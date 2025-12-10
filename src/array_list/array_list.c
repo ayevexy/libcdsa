@@ -1,6 +1,7 @@
 #include "array_list.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define INITIAL_CAPACITY 10
@@ -35,6 +36,9 @@ void array_list_add(ArrayList* array_list, void* element) {
 }
 
 void* array_list_get(ArrayList* array_list, int index) {
+    if (!(index > 0 && index <= array_list->size)) {
+        fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);
+    }
     return array_list->elements[index];
 }
 

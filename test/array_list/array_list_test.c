@@ -3,15 +3,18 @@
 #include "unity.h"
 #include "fff.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 DEFINE_FFF_GLOBALS;
 
 FAKE_VOID_FUNC(free, void*);
 FAKE_VALUE_FUNC(void*, realloc, void*, size_t);
+FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 
 #define FFF_FAKES_LIST(FAKE)    \
     FAKE(free)                  \
-    FAKE(realloc)
+    FAKE(realloc)               \
+    FAKE(fprintf)
 
 ArrayList* array_list;
 
@@ -96,6 +99,23 @@ void test_get_element_from_array_list() {
     TEST_ASSERT_EQUAL(value, actual_value);
 }
 
+void get_out_of_bounds(int index) {
+    // given
+    const char* message = "Warning: array_list_get index %d out of bounds\n";
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    array_list_get(array_list, index);
+    // then
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+}
+
+void test_get_element_from_array_list_index_out_of_bounds_warns_client() {
+    get_out_of_bounds(10);
+    get_out_of_bounds(-1);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -104,5 +124,6 @@ int main(void) {
     RUN_TEST(test_add_multiple_elements_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it);
     RUN_TEST(test_get_element_from_array_list);
+    RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
     return UNITY_END();
 }

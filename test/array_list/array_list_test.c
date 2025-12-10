@@ -144,6 +144,48 @@ void test_set_element_of_array_list_index_out_of_bounds_warns_client() {
     set_out_of_bounds(-1);
 }
 
+void test_remove_element_from_array_list() {
+    // given
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    array_list_remove(array_list, 0);
+    // then
+    size_t expected_size = 0;
+    void* actual_value = array_list_get(array_list, 0);
+    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
+    TEST_ASSERT_NULL(actual_value);
+}
+
+void test_remove_element_from_array_list_shifts_its_remaining_elements() {
+    // given
+    int values[4] = { 0, 1, 2, 3 };
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_remove(array_list, 2);
+    // then
+    TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(array_list, 2));
+}
+
+void remove_out_of_bounds(int index) {
+    // given
+    const char* message = "Warning: array_list_remove index %d out of bounds\n";
+    // when
+    array_list_remove(array_list, index);
+    // then
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+}
+
+void test_remove_element_from_array_list_index_out_of_bounds_warns_client() {
+    remove_out_of_bounds(10);
+    remove_out_of_bounds(-1);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -155,5 +197,8 @@ int main(void) {
     RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
     RUN_TEST(test_set_element_of_array_list);
     RUN_TEST(test_set_element_of_array_list_index_out_of_bounds_warns_client);
+    RUN_TEST(test_remove_element_from_array_list);
+    RUN_TEST(test_remove_element_from_array_list_shifts_its_remaining_elements);
+    RUN_TEST(test_remove_element_from_array_list_index_out_of_bounds_warns_client);
     return UNITY_END();
 }

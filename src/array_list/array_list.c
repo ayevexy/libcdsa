@@ -50,7 +50,13 @@ void array_list_set(ArrayList* array_list, int index, void* element) {
 }
 
 void array_list_remove(ArrayList* array_list, int index) {
-    // TODO: implement
+    if (!(index > 0 && index <= array_list->size)) {
+        fprintf(stderr, "Warning: array_list_remove index %d out of bounds\n", index);
+    }
+    for (int i = index; i < array_list_size(array_list); i++) {
+        array_list->elements[i] = array_list->elements[i + 1];
+    }
+    array_list->size--;
 }
 
 size_t array_list_size(ArrayList* array_list) {

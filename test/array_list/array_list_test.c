@@ -116,6 +116,34 @@ void test_get_element_from_array_list_index_out_of_bounds_warns_client() {
     get_out_of_bounds(-1);
 }
 
+void test_set_element_of_array_list() {
+    // given
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    int new_value = 20;
+    array_list_set(array_list, 0, &new_value);
+    // then
+    int actual_value = *(int*) array_list_get(array_list, 0);
+    TEST_ASSERT_EQUAL(new_value, actual_value);
+}
+
+void set_out_of_bounds(int index) {
+    // given
+    const char* message = "Warning: array_list_set index %d out of bounds\n";
+    int value = 20;
+    // when
+    array_list_set(array_list, index, &value);
+    // then
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+}
+
+void test_set_element_of_array_list_index_out_of_bounds_warns_client() {
+    set_out_of_bounds(10);
+    set_out_of_bounds(-1);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -125,5 +153,7 @@ int main(void) {
     RUN_TEST(test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it);
     RUN_TEST(test_get_element_from_array_list);
     RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
+    RUN_TEST(test_set_element_of_array_list);
+    RUN_TEST(test_set_element_of_array_list_index_out_of_bounds_warns_client);
     return UNITY_END();
 }

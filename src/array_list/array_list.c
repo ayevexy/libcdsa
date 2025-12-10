@@ -43,7 +43,10 @@ void* array_list_get(ArrayList* array_list, int index) {
 }
 
 void array_list_set(ArrayList* array_list, int index, void* element) {
-    // TODO: implement
+    if (!(index > 0 && index <= array_list->size)) {
+        fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);
+    }
+    array_list->elements[index] = element;
 }
 
 void array_list_remove(ArrayList* array_list, int index) {

@@ -86,6 +86,16 @@ void test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it() {
     free(elements);
 }
 
+void test_get_element_from_array_list() {
+    // given
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    int actual_value = *(int*) array_list_get(array_list, 0);
+    // then
+    TEST_ASSERT_EQUAL(value, actual_value);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -93,5 +103,6 @@ int main(void) {
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it);
+    RUN_TEST(test_get_element_from_array_list);
     return UNITY_END();
 }

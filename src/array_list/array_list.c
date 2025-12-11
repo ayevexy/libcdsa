@@ -1,6 +1,5 @@
 #include "array_list.h"
 
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,8 +8,8 @@
 
 struct ArrayList {
     void** elements;
-    size_t size;
-    size_t capacity;
+    int size;
+    int capacity;
 };
 
 static void grow(ArrayList*);
@@ -59,11 +58,11 @@ void array_list_remove(ArrayList* array_list, int index) {
     array_list->size--;
 }
 
-size_t array_list_size(ArrayList* array_list) {
+int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }
 
-size_t array_list_capacity(ArrayList* array_list) {
+int array_list_capacity(ArrayList* array_list) {
     return array_list->capacity;
 }
 

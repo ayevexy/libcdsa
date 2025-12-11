@@ -77,8 +77,8 @@ void test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it() {
     // when
     array_list_add(array_list, &values[11]);
     // then
-    size_t expected_size = 11;
-    size_t expected_capacity = 20;
+    int expected_size = 11;
+    int expected_capacity = 20;
     TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
     TEST_ASSERT_EQUAL(expected_capacity, array_list_capacity(array_list));
     // and
@@ -151,7 +151,7 @@ void test_remove_element_from_array_list() {
     // when
     array_list_remove(array_list, 0);
     // then
-    size_t expected_size = 0;
+    int expected_size = 0;
     void* actual_value = array_list_get(array_list, 0);
     TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
     TEST_ASSERT_NULL(actual_value);

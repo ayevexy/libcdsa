@@ -1,8 +1,6 @@
 #ifndef ARRAY_LIST_H
 #define ARRAY_LIST_H
 
-#include <stddef.h>
-
 typedef struct ArrayList ArrayList;
 
 ArrayList* array_list_new(void);
@@ -17,8 +15,8 @@ void array_list_set(ArrayList*, int index, void* element);
 
 void array_list_remove(ArrayList*, int index);
 
-size_t array_list_size(ArrayList*);
+int array_list_size(ArrayList*);
 
-size_t array_list_capacity(ArrayList*);
+int array_list_capacity(ArrayList*);
 
 #endif

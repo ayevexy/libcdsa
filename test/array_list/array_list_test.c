@@ -206,6 +206,21 @@ void test_array_list_is_empty() {
     TEST_ASSERT_TRUE(empty);
 }
 
+void test_clear_array_list() {
+    // given
+    int values[3] = { 0, 1, 2 };
+    for (int i = 0; i < 3; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_clear(array_list);
+    // then
+    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
+    TEST_ASSERT_NULL(array_list_get(array_list, 0));
+    TEST_ASSERT_NULL(array_list_get(array_list, 1));
+    TEST_ASSERT_NULL(array_list_get(array_list, 2));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -222,5 +237,6 @@ int main(void) {
     RUN_TEST(test_remove_element_from_array_list_index_out_of_bounds_warns_client);
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);
+    RUN_TEST(test_clear_array_list);
     return UNITY_END();
 }

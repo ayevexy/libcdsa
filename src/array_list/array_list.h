@@ -21,4 +21,6 @@ int array_list_capacity(ArrayList*);
 
 bool array_list_is_empty(ArrayList*);
 
+void array_list_clear(ArrayList*);
+
 #endif

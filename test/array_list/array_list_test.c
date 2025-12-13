@@ -240,6 +240,31 @@ void test_array_list_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_array_list_index_of_element_returns_its_index() {
+    // given
+    int values[3] = { 0, 1, 2 };
+    for (int i = 0; i < 3; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    int index = array_list_index_of(array_list, &values[1]);
+    // then
+    TEST_ASSERT_EQUAL(1, index);
+}
+
+void test_array_list_index_of_nonexistent_element_returns_negative_one() {
+    // given
+    int nonexistent = 10;
+    int values[3] = { 0, 1, 2 };
+    for (int i = 0; i < 3; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    int index = array_list_index_of(array_list, &nonexistent);
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -259,5 +284,7 @@ int main(void) {
     RUN_TEST(test_clear_array_list);
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);
+    RUN_TEST(test_array_list_index_of_element_returns_its_index);
+    RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
     return UNITY_END();
 }

@@ -89,6 +89,15 @@ bool array_list_contains(ArrayList* array_list, void* element) {
     return false;
 }
 
+int array_list_index_of(ArrayList* array_list, void* element) {
+    for (int i = 0; i < array_list_size(array_list); i++) {
+        if (array_list->elements[i] == element) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 static void grow(ArrayList* array_list) {
     void** elements = realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
     if (!elements) {

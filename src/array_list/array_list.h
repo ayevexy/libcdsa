@@ -25,4 +25,6 @@ void array_list_clear(ArrayList*);
 
 bool array_list_contains(ArrayList*, void* element);
 
+int array_list_index_of(ArrayList*, void* element);
+
 #endif

@@ -1,7 +1,7 @@
 #include "array_list.h"
 
+#include "util/memory.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 #define INITIAL_CAPACITY 10
 #define GROW_FACTOR 2
@@ -19,16 +19,16 @@ static bool has_next(void* array_list, void* index);
 static void* next(void* array_list, void* index);
 
 ArrayList* array_list_new() {
-    ArrayList* array_list = malloc(sizeof(ArrayList));
-    array_list->elements = malloc(INITIAL_CAPACITY * sizeof(void*));
+    ArrayList* array_list = memory_alloc(sizeof(ArrayList));
+    array_list->elements = memory_alloc(INITIAL_CAPACITY * sizeof(void*));
     array_list->size = 0;
     array_list->capacity = INITIAL_CAPACITY;
     return array_list;
 }
 
 void array_list_delete(ArrayList* array_list) {
-    free(array_list->elements);
-    free(array_list);
+    memory_free((void**) &array_list->elements);
+    memory_free((void**) &array_list);
 }
 
 void array_list_add(ArrayList* array_list, void* element) {
@@ -93,7 +93,7 @@ bool array_list_is_empty(ArrayList* array_list) {
 }
 
 Iterator* array_list_iterator(ArrayList* array_list) {
-    int* index = malloc(sizeof(int));
+    int* index = memory_alloc(sizeof(int));
     *index = 0;
     return iterator_new(array_list, index, &has_next, &next);
 }
@@ -135,10 +135,6 @@ int array_list_index_of(ArrayList* array_list, void* element) {
 }
 
 static void grow(ArrayList* array_list) {
-    void** elements = realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
-    if (!elements) {
-        exit(EXIT_FAILURE); // Hope this never happens
-    }
-    array_list->elements = elements;
+    array_list->elements = memory_realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
     array_list->capacity *= GROW_FACTOR;
 }

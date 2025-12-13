@@ -7,6 +7,7 @@ set(CMAKE_C_STANDARD 23)
 add_library(data_structures STATIC
         src/array_list/array_list.c
         src/util/iterator.c
+        src/util/memory.c
 )
 target_include_directories(data_structures PUBLIC src)
 

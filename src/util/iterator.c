@@ -1,6 +1,6 @@
 #include "iterator.h"
 
-#include <stdlib.h>
+#include "memory.h"
 
 struct Iterator {
     void* iterable_structure;
@@ -15,7 +15,7 @@ Iterator* iterator_new(
     bool (*has_next)(void* iterable_structure, void* internal_state),
     void* (*next)(void* iterable_structure, void* internal_state)
 ) {
-    Iterator* iterator = malloc(sizeof(Iterator));
+    Iterator* iterator = memory_alloc(sizeof(Iterator));
     iterator->iterable_structure = iterable_structure;
     iterator->internal_state = internal_state;
     iterator->has_next = has_next;
@@ -32,6 +32,6 @@ void *iterator_next(Iterator* iterator) {
 }
 
 void iterator_delete(Iterator* iterator) {
-    free(iterator->internal_state);
-    free(iterator);
+    memory_free(&iterator->internal_state);
+    memory_free((void**) &iterator);
 }

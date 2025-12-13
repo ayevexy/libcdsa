@@ -89,6 +89,66 @@ void test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it() {
     free(elements);
 }
 
+void test_add_element_at_specific_index_to_array_list() {
+    // given
+    int new_element = 10;
+    int values[4] = { 0, 1, 2, 3 };
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_add_at(array_list, 2, &new_element);
+    // then
+    int expected_size = 5;
+    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(new_element, *(int*) array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(array_list, 3));
+    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(array_list, 4));
+}
+
+void test_add_element_at_specific_index_to_array_list_exceeding_capacity_resize_it() {
+    // setup
+    void** elements = malloc(sizeof(void*) * 10);
+    realloc_fake.return_val = elements;
+    // given
+    int values[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    for (int i = 0; i < 10; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_add_at(array_list,  7, &values[11]);
+    // then
+    int expected_size = 11;
+    int expected_capacity = 20;
+    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(expected_capacity, array_list_capacity(array_list));
+    // and
+    TEST_ASSERT_EQUAL(elements, realloc_fake.return_val);
+    // TODO: add assertion for realloc.fake.arg0_val
+    TEST_ASSERT_EQUAL(sizeof(void*) * 20, realloc_fake.arg1_val);
+    // clean up
+    free(elements);
+}
+
+void add_out_of_bounds(int index) {
+    // given
+    const char* message = "Warning: array_list_add_at index %d out of bounds\n";
+    int value = 10;
+    // when
+    array_list_add_at(array_list, index, &value);
+    // then
+    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+}
+
+void test_add_element_at_specific_index_to_array_list_out_of_bounds_warns_client() {
+    add_out_of_bounds(10);
+    add_out_of_bounds(-1);
+}
+
 void test_get_element_from_array_list() {
     // given
     int value = 10;
@@ -272,6 +332,9 @@ int main(void) {
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it);
+    RUN_TEST(test_add_element_at_specific_index_to_array_list);
+    RUN_TEST(test_add_element_at_specific_index_to_array_list_exceeding_capacity_resize_it);
+    RUN_TEST(test_add_element_at_specific_index_to_array_list_out_of_bounds_warns_client);
     RUN_TEST(test_get_element_from_array_list);
     RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
     RUN_TEST(test_set_element_of_array_list);

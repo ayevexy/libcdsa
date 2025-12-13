@@ -9,6 +9,8 @@ void array_list_delete(ArrayList*);
 
 void array_list_add(ArrayList*, void* element);
 
+void array_list_add_at(ArrayList*, int index, void* element);
+
 void* array_list_get(ArrayList*, int index);
 
 void array_list_set(ArrayList*, int index, void* element);

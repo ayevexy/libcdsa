@@ -34,6 +34,21 @@ void array_list_add(ArrayList* array_list, void* element) {
     array_list->elements[array_list->size++] = element;
 }
 
+void array_list_add_at(ArrayList* array_list, int index, void* element) {
+    if (index < 0 || index >= array_list->size) {
+        fprintf(stderr, "Warning: array_list_add_at index %d out of bounds\n", index);
+        return;
+    }
+    if (array_list->size >= array_list->capacity) {
+        grow(array_list);
+    }
+    for (int i = array_list->size; i > index; i--) {
+        array_list->elements[i] = array_list->elements[i - 1];
+    }
+    array_list->elements[index] = element;
+    array_list->size++;
+}
+
 void* array_list_get(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);

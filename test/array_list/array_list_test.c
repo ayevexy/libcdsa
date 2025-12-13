@@ -105,8 +105,9 @@ void get_out_of_bounds(int index) {
     int value = 10;
     array_list_add(array_list, &value);
     // when
-    array_list_get(array_list, index);
+    void* element = array_list_get(array_list, index);
     // then
+    TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
@@ -177,6 +178,8 @@ void remove_out_of_bounds(int index) {
     // when
     array_list_remove(array_list, index);
     // then
+    int expected_size = 0;
+    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }

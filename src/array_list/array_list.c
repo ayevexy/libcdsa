@@ -37,6 +37,7 @@ void array_list_add(ArrayList* array_list, void* element) {
 void* array_list_get(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);
+        return NULL;
     }
     return array_list->elements[index];
 }
@@ -44,6 +45,7 @@ void* array_list_get(ArrayList* array_list, int index) {
 void array_list_set(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);
+        return;
     }
     array_list->elements[index] = element;
 }
@@ -51,6 +53,7 @@ void array_list_set(ArrayList* array_list, int index, void* element) {
 void array_list_remove(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_remove index %d out of bounds\n", index);
+        return;
     }
     for (int i = index; i < array_list_size(array_list); i++) {
         array_list->elements[i] = array_list->elements[i + 1];

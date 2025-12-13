@@ -1,6 +1,8 @@
 #ifndef ARRAY_LIST_H
 #define ARRAY_LIST_H
 
+#include "util/iterator.h"
+
 typedef struct ArrayList ArrayList;
 
 ArrayList* array_list_new(void);
@@ -22,6 +24,8 @@ int array_list_size(ArrayList*);
 int array_list_capacity(ArrayList*);
 
 bool array_list_is_empty(ArrayList*);
+
+Iterator* array_list_iterator(ArrayList*);
 
 void array_list_clear(ArrayList*);
 

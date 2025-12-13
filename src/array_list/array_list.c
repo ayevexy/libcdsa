@@ -14,6 +14,10 @@ struct ArrayList {
 
 static void grow(ArrayList*);
 
+static bool has_next(void* array_list, void* index);
+
+static void* next(void* array_list, void* index);
+
 ArrayList* array_list_new() {
     ArrayList* array_list = malloc(sizeof(ArrayList));
     array_list->elements = malloc(INITIAL_CAPACITY * sizeof(void*));
@@ -86,6 +90,23 @@ int array_list_capacity(ArrayList* array_list) {
 
 bool array_list_is_empty(ArrayList* array_list) {
     return array_list->size == 0;
+}
+
+Iterator* array_list_iterator(ArrayList* array_list) {
+    int* index = malloc(sizeof(int));
+    *index = 0;
+    return iterator_new(array_list, index, &has_next, &next);
+}
+
+static bool has_next(void* array_list, void* index) {
+    return *(int*) index < ((ArrayList*) array_list)->size;
+}
+
+static void* next(void* array_list, void* index) {
+    if (*(int*) index >= ((ArrayList*) array_list)->size) {
+        return NULL;
+    }
+    return ((ArrayList*) array_list)->elements[(*(int*) index)++];
 }
 
 void array_list_clear(ArrayList* array_list) {

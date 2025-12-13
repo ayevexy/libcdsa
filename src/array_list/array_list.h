@@ -19,4 +19,6 @@ int array_list_size(ArrayList*);
 
 int array_list_capacity(ArrayList*);
 
+bool array_list_is_empty(ArrayList*);
+
 #endif

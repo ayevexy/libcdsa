@@ -69,6 +69,10 @@ int array_list_capacity(ArrayList* array_list) {
     return array_list->capacity;
 }
 
+bool array_list_is_empty(ArrayList* array_list) {
+    return array_list->size == 0;
+}
+
 static void grow(ArrayList* array_list) {
     void** elements = realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
     if (!elements) {

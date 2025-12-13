@@ -189,6 +189,23 @@ void test_remove_element_from_array_list_index_out_of_bounds_warns_client() {
     remove_out_of_bounds(-1);
 }
 
+void test_array_list_is_not_empty() {
+    // given
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    bool empty = array_list_is_empty(array_list);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
+void test_array_list_is_empty() {
+    // when
+    bool empty = array_list_is_empty(array_list);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -203,5 +220,7 @@ int main(void) {
     RUN_TEST(test_remove_element_from_array_list);
     RUN_TEST(test_remove_element_from_array_list_shifts_its_remaining_elements);
     RUN_TEST(test_remove_element_from_array_list_index_out_of_bounds_warns_client);
+    RUN_TEST(test_array_list_is_not_empty);
+    RUN_TEST(test_array_list_is_empty);
     return UNITY_END();
 }

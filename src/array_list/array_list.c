@@ -80,6 +80,15 @@ void array_list_clear(ArrayList* array_list) {
     array_list->size = 0;
 }
 
+bool array_list_contains(ArrayList* array_list, void* element) {
+    for (int i = 0; i < array_list->size; i++) {
+        if (array_list->elements[i] == element) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void grow(ArrayList* array_list) {
     void** elements = realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
     if (!elements) {

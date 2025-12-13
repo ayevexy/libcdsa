@@ -221,6 +221,25 @@ void test_clear_array_list() {
     TEST_ASSERT_NULL(array_list_get(array_list, 2));
 }
 
+void test_array_list_contains_element() {
+    // given
+    int value = 10;
+    array_list_add(array_list, &value);
+    // when
+    bool contains = array_list_contains(array_list, &value);
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_array_list_does_not_contains_element() {
+    // given
+    int value = 10;
+    // when
+    bool contains = array_list_contains(array_list, &value);
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -238,5 +257,7 @@ int main(void) {
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_clear_array_list);
+    RUN_TEST(test_array_list_contains_element);
+    RUN_TEST(test_array_list_does_not_contains_element);
     return UNITY_END();
 }

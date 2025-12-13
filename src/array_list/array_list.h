@@ -23,4 +23,6 @@ bool array_list_is_empty(ArrayList*);
 
 void array_list_clear(ArrayList*);
 
+bool array_list_contains(ArrayList*, void* element);
+
 #endif

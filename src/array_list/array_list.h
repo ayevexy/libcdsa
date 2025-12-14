@@ -2,10 +2,17 @@
 #define ARRAY_LIST_H
 
 #include "util/iterator.h"
+#include "util/functions.h"
+
+#define DEFAULT_OPTIONS (Options) { .equals = equals }
+
+typedef struct Options {
+    bool (*equals)(void*, void*);
+} Options;
 
 typedef struct ArrayList ArrayList;
 
-ArrayList* array_list_new(void);
+ArrayList* array_list_new(Options options);
 
 void array_list_delete(ArrayList*);
 

@@ -10,6 +10,7 @@ struct ArrayList {
     void** elements;
     int size;
     int capacity;
+    bool (*equals)(void*, void*);
 };
 
 static void grow(ArrayList*);
@@ -18,11 +19,12 @@ static bool has_next(void* array_list, void* index);
 
 static void* next(void* array_list, void* index);
 
-ArrayList* array_list_new() {
+ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(INITIAL_CAPACITY * sizeof(void*));
     array_list->size = 0;
     array_list->capacity = INITIAL_CAPACITY;
+    array_list->equals = options.equals;
     return array_list;
 }
 
@@ -118,7 +120,7 @@ void array_list_clear(ArrayList* array_list) {
 
 bool array_list_contains(ArrayList* array_list, void* element) {
     for (int i = 0; i < array_list->size; i++) {
-        if (array_list->elements[i] == element) {
+        if (array_list->equals(array_list->elements[i], element)) {
             return true;
         }
     }
@@ -127,7 +129,7 @@ bool array_list_contains(ArrayList* array_list, void* element) {
 
 int array_list_index_of(ArrayList* array_list, void* element) {
     for (int i = 0; i < array_list_size(array_list); i++) {
-        if (array_list->elements[i] == element) {
+        if (array_list->equals(array_list->elements[i], element)) {
             return i;
         }
     }

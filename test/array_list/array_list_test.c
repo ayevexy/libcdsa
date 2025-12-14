@@ -23,7 +23,7 @@ ArrayList* array_list;
 void setUp() {
     FFF_FAKES_LIST(RESET_FAKE);
     FFF_RESET_HISTORY();
-    array_list = array_list_new();
+    array_list = array_list_new(DEFAULT_OPTIONS);
 }
 
 void tearDown() {

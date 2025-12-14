@@ -40,7 +40,7 @@ void test_delete_array_list() {
     // then
     TEST_ASSERT_EQUAL(array_list, free_fake.arg0_val);
     // and (clean up)
-    array_list = NULL; // Setting pointer to null to prevent double delete call
+    array_list = nullptr; // Setting pointer to null to prevent double delete call
 }
 
 void test_add_element_to_array_list() {

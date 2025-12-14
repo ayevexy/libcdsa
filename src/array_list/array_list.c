@@ -70,7 +70,7 @@ void array_list_add_at(ArrayList* array_list, int index, void* element) {
 void* array_list_get(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);
-        return NULL;
+        return nullptr;
     }
     return array_list->elements[index];
 }
@@ -118,7 +118,7 @@ static bool has_next(void* array_list, void* index) {
 
 static void* next(void* array_list, void* index) {
     if (*(int*) index >= ((ArrayList*) array_list)->size) {
-        return NULL;
+        return nullptr;
     }
     return ((ArrayList*) array_list)->elements[(*(int*) index)++];
 }
@@ -143,7 +143,7 @@ static void bubble_sort(ArrayList* array_list, Comparator compare) {
 
 void array_list_clear(ArrayList* array_list) {
     for (int i = 0; i < array_list->size; i++) {
-        array_list->elements[i] = NULL;
+        array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
 }

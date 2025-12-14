@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 4.0)
-project(data_structures C)
+project(libcdsa C)
 
 set(CMAKE_C_STANDARD 23)
 
 # ---- Library under test ----
-add_library(data_structures STATIC
+add_library(libcdsa STATIC
         src/array_list/array_list.c
         src/util/iterator.c
         src/util/memory.c
         src/util/functions.c
 )
-target_include_directories(data_structures PUBLIC src)
+target_include_directories(libcdsa PUBLIC src)
 
 # ---- Dependencies ----
 include(FetchContent)
@@ -54,7 +54,7 @@ foreach(TEST_FILE ${TEST_FILES})
 
     target_link_libraries(${EXECUTABLE}
             PRIVATE
-            data_structures
+            libcdsa
             unity_test_framework
     )
     target_include_directories(${EXECUTABLE} PRIVATE

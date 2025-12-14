@@ -4,9 +4,15 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 
-#define DEFAULT_OPTIONS (Options) { .equals = equals }
+#define DEFAULT_OPTIONS (Options) { \
+    .initial_capacity = 10,         \
+    .grow_factor = 2.0,             \
+    .equals = equals                \
+}
 
 typedef struct Options {
+    int initial_capacity;
+    double grow_factor;
     bool (*equals)(void*, void*);
 } Options;
 

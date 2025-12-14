@@ -3,13 +3,11 @@
 #include "util/memory.h"
 #include <stdio.h>
 
-#define INITIAL_CAPACITY 10
-#define GROW_FACTOR 2
-
 struct ArrayList {
     void** elements;
     int size;
     int capacity;
+    double grow_factor;
     bool (*equals)(void*, void*);
 };
 
@@ -21,9 +19,10 @@ static void* next(void* array_list, void* index);
 
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
-    array_list->elements = memory_alloc(INITIAL_CAPACITY * sizeof(void*));
+    array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
     array_list->size = 0;
-    array_list->capacity = INITIAL_CAPACITY;
+    array_list->capacity = options.initial_capacity;
+    array_list->grow_factor = options.grow_factor;
     array_list->equals = options.equals;
     return array_list;
 }
@@ -137,6 +136,9 @@ int array_list_index_of(ArrayList* array_list, void* element) {
 }
 
 static void grow(ArrayList* array_list) {
-    array_list->elements = memory_realloc(array_list->elements, array_list->capacity * GROW_FACTOR * sizeof(void*));
-    array_list->capacity *= GROW_FACTOR;
+    array_list->elements = memory_realloc(
+        array_list->elements,
+        array_list->capacity * array_list->grow_factor * sizeof(void*)
+        );
+    array_list->capacity *= array_list->grow_factor;
 }

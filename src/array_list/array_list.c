@@ -44,6 +44,14 @@ void array_list_add(ArrayList* array_list, void* element) {
     array_list->elements[array_list->size++] = element;
 }
 
+static void grow(ArrayList* array_list) {
+    array_list->elements = memory_realloc(
+        array_list->elements,
+        array_list->capacity * array_list->grow_factor * sizeof(void*)
+        );
+    array_list->capacity *= array_list->grow_factor;
+}
+
 void array_list_add_at(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_add_at index %d out of bounds\n", index);
@@ -170,12 +178,4 @@ char* array_list_to_string(ArrayList* array_list) {
     }
     strcat(string, " ]");
     return string;
-}
-
-static void grow(ArrayList* array_list) {
-    array_list->elements = memory_realloc(
-        array_list->elements,
-        array_list->capacity * array_list->grow_factor * sizeof(void*)
-        );
-    array_list->capacity *= array_list->grow_factor;
 }

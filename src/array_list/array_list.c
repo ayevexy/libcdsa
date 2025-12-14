@@ -17,6 +17,8 @@ static bool has_next(void* array_list, void* index);
 
 static void* next(void* array_list, void* index);
 
+static void bubble_sort(ArrayList*, Comparator compare);
+
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
@@ -108,6 +110,24 @@ static void* next(void* array_list, void* index) {
         return NULL;
     }
     return ((ArrayList*) array_list)->elements[(*(int*) index)++];
+}
+
+void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
+    switch (algorithm) {
+        case BUBBLE_SORT: { bubble_sort(array_list, comparator); }
+    }
+}
+
+static void bubble_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 0; i < array_list->size - 1; i++) {
+        for (int j = 0; j < array_list->size - i - 1; j++) {
+            if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
+                void* swap = array_list->elements[j];
+                array_list->elements[j] = array_list->elements[j + 1];
+                array_list->elements[j + 1] = swap;
+            }
+        }
+    }
 }
 
 void array_list_clear(ArrayList* array_list) {

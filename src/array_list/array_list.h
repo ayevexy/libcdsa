@@ -3,6 +3,7 @@
 
 #include "util/iterator.h"
 #include "util/functions.h"
+#include "util/algorithms.h"
 
 #define DEFAULT_OPTIONS (Options) { \
     .initial_capacity = 10,         \
@@ -39,6 +40,8 @@ int array_list_capacity(ArrayList*);
 bool array_list_is_empty(ArrayList*);
 
 Iterator* array_list_iterator(ArrayList*);
+
+void array_list_sort(ArrayList*, Comparator, SortingAlgorithm);
 
 void array_list_clear(ArrayList*);
 

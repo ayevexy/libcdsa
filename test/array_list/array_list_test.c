@@ -290,6 +290,22 @@ void test_array_list_iterator() {
     TEST_ASSERT_NULL(iterator_next(iterator));
 }
 
+void test_sort_array_list() {
+    // given
+    int values[5] = { 3, 1, 0, 4, 2 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_sort(array_list, DEFAULT_COMPARATOR, BUBBLE_SORT);
+    // then
+    TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(array_list, 3));
+    TEST_ASSERT_EQUAL(values[4], *(int*) array_list_get(array_list, 4));
+}
+
 void test_clear_array_list() {
     // given
     int values[3] = { 0, 1, 2 };
@@ -369,6 +385,7 @@ int main(void) {
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_iterator);
+    RUN_TEST(test_sort_array_list);
     RUN_TEST(test_clear_array_list);
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);

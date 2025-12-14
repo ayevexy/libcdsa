@@ -10,12 +10,10 @@
 DEFINE_FFF_GLOBALS;
 
 FAKE_VOID_FUNC(free, void*);
-FAKE_VALUE_FUNC(void*, realloc, void*, size_t);
 FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 
 #define FFF_FAKES_LIST(FAKE)    \
     FAKE(free)                  \
-    FAKE(realloc)               \
     FAKE(fprintf)
 
 ArrayList* array_list;
@@ -68,27 +66,20 @@ void test_add_multiple_elements_to_array_list() {
 }
 
 void test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it() {
-    // setup
-    void** elements = malloc(sizeof(void*) * 10);
-    realloc_fake.return_val = elements;
     // given
-    int values[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    for (int i = 0; i < 10; i++) {
+    constexpr int SIZE = 11;
+    constexpr int NEW_CAPACITY = 20;
+    int values[SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    // when
+    for (int i = 0; i < SIZE; i++) {
         array_list_add(array_list, &values[i]);
     }
-    // when
-    array_list_add(array_list, &values[11]);
     // then
-    int expected_size = 11;
-    int expected_capacity = 20;
-    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
-    TEST_ASSERT_EQUAL(expected_capacity, array_list_capacity(array_list));
-    // and
-    TEST_ASSERT_EQUAL(elements, realloc_fake.return_val);
-    // TODO: add assertion for realloc.fake.arg0_val
-    TEST_ASSERT_EQUAL(sizeof(void*) * 20, realloc_fake.arg1_val);
-    // clean up
-    free(elements);
+    TEST_ASSERT_EQUAL(SIZE, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(NEW_CAPACITY, array_list_capacity(array_list));
+    for (int i = 0; i < SIZE; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(array_list, i));
+    }
 }
 
 void test_add_element_at_specific_index_to_array_list() {
@@ -111,27 +102,27 @@ void test_add_element_at_specific_index_to_array_list() {
 }
 
 void test_add_element_at_specific_index_to_array_list_exceeding_capacity_resize_it() {
-    // setup
-    void** elements = malloc(sizeof(void*) * 10);
-    realloc_fake.return_val = elements;
     // given
-    int values[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    for (int i = 0; i < 10; i++) {
+    constexpr int SIZE = 11;
+    constexpr int NEW_CAPACITY = 20;
+    int values[SIZE] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    int index = 7;
+    // and
+    for (int i = 0; i < SIZE - 1; i++) {
         array_list_add(array_list, &values[i]);
     }
     // when
-    array_list_add_at(array_list,  7, &values[11]);
+    array_list_add_at(array_list, index, &values[11]);
     // then
-    int expected_size = 11;
-    int expected_capacity = 20;
-    TEST_ASSERT_EQUAL(expected_size, array_list_size(array_list));
-    TEST_ASSERT_EQUAL(expected_capacity, array_list_capacity(array_list));
-    // and
-    TEST_ASSERT_EQUAL(elements, realloc_fake.return_val);
-    // TODO: add assertion for realloc.fake.arg0_val
-    TEST_ASSERT_EQUAL(sizeof(void*) * 20, realloc_fake.arg1_val);
-    // clean up
-    free(elements);
+    TEST_ASSERT_EQUAL(SIZE, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(NEW_CAPACITY, array_list_capacity(array_list));
+    for (int i = 0; i < index; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(array_list, i));
+    }
+    TEST_ASSERT_EQUAL(values[11], *(int*) array_list_get(array_list, index));
+    for (int i = index; i < SIZE - 1; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(array_list, i + 1));
+    }
 }
 
 void add_out_of_bounds(int index) {

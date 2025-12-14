@@ -365,6 +365,21 @@ void test_array_list_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_array_list_to_string() {
+    // given
+    char expected_string[68];
+    int values[4] = { 0, 1, 2, 3 };
+    // and
+    sprintf(expected_string, "[ %p, %p, %p, %p ]", &values[0], &values[1], &values[2], &values[3]);
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    char* string = array_list_to_string(array_list);
+    // then
+    TEST_ASSERT_EQUAL_STRING(expected_string, string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -391,5 +406,6 @@ int main(void) {
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_array_list_to_string);
     return UNITY_END();
 }

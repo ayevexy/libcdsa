@@ -8,13 +8,15 @@
 #define DEFAULT_OPTIONS (Options) { \
     .initial_capacity = 10,         \
     .grow_factor = 2.0,             \
-    .equals = equals                \
+    .equals = equals,               \
+    .to_string = to_string          \
 }
 
 typedef struct Options {
     int initial_capacity;
     double grow_factor;
     bool (*equals)(void*, void*);
+    char* (*to_string)(void*);
 } Options;
 
 typedef struct ArrayList ArrayList;
@@ -48,5 +50,7 @@ void array_list_clear(ArrayList*);
 bool array_list_contains(ArrayList*, void* element);
 
 int array_list_index_of(ArrayList*, void* element);
+
+char* array_list_to_string(ArrayList*);
 
 #endif

@@ -9,4 +9,6 @@ bool equals(void*, void*);
 
 int compare(void* a, void* b);
 
+char* to_string(void*);
+
 #endif

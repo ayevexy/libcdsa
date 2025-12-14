@@ -2,6 +2,7 @@
 
 #include "util/memory.h"
 #include <stdio.h>
+#include <string.h>
 
 struct ArrayList {
     void** elements;
@@ -9,6 +10,7 @@ struct ArrayList {
     int capacity;
     double grow_factor;
     bool (*equals)(void*, void*);
+    char* (*to_string)(void*);
 };
 
 static void grow(ArrayList*);
@@ -26,6 +28,7 @@ ArrayList* array_list_new(Options options) {
     array_list->capacity = options.initial_capacity;
     array_list->grow_factor = options.grow_factor;
     array_list->equals = options.equals;
+    array_list->to_string = options.to_string;
     return array_list;
 }
 
@@ -153,6 +156,20 @@ int array_list_index_of(ArrayList* array_list, void* element) {
         }
     }
     return -1;
+}
+
+char* array_list_to_string(ArrayList* array_list) {
+    const unsigned long ELEMENT_STRING_SIZE = strlen(array_list->to_string(array_list->elements[0]));
+    char* string = memory_alloc(5 + (ELEMENT_STRING_SIZE + 2) * array_list->size);
+    strcat(string, "[ ");
+    for (int i = 0; i < array_list->size; i++) {
+        strcat(string, array_list->to_string(array_list->elements[i]));
+        if (i < array_list->size - 1) {
+            strcat(string, ", ");
+        }
+    }
+    strcat(string, " ]");
+    return string;
 }
 
 static void grow(ArrayList* array_list) {

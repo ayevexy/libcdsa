@@ -7,7 +7,7 @@ typedef int (*Comparator)(void*, void*);
 
 bool equals(void*, void*);
 
-int compare(void* a, void* b);
+int compare(void*, void*);
 
 char* to_string(void*);
 

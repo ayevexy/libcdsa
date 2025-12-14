@@ -88,7 +88,7 @@ void array_list_remove(ArrayList* array_list, int index) {
         fprintf(stderr, "Warning: array_list_remove index %d out of bounds\n", index);
         return;
     }
-    for (int i = index; i < array_list_size(array_list); i++) {
+    for (int i = index; i < array_list->size; i++) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
     array_list->size--;
@@ -158,7 +158,7 @@ bool array_list_contains(ArrayList* array_list, void* element) {
 }
 
 int array_list_index_of(ArrayList* array_list, void* element) {
-    for (int i = 0; i < array_list_size(array_list); i++) {
+    for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {
             return i;
         }

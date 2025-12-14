@@ -8,8 +8,8 @@
 #define DEFAULT_OPTIONS (Options) { \
     .initial_capacity = 10,         \
     .grow_factor = 2.0,             \
-    .equals = equals,               \
-    .to_string = to_string          \
+    .equals = default_equals,       \
+    .to_string = default_to_string  \
 }
 
 typedef struct Options {

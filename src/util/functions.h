@@ -1,14 +1,14 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#define DEFAULT_COMPARATOR compare
+#define DEFAULT_COMPARATOR default_compare
 
 typedef int (*Comparator)(void*, void*);
 
-bool equals(void*, void*);
+bool default_equals(void*, void*);
 
-int compare(void*, void*);
+int default_compare(void*, void*);
 
-char* to_string(void*);
+char* default_to_string(void*);
 
 #endif

@@ -123,6 +123,12 @@ static void* next(void* array_list, void* index) {
     return ((ArrayList*) array_list)->elements[(*(int*) index)++];
 }
 
+void array_list_for_each(ArrayList* array_list, Consumer action) {
+    for (int i = 0; i < array_list->size; i++) {
+        action(array_list->elements[i]);
+    }
+}
+
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
     switch (algorithm) {
         case BUBBLE_SORT: { bubble_sort(array_list, comparator); }

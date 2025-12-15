@@ -43,6 +43,8 @@ bool array_list_is_empty(ArrayList*);
 
 Iterator* array_list_iterator(ArrayList*);
 
+void array_list_for_each(ArrayList*, Consumer);
+
 void array_list_sort(ArrayList*, Comparator, SortingAlgorithm);
 
 void array_list_clear(ArrayList*);

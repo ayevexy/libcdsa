@@ -11,10 +11,12 @@ DEFINE_FFF_GLOBALS;
 
 FAKE_VOID_FUNC(free, void*);
 FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
+FAKE_VOID_FUNC(action, void*);
 
 #define FFF_FAKES_LIST(FAKE)    \
     FAKE(free)                  \
-    FAKE(fprintf)
+    FAKE(fprintf)               \
+    FAKE(action)
 
 ArrayList* array_list;
 
@@ -281,6 +283,21 @@ void test_array_list_iterator() {
     TEST_ASSERT_NULL(iterator_next(iterator));
 }
 
+void test_perform_action_for_each_element_of_array_list() {
+    // given
+    int values[5] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_for_each(array_list, action);
+    // then
+    TEST_ASSERT_EQUAL(5, action_fake.call_count);
+    for (int i = 0; i < 5; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) action_fake.arg0_history[i]);
+    }
+}
+
 void test_sort_array_list() {
     // given
     int values[5] = { 3, 1, 0, 4, 2 };
@@ -391,6 +408,7 @@ int main(void) {
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_iterator);
+    RUN_TEST(test_perform_action_for_each_element_of_array_list);
     RUN_TEST(test_sort_array_list);
     RUN_TEST(test_clear_array_list);
     RUN_TEST(test_array_list_contains_element);

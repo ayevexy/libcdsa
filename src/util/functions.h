@@ -3,6 +3,8 @@
 
 #define DEFAULT_COMPARATOR default_compare
 
+typedef void (*Consumer)(void*);
+
 typedef int (*Comparator)(void*, void*);
 
 bool default_equals(void*, void*);

@@ -24,6 +24,8 @@ typedef struct ArrayList ArrayList;
 
 ArrayList* array_list_new(Options options);
 
+ArrayList* array_list_from(Collection, Options);
+
 void array_list_delete(ArrayList*);
 
 void array_list_add(ArrayList*, void* element);

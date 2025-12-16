@@ -32,6 +32,12 @@ ArrayList* array_list_new(Options options) {
     return array_list;
 }
 
+ArrayList* array_list_from(Collection collection, Options options) {
+    ArrayList* array_list = array_list_new(options);
+    array_list_add_all(array_list, collection);
+    return array_list;
+}
+
 void array_list_delete(ArrayList* array_list) {
     memory_free((void**) &array_list->elements);
     memory_free((void**) &array_list);

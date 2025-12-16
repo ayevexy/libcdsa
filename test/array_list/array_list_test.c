@@ -34,6 +34,22 @@ void test_create_array_list() {
     TEST_ASSERT_NOT_NULL(array_list);
 }
 
+void test_create_array_list_from_collection() {
+    // given
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < SIZE; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), DEFAULT_OPTIONS);
+    // then
+    TEST_ASSERT_NOT_NULL(new_array_list);
+    for (int i = 0; i < SIZE; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(new_array_list, i));
+    }
+}
+
 void test_delete_array_list() {
     // when
     array_list_delete(array_list);
@@ -448,6 +464,7 @@ void test_array_list_to_string() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
+    RUN_TEST(test_create_array_list_from_collection);
     RUN_TEST(test_delete_array_list);
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);

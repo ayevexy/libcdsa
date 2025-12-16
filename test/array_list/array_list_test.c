@@ -1,4 +1,4 @@
-#include "array_list/array_list.h"
+#include "list/array_list.h"
 
 #include "util/iterator.h"
 

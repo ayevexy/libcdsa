@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 23)
 
 # ---- Library under test ----
 add_library(libcdsa STATIC
-        src/array_list/array_list.c
+        src/list/array_list.c
         src/util/iterator.c
         src/util/memory.c
         src/util/functions.c

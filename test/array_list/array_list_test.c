@@ -161,6 +161,37 @@ void test_add_all_elements_from_collection_to_array_list() {
     }
 }
 
+void test_add_all_elements_from_collection_to_array_list_at_specific_index() {
+    // given
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < SIZE; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // and
+    ArrayList* existing_array_list = array_list_new(DEFAULT_OPTIONS);
+    int new_values[] = { 10, 20 , 30};
+    array_list_add(existing_array_list, &new_values[0]);
+    array_list_add(existing_array_list, &new_values[1]);
+    array_list_add(existing_array_list, &new_values[2]);
+    // when
+    array_list_add_all_at(array_list, 2, array_list_to_collection(existing_array_list));
+    // then
+    TEST_ASSERT_EQUAL(SIZE + 3, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));
+    // and
+    TEST_ASSERT_EQUAL(new_values[0], *(int*) array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(new_values[1], *(int*) array_list_get(array_list, 3));
+    TEST_ASSERT_EQUAL(new_values[2], *(int*) array_list_get(array_list, 4));
+    // and
+    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(array_list, 5));
+    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(array_list, 6));
+    TEST_ASSERT_EQUAL(values[4], *(int*) array_list_get(array_list, 7));
+    // clean up
+    array_list_delete(existing_array_list);
+}
+
 void test_get_element_from_array_list() {
     // given
     int value = 10;
@@ -425,6 +456,7 @@ int main(void) {
     RUN_TEST(test_add_element_at_specific_index_to_array_list_exceeding_capacity_resize_it);
     RUN_TEST(test_add_element_at_specific_index_to_array_list_out_of_bounds_warns_client);
     RUN_TEST(test_add_all_elements_from_collection_to_array_list);
+    RUN_TEST(test_add_all_elements_from_collection_to_array_list_at_specific_index);
     RUN_TEST(test_get_element_from_array_list);
     RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
     RUN_TEST(test_set_element_of_array_list);

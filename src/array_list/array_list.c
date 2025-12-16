@@ -75,6 +75,14 @@ void array_list_add_all(ArrayList* array_list, Collection collection) {
     iterator_delete(iterator);
 }
 
+void array_list_add_all_at(ArrayList* array_list, int index, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+    while (iterator_has_next(iterator)) {
+        array_list_add_at(array_list, index++, iterator_next(iterator));
+    }
+    iterator_delete(iterator);
+}
+
 void* array_list_get(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);

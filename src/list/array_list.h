@@ -22,7 +22,7 @@ typedef struct Options {
 
 typedef struct ArrayList ArrayList;
 
-ArrayList* array_list_new(Options options);
+ArrayList* array_list_new(Options);
 
 ArrayList* array_list_from(Collection, Options);
 

@@ -144,6 +144,23 @@ void test_add_element_at_specific_index_to_array_list_out_of_bounds_warns_client
     add_out_of_bounds(-1);
 }
 
+void test_add_all_elements_from_collection_to_array_list() {
+    // given
+    ArrayList* existing_array_list = array_list_new(DEFAULT_OPTIONS);
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < SIZE; i++) {
+        array_list_add(existing_array_list, &values[i]);
+    }
+    // when
+    array_list_add_all(array_list, array_list_to_collection(existing_array_list));
+    // then
+    TEST_ASSERT_EQUAL(SIZE, array_list_size(array_list));
+    for (int i = 0; i < SIZE; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(array_list, i));
+    }
+}
+
 void test_get_element_from_array_list() {
     // given
     int value = 10;
@@ -373,6 +390,15 @@ void test_array_list_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_array_list_to_collection() {
+    // when
+    Collection collection = array_list_to_collection(array_list);
+    // then
+    TEST_ASSERT_EQUAL(array_list, collection.data_structure);
+    TEST_ASSERT_EQUAL(array_list_size, collection.size);
+    TEST_ASSERT_EQUAL(array_list_iterator, collection.iterator);
+}
+
 void test_array_list_to_string() {
     // given
     char expected_string[68];
@@ -398,6 +424,7 @@ int main(void) {
     RUN_TEST(test_add_element_at_specific_index_to_array_list);
     RUN_TEST(test_add_element_at_specific_index_to_array_list_exceeding_capacity_resize_it);
     RUN_TEST(test_add_element_at_specific_index_to_array_list_out_of_bounds_warns_client);
+    RUN_TEST(test_add_all_elements_from_collection_to_array_list);
     RUN_TEST(test_get_element_from_array_list);
     RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
     RUN_TEST(test_set_element_of_array_list);
@@ -415,6 +442,7 @@ int main(void) {
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_array_list_to_collection);
     RUN_TEST(test_array_list_to_string);
     return UNITY_END();
 }

@@ -67,6 +67,14 @@ void array_list_add_at(ArrayList* array_list, int index, void* element) {
     array_list->size++;
 }
 
+void array_list_add_all(ArrayList* array_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+    while (iterator_has_next(iterator)) {
+        array_list_add(array_list, iterator_next(iterator));
+    }
+    iterator_delete(iterator);
+}
+
 void* array_list_get(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_get index %d out of bounds\n", index);
@@ -170,6 +178,10 @@ int array_list_index_of(ArrayList* array_list, void* element) {
         }
     }
     return -1;
+}
+
+Collection array_list_to_collection(ArrayList* array_list) {
+    return collection_from(array_list);
 }
 
 char* array_list_to_string(ArrayList* array_list) {

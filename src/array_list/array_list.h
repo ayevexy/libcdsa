@@ -4,6 +4,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/algorithms.h"
+#include "util/collection.h"
 
 #define DEFAULT_OPTIONS (Options) { \
     .initial_capacity = 10,         \
@@ -29,6 +30,8 @@ void array_list_add(ArrayList*, void* element);
 
 void array_list_add_at(ArrayList*, int index, void* element);
 
+void array_list_add_all(ArrayList*, Collection);
+
 void* array_list_get(ArrayList*, int index);
 
 void array_list_set(ArrayList*, int index, void* element);
@@ -52,6 +55,8 @@ void array_list_clear(ArrayList*);
 bool array_list_contains(ArrayList*, void* element);
 
 int array_list_index_of(ArrayList*, void* element);
+
+Collection array_list_to_collection(ArrayList*);
 
 char* array_list_to_string(ArrayList*);
 

@@ -116,6 +116,11 @@ void array_list_remove(ArrayList* array_list, int index) {
     array_list->size--;
 }
 
+void array_list_remove_element(ArrayList* array_list, void* element) {
+    int index = array_list_index_of(array_list, element);
+    array_list_remove(array_list, index);
+}
+
 int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }

@@ -199,6 +199,32 @@ int array_list_index_of(ArrayList* array_list, void* element) {
     return -1;
 }
 
+ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_index) {
+    if (start_index < 0 || start_index >= array_list->size) {
+        fprintf(stderr, "Warning: array_list_sub_list start_index %d out of bounds\n", start_index);
+        return nullptr;
+    }
+    if (end_index < 0 || end_index >= array_list->size) {
+        fprintf(stderr, "Warning: array_list_sub_list end_index %d out of bounds\n", end_index);
+        return nullptr;
+    }
+    if (start_index > end_index) {
+        fprintf(stderr, "Warning: array_list_sub_list start_index %d greater than end_index %d\n", start_index, end_index);
+        return nullptr;
+    }
+    const Options options = {
+        .initial_capacity = array_list->capacity,
+        .grow_factor = array_list->grow_factor,
+        .equals = array_list->equals,
+        .to_string = array_list->to_string
+    };
+    ArrayList* new_array_list = array_list_new(options);
+    for (int i = start_index; i <= end_index; i++) {
+        array_list_add(new_array_list, array_list->elements[i]);
+    }
+    return new_array_list;
+}
+
 Collection array_list_to_collection(ArrayList* array_list) {
     return collection_from(array_list);
 }

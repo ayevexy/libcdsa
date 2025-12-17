@@ -450,6 +450,54 @@ void test_array_list_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_array_list_sub_list() {
+    // given
+    int values[5] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    ArrayList* new_array_list = array_list_sub_list(array_list, 1, 3);
+    // then
+    TEST_ASSERT_NOT_NULL(new_array_list);
+    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(new_array_list, 0));
+    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(new_array_list, 1));
+    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(new_array_list, 2));
+    TEST_ASSERT_NULL(array_list_get(new_array_list, 3));
+}
+
+void test_array_list_sub_list_index_out_of_bounds_returns_null() {
+    // given
+    int values[5] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // then
+    TEST_ASSERT_NULL(array_list_sub_list(array_list, -1, 4));
+    TEST_ASSERT_NULL(array_list_sub_list(array_list, 0, 6));
+    // and
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_NOT_NULL(fprintf_fake.arg1_val);
+    TEST_ASSERT_EQUAL_STRING("Warning: array_list_sub_list start_index %d out of bounds\n", fprintf_fake.arg1_history[0]);
+    TEST_ASSERT_EQUAL_STRING("Warning: array_list_sub_list end_index %d out of bounds\n", fprintf_fake.arg1_history[1]);
+}
+
+void test_array_list_sub_list_start_index_greater_than_end_index_returns_null() {
+    // given
+    const char* message = "Warning: array_list_sub_list start_index %d greater than end_index %d\n";
+    int values[5] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    ArrayList* new_array_list = array_list_sub_list(array_list, 4, 3);
+    // then
+    TEST_ASSERT_NULL(new_array_list);
+    // and
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+}
+
 void test_array_list_to_collection() {
     // when
     Collection collection = array_list_to_collection(array_list);
@@ -505,6 +553,9 @@ int main(void) {
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_array_list_sub_list);
+    RUN_TEST(test_array_list_sub_list_index_out_of_bounds_returns_null);
+    RUN_TEST(test_array_list_sub_list_start_index_greater_than_end_index_returns_null);
     RUN_TEST(test_array_list_to_collection);
     RUN_TEST(test_array_list_to_string);
     return UNITY_END();

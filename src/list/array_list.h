@@ -62,6 +62,8 @@ bool array_list_contains(ArrayList*, void* element);
 
 int array_list_index_of(ArrayList*, void* element);
 
+ArrayList* array_list_sub_list(ArrayList*, int start_index, int end_index);
+
 Collection array_list_to_collection(ArrayList*);
 
 char* array_list_to_string(ArrayList*);

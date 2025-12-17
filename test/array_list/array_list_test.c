@@ -450,6 +450,24 @@ void test_array_list_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_array_list_clone() {
+    // given
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < SIZE; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    ArrayList* array_list_copy = array_list_clone(array_list);
+    // then
+    for (int i = 0; i < SIZE; i++) {
+        void* original = array_list_get(array_list, i);
+        void* copy = array_list_get(array_list_copy, i);
+        TEST_ASSERT_EQUAL(original, copy);
+        TEST_ASSERT_EQUAL(*(int*) original, *(int*) copy);
+    }
+}
+
 void test_array_list_sub_list() {
     // given
     int values[5] = { 1, 2, 3, 4, 5 };
@@ -553,6 +571,7 @@ int main(void) {
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_array_list_clone);
     RUN_TEST(test_array_list_sub_list);
     RUN_TEST(test_array_list_sub_list_index_out_of_bounds_returns_null);
     RUN_TEST(test_array_list_sub_list_start_index_greater_than_end_index_returns_null);

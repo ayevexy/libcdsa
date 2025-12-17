@@ -199,6 +199,10 @@ int array_list_index_of(ArrayList* array_list, void* element) {
     return -1;
 }
 
+ArrayList* array_list_clone(ArrayList* array_list) {
+    return array_list_sub_list(array_list, 0, array_list->size - 1);
+}
+
 ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || start_index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_sub_list start_index %d out of bounds\n", start_index);

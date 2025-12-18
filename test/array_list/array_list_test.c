@@ -379,18 +379,17 @@ void test_perform_action_for_each_element_of_array_list() {
 
 void test_sort_array_list() {
     // given
-    int values[5] = { 3, 1, 0, 4, 2 };
-    for (int i = 0; i < 5; i++) {
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 3, 1, 0, 4, 2 };
+    for (int i = 0; i < SIZE; i++) {
         array_list_add(array_list, &values[i]);
     }
     // when
     array_list_sort(array_list, DEFAULT_COMPARATOR(int), BUBBLE_SORT);
     // then
-    TEST_ASSERT_EQUAL(0, *(int*) array_list_get(array_list, 0));
-    TEST_ASSERT_EQUAL(1, *(int*) array_list_get(array_list, 1));
-    TEST_ASSERT_EQUAL(2, *(int*) array_list_get(array_list, 2));
-    TEST_ASSERT_EQUAL(3, *(int*) array_list_get(array_list, 3));
-    TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 4));
+    for (int i = 0; i < SIZE; i++) {
+        TEST_ASSERT_EQUAL(i, *(int*) array_list_get(array_list, i));
+    }
 }
 
 void test_clear_array_list() {

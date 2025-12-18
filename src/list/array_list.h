@@ -44,6 +44,8 @@ void array_list_remove(ArrayList*, int index);
 
 void array_list_remove_element(ArrayList*, void* element);
 
+void array_list_remove_all(ArrayList*, Collection);
+
 void array_list_remove_range(ArrayList*, int start_index, int end_index);
 
 void array_list_remove_if(ArrayList*, Predicate);

@@ -123,6 +123,14 @@ void array_list_remove_element(ArrayList* array_list, void* element) {
     array_list_remove(array_list, index);
 }
 
+void array_list_remove_all(ArrayList* array_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+    while (iterator_has_next(iterator)) {
+        array_list_remove_element(array_list, iterator_next(iterator));
+    }
+    iterator_delete(iterator);
+}
+
 void array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || start_index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_remove_range start_index %d out of bounds\n", start_index);

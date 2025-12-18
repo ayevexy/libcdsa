@@ -323,6 +323,24 @@ void test_remove_element_from_array_list_by_reference() {
     TEST_ASSERT_NULL(actual_value);
 }
 
+void test_remove_all_elements_from_array_list_matching_collection() {
+    // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
+    int values[5] = { 0, 1, 2, 3, 4 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    array_list_add(new_array_list, &values[1]);
+    array_list_add(new_array_list, &values[2]);
+    array_list_add(new_array_list, &values[3]);
+    // when
+    array_list_remove_all(array_list, array_list_to_collection(new_array_list));
+    // then
+    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(0, *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 1));
+}
+
 void test_remove_elements_from_array_list_from_range() {
     // given
     int values[5] = { 0, 1, 2, 3, 4 };
@@ -678,6 +696,8 @@ int main(void) {
     RUN_TEST(test_remove_element_from_array_list_index_out_of_bounds_warns_client);
 
     RUN_TEST(test_remove_element_from_array_list_by_reference);
+
+    RUN_TEST(test_remove_all_elements_from_array_list_matching_collection);
 
     RUN_TEST(test_remove_elements_from_array_list_from_range);
     RUN_TEST(test_remove_elements_from_array_list_from_range_end_index_equals_last_index);

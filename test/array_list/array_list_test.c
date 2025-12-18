@@ -384,13 +384,13 @@ void test_sort_array_list() {
         array_list_add(array_list, &values[i]);
     }
     // when
-    array_list_sort(array_list, DEFAULT_COMPARATOR(void), BUBBLE_SORT);
+    array_list_sort(array_list, DEFAULT_COMPARATOR(int), BUBBLE_SORT);
     // then
-    TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
-    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));
-    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(array_list, 2));
-    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(array_list, 3));
-    TEST_ASSERT_EQUAL(values[4], *(int*) array_list_get(array_list, 4));
+    TEST_ASSERT_EQUAL(0, *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(1, *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(2, *(int*) array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(3, *(int*) array_list_get(array_list, 3));
+    TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 4));
 }
 
 void test_clear_array_list() {

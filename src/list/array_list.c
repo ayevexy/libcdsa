@@ -123,6 +123,26 @@ void array_list_remove_element(ArrayList* array_list, void* element) {
     array_list_remove(array_list, index);
 }
 
+void array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
+    if (start_index < 0 || start_index >= array_list->size) {
+        fprintf(stderr, "Warning: array_list_remove_range start_index %d out of bounds\n", start_index);
+        return;
+    }
+    if (end_index < 0 || end_index >= array_list->size) {
+        fprintf(stderr, "Warning: array_list_remove_range end_index %d out of bounds\n", end_index);
+        return;
+    }
+    if (start_index > end_index) {
+        fprintf(stderr, "Warning: array_list_remove_range start_index %d greater than end_index %d\n", start_index, end_index);
+        return;
+    }
+    const int initial_size = array_list->size;
+    for (int i = start_index, j = end_index + 1; i <= end_index; i++, j++) {
+        array_list->elements[i] = j < initial_size ? array_list->elements[j] : nullptr;
+        array_list->size--;
+    }
+}
+
 void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
     for (int i = 0; i < array_list->size; i++) {
         if (condition_matches(array_list->elements[i])) {

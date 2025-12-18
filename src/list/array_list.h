@@ -66,6 +66,8 @@ bool array_list_contains(ArrayList*, void* element);
 
 int array_list_index_of(ArrayList*, void* element);
 
+int array_list_last_index_of(ArrayList*, void* element);
+
 ArrayList* array_list_clone(ArrayList*);
 
 ArrayList* array_list_sub_list(ArrayList*, int start_index, int end_index);

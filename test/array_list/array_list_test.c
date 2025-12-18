@@ -533,6 +533,33 @@ void test_array_list_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_array_list_last_index_of_element_returns_its_index() {
+    // given
+    int values[3] = { 0, 1, 2 };
+    array_list_add(array_list, &values[0]);
+    array_list_add(array_list, &values[1]);
+    array_list_add(array_list, &values[1]);
+    array_list_add(array_list, &values[1]);
+    array_list_add(array_list, &values[2]);
+    // when
+    int index = array_list_last_index_of(array_list, &values[1]);
+    // then
+    TEST_ASSERT_EQUAL(3, index);
+}
+
+void test_array_list_last_index_of_nonexistent_element_returns_negative_one() {
+    // given
+    int nonexistent = 10;
+    int values[3] = { 0, 1, 2 };
+    for (int i = 0; i < 3; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    int last_index = array_list_last_index_of(array_list, &nonexistent);
+    // then
+    TEST_ASSERT_EQUAL(-1, last_index);
+}
+
 void test_array_list_clone() {
     // given
     constexpr int SIZE = 5;
@@ -659,6 +686,8 @@ int main(void) {
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_array_list_last_index_of_element_returns_its_index);
+    RUN_TEST(test_array_list_last_index_of_nonexistent_element_returns_negative_one);
     RUN_TEST(test_array_list_clone);
     RUN_TEST(test_array_list_sub_list);
     RUN_TEST(test_array_list_sub_list_index_out_of_bounds_returns_null);

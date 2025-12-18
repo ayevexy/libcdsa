@@ -242,6 +242,16 @@ int array_list_index_of(ArrayList* array_list, void* element) {
     return -1;
 }
 
+int array_list_last_index_of(ArrayList* array_list, void* element) {
+    int last_index = -1;
+    for (int i = 0; i < array_list->size; i++) {
+        if (array_list->equals(array_list->elements[i], element)) {
+            last_index = i;
+        }
+    }
+    return last_index;
+}
+
 ArrayList* array_list_clone(ArrayList* array_list) {
     return array_list_sub_list(array_list, 0, array_list->size - 1);
 }

@@ -2,7 +2,8 @@
 #define SORTING_ALGORITHM_H
 
 typedef enum SortingAlgorithm {
-    BUBBLE_SORT
+    BUBBLE_SORT,
+    INSERTION_SORT
 } SortingAlgorithm;
 
 #endif

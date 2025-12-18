@@ -21,6 +21,8 @@ static void* next(void* array_list, void* index);
 
 static void bubble_sort(ArrayList*, Comparator compare);
 
+static void insertion_sort(ArrayList*, Comparator compare);
+
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
@@ -158,19 +160,32 @@ void array_list_for_each(ArrayList* array_list, Consumer action) {
 
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
     switch (algorithm) {
-        case BUBBLE_SORT: { bubble_sort(array_list, comparator); }
+        case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
+        case INSERTION_SORT: { insertion_sort(array_list, comparator); }
     }
 }
 
 static void bubble_sort(ArrayList* array_list, Comparator compare) {
     for (int i = 0; i < array_list->size - 1; i++) {
         for (int j = 0; j < array_list->size - i - 1; j++) {
-            if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
+            if (compare(array_list->elements[j], array_list->elements[j + 1]) >= 0) {
                 void* swap = array_list->elements[j];
                 array_list->elements[j] = array_list->elements[j + 1];
                 array_list->elements[j + 1] = swap;
             }
         }
+    }
+}
+
+static void insertion_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 1; i < array_list->size; i++) {
+        void* element = array_list->elements[i];
+        int j = i - 1;
+        while (j >= 0 && compare(array_list->elements[j], element) > 0) {
+            array_list->elements[j + 1] = array_list->elements[j];
+            j = j - 1;
+        }
+        array_list->elements[j + 1] = element;
     }
 }
 

@@ -44,6 +44,8 @@ void array_list_remove(ArrayList*, int index);
 
 void array_list_remove_element(ArrayList*, void* element);
 
+void array_list_remove_if(ArrayList*, Predicate);
+
 int array_list_size(ArrayList*);
 
 int array_list_capacity(ArrayList*);

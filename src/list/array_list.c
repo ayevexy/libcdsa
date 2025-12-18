@@ -123,6 +123,14 @@ void array_list_remove_element(ArrayList* array_list, void* element) {
     array_list_remove(array_list, index);
 }
 
+void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
+    for (int i = 0; i < array_list->size; i++) {
+        if (condition_matches(array_list->elements[i])) {
+            array_list_remove(array_list, i);
+        }
+    }
+}
+
 int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }

@@ -76,6 +76,8 @@ ArrayList* array_list_sub_list(ArrayList*, int start_index, int end_index);
 
 Collection array_list_to_collection(ArrayList*);
 
+void** array_list_to_array(ArrayList*);
+
 char* array_list_to_string(ArrayList*);
 
 #endif

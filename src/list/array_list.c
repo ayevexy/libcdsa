@@ -294,6 +294,14 @@ Collection array_list_to_collection(ArrayList* array_list) {
     return collection_from(array_list);
 }
 
+void** array_list_to_array(ArrayList* array_list) {
+    void** elements = memory_alloc(sizeof(void*) * array_list->size);
+    for (int i = 0; i < array_list->size; i++) {
+        elements[i] = array_list->elements[i];
+    }
+    return elements;
+}
+
 char* array_list_to_string(ArrayList* array_list) {
     const unsigned long ELEMENT_STRING_SIZE = strlen(array_list->to_string(array_list->elements[0]));
     char* string = memory_alloc(5 + (ELEMENT_STRING_SIZE + 2) * array_list->size);

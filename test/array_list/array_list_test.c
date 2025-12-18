@@ -653,6 +653,21 @@ void test_array_list_to_collection() {
     TEST_ASSERT_EQUAL(array_list_iterator, collection.iterator);
 }
 
+void test_array_list_to_array() {
+    // given
+    constexpr int SIZE = 5;
+    int values[SIZE] = { 1, 2, 3, 4, 5 };
+    for (int i = 0; i < SIZE; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    void** elements = array_list_to_array(array_list);
+    // then
+    for (int i = 0; i < SIZE; i++) {
+        TEST_ASSERT_EQUAL(values[i], *(int*) elements[i]);
+    }
+}
+
 void test_array_list_to_string() {
     // given
     char expected_string[68];
@@ -733,6 +748,7 @@ int main(void) {
     RUN_TEST(test_array_list_sub_list_start_index_greater_than_end_index_returns_null);
 
     RUN_TEST(test_array_list_to_collection);
+    RUN_TEST(test_array_list_to_array);
     RUN_TEST(test_array_list_to_string);
     return UNITY_END();
 }

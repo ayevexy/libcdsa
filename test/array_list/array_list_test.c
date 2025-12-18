@@ -1,5 +1,7 @@
 #include "list/array_list.h"
 
+#include <complex.h>
+
 #include "util/iterator.h"
 
 #include "unity.h"
@@ -382,7 +384,7 @@ void test_sort_array_list() {
         array_list_add(array_list, &values[i]);
     }
     // when
-    array_list_sort(array_list, DEFAULT_COMPARATOR, BUBBLE_SORT);
+    array_list_sort(array_list, DEFAULT_COMPARATOR(void), BUBBLE_SORT);
     // then
     TEST_ASSERT_EQUAL(values[0], *(int*) array_list_get(array_list, 0));
     TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(array_list, 1));

@@ -159,6 +159,12 @@ void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
     }
 }
 
+void array_list_replace_all(ArrayList* array_list, UnaryOperator operator_apply) {
+    for (int i = 0; i < array_list->size; i++) {
+        array_list->elements[i] = operator_apply(array_list->elements[i]);
+    }
+}
+
 int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }

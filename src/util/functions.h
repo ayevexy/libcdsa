@@ -14,6 +14,8 @@ typedef void (*Consumer)(void*);
 
 typedef bool (*Predicate)(void*);
 
+typedef void* (*UnaryOperator)(void*);
+
 typedef int (*Comparator)(void*, void*);
 
 bool default_equals(void*, void*);

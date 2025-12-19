@@ -408,6 +408,31 @@ void test_remove_elements_from_array_list_matching_predicate() {
     TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 2));
 }
 
+void* replace_by_2_times_original(void* element) {
+    int* value = malloc(sizeof(int));
+    *value = *(int*) element * 2;
+    // free(element); free original element, since that pointer will be lost now.
+    // since element is in the stack, it's not necessary
+    // if the element was in the heap, a free call MUST be made here
+    return value;
+}
+
+void test_replace_all_elements_from_array_list() {
+    // given
+    int values[5] = { 0, 1, 2, 3, 4 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    array_list_replace_all(array_list, replace_by_2_times_original);
+    // then
+    TEST_ASSERT_EQUAL(0, *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(2, *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(6, *(int*) array_list_get(array_list, 3));
+    TEST_ASSERT_EQUAL(8, *(int*) array_list_get(array_list, 4));
+}
+
 void test_array_list_is_not_empty() {
     // given
     int value = 10;
@@ -719,6 +744,8 @@ int main(void) {
     RUN_TEST(test_remove_elements_from_array_list_from_range_index_out_of_bounds_warns_client);
 
     RUN_TEST(test_remove_elements_from_array_list_matching_predicate);
+
+    RUN_TEST(test_replace_all_elements_from_array_list);
 
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);

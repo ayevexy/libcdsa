@@ -50,6 +50,8 @@ void array_list_remove_range(ArrayList*, int start_index, int end_index);
 
 void array_list_remove_if(ArrayList*, Predicate);
 
+void array_list_replace_all(ArrayList*, UnaryOperator);
+
 int array_list_size(ArrayList*);
 
 int array_list_capacity(ArrayList*);

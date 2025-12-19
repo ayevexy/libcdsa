@@ -56,6 +56,8 @@ void array_list_retain_all(ArrayList*, Collection);
 
 int array_list_size(ArrayList*);
 
+void array_list_trim_to_size(ArrayList*);
+
 int array_list_capacity(ArrayList*);
 
 bool array_list_is_empty(ArrayList*);

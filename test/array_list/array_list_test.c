@@ -452,6 +452,24 @@ void test_retain_all_elements_from_collection_in_array_list() {
     TEST_ASSERT_EQUAL(3, *(int*) array_list_get(array_list, 2));
 }
 
+void test_array_list_trim_to_size() {
+    // given
+    int values[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    for (int i = 0; i < 11; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    array_list_remove_range(array_list, 0, 6);
+    // when
+    array_list_trim_to_size(array_list);
+    // then
+    TEST_ASSERT_EQUAL(4, array_list_capacity(array_list));
+    // and (check if the array list will grow correctly)
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    TEST_ASSERT_EQUAL(8, array_list_capacity(array_list));
+}
+
 void test_array_list_is_not_empty() {
     // given
     int value = 10;
@@ -766,6 +784,8 @@ int main(void) {
 
     RUN_TEST(test_replace_all_elements_from_array_list);
     RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
+
+    RUN_TEST(test_array_list_trim_to_size);
 
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);

@@ -179,6 +179,11 @@ int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }
 
+void array_list_trim_to_size(ArrayList* array_list) {
+    array_list->elements = memory_realloc(array_list->elements, sizeof(void*) * array_list->size);
+    array_list->capacity = array_list->size;
+}
+
 int array_list_capacity(ArrayList* array_list) {
     return array_list->capacity;
 }

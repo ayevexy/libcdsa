@@ -52,6 +52,8 @@ void array_list_remove_if(ArrayList*, Predicate);
 
 void array_list_replace_all(ArrayList*, UnaryOperator);
 
+void array_list_retain_all(ArrayList*, Collection);
+
 int array_list_size(ArrayList*);
 
 int array_list_capacity(ArrayList*);

@@ -433,6 +433,25 @@ void test_replace_all_elements_from_array_list() {
     TEST_ASSERT_EQUAL(8, *(int*) array_list_get(array_list, 4));
 }
 
+void test_retain_all_elements_from_collection_in_array_list() {
+    // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
+    int values[5] = { 0, 1, 2, 3, 4 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    array_list_add(new_array_list, &values[1]);
+    array_list_add(new_array_list, &values[2]);
+    array_list_add(new_array_list, &values[3]);
+    // when
+    array_list_retain_all(array_list, array_list_to_collection(new_array_list));
+    // then
+    TEST_ASSERT_EQUAL(3, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(1, *(int*) array_list_get(array_list, 0));
+    TEST_ASSERT_EQUAL(2, *(int*) array_list_get(array_list, 1));
+    TEST_ASSERT_EQUAL(3, *(int*) array_list_get(array_list, 2));
+}
+
 void test_array_list_is_not_empty() {
     // given
     int value = 10;
@@ -746,6 +765,7 @@ int main(void) {
     RUN_TEST(test_remove_elements_from_array_list_matching_predicate);
 
     RUN_TEST(test_replace_all_elements_from_array_list);
+    RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);

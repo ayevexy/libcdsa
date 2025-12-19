@@ -165,6 +165,16 @@ void array_list_replace_all(ArrayList* array_list, UnaryOperator operator_apply)
     }
 }
 
+void array_list_retain_all(ArrayList* array_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+    for (int i = 0; i < array_list->size; i++) {
+        if (!array_list->equals(array_list->elements[i], iterator_next(iterator))) {
+            array_list_remove(array_list, i);
+        }
+    }
+    iterator_delete(iterator);
+}
+
 int array_list_size(ArrayList* array_list) {
     return array_list->size;
 }

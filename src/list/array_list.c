@@ -103,6 +103,14 @@ void* array_list_get(ArrayList* array_list, int index) {
     return array_list->elements[index];
 }
 
+void* array_list_get_first(ArrayList* array_list) {
+    return array_list_get(array_list, 0);
+}
+
+void* array_list_get_last(ArrayList* array_list) {
+    return array_list_get(array_list, array_list->size - 1);
+}
+
 void array_list_set(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);

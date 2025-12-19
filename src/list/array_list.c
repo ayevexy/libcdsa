@@ -60,6 +60,10 @@ static void grow(ArrayList* array_list) {
     array_list->capacity *= array_list->grow_factor;
 }
 
+void array_list_add_first(ArrayList* array_list, void* element) {
+    array_list_add_at(array_list, 0, element);
+}
+
 void array_list_add_at(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_add_at index %d out of bounds\n", index);
@@ -116,6 +120,14 @@ void array_list_remove(ArrayList* array_list, int index) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
     array_list->size--;
+}
+
+void array_list_remove_first(ArrayList* array_list) {
+    array_list_remove(array_list, 0);
+}
+
+void array_list_remove_last(ArrayList* array_list) {
+    array_list_remove(array_list, array_list->size - 1);
 }
 
 void array_list_remove_element(ArrayList* array_list, void* element) {

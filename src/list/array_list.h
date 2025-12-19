@@ -30,6 +30,8 @@ void array_list_delete(ArrayList*);
 
 void array_list_add(ArrayList*, void* element);
 
+void array_list_add_first(ArrayList*, void* element);
+
 void array_list_add_at(ArrayList*, int index, void* element);
 
 void array_list_add_all(ArrayList*, Collection);
@@ -41,6 +43,10 @@ void* array_list_get(ArrayList*, int index);
 void array_list_set(ArrayList*, int index, void* element);
 
 void array_list_remove(ArrayList*, int index);
+
+void array_list_remove_first(ArrayList*);
+
+void array_list_remove_last(ArrayList*);
 
 void array_list_remove_element(ArrayList*, void* element);
 

@@ -1,7 +1,5 @@
 #include "list/array_list.h"
 
-#include <complex.h>
-
 #include "util/iterator.h"
 
 #include "unity.h"

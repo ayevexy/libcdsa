@@ -268,6 +268,18 @@ bool array_list_contains(ArrayList* array_list, void* element) {
     return false;
 }
 
+bool array_list_contains_all(ArrayList* array_list, Collection collection) {
+    bool contains = false;
+    Iterator* iterator = collection_iterator(collection);
+    while (iterator_has_next(iterator)) {
+        void* element = iterator_next(iterator);
+        contains = array_list_contains(array_list, element);
+        if (!contains) break;
+    }
+    iterator_delete(iterator);
+    return contains;
+}
+
 int array_list_index_of(ArrayList* array_list, void* element) {
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {

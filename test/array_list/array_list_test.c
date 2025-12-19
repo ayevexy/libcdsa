@@ -595,6 +595,39 @@ void test_array_list_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_array_list_contains_all_elements() {
+    // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
+    int values[5] = { 0, 1, 2, 3, 4 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    array_list_add(new_array_list, &values[1]);
+    array_list_add(new_array_list, &values[2]);
+    array_list_add(new_array_list, &values[3]);
+    // when
+    bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_array_list_does_not_contains_all_elements() {
+    // given
+    int new_value = 10;
+    ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
+    int values[5] = { 0, 1, 2, 3, 4 };
+    for (int i = 0; i < 5; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    array_list_add(new_array_list, &values[1]);
+    array_list_add(new_array_list, &new_value);
+    array_list_add(new_array_list, &values[3]);
+    // when
+    bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
 void test_array_list_index_of_element_returns_its_index() {
     // given
     int values[3] = { 0, 1, 2 };
@@ -809,6 +842,9 @@ int main(void) {
 
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);
+
+    RUN_TEST(test_array_list_contains_all_elements);
+    RUN_TEST(test_array_list_does_not_contains_all_elements);
 
     RUN_TEST(test_array_list_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);

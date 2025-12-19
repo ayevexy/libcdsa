@@ -11,12 +11,10 @@
 
 DEFINE_FFF_GLOBALS;
 
-FAKE_VOID_FUNC(free, void*);
 FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 FAKE_VOID_FUNC(action, void*);
 
 #define FFF_FAKES_LIST(FAKE)    \
-    FAKE(free)                  \
     FAKE(fprintf)               \
     FAKE(action)
 
@@ -29,7 +27,7 @@ void setUp() {
 }
 
 void tearDown() {
-    if (array_list) array_list_delete(array_list);
+    array_list_delete(array_list);
 }
 
 void test_create_array_list() {
@@ -50,15 +48,6 @@ void test_create_array_list_from_collection() {
     for (int i = 0; i < SIZE; i++) {
         TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(new_array_list, i));
     }
-}
-
-void test_delete_array_list() {
-    // when
-    array_list_delete(array_list);
-    // then
-    TEST_ASSERT_EQUAL(array_list, free_fake.arg0_val);
-    // and (clean up)
-    array_list = nullptr; // Setting pointer to null to prevent double delete call
 }
 
 void test_add_element_to_array_list() {
@@ -811,7 +800,6 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
     RUN_TEST(test_create_array_list_from_collection);
-    RUN_TEST(test_delete_array_list);
 
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);

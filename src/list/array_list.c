@@ -356,9 +356,11 @@ void** array_list_to_array(ArrayList* array_list) {
 char* array_list_to_string(ArrayList* array_list) {
     char* element_string = array_list->to_string(array_list->elements[0]);
     char* string = memory_alloc(5 + (strlen(element_string) + 2) * array_list->size);
-    memory_free((void**) element_string);
+    memory_free((void**) &element_string);
 
+    string[0] = '\0'; // initialize string to clear trash data
     strcat(string, "[ ");
+
     for (int i = 0; i < array_list->size; i++) {
         element_string = array_list->to_string(array_list->elements[i]);
         strcat(string, element_string);
@@ -366,7 +368,7 @@ char* array_list_to_string(ArrayList* array_list) {
         if (i < array_list->size - 1) {
             strcat(string, ", ");
         }
-        memory_free((void**) element_string);
+        memory_free((void**) &element_string);
     }
 
     strcat(string, " ]");

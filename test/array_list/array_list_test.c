@@ -48,6 +48,8 @@ void test_create_array_list_from_collection() {
     for (int i = 0; i < SIZE; i++) {
         TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(new_array_list, i));
     }
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_add_element_to_array_list() {
@@ -166,6 +168,8 @@ void test_add_all_elements_from_collection_to_array_list() {
     for (int i = 0; i < SIZE; i++) {
         TEST_ASSERT_EQUAL(values[i], *(int*) array_list_get(array_list, i));
     }
+    // clean up
+    array_list_delete(existing_array_list);
 }
 
 void test_add_all_elements_from_collection_to_array_list_at_specific_index() {
@@ -328,6 +332,8 @@ void test_remove_all_elements_from_array_list_matching_collection() {
     TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     TEST_ASSERT_EQUAL(0, *(int*) array_list_get(array_list, 0));
     TEST_ASSERT_EQUAL(4, *(int*) array_list_get(array_list, 1));
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_remove_elements_from_array_list_from_range() {
@@ -439,6 +445,8 @@ void test_retain_all_elements_from_collection_in_array_list() {
     TEST_ASSERT_EQUAL(1, *(int*) array_list_get(array_list, 0));
     TEST_ASSERT_EQUAL(2, *(int*) array_list_get(array_list, 1));
     TEST_ASSERT_EQUAL(3, *(int*) array_list_get(array_list, 2));
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_array_list_trim_to_size() {
@@ -598,6 +606,8 @@ void test_array_list_contains_all_elements() {
     bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
     TEST_ASSERT_TRUE(contains);
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_array_list_does_not_contains_all_elements() {
@@ -615,6 +625,8 @@ void test_array_list_does_not_contains_all_elements() {
     bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
     TEST_ASSERT_FALSE(contains);
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_array_list_index_of_element_returns_its_index() {
@@ -685,6 +697,8 @@ void test_array_list_clone() {
         TEST_ASSERT_EQUAL(original, copy);
         TEST_ASSERT_EQUAL(*(int*) original, *(int*) copy);
     }
+    // clean up
+    array_list_delete(array_list_copy);
 }
 
 void test_array_list_sub_list() {
@@ -701,6 +715,8 @@ void test_array_list_sub_list() {
     TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(new_array_list, 1));
     TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(new_array_list, 2));
     TEST_ASSERT_NULL(array_list_get(new_array_list, 3));
+    // clean up
+    array_list_delete(new_array_list);
 }
 
 void test_array_list_sub_list_index_out_of_bounds_returns_null() {

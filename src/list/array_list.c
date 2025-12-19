@@ -354,15 +354,21 @@ void** array_list_to_array(ArrayList* array_list) {
 }
 
 char* array_list_to_string(ArrayList* array_list) {
-    const unsigned long ELEMENT_STRING_SIZE = strlen(array_list->to_string(array_list->elements[0]));
-    char* string = memory_alloc(5 + (ELEMENT_STRING_SIZE + 2) * array_list->size);
+    char* element_string = array_list->to_string(array_list->elements[0]);
+    char* string = memory_alloc(5 + (strlen(element_string) + 2) * array_list->size);
+    memory_free((void**) element_string);
+
     strcat(string, "[ ");
     for (int i = 0; i < array_list->size; i++) {
-        strcat(string, array_list->to_string(array_list->elements[i]));
+        element_string = array_list->to_string(array_list->elements[i]);
+        strcat(string, element_string);
+
         if (i < array_list->size - 1) {
             strcat(string, ", ");
         }
+        memory_free((void**) element_string);
     }
+
     strcat(string, " ]");
     return string;
 }

@@ -785,6 +785,28 @@ void test_array_list_to_string() {
     TEST_ASSERT_EQUAL_STRING(expected_string, string);
 }
 
+void test_array_list_to_string_different_format() {
+    // setup
+    array_list = array_list_new((Options) {
+        .initial_capacity = 10,
+        .grow_factor = 2,
+        .equals = default_equals,
+        .to_string = DEFAULT_TO_STRING(int)
+    });
+    // given
+    char expected_string[15];
+    int values[4] = { 0, 1, 2, 3 };
+    // and
+    sprintf(expected_string, "[ %d, %d, %d, %d ]", values[0], values[1], values[2], values[3]);
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    char* string = array_list_to_string(array_list);
+    // then
+    TEST_ASSERT_EQUAL_STRING(expected_string, string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -861,5 +883,6 @@ int main(void) {
     RUN_TEST(test_array_list_to_collection);
     RUN_TEST(test_array_list_to_array);
     RUN_TEST(test_array_list_to_string);
+    RUN_TEST(test_array_list_to_string_different_format);
     return UNITY_END();
 }

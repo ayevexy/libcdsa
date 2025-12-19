@@ -60,6 +60,8 @@ void array_list_trim_to_size(ArrayList*);
 
 int array_list_capacity(ArrayList*);
 
+void array_list_ensure_capacity(ArrayList*, int capacity);
+
 bool array_list_is_empty(ArrayList*);
 
 Iterator* array_list_iterator(ArrayList*);

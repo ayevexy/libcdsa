@@ -470,6 +470,13 @@ void test_array_list_trim_to_size() {
     TEST_ASSERT_EQUAL(8, array_list_capacity(array_list));
 }
 
+void test_array_list_ensure_capacity() {
+    // when
+    array_list_ensure_capacity(array_list, 25);
+    // then
+    TEST_ASSERT_EQUAL(40, array_list_capacity(array_list));
+}
+
 void test_array_list_is_not_empty() {
     // given
     int value = 10;
@@ -786,6 +793,7 @@ int main(void) {
     RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
     RUN_TEST(test_array_list_trim_to_size);
+    RUN_TEST(test_array_list_ensure_capacity);
 
     RUN_TEST(test_array_list_is_not_empty);
     RUN_TEST(test_array_list_is_empty);

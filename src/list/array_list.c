@@ -188,6 +188,12 @@ int array_list_capacity(ArrayList* array_list) {
     return array_list->capacity;
 }
 
+void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
+    while (array_list->capacity < capacity) {
+        grow(array_list);
+    }
+}
+
 bool array_list_is_empty(ArrayList* array_list) {
     return array_list->size == 0;
 }

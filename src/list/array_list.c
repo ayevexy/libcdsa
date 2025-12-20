@@ -27,6 +27,8 @@ static void insertion_sort(ArrayList*, Comparator compare);
 
 static void merge_sort(ArrayList*, Comparator compare);
 
+static void quick_sort(ArrayList*, Comparator compare);
+
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
@@ -250,7 +252,8 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
         case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
         case INSERTION_SORT: { insertion_sort(array_list, comparator); return; }
         case SELECTION_SORT: { selection_sort(array_list, comparator); return; }
-        case MERGE_SORT: { merge_sort(array_list, comparator); }
+        case MERGE_SORT: { merge_sort(array_list, comparator); return; }
+        case QUICK_SORT: { quick_sort(array_list, comparator); }
     }
 }
 
@@ -334,6 +337,47 @@ static void merge_sort(ArrayList* array_list, Comparator compare) {
         }
     }
     memory_free((void**) &temporary);
+}
+
+// Another iterative implementation
+static void quick_sort(ArrayList* array_list, Comparator compare) {
+    int* stack = memory_alloc(sizeof(int) * (array_list->size + 1));
+    int top = -1;
+
+    stack[++top] = 0;
+    stack[++top] = array_list->size - 1;
+
+    while (top >= 0) {
+        int end_index = stack[top--];
+        int start_index = stack[top--];
+
+        int pivot = start_index - 1;
+
+        for (int i = start_index; i <= end_index - 1; i++) {
+            if (compare(array_list->elements[i], array_list->elements[end_index]) <= 0) {
+                pivot++;
+                void* swap = array_list->elements[pivot];
+                array_list->elements[pivot] = array_list->elements[i];
+                array_list->elements[i] = swap;
+            }
+        }
+        pivot++;
+
+        void* swap = array_list->elements[pivot];
+        array_list->elements[pivot] = array_list->elements[end_index];
+        array_list->elements[end_index] = swap;
+
+        if (pivot - 1 > start_index) {
+            stack[++top] = start_index;
+            stack[++top] = pivot - 1;
+        }
+
+        if (pivot + 1 < end_index) {
+            stack[++top] = pivot + 1;
+            stack[++top] = end_index;
+        }
+    }
+    memory_free((void**) &stack);
 }
 
 void array_list_clear(ArrayList* array_list) {

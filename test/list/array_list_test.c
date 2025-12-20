@@ -549,6 +549,7 @@ void test_sort_array_list() {
     sort_array_list(SELECTION_SORT);
     sort_array_list(INSERTION_SORT);
     sort_array_list(MERGE_SORT);
+    sort_array_list(QUICK_SORT);
 }
 
 void test_clear_array_list() {

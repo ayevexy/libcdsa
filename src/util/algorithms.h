@@ -4,7 +4,8 @@
 typedef enum SortingAlgorithm {
     BUBBLE_SORT,
     SELECTION_SORT,
-    INSERTION_SORT
+    INSERTION_SORT,
+    MERGE_SORT
 } SortingAlgorithm;
 
 #endif

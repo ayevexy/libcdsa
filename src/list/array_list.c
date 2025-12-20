@@ -25,6 +25,8 @@ static void selection_sort(ArrayList*, Comparator compare);
 
 static void insertion_sort(ArrayList*, Comparator compare);
 
+static void merge_sort(ArrayList*, Comparator compare);
+
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
@@ -247,7 +249,8 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
     switch (algorithm) {
         case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
         case INSERTION_SORT: { insertion_sort(array_list, comparator); return; }
-        case SELECTION_SORT: { selection_sort(array_list, comparator); }
+        case SELECTION_SORT: { selection_sort(array_list, comparator); return; }
+        case MERGE_SORT: { merge_sort(array_list, comparator); }
     }
 }
 
@@ -287,6 +290,50 @@ static void insertion_sort(ArrayList* array_list, Comparator compare) {
         }
         array_list->elements[j + 1] = element;
     }
+}
+
+// No recursion because yes
+static void merge_sort(ArrayList* array_list, Comparator compare) {
+    void** temporary = memory_alloc(sizeof(void*) * array_list->size);
+
+    for (int subarray_size = 1; subarray_size < array_list->size; subarray_size *= 2) {
+        for (int start_index = 0; start_index < array_list->size - 1; start_index += 2 * subarray_size) {
+
+            int mid_index = start_index + subarray_size - 1;
+            int end_index = start_index + 2 * subarray_size - 1;
+
+            if (mid_index >= array_list->size - 1) {
+                continue;
+            }
+            if (end_index >= array_list->size) {
+                end_index = array_list->size - 1;
+            }
+
+            int left_subarray_index = start_index;
+            int right_subarray_index = mid_index + 1;
+            int current_index = start_index;
+
+            while (left_subarray_index <= mid_index && right_subarray_index <= end_index) {
+                if (compare(array_list->elements[left_subarray_index], array_list->elements[right_subarray_index]) <= 0) {
+                    temporary[current_index++] = array_list->elements[left_subarray_index++];
+                } else {
+                    temporary[current_index++] = array_list->elements[right_subarray_index++];
+                }
+            }
+
+            while (left_subarray_index <= mid_index) {
+                temporary[current_index++] = array_list->elements[left_subarray_index++];
+            }
+            while (right_subarray_index <= end_index) {
+                temporary[current_index++] = array_list->elements[right_subarray_index++];
+            }
+
+            for (left_subarray_index = start_index; left_subarray_index <= end_index; left_subarray_index++) {
+                array_list->elements[left_subarray_index] = temporary[left_subarray_index];
+            }
+        }
+    }
+    memory_free((void**) &temporary);
 }
 
 void array_list_clear(ArrayList* array_list) {

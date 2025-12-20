@@ -526,7 +526,10 @@ void test_perform_action_for_each_element_of_array_list() {
     }
 }
 
-void test_bubble_sort_array_list() {
+void sort_array_list(SortingAlgorithm sorting_algorithm) {
+    // setup
+    array_list_delete(array_list);
+    array_list = array_list_new(DEFAULT_OPTIONS);
     // given
     constexpr int SIZE = 5;
     int values[SIZE] = { 3, 1, 0, 4, 2 };
@@ -534,26 +537,16 @@ void test_bubble_sort_array_list() {
         array_list_add(array_list, &values[i]);
     }
     // when
-    array_list_sort(array_list, DEFAULT_COMPARATOR(int), BUBBLE_SORT);
+    array_list_sort(array_list, DEFAULT_COMPARATOR(int), sorting_algorithm);
     // then
     for (int i = 0; i < SIZE; i++) {
         TEST_ASSERT_EQUAL(i, *(int*) array_list_get(array_list, i));
     }
 }
 
-void test_insertion_sort_array_list() {
-    // given
-    constexpr int SIZE = 5;
-    int values[SIZE] = { 3, 1, 0, 4, 2 };
-    for (int i = 0; i < SIZE; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    // when
-    array_list_sort(array_list, DEFAULT_COMPARATOR(int), INSERTION_SORT);
-    // then
-    for (int i = 0; i < SIZE; i++) {
-        TEST_ASSERT_EQUAL(i, *(int*) array_list_get(array_list, i));
-    }
+void test_sort_array_list() {
+    sort_array_list(BUBBLE_SORT);
+    sort_array_list(INSERTION_SORT);
 }
 
 void test_clear_array_list() {
@@ -859,8 +852,7 @@ int main(void) {
 
     RUN_TEST(test_perform_action_for_each_element_of_array_list);
 
-    RUN_TEST(test_bubble_sort_array_list);
-    RUN_TEST(test_insertion_sort_array_list);
+    RUN_TEST(test_sort_array_list);
 
     RUN_TEST(test_clear_array_list);
 

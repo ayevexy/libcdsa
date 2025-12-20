@@ -21,6 +21,8 @@ static void* next(void* array_list, void* index);
 
 static void bubble_sort(ArrayList*, Comparator compare);
 
+static void selection_sort(ArrayList*, Comparator compare);
+
 static void insertion_sort(ArrayList*, Comparator compare);
 
 ArrayList* array_list_new(Options options) {
@@ -244,7 +246,8 @@ void array_list_for_each(ArrayList* array_list, Consumer action) {
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
     switch (algorithm) {
         case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
-        case INSERTION_SORT: { insertion_sort(array_list, comparator); }
+        case INSERTION_SORT: { insertion_sort(array_list, comparator); return; }
+        case SELECTION_SORT: { selection_sort(array_list, comparator); }
     }
 }
 
@@ -257,6 +260,20 @@ static void bubble_sort(ArrayList* array_list, Comparator compare) {
                 array_list->elements[j + 1] = swap;
             }
         }
+    }
+}
+
+static void selection_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 0; i < array_list->size - 1; i++) {
+        int min_index = i;
+        for (int j = i + 1; j < array_list->size; j++) {
+            if (compare(array_list->elements[j], array_list->elements[min_index]) < 0) {
+                min_index = j;
+            }
+        }
+        void* swap = array_list->elements[i];
+        array_list->elements[i] = array_list->elements[min_index];
+        array_list->elements[min_index] = swap;
     }
 }
 

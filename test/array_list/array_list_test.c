@@ -546,6 +546,7 @@ void sort_array_list(SortingAlgorithm sorting_algorithm) {
 
 void test_sort_array_list() {
     sort_array_list(BUBBLE_SORT);
+    sort_array_list(SELECTION_SORT);
     sort_array_list(INSERTION_SORT);
 }
 

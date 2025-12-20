@@ -19,15 +19,15 @@ static bool has_next(void* array_list, void* index);
 
 static void* next(void* array_list, void* index);
 
-static void bubble_sort(ArrayList*, Comparator compare);
+static void bubble_sort(ArrayList*, Comparator);
 
-static void selection_sort(ArrayList*, Comparator compare);
+static void selection_sort(ArrayList*, Comparator);
 
-static void insertion_sort(ArrayList*, Comparator compare);
+static void insertion_sort(ArrayList*, Comparator);
 
-static void merge_sort(ArrayList*, Comparator compare);
+static void merge_sort(ArrayList*, Comparator);
 
-static void quick_sort(ArrayList*, Comparator compare);
+static void quick_sort(ArrayList*, Comparator);
 
 ArrayList* array_list_new(Options options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));

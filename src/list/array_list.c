@@ -59,11 +59,9 @@ void array_list_add(ArrayList* array_list, void* element) {
 }
 
 static void grow(ArrayList* array_list) {
-    array_list->elements = memory_realloc(
-        array_list->elements,
-        array_list->capacity * array_list->grow_factor * sizeof(void*)
-        );
-    array_list->capacity *= array_list->grow_factor;
+    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+    array_list->elements = memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    array_list->capacity = new_capacity;
 }
 
 void array_list_add_first(ArrayList* array_list, void* element) {

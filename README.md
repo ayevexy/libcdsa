@@ -1,7 +1,185 @@
-# Data Structures Implemented in C
+# Data Structures and Algorithms Library in C
 
-In progress...
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installing](#installing)
+    - [Usage](#usage)
+    - [Documentation](#documentation)
+    - [Building](#building)
+    - [Tests](#tests)
+    - [Installing System-Wide](#installing-system-wide)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
+
+---
+
+## Overview
+
+A Feature-Rich Data Structures and Algorithms Library Implemented in C.
+
+This library is meant to implement the majority of the algorithms and data structures using high-level abstractions
+in pure C code. It aims to implement most structures like array lists, linked lists, hashtable, etc. as well as sorting algorithms like merge sort, quick sort. The library provides a high level API to operate on these structures,
+instead of just the basic operations. The library comes with opinionated defaults but provides some customization, the intent is to 
+act like a high-level language collections library while keeping some low-level control of the implementation. The API is heavily based
+on the Java Collections Framework and shares many similarities with it.
+
+This library is designed for ease of use and currently implements the following data structures:
+
+- [Array List](./docs/ArrayList.md): A linear generic and dynamic data structure that stores data consecutively in memory.
+
+## Features
+
+This project aims to accomplish the following features:
+
+- Most Data Structures Implemented
+- Ease of Use
+- Rich API
+- Customizable
+- Good Defaults
+- Great Test Coverage
+- Simple Documentation
+
+## Technologies
+
+This project is being built using the following technologies:
+
+- The C Programming Language
+- CMake Build System
+- Unity Test Framework
+- Fake Function Framework
+
+---
+
+## Getting Started
+
+There are several ways of adding the library to your project, following is one recommended way:
+
+### Prerequisites
+
+* C Compiler (C Standard 23)
+* CMake Build Tool (Version 4.0)
+
+### Installing
+
+Add the library to your `CMakeLists.txt` and link it to your project:
+
+```cmake
+FetchContent_Declare(
+        libcdsa
+        GIT_REPOSITORY https://github.com/ayevexy/libcdsa.git
+        GIT_TAG master # replace with the current version, e.g.: v1.0.0
+)
+FetchContent_MakeAvailable(libcdsa)
+
+target_link_libraries(your_project PRIVATE libcdsa)
+```
+
+Instead, if installed system-wide:
+
+```cmake
+find_package(libcdsa REQUIRED)
+
+target_link_libraries(your_project PRIVATE libcdsa::libcdsa)
+```
+
+### Usage
+
+Now just include the desired header files and start coding, for example: `array_list.h`
+
+```c++
+#include "list/array_list.h" // replace with <libcdsa/list/array_list.h> if installed system-wide
+#include <stdio.h>
+
+int main() {
+    ArrayList* array_list = array_list_new(DEFAULT_OPTIONS);
+    int values[] = { 1, 2, 3, 4 };
+    
+    for (int i = 0; i < 4; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    
+    printf("%s\n", array_list_to_string(array_list)); // [ 1, 2, 3, 4 ]
+    return 0;
+}
+```
+
+### Documentation
+
+Each data structure is documented separately in a respective markdown file in the [docs](./docs) folder.
+
+---
+
+### Building
+
+If you want to build the project locally follow these steps instead:
+
+Clone the project:
+
+```bash
+  git clone https://github.com/ayevexy/libcdsa.git
+```
+
+Go to the project directory:
+
+```bash
+  cd libcdsa
+```
+
+Build the project with CMake:
+
+```bash
+  mkdir build
+  cmake -S . -B build
+  cmake --build build
+```
+
+It will compile the library as a shared library by default.
+To compile it as a static library instead, add the following flag:
+
+```bash
+  cmake -S . -B build -DBUILD_SHARED_LIBS=OFF
+```
+
+### Tests
+
+To run tests, execute the following command:
+
+```bash
+  ctest --test-dir build
+```
+
+### Installing System-Wide
+
+To install the library system-wide in `/usr/local`, execute the following command:
+
+```bash
+  sudo cmake --install build
+```
+
+---
+
+## Contributing
+
+Open an issue to request a feature or report a bug.
+
+---
 
 ## License
 
-MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Disclaimer
+
+This is a personal project I created for fun, learning, and practice.
+It is not designed to be thread-safe, highly performant, or completely bug-free.
+Do not use it in real-world projects unless these requirements are not important.

@@ -33,7 +33,7 @@ on the Java Collections Framework and shares many similarities with it.
 
 This library is designed for ease of use and currently implements the following data structures:
 
-- [Array List](./docs/ArrayList.md): A linear generic and dynamic data structure that stores data consecutively in memory.
+- [Array List](docs/array_list.md): A linear generic and dynamic data structure that stores data consecutively in memory.
 
 ## Features
 

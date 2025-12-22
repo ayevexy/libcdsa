@@ -675,6 +675,18 @@ void test_array_list_last_index_of_nonexistent_element_returns_negative_one() {
     TEST_ASSERT_EQUAL(-1, last_index);
 }
 
+void test_array_list_binary_search() {
+    // given
+    int values[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    for (int i = 0; i < 10; i++) {
+        array_list_add(array_list, &values[i]);
+    }
+    // when
+    int index = array_list_binary_search(array_list, &values[8], DEFAULT_COMPARATOR(int));
+    // then
+    TEST_ASSERT_EQUAL(8, index);
+}
+
 void test_array_list_clone() {
     // given
     constexpr int SIZE = 5;
@@ -870,6 +882,8 @@ int main(void) {
 
     RUN_TEST(test_array_list_last_index_of_element_returns_its_index);
     RUN_TEST(test_array_list_last_index_of_nonexistent_element_returns_negative_one);
+
+    RUN_TEST(test_array_list_binary_search);
 
     RUN_TEST(test_array_list_clone);
 

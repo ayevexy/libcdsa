@@ -425,6 +425,27 @@ int array_list_last_index_of(ArrayList* array_list, void* element) {
     return last_index;
 }
 
+int array_list_binary_search(ArrayList* array_list, void* element, Comparator compare) {
+    int start_index = 0;
+    int end_index = array_list->size - 1;
+
+    while (start_index <= end_index) {
+        int mid_index = start_index + (end_index - start_index) / 2;
+        int result = compare(array_list->elements[mid_index], element);
+
+        if (result == 0) {
+            return mid_index;
+        }
+        if (result < 0) {
+            start_index = mid_index + 1;
+        }
+        if (result > 0) {
+            end_index = mid_index - 1;
+        }
+    }
+    return -1;
+}
+
 ArrayList* array_list_clone(ArrayList* array_list) {
     return array_list_sub_list(array_list, 0, array_list->size - 1);
 }

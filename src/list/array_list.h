@@ -6,11 +6,11 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 
-#define DEFAULT_OPTIONS (Options) { \
-    .initial_capacity = 10,         \
-    .grow_factor = 2.0,             \
-    .equals = default_equals,       \
-    .to_string = default_to_string  \
+#define DEFAULT_OPTIONS (Options) {     \
+    .initial_capacity = 10,             \
+    .grow_factor = 2.0,                 \
+    .equals = pointer_equals,           \
+    .to_string = pointer_to_string      \
 }
 
 typedef struct Options {

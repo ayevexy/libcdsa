@@ -87,8 +87,8 @@ You may supply custom options or use the default:
 #define DEFAULT_OPTIONS (Options) {     \
     .initial_capacity = 10,             \
     .grow_factor = 2.0,                 \
-    .equals = default_equals,           \
-    .to_string = default_to_string      \
+    .equals = pointer_equals,           \
+    .to_string = pointer_to_string      \
 }
 ```
 

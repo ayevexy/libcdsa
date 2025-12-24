@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include "internal/memory.h"
 
-bool default_equals(void* a, void* b) {
+bool pointer_equals(void* a, void* b) {
     return a == b;
 }
 
-#define DEFINE_COMPARATOR(T) int T##_compare(void* a, void* b) {    \
+#define DEFINE_COMPARATOR(T) int compare_##T##s(void* a, void* b) {    \
     return (*(T*) a > *(T*) b) - (*(T*) a < *(T*) b);               \
 }
 
@@ -19,7 +19,7 @@ DEFINE_COMPARATOR(double)
 
 #undef DEFINE_COMPARATOR
 
-int default_compare(void* a, void* b) {
+int compare_pointers(void* a, void* b) {
     return (a > b) - (a < b);
 }
 
@@ -38,7 +38,7 @@ DEFINE_TO_STRING(double, "%lf")
 
 #undef DEFINE_TO_STRING
 
-char* default_to_string(void* e) {
+char* pointer_to_string(void* e) {
     const int length = snprintf(nullptr, 0, "%p", e) + 1;
     char* string = memory_alloc(sizeof(char) * length);
     snprintf(string, length, "%p", e);

@@ -10,11 +10,6 @@
 DEFINE_FFF_GLOBALS;
 
 FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
-FAKE_VOID_FUNC(action, void*);
-
-#define FFF_FAKES_LIST(FAKE)    \
-    FAKE(fprintf)               \
-    FAKE(action)
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
@@ -28,6 +23,11 @@ FAKE_VOID_FUNC(action, void*);
         TEST_ASSERT_EQUAL(array[i], *(int*) array_list_get(array_list, i));     \
 }
 
+#define TEST_ASSERT_ARRAY_EQUALS(array_a, array_b)              \
+    for (int i = 0; i < SIZE(array_a); i++) {                   \
+        TEST_ASSERT_EQUAL(array_a[i], *(int*) array_b[i]);      \
+    }
+
 ArrayList* array_list;
 
 bool int_equals(void* a, void* b) {
@@ -35,13 +35,13 @@ bool int_equals(void* a, void* b) {
 }
 
 void setUp() {
-    FFF_FAKES_LIST(RESET_FAKE);
+    RESET_FAKE(fprintf);
     FFF_RESET_HISTORY();
     array_list = array_list_new((Options) {
         .initial_capacity = 10,
         .grow_factor = 2,
         .equals = int_equals,
-        .to_string = default_to_string
+        .to_string = DEFAULT_TO_STRING(int)
     });
 }
 
@@ -425,39 +425,28 @@ void test_retain_all_elements_from_collection_in_array_list() {
     array_list_delete(new_array_list);
 }
 
-void test_array_list_trim_to_size() {
+void test_trim_array_list_size() {
     // given
-    int values[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    for (int i = 0; i < 11; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    array_list_remove_range(array_list, 0, 6);
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    array_list_remove_range(array_list, 0, 4);
+
     // when
     array_list_trim_to_size(array_list);
+
     // then
-    TEST_ASSERT_EQUAL(4, array_list_capacity(array_list));
-    // and (check if the array list will grow correctly)
-    for (int i = 0; i < 4; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    TEST_ASSERT_EQUAL(8, array_list_capacity(array_list));
+    TEST_ASSERT_EQUAL(5, array_list_capacity(array_list));
+    // and
+    POPULATE_ARRAY_LIST(array_list, values); // (check if the array list will grow correctly)
+    TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
 }
 
-void test_array_list_ensure_capacity() {
+void test_ensure_capacity_of_array_list() {
     // when
     array_list_ensure_capacity(array_list, 25);
     // then
     TEST_ASSERT_EQUAL(40, array_list_capacity(array_list));
-}
-
-void test_array_list_is_not_empty() {
-    // given
-    int value = 10;
-    array_list_add(array_list, &value);
-    // when
-    bool empty = array_list_is_empty(array_list);
-    // then
-    TEST_ASSERT_FALSE(empty);
 }
 
 void test_array_list_is_empty() {
@@ -467,12 +456,19 @@ void test_array_list_is_empty() {
     TEST_ASSERT_TRUE(empty);
 }
 
+void test_array_list_is_not_empty() {
+    // given
+    array_list_add(array_list, &(int){10});
+    // when
+    bool empty = array_list_is_empty(array_list);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 void test_array_list_iterator() {
     // given
-    int values[3] = { 0, 1, 2 };
-    for (int i = 0; i < 3; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     // then
@@ -489,53 +485,56 @@ void test_array_list_iterator() {
     TEST_ASSERT_NULL(iterator_next(iterator));
 }
 
-void test_perform_action_for_each_element_of_array_list() {
-    // given
-    int values[5] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    // when
-    array_list_for_each(array_list, action);
-    // then
-    TEST_ASSERT_EQUAL(5, action_fake.call_count);
-    for (int i = 0; i < 5; i++) {
-        TEST_ASSERT_EQUAL(values[i], *(int*) action_fake.arg0_history[i]);
-    }
+static void action_add_one(void* element) {
+    *(int*) element += 1;
 }
 
-void sort_array_list(SortingAlgorithm sorting_algorithm) {
-    // setup
-    array_list_delete(array_list);
-    array_list = array_list_new(DEFAULT_OPTIONS);
+void test_perform_action_for_each_element_of_array_list() {
     // given
-    constexpr int SIZE = 5;
-    int values[SIZE] = { 3, 1, 0, 4, 2 };
-    for (int i = 0; i < SIZE; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_for_each(array_list, action_add_one);
+    // then
+    int new_values[] = { 2, 3, 4, 5, 6 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+}
+
+static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
+    // given
+    int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     array_list_sort(array_list, DEFAULT_COMPARATOR(int), sorting_algorithm);
     // then
-    for (int i = 0; i < SIZE; i++) {
-        TEST_ASSERT_EQUAL(i, *(int*) array_list_get(array_list, i));
-    }
+    int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(sorted_values, array_list);
 }
 
-void test_sort_array_list() {
-    sort_array_list(BUBBLE_SORT);
-    sort_array_list(SELECTION_SORT);
-    sort_array_list(INSERTION_SORT);
-    sort_array_list(MERGE_SORT);
-    sort_array_list(QUICK_SORT);
+void test_bubble_sort_array_list() {
+    sort_array_list_test_helper(BUBBLE_SORT);
+}
+
+void test_selection_sort_array_list() {
+    sort_array_list_test_helper(SELECTION_SORT);
+}
+
+void test_insertion_sort_array_list() {
+    sort_array_list_test_helper(INSERTION_SORT);
+}
+
+void test_merge_sort_array_list() {
+    sort_array_list_test_helper(MERGE_SORT);
+}
+
+void test_quick_sort_array_list() {
+    sort_array_list_test_helper(QUICK_SORT);
 }
 
 void test_clear_array_list() {
     // given
-    int values[3] = { 0, 1, 2 };
-    for (int i = 0; i < 3; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     array_list_clear(array_list);
     // then
@@ -567,175 +566,149 @@ void test_array_list_does_not_contains_element() {
 void test_array_list_contains_all_elements() {
     // given
     ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
-    int values[5] = { 0, 1, 2, 3, 4 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    array_list_add(new_array_list, &values[1]);
-    array_list_add(new_array_list, &values[2]);
-    array_list_add(new_array_list, &values[3]);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    int other_values[] = { 2, 3, 4};
+    POPULATE_ARRAY_LIST(new_array_list, other_values);
+
     // when
-    bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+    bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+
     // then
-    TEST_ASSERT_TRUE(contains);
+    TEST_ASSERT_TRUE(contains_all);
     // clean up
     array_list_delete(new_array_list);
 }
 
 void test_array_list_does_not_contains_all_elements() {
     // given
-    int new_value = 10;
     ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
-    int values[5] = { 0, 1, 2, 3, 4 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    array_list_add(new_array_list, &values[1]);
-    array_list_add(new_array_list, &new_value);
-    array_list_add(new_array_list, &values[3]);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    int other_values[] = { 2, 10, 4};
+    POPULATE_ARRAY_LIST(new_array_list, other_values);
+
     // when
-    bool contains = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+    bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+
     // then
-    TEST_ASSERT_FALSE(contains);
+    TEST_ASSERT_FALSE(contains_all);
     // clean up
     array_list_delete(new_array_list);
 }
 
-void test_array_list_index_of_element_returns_its_index() {
+void test_get_index_of_element_from_array_list() {
     // given
-    int values[3] = { 0, 1, 2 };
-    for (int i = 0; i < 3; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_of(array_list, &values[1]);
+    int index = array_list_index_of(array_list, &(int){3});
     // then
-    TEST_ASSERT_EQUAL(1, index);
+    TEST_ASSERT_EQUAL(2, index);
 }
 
-void test_array_list_index_of_nonexistent_element_returns_negative_one() {
+void test_get_index_of_nonexistent_element_from_array_list_returns_negative_one() {
     // given
-    int nonexistent = 10;
-    int values[3] = { 0, 1, 2 };
-    for (int i = 0; i < 3; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_of(array_list, &nonexistent);
+    int index = array_list_index_of(array_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
 
-void test_array_list_last_index_of_element_returns_its_index() {
+void test_get_last_index_of_element_from_array_list() {
     // given
-    int values[3] = { 0, 1, 2 };
-    array_list_add(array_list, &values[0]);
-    array_list_add(array_list, &values[1]);
-    array_list_add(array_list, &values[1]);
-    array_list_add(array_list, &values[1]);
-    array_list_add(array_list, &values[2]);
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_last_index_of(array_list, &values[1]);
+    int last_index = array_list_last_index_of(array_list, &(int){3});
     // then
-    TEST_ASSERT_EQUAL(3, index);
+    TEST_ASSERT_EQUAL(4, last_index);
 }
 
-void test_array_list_last_index_of_nonexistent_element_returns_negative_one() {
+void test_get_last_index_of_nonexistent_element_from_array_list_returns_negative_one() {
     // given
-    int nonexistent = 10;
-    int values[3] = { 0, 1, 2 };
-    for (int i = 0; i < 3; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int last_index = array_list_last_index_of(array_list, &nonexistent);
+    int last_index = array_list_last_index_of(array_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }
 
-void test_array_list_binary_search() {
+void test_binary_search_element_of_array_list() {
     // given
-    int values[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    for (int i = 0; i < 10; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &values[8], DEFAULT_COMPARATOR(int));
+    int index = array_list_binary_search(array_list, &(int){9}, DEFAULT_COMPARATOR(int));
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
 
-void test_array_list_clone() {
+void test_clone_array_list() {
     // given
-    constexpr int SIZE = 5;
-    int values[SIZE] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < SIZE; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* array_list_copy = array_list_clone(array_list);
+    ArrayList* copy_array_list = array_list_clone(array_list);
     // then
-    for (int i = 0; i < SIZE; i++) {
-        void* original = array_list_get(array_list, i);
-        void* copy = array_list_get(array_list_copy, i);
-        TEST_ASSERT_EQUAL(original, copy);
-        TEST_ASSERT_EQUAL(*(int*) original, *(int*) copy);
-    }
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, copy_array_list);
     // clean up
-    array_list_delete(array_list_copy);
+    array_list_delete(copy_array_list);
 }
 
-void test_array_list_sub_list() {
+void test_create_sub_list_of_array_list() {
     // given
-    int values[5] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+
     // when
     ArrayList* new_array_list = array_list_sub_list(array_list, 1, 3);
+
     // then
-    TEST_ASSERT_NOT_NULL(new_array_list);
-    TEST_ASSERT_EQUAL(values[1], *(int*) array_list_get(new_array_list, 0));
-    TEST_ASSERT_EQUAL(values[2], *(int*) array_list_get(new_array_list, 1));
-    TEST_ASSERT_EQUAL(values[3], *(int*) array_list_get(new_array_list, 2));
-    TEST_ASSERT_NULL(array_list_get(new_array_list, 3));
+    TEST_ASSERT_EQUAL(3, array_list_size(new_array_list));
+    // and
+    int sub_list_values[] = { 2, 3, 4 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(sub_list_values, new_array_list);
+
     // clean up
     array_list_delete(new_array_list);
 }
 
-void test_array_list_sub_list_index_out_of_bounds_returns_null() {
+static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index, char* message) {
     // given
-    int values[5] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    // then
-    TEST_ASSERT_NULL(array_list_sub_list(array_list, -1, 4));
-    TEST_ASSERT_NULL(array_list_sub_list(array_list, 0, 6));
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_NOT_NULL(fprintf_fake.arg1_val);
-    TEST_ASSERT_EQUAL_STRING("Warning: array_list_sub_list start_index %d out of bounds\n", fprintf_fake.arg1_history[0]);
-    TEST_ASSERT_EQUAL_STRING("Warning: array_list_sub_list end_index %d out of bounds\n", fprintf_fake.arg1_history[1]);
-}
-
-void test_array_list_sub_list_start_index_greater_than_end_index_returns_null() {
-    // given
-    const char* message = "Warning: array_list_sub_list start_index %d greater than end_index %d\n";
-    int values[5] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < 5; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* new_array_list = array_list_sub_list(array_list, 4, 3);
+    ArrayList* sub_list = array_list_sub_list(array_list, start_index, end_index);
     // then
-    TEST_ASSERT_NULL(new_array_list);
-    // and
+    TEST_ASSERT_NULL(sub_list);
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
-void test_array_list_to_collection() {
+void test_create_sub_list_end_index_above_bounds_returns_null_and_warns_client() {
+    char message[] = "Warning: array_list_sub_list end_index %d out of bounds\n";
+    sub_list_index_out_of_bounds_test_helper(0, 10, message);
+}
+
+void test_create_sub_list_negative_start_index_returns_null_and_warns_client() {
+    char message[] = "Warning: array_list_sub_list start_index %d out of bounds\n";
+    sub_list_index_out_of_bounds_test_helper(-1, 4, message);
+}
+
+void test_create_sub_list_start_index_greater_than_end_index_returns_null_and_warns_client() {
+    char message[] = "Warning: array_list_sub_list start_index %d greater than end_index %d\n";
+    sub_list_index_out_of_bounds_test_helper(4, 3, message);
+}
+
+void test_convert_array_list_to_collection() {
     // when
     Collection collection = array_list_to_collection(array_list);
     // then
@@ -744,54 +717,27 @@ void test_array_list_to_collection() {
     TEST_ASSERT_EQUAL(array_list_iterator, collection.iterator);
 }
 
-void test_array_list_to_array() {
+void test_convert_array_list_to_array() {
     // given
-    constexpr int SIZE = 5;
-    int values[SIZE] = { 1, 2, 3, 4, 5 };
-    for (int i = 0; i < SIZE; i++) {
-        array_list_add(array_list, &values[i]);
-    }
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     void** elements = array_list_to_array(array_list);
     // then
-    for (int i = 0; i < SIZE; i++) {
-        TEST_ASSERT_EQUAL(values[i], *(int*) elements[i]);
-    }
+    TEST_ASSERT_ARRAY_EQUALS(values, elements);
 }
 
-void test_array_list_to_string() {
+void test_get_array_list_string_representation() {
     // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
     char expected_string[68];
-    int values[4] = { 0, 1, 2, 3 };
-    // and
-    sprintf(expected_string, "[ %p, %p, %p, %p ]", &values[0], &values[1], &values[2], &values[3]);
-    for (int i = 0; i < 4; i++) {
-        array_list_add(array_list, &values[i]);
-    }
-    // when
-    char* string = array_list_to_string(array_list);
-    // then
-    TEST_ASSERT_EQUAL_STRING(expected_string, string);
-}
+    sprintf(expected_string, "[ %d, %d, %d, %d, %d ]", 1, 2, 3, 4, 5);
 
-void test_array_list_to_string_different_format() {
-    // setup
-    array_list = array_list_new((Options) {
-        .initial_capacity = 10,
-        .grow_factor = 2,
-        .equals = default_equals,
-        .to_string = DEFAULT_TO_STRING(int)
-    });
-    // given
-    char expected_string[15];
-    int values[4] = { 0, 1, 2, 3 };
-    // and
-    sprintf(expected_string, "[ %d, %d, %d, %d ]", values[0], values[1], values[2], values[3]);
-    for (int i = 0; i < 4; i++) {
-        array_list_add(array_list, &values[i]);
-    }
     // when
     char* string = array_list_to_string(array_list);
+
     // then
     TEST_ASSERT_EQUAL_STRING(expected_string, string);
 }
@@ -827,7 +773,6 @@ int main(void) {
     RUN_TEST(test_remove_element_from_array_list_negative_index_warns_client);
 
     RUN_TEST(test_remove_element_from_array_list_by_reference);
-
     RUN_TEST(test_remove_all_elements_from_array_list_matching_collection);
 
     RUN_TEST(test_remove_elements_in_range_from_array_list);
@@ -837,47 +782,46 @@ int main(void) {
     RUN_TEST(test_remove_elements_in_range_from_array_list_start_index_greater_than_end_index_warns_client);
 
     RUN_TEST(test_remove_elements_from_array_list_matching_predicate);
-
     RUN_TEST(test_replace_all_elements_from_array_list);
     RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
-    RUN_TEST(test_array_list_trim_to_size);
-    RUN_TEST(test_array_list_ensure_capacity);
-
-    RUN_TEST(test_array_list_is_not_empty);
+    RUN_TEST(test_trim_array_list_size);
+    RUN_TEST(test_ensure_capacity_of_array_list);
     RUN_TEST(test_array_list_is_empty);
+    RUN_TEST(test_array_list_is_not_empty);
 
     RUN_TEST(test_array_list_iterator);
-
     RUN_TEST(test_perform_action_for_each_element_of_array_list);
 
-    RUN_TEST(test_sort_array_list);
+    RUN_TEST(test_bubble_sort_array_list);
+    RUN_TEST(test_selection_sort_array_list);
+    RUN_TEST(test_insertion_sort_array_list);
+    RUN_TEST(test_merge_sort_array_list);
+    RUN_TEST(test_quick_sort_array_list);
 
     RUN_TEST(test_clear_array_list);
 
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);
-
     RUN_TEST(test_array_list_contains_all_elements);
     RUN_TEST(test_array_list_does_not_contains_all_elements);
 
-    RUN_TEST(test_array_list_index_of_element_returns_its_index);
-    RUN_TEST(test_array_list_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_get_index_of_element_from_array_list);
+    RUN_TEST(test_get_index_of_nonexistent_element_from_array_list_returns_negative_one);
+    RUN_TEST(test_get_last_index_of_element_from_array_list);
+    RUN_TEST(test_get_last_index_of_nonexistent_element_from_array_list_returns_negative_one);
 
-    RUN_TEST(test_array_list_last_index_of_element_returns_its_index);
-    RUN_TEST(test_array_list_last_index_of_nonexistent_element_returns_negative_one);
+    RUN_TEST(test_binary_search_element_of_array_list);
 
-    RUN_TEST(test_array_list_binary_search);
+    RUN_TEST(test_clone_array_list);
 
-    RUN_TEST(test_array_list_clone);
+    RUN_TEST(test_create_sub_list_of_array_list);
+    RUN_TEST(test_create_sub_list_end_index_above_bounds_returns_null_and_warns_client);
+    RUN_TEST(test_create_sub_list_negative_start_index_returns_null_and_warns_client);
+    RUN_TEST(test_create_sub_list_start_index_greater_than_end_index_returns_null_and_warns_client);
 
-    RUN_TEST(test_array_list_sub_list);
-    RUN_TEST(test_array_list_sub_list_index_out_of_bounds_returns_null);
-    RUN_TEST(test_array_list_sub_list_start_index_greater_than_end_index_returns_null);
-
-    RUN_TEST(test_array_list_to_collection);
-    RUN_TEST(test_array_list_to_array);
-    RUN_TEST(test_array_list_to_string);
-    RUN_TEST(test_array_list_to_string_different_format);
+    RUN_TEST(test_convert_array_list_to_collection);
+    RUN_TEST(test_convert_array_list_to_array);
+    RUN_TEST(test_get_array_list_string_representation);
     return UNITY_END();
 }

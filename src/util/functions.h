@@ -9,6 +9,25 @@ typedef void* (*UnaryOperator)(void*);
 
 typedef int (*Comparator)(void*, void*);
 
+#define DEFAULT_EQUALS(T) _Generic((T*) 0,  \
+    char*: char_equals,                     \
+    int*: int_equals,                       \
+    long*: long_equals,                     \
+    float*: float_equals,                   \
+    double*: double_equals,                 \
+    void*: pointer_equals                   \
+)
+
+bool char_equals(void*, void*);
+
+bool int_equals(void*, void*);
+
+bool long_equals(void*, void*);
+
+bool float_equals(void*, void*);
+
+bool double_equals(void*, void*);
+
 bool pointer_equals(void*, void*);
 
 #define DEFAULT_COMPARATOR(T) _Generic((T*) 0,  \

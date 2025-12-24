@@ -30,17 +30,13 @@ FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 
 ArrayList* array_list;
 
-bool int_equals(void* a, void* b) {
-    return *(int*) a == *(int*) b;
-}
-
 void setUp() {
     RESET_FAKE(fprintf);
     FFF_RESET_HISTORY();
     array_list = array_list_new((ArrayListOptions) {
         .initial_capacity = 10,
         .grow_factor = 2,
-        .equals = int_equals,
+        .equals = DEFAULT_EQUALS(int),
         .to_string = DEFAULT_TO_STRING(int)
     });
 }

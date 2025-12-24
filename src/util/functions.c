@@ -3,12 +3,24 @@
 #include <stdio.h>
 #include "internal/memory.h"
 
+#define DEFINE_EQUALS(T) bool T##_equals(void* a, void* b) {    \
+    return *(T*) a == *(T*) b;                                  \
+}
+
+DEFINE_EQUALS(char)
+DEFINE_EQUALS(int)
+DEFINE_EQUALS(long)
+DEFINE_EQUALS(float)
+DEFINE_EQUALS(double)
+
+#undef DEFINE_EQUALS
+
 bool pointer_equals(void* a, void* b) {
     return a == b;
 }
 
-#define DEFINE_COMPARATOR(T) int compare_##T##s(void* a, void* b) {    \
-    return (*(T*) a > *(T*) b) - (*(T*) a < *(T*) b);               \
+#define DEFINE_COMPARATOR(T) int compare_##T##s(void* a, void* b) {     \
+    return (*(T*) a > *(T*) b) - (*(T*) a < *(T*) b);                   \
 }
 
 DEFINE_COMPARATOR(char)

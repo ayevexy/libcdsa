@@ -404,7 +404,6 @@ void test_replace_all_elements_from_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
 
-// TODO: fix implementation code to make the test pass
 void test_retain_all_elements_from_collection_in_array_list() {
     // given
     ArrayList* new_array_list = array_list_new(DEFAULT_OPTIONS);
@@ -412,14 +411,14 @@ void test_retain_all_elements_from_collection_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // and
-    int new_values[] = { 2, 3, 4 };
+    int new_values[] = { 2, 4 }; // empty value between `2` and `4` to ensure `3` will not be skipped
     POPULATE_ARRAY_LIST(new_array_list, new_values);
 
     // when
     array_list_retain_all(array_list, array_list_to_collection(new_array_list));
 
     // then
-    TEST_ASSERT_EQUAL(3, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 
     // clean up
@@ -840,7 +839,7 @@ int main(void) {
     RUN_TEST(test_remove_elements_from_array_list_matching_predicate);
 
     RUN_TEST(test_replace_all_elements_from_array_list);
-    //RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
+    RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
     RUN_TEST(test_array_list_trim_to_size);
     RUN_TEST(test_array_list_ensure_capacity);

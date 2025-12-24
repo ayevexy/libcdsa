@@ -179,11 +179,10 @@ void test_get_element_from_array_list() {
     TEST_ASSERT_EQUAL(value, actual_value);
 }
 
-void get_out_of_bounds(int index) {
+static void get_index_out_of_bounds_test_helper(int index) {
     // given
     const char* message = "Warning: array_list_get index %d out of bounds\n";
-    int value = 10;
-    array_list_add(array_list, &value);
+    array_list_add(array_list, &(int){10});
     // when
     void* element = array_list_get(array_list, index);
     // then
@@ -192,9 +191,12 @@ void get_out_of_bounds(int index) {
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
-void test_get_element_from_array_list_index_out_of_bounds_warns_client() {
-    get_out_of_bounds(10);
-    get_out_of_bounds(-1);
+void test_get_element_from_array_list_index_above_bounds_warns_client() {
+    get_index_out_of_bounds_test_helper(10);
+}
+
+void test_get_element_from_array_list_negative_index_warns_client() {
+    get_index_out_of_bounds_test_helper(-1);
 }
 
 void test_set_element_of_array_list() {
@@ -209,20 +211,22 @@ void test_set_element_of_array_list() {
     TEST_ASSERT_EQUAL(new_value, actual_value);
 }
 
-void set_out_of_bounds(int index) {
+static void set_index_out_of_bounds_test_helper(int index) {
     // given
     const char* message = "Warning: array_list_set index %d out of bounds\n";
-    int value = 20;
     // when
-    array_list_set(array_list, index, &value);
+    array_list_set(array_list, index, &(int){10});
     // then
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
-void test_set_element_of_array_list_index_out_of_bounds_warns_client() {
-    set_out_of_bounds(10);
-    set_out_of_bounds(-1);
+void test_set_element_of_array_list_index_above_bounds_warns_client() {
+    set_index_out_of_bounds_test_helper(10);
+}
+
+void test_set_element_of_array_list_negative_index_warns_client() {
+    set_index_out_of_bounds_test_helper(-1);
 }
 
 void test_remove_element_from_array_list() {
@@ -804,10 +808,12 @@ int main(void) {
     RUN_TEST(test_add_all_elements_from_collection_to_array_list_at_index);
 
     RUN_TEST(test_get_element_from_array_list);
-    RUN_TEST(test_get_element_from_array_list_index_out_of_bounds_warns_client);
+    RUN_TEST(test_get_element_from_array_list_index_above_bounds_warns_client);
+    RUN_TEST(test_get_element_from_array_list_negative_index_warns_client);
 
     RUN_TEST(test_set_element_of_array_list);
-    RUN_TEST(test_set_element_of_array_list_index_out_of_bounds_warns_client);
+    RUN_TEST(test_set_element_of_array_list_index_above_bounds_warns_client);
+    RUN_TEST(test_set_element_of_array_list_negative_index_warns_client);
 
     RUN_TEST(test_remove_element_from_array_list);
     RUN_TEST(test_remove_element_from_array_list_shifts_its_remaining_elements);

@@ -17,6 +17,8 @@ DEFINE_COMPARATOR(long)
 DEFINE_COMPARATOR(float)
 DEFINE_COMPARATOR(double)
 
+#undef DEFINE_COMPARATOR
+
 int default_compare(void* a, void* b) {
     return (a > b) - (a < b);
 }
@@ -33,6 +35,8 @@ DEFINE_TO_STRING(int, "%d")
 DEFINE_TO_STRING(long, "%ld")
 DEFINE_TO_STRING(float, "%f")
 DEFINE_TO_STRING(double, "%lf")
+
+#undef DEFINE_TO_STRING
 
 char* default_to_string(void* e) {
     const int length = snprintf(nullptr, 0, "%p", e) + 1;

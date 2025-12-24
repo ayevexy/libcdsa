@@ -1,6 +1,6 @@
 #include "array_list.h"
 
-#include "util/memory.h"
+#include "internal/memory.h"
 #include <stdio.h>
 #include <string.h>
 

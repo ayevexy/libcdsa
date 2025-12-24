@@ -24,8 +24,8 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 add_library(${PROJECT_NAME}
         src/list/array_list.c
         src/util/iterator.c
-        src/util/memory.c
         src/util/functions.c
+        src/internal/memory.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

@@ -1,6 +1,6 @@
 #include "iterator.h"
 
-#include "memory.h"
+#include "internal/memory.h"
 
 struct Iterator {
     void* iterable_structure;

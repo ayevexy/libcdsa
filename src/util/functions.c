@@ -1,7 +1,7 @@
 #include "functions.h"
 
 #include <stdio.h>
-#include "memory.h"
+#include "internal/memory.h"
 
 bool default_equals(void* a, void* b) {
     return a == b;

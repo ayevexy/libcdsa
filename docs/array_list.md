@@ -77,18 +77,18 @@ array_list_add_at(array_list, &value, -1); // "Warning: array_list_add_at index 
 To create a new `ArrayList`, call:
 
 ```c++
-ArrayList* array_list = array_list_new(DEFAULT_OPTIONS);
+ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
 ```
 
-The function takes an `Options` object that defines the list’s behavior. 
+The function takes an `ArrayListOptions` object that defines the list’s behavior. 
 You may supply custom options or use the default:
 
 ```c++
-#define DEFAULT_OPTIONS (Options) {     \
-    .initial_capacity = 10,             \
-    .grow_factor = 2.0,                 \
-    .equals = pointer_equals,           \
-    .to_string = pointer_to_string      \
+#define DEFAULT_ARRAY_LIST_OPTIONS (ArrayListOptions) {     \
+    .initial_capacity = 10,                                 \
+    .grow_factor = 2.0,                                     \
+    .equals = pointer_equals,                               \
+    .to_string = pointer_to_string                          \
 }
 ```
 
@@ -99,7 +99,7 @@ The function returns a pointer to a newly allocated `ArrayList`.
 To initialize an array list from an existing `Collection`:
 
 ```c++
-ArrayList* array_list = array_list_from(collection, DEFAULT_OPTIONS);
+ArrayList* array_list = array_list_from(collection, DEFAULT_ARRAY_LIST_OPTIONS);
 ```
 
 See [To Collection](#to-collection) for more details about the `Collection` type.
@@ -452,7 +452,7 @@ To retrieve the index of the last occurrence of an element:
 int last_index = array_list_last_index_of(array_list, &value); // -1 if not found
 ```
 
-These functions rely on the equals function provided in `Options`.
+These functions rely on the equals function provided in `ArrayListOptions`.
 By default, equality is based on memory address comparison, but this behavior can be customized:
 
 ```c++
@@ -526,9 +526,9 @@ To obtain a string representation of the array list:
 char* string = array_list_to_string(array_list); // [ 0x7fffb6f53fe0, 0x7fffb6f53fe4, 0x7fffb6f53fe8, 0x7fffb6f53fec ]
 ```
 
-The output format depends on the `to_string` function defined in `Options`. The library provides default
+The output format depends on the `to_string` function defined in `ArrayListOptions`. The library provides default
 `to_string` implementations for the following data types: `char`, `int`, `long`, `float`, `double` and `void*`. The one
-defined in `DEFAULT_OPTIONS` prints the memory addresses of the elements. To customize:
+defined in `DEFAULT_ARRAY_LIST_OPTIONS` prints the memory addresses of the elements. To customize:
 
 ```c++
 char* my_to_string(void* element) {

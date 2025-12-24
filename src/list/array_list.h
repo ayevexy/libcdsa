@@ -6,25 +6,25 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 
-#define DEFAULT_OPTIONS (Options) {     \
-    .initial_capacity = 10,             \
-    .grow_factor = 2.0,                 \
-    .equals = pointer_equals,           \
-    .to_string = pointer_to_string      \
+#define DEFAULT_ARRAY_LIST_OPTIONS (ArrayListOptions) {     \
+    .initial_capacity = 10,                                 \
+    .grow_factor = 2.0,                                     \
+    .equals = pointer_equals,                               \
+    .to_string = pointer_to_string                          \
 }
 
-typedef struct Options {
+typedef struct ArrayListOptions {
     int initial_capacity;
     double grow_factor;
     bool (*equals)(void*, void*);
     char* (*to_string)(void*);
-} Options;
+} ArrayListOptions;
 
 typedef struct ArrayList ArrayList;
 
-ArrayList* array_list_new(Options);
+ArrayList* array_list_new(ArrayListOptions);
 
-ArrayList* array_list_from(Collection, Options);
+ArrayList* array_list_from(Collection, ArrayListOptions);
 
 void array_list_delete(ArrayList*);
 

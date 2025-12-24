@@ -29,7 +29,7 @@ static void merge_sort(ArrayList*, Comparator);
 
 static void quick_sort(ArrayList*, Comparator);
 
-ArrayList* array_list_new(Options options) {
+ArrayList* array_list_new(ArrayListOptions options) {
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
     array_list->size = 0;
@@ -40,7 +40,7 @@ ArrayList* array_list_new(Options options) {
     return array_list;
 }
 
-ArrayList* array_list_from(Collection collection, Options options) {
+ArrayList* array_list_from(Collection collection, ArrayListOptions options) {
     ArrayList* array_list = array_list_new(options);
     array_list_add_all(array_list, collection);
     return array_list;
@@ -471,7 +471,7 @@ ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_i
         fprintf(stderr, "Warning: array_list_sub_list start_index %d greater than end_index %d\n", start_index, end_index);
         return nullptr;
     }
-    const Options options = {
+    const ArrayListOptions options = {
         .initial_capacity = array_list->capacity,
         .grow_factor = array_list->grow_factor,
         .equals = array_list->equals,

@@ -99,7 +99,7 @@ Now just include the desired header files and start coding, for example: `array_
 #include <stdio.h>
 
 int main() {
-    ArrayList* array_list = array_list_new(DEFAULT_OPTIONS);
+    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
     int values[] = { 1, 2, 3, 4 };
     
     for (int i = 0; i < 4; i++) {

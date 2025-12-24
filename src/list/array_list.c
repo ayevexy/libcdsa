@@ -176,7 +176,7 @@ void array_list_remove_range(ArrayList* array_list, int start_index, int end_ind
 }
 
 void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
-    for (int i = 0; i < array_list->size; i++) {
+    for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition_matches(array_list->elements[i])) {
             array_list_remove(array_list, i);
         }

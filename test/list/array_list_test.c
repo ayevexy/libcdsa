@@ -373,7 +373,7 @@ static bool odd_predicate(void* element) {
 
 void test_remove_elements_from_array_list_matching_predicate() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
+    int values[] = { 1, 2, 3, 3, 4, 5 }; // the duplicated 3 ensure it will not be skipped
     POPULATE_ARRAY_LIST(array_list, values);
     // when
     array_list_remove_if(array_list, odd_predicate);

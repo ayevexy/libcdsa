@@ -471,13 +471,12 @@ ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_i
         fprintf(stderr, "Warning: array_list_sub_list start_index %d greater than end_index %d\n", start_index, end_index);
         return nullptr;
     }
-    const ArrayListOptions options = {
+    ArrayList* new_array_list = array_list_new((ArrayListOptions) {
         .initial_capacity = array_list->capacity,
         .grow_factor = array_list->grow_factor,
         .equals = array_list->equals,
         .to_string = array_list->to_string
-    };
-    ArrayList* new_array_list = array_list_new(options);
+    });
     for (int i = start_index; i <= end_index; i++) {
         array_list_add(new_array_list, array_list->elements[i]);
     }

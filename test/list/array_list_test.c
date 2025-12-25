@@ -785,15 +785,10 @@ void test_get_array_list_string_representation() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    char expected_string[68];
-    sprintf(expected_string, "[ %d, %d, %d, %d, %d ]", 1, 2, 3, 4, 5);
-
     // when
     char* string = array_list_to_string(array_list);
-
     // then
-    TEST_ASSERT_EQUAL_STRING(expected_string, string);
+    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string);
 }
 
 void test_get_empty_array_list_string_representation() {

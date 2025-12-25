@@ -30,6 +30,10 @@ static void merge_sort(ArrayList*, Comparator);
 static void quick_sort(ArrayList*, Comparator);
 
 ArrayList* array_list_new(ArrayListOptions options) {
+    if (options.initial_capacity < 10 || options.grow_factor <= 1.1 || !options.equals || !options.to_string) {
+        fprintf(stderr, "Warning: array_list_new invalid options\n");
+        return nullptr;
+    }
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
     array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
     array_list->size = 0;
@@ -42,7 +46,9 @@ ArrayList* array_list_new(ArrayListOptions options) {
 
 ArrayList* array_list_from(Collection collection, ArrayListOptions options) {
     ArrayList* array_list = array_list_new(options);
-    array_list_add_all(array_list, collection);
+    if (array_list) {
+        array_list_add_all(array_list, collection);
+    }
     return array_list;
 }
 

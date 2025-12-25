@@ -49,6 +49,20 @@ void test_create_array_list() {
     TEST_ASSERT_NOT_NULL(array_list);
 }
 
+void test_do_not_create_array_list_with_invalid_options() {
+    // given
+    ArrayListOptions invalid_options = {
+        .initial_capacity = 0,
+        .grow_factor = -1,
+        .equals = nullptr,
+        .to_string = nullptr
+    };
+    // when
+    ArrayList* new_array_list = array_list_new(invalid_options);
+    // then
+    TEST_ASSERT_NULL(new_array_list);
+}
+
 void test_create_array_list_from_collection() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -60,6 +74,21 @@ void test_create_array_list_from_collection() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, new_array_list);
     // clean up
     array_list_delete(new_array_list);
+}
+
+void test_do_not_create_array_list_with_invalid_options_from_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), (ArrayListOptions) {
+        .initial_capacity = 0,
+        .grow_factor = -1,
+        .equals = nullptr,
+        .to_string = nullptr
+    });
+    // then
+    TEST_ASSERT_NULL(new_array_list);
 }
 
 void test_add_element_to_array_list() {
@@ -777,7 +806,9 @@ void test_get_empty_array_list_string_representation() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
+    RUN_TEST(test_do_not_create_array_list_with_invalid_options);
     RUN_TEST(test_create_array_list_from_collection);
+    RUN_TEST(test_do_not_create_array_list_with_invalid_options_from_collection);
 
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);

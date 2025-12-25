@@ -92,7 +92,13 @@ You may supply custom options or use the default:
 }
 ```
 
-The function returns a pointer to a newly allocated `ArrayList`.
+For an options object to be valid it has to constraint the following rules:
+- `initial_capacity >= 10`
+- `grow_factor >= 1.1`
+- `equals != nullptr`
+- `to_string != nullptr`
+
+The function returns a pointer to a newly allocated `ArrayList` or null if options are invalid.
 
 ---
 

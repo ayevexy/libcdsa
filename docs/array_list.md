@@ -417,7 +417,7 @@ array_list_sort(array_list, DEFAULT_COMPARATOR(int), BUBBLE_SORT); // [ 1, 2, 3,
 It takes a `Comparator` and a `SortingAlgorithm` as arguments.
 
 The library provides default comparators for the following data types:
-`char`, `int`, `long`, `float`, `double` and `void*`. They can be used through the 
+`char`, `int`, `long`, `float`, `double`,`void*` and `string`. They can be used through the 
 `DEFAULT_COMPARATOR(T)` macro. You can provide your own `Comparator` too:
 
 ```c++
@@ -533,7 +533,7 @@ char* string = array_list_to_string(array_list); // [ 0x7fffb6f53fe0, 0x7fffb6f5
 ```
 
 The output format depends on the `to_string` function defined in `ArrayListOptions`. The library provides default
-`to_string` implementations for the following data types: `char`, `int`, `long`, `float`, `double` and `void*`. The one
+`to_string` implementations for the following data types: `char`, `int`, `long`, `float`, `double`, `void*` and `string`. The one
 defined in `DEFAULT_ARRAY_LIST_OPTIONS` prints the memory addresses of the elements. To customize:
 
 ```c++

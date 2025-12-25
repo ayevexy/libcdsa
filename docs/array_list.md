@@ -262,11 +262,11 @@ To remove all elements present in a given `Collection`:
 array_list_remove_all(array_list, collection); // [ 3, 4]
 ```
 
-To remove all elements from a start index to an end index (both inclusive):
+To remove all elements from a start index (inclusive) to an end index (exclusive):
 
 ```c++
 // list: [ 1, 2, 3, 4, 5 ]
-array_list_remove_range(array_list, 1, 3); // [ 1, 5 ]
+array_list_remove_range(array_list, 1, 4); // [ 1, 5 ]
 ```
 
 To remove all elements matching a predicate:
@@ -485,11 +485,11 @@ ArrayList* copy = array_list_clone(array_list); // [ 1, 2, 3, 4 ]
 
 ### SubList
 
-To create a view of the array list from a start index to an end index (both inclusive):
+To create a view of the array list from a start index (inclusive) to an end index (exclusive):
 
 ```c++
 // list: [ 1, 2, 3, 4, 5, 6 ]
-ArrayList* sub_list = array_list_sub_list(array_list, 1, 4); // [ 2, 3, 4, 5 ]
+ArrayList* sub_list = array_list_sub_list(array_list, 1, 5); // [ 2, 3, 4, 5 ]
 ```
 
 ### To Array

@@ -104,6 +104,20 @@ void test_add_element_at_index_to_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
 
+// Edge case
+void test_add_element_at_index_to_array_list_index_equals_size() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_add_at(array_list, 5, &(int){10});
+    // then
+    TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
+    // and
+    int new_values[] = { 1, 2, 3, 4, 5, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+}
+
 void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
     // given
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -285,6 +299,13 @@ void test_remove_element_from_array_list_by_reference() {
     TEST_ASSERT_NULL(array_list_get(array_list, 0));
 }
 
+void test_remove_nonexistent_element_from_array_list_by_reference_does_not_warns_client() {
+    // when
+    array_list_remove_element(array_list, &(int){10});
+    // then
+    TEST_ASSERT_EQUAL(0, fprintf_fake.call_count);
+}
+
 void test_remove_all_elements_from_array_list_matching_collection() {
     // given
     ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
@@ -313,7 +334,7 @@ void test_remove_elements_in_range_from_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_remove_range(array_list, 1, 3);
+    array_list_remove_range(array_list, 1, 4);
     // then
     TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     // and
@@ -321,22 +342,9 @@ void test_remove_elements_in_range_from_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
 
-// Edge case
-void test_remove_elements_in_range_from_array_list_end_index_equals_last_index() {
+static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // when
-    array_list_remove_range(array_list, 2, 4);
-    // then
-    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
-    // and
-    int new_values[] = { 1, 2 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
-}
-
-static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index, char* message) {
-    // given
+    char message[] = "Warning: array_list_remove_range invalid range: %d to %d\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -349,18 +357,15 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
 }
 
 void test_remove_elements_in_range_from_array_list_end_index_above_bounds_warns_client() {
-    char message[] = "Warning: array_list_remove_range end_index %d out of bounds\n";
-    remove_elements_in_range_index_out_of_bounds_test_helper(0, 10, message);
+    remove_elements_in_range_index_out_of_bounds_test_helper(0, 10);
 }
 
 void test_remove_elements_in_range_from_array_list_negative_start_index_warns_client() {
-    char message[] = "Warning: array_list_remove_range start_index %d out of bounds\n";
-    remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3, message);
+    remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3);
 }
 
 void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_index_warns_client() {
-    char message[] = "Warning: array_list_remove_range start_index %d greater than end_index %d\n";
-    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, message);
+    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3);
 }
 
 static bool odd_predicate(void* element) {
@@ -426,7 +431,7 @@ void test_trim_array_list_size() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // and
-    array_list_remove_range(array_list, 0, 4);
+    array_list_remove_range(array_list, 0, 5);
 
     // when
     array_list_trim_to_size(array_list);
@@ -436,6 +441,14 @@ void test_trim_array_list_size() {
     // and
     POPULATE_ARRAY_LIST(array_list, values); // (check if the array list will grow correctly)
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
+}
+
+void test_do_not_trim_array_list_size_for_empty_array_list() {
+    // when
+    array_list_trim_to_size(array_list);
+    // then
+    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(10, array_list_capacity(array_list));
 }
 
 void test_ensure_capacity_of_array_list() {
@@ -578,6 +591,17 @@ void test_array_list_contains_all_elements() {
     array_list_delete(new_array_list);
 }
 
+void test_empty_array_list_contains_all_elements_of_empty_collection() {
+    // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // when
+    bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    array_list_delete(new_array_list);
+}
+
 void test_array_list_does_not_contains_all_elements() {
     // given
     ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
@@ -665,7 +689,7 @@ void test_create_sub_list_of_array_list() {
     POPULATE_ARRAY_LIST(array_list, values);
 
     // when
-    ArrayList* new_array_list = array_list_sub_list(array_list, 1, 3);
+    ArrayList* new_array_list = array_list_sub_list(array_list, 1, 4);
 
     // then
     TEST_ASSERT_EQUAL(3, array_list_size(new_array_list));
@@ -677,8 +701,16 @@ void test_create_sub_list_of_array_list() {
     array_list_delete(new_array_list);
 }
 
-static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index, char* message) {
+void test_create_empty_sub_list_of_array_list() {
+    // when
+    ArrayList* new_array_list = array_list_sub_list(array_list, 0, 0);
+    // then
+    TEST_ASSERT_EQUAL(0, array_list_size(new_array_list));
+}
+
+static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
+    char message[] = "Warning: array_list_sub_list invalid range: %d to %d\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -690,18 +722,15 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
 }
 
 void test_create_sub_list_end_index_above_bounds_returns_null_and_warns_client() {
-    char message[] = "Warning: array_list_sub_list end_index %d out of bounds\n";
-    sub_list_index_out_of_bounds_test_helper(0, 10, message);
+    sub_list_index_out_of_bounds_test_helper(0, 10);
 }
 
 void test_create_sub_list_negative_start_index_returns_null_and_warns_client() {
-    char message[] = "Warning: array_list_sub_list start_index %d out of bounds\n";
-    sub_list_index_out_of_bounds_test_helper(-1, 4, message);
+    sub_list_index_out_of_bounds_test_helper(-1, 4);
 }
 
 void test_create_sub_list_start_index_greater_than_end_index_returns_null_and_warns_client() {
-    char message[] = "Warning: array_list_sub_list start_index %d greater than end_index %d\n";
-    sub_list_index_out_of_bounds_test_helper(4, 3, message);
+    sub_list_index_out_of_bounds_test_helper(4, 3);
 }
 
 void test_convert_array_list_to_collection() {
@@ -738,6 +767,13 @@ void test_get_array_list_string_representation() {
     TEST_ASSERT_EQUAL_STRING(expected_string, string);
 }
 
+void test_get_empty_array_list_string_representation() {
+    // when
+    char* string = array_list_to_string(array_list);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[]", string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_array_list);
@@ -748,6 +784,7 @@ int main(void) {
     RUN_TEST(test_add_multiple_elements_to_array_list_exceeding_capacity_resize_it);
 
     RUN_TEST(test_add_element_at_index_to_array_list);
+    RUN_TEST(test_add_element_at_index_to_array_list_index_equals_size);
     RUN_TEST(test_add_element_at_index_to_array_list_exceeding_capacity_resize_it);
     RUN_TEST(test_add_element_at_index_to_array_list_index_above_bounds_warns_client);
     RUN_TEST(test_add_element_at_index_to_array_list_negative_index_warns_client);
@@ -769,10 +806,10 @@ int main(void) {
     RUN_TEST(test_remove_element_from_array_list_negative_index_warns_client);
 
     RUN_TEST(test_remove_element_from_array_list_by_reference);
+    RUN_TEST(test_remove_nonexistent_element_from_array_list_by_reference_does_not_warns_client);
     RUN_TEST(test_remove_all_elements_from_array_list_matching_collection);
 
     RUN_TEST(test_remove_elements_in_range_from_array_list);
-    RUN_TEST(test_remove_elements_in_range_from_array_list_end_index_equals_last_index);
     RUN_TEST(test_remove_elements_in_range_from_array_list_end_index_above_bounds_warns_client);
     RUN_TEST(test_remove_elements_in_range_from_array_list_negative_start_index_warns_client);
     RUN_TEST(test_remove_elements_in_range_from_array_list_start_index_greater_than_end_index_warns_client);
@@ -782,6 +819,7 @@ int main(void) {
     RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
     RUN_TEST(test_trim_array_list_size);
+    RUN_TEST(test_do_not_trim_array_list_size_for_empty_array_list);
     RUN_TEST(test_ensure_capacity_of_array_list);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_is_not_empty);
@@ -800,6 +838,7 @@ int main(void) {
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);
     RUN_TEST(test_array_list_contains_all_elements);
+    RUN_TEST(test_empty_array_list_contains_all_elements_of_empty_collection);
     RUN_TEST(test_array_list_does_not_contains_all_elements);
 
     RUN_TEST(test_get_index_of_element_from_array_list);
@@ -812,6 +851,7 @@ int main(void) {
     RUN_TEST(test_clone_array_list);
 
     RUN_TEST(test_create_sub_list_of_array_list);
+    RUN_TEST(test_create_empty_sub_list_of_array_list);
     RUN_TEST(test_create_sub_list_end_index_above_bounds_returns_null_and_warns_client);
     RUN_TEST(test_create_sub_list_negative_start_index_returns_null_and_warns_client);
     RUN_TEST(test_create_sub_list_start_index_greater_than_end_index_returns_null_and_warns_client);
@@ -819,5 +859,6 @@ int main(void) {
     RUN_TEST(test_convert_array_list_to_collection);
     RUN_TEST(test_convert_array_list_to_array);
     RUN_TEST(test_get_array_list_string_representation);
+    RUN_TEST(test_get_empty_array_list_string_representation);
     return UNITY_END();
 }

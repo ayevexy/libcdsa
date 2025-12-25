@@ -69,7 +69,7 @@ void array_list_add_first(ArrayList* array_list, void* element) {
 }
 
 void array_list_add_at(ArrayList* array_list, int index, void* element) {
-    if (index < 0 || index >= array_list->size) {
+    if (index < 0 || index > array_list->size) {
         fprintf(stderr, "Warning: array_list_add_at index %d out of bounds\n", index);
         return;
     }
@@ -128,7 +128,7 @@ void array_list_remove(ArrayList* array_list, int index) {
         fprintf(stderr, "Warning: array_list_remove index %d out of bounds\n", index);
         return;
     }
-    for (int i = index; i < array_list->size; i++) {
+    for (int i = index; i < array_list->size - 1; i++) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
     array_list->size--;
@@ -144,7 +144,9 @@ void array_list_remove_last(ArrayList* array_list) {
 
 void array_list_remove_element(ArrayList* array_list, void* element) {
     int index = array_list_index_of(array_list, element);
-    array_list_remove(array_list, index);
+    if (index >= 0) {
+        array_list_remove(array_list, index);
+    }
 }
 
 void array_list_remove_all(ArrayList* array_list, Collection collection) {
@@ -156,23 +158,15 @@ void array_list_remove_all(ArrayList* array_list, Collection collection) {
 }
 
 void array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
-    if (start_index < 0 || start_index >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_remove_range start_index %d out of bounds\n", start_index);
+    if (start_index < 0 || end_index > array_list->size || start_index >= end_index) {
+        fprintf(stderr, "Warning: array_list_remove_range invalid range: %d to %d\n", start_index, end_index);
         return;
     }
-    if (end_index < 0 || end_index >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_remove_range end_index %d out of bounds\n", end_index);
-        return;
+    int count = end_index - start_index;
+    for (int i = start_index; i < array_list->size - count; i++) {
+        array_list->elements[i] = array_list->elements[i + count];
     }
-    if (start_index > end_index) {
-        fprintf(stderr, "Warning: array_list_remove_range start_index %d greater than end_index %d\n", start_index, end_index);
-        return;
-    }
-    const int initial_size = array_list->size;
-    for (int i = start_index, j = end_index + 1; i <= end_index; i++, j++) {
-        array_list->elements[i] = j < initial_size ? array_list->elements[j] : nullptr;
-        array_list->size--;
-    }
+    array_list->size -= count;
 }
 
 void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
@@ -212,6 +206,9 @@ int array_list_size(ArrayList* array_list) {
 }
 
 void array_list_trim_to_size(ArrayList* array_list) {
+    if (array_list->size == 0) {
+        return;
+    }
     array_list->elements = memory_realloc(array_list->elements, sizeof(void*) * array_list->size);
     array_list->capacity = array_list->size;
 }
@@ -266,7 +263,7 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
 static void bubble_sort(ArrayList* array_list, Comparator compare) {
     for (int i = 0; i < array_list->size - 1; i++) {
         for (int j = 0; j < array_list->size - i - 1; j++) {
-            if (compare(array_list->elements[j], array_list->elements[j + 1]) >= 0) {
+            if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
                 void* swap = array_list->elements[j];
                 array_list->elements[j] = array_list->elements[j + 1];
                 array_list->elements[j + 1] = swap;
@@ -403,12 +400,14 @@ bool array_list_contains(ArrayList* array_list, void* element) {
 }
 
 bool array_list_contains_all(ArrayList* array_list, Collection collection) {
-    bool contains = false;
     Iterator* iterator = collection_iterator(collection);
+    bool contains = true;
     while (iterator_has_next(iterator)) {
         void* element = iterator_next(iterator);
-        contains = array_list_contains(array_list, element);
-        if (!contains) break;
+        if (!array_list_contains(array_list, element)) {
+            contains = false;
+            break;
+        }
     }
     iterator_delete(iterator);
     return contains;
@@ -455,20 +454,12 @@ int array_list_binary_search(ArrayList* array_list, void* element, Comparator co
 }
 
 ArrayList* array_list_clone(ArrayList* array_list) {
-    return array_list_sub_list(array_list, 0, array_list->size - 1);
+    return array_list_sub_list(array_list, 0, array_list->size);
 }
 
 ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_index) {
-    if (start_index < 0 || start_index >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_sub_list start_index %d out of bounds\n", start_index);
-        return nullptr;
-    }
-    if (end_index < 0 || end_index >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_sub_list end_index %d out of bounds\n", end_index);
-        return nullptr;
-    }
-    if (start_index > end_index) {
-        fprintf(stderr, "Warning: array_list_sub_list start_index %d greater than end_index %d\n", start_index, end_index);
+    if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
+        fprintf(stderr, "Warning: array_list_sub_list invalid range: %d to %d\n", start_index, end_index);
         return nullptr;
     }
     ArrayList* new_array_list = array_list_new((ArrayListOptions) {
@@ -477,7 +468,7 @@ ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_i
         .equals = array_list->equals,
         .to_string = array_list->to_string
     });
-    for (int i = start_index; i <= end_index; i++) {
+    for (int i = start_index; i < end_index; i++) {
         array_list_add(new_array_list, array_list->elements[i]);
     }
     return new_array_list;
@@ -496,6 +487,12 @@ void** array_list_to_array(ArrayList* array_list) {
 }
 
 char* array_list_to_string(ArrayList* array_list) {
+    if (array_list->size == 0) {
+        char* string = memory_alloc(sizeof(char) * 4);
+        sprintf(string, "[]");
+        return string;
+    }
+
     char* element_string = array_list->to_string(array_list->elements[0]);
     char* string = memory_alloc(5 + (strlen(element_string) + 2) * array_list->size);
     memory_free((void**) &element_string);

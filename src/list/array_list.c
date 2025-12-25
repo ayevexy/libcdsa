@@ -212,11 +212,10 @@ int array_list_size(ArrayList* array_list) {
 }
 
 void array_list_trim_to_size(ArrayList* array_list) {
-    if (array_list->size == 0) {
-        return;
-    }
-    array_list->elements = memory_realloc(array_list->elements, sizeof(void*) * array_list->size);
-    array_list->capacity = array_list->size;
+    constexpr int MIN_CAPACITY = 10;
+    const int new_capacity = (array_list->size < MIN_CAPACITY) ? MIN_CAPACITY : array_list->size;
+    array_list->elements = memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
+    array_list->capacity = new_capacity;
 }
 
 int array_list_capacity(ArrayList* array_list) {

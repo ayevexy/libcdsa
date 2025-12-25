@@ -432,6 +432,15 @@ The supported algorithms are: `BUBBLE_SORT`, `SELECTION_SORT`, `INSERTION_SORT`,
 
 ---
 
+To reverse an array list:
+
+```c++
+// list: [ 1, 2, 3, 4, 5 ]
+array_list_reverse(array_list); // [ 5, 4, 3, 2, 1 ]
+```
+
+---
+
 ### Searching
 
 To verify the presence of an element:

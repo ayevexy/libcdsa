@@ -80,6 +80,8 @@ void array_list_for_each(ArrayList*, Consumer);
 
 void array_list_sort(ArrayList*, Comparator, SortingAlgorithm);
 
+void array_list_reverse(ArrayList*);
+
 void array_list_clear(ArrayList*);
 
 bool array_list_contains(ArrayList*, void* element);

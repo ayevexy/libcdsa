@@ -569,6 +569,17 @@ void test_quick_sort_array_list() {
     sort_array_list_test_helper(QUICK_SORT);
 }
 
+void test_reverse_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_reverse(array_list);
+    // then
+    int reversed_values[] = { 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(reversed_values, array_list);
+}
+
 void test_clear_array_list() {
     // given
     int values[] = { 1, 2, 3 };
@@ -859,6 +870,7 @@ int main(void) {
     RUN_TEST(test_merge_sort_array_list);
     RUN_TEST(test_quick_sort_array_list);
 
+    RUN_TEST(test_reverse_array_list);
     RUN_TEST(test_clear_array_list);
 
     RUN_TEST(test_array_list_contains_element);

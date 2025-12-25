@@ -388,6 +388,14 @@ static void quick_sort(ArrayList* array_list, Comparator compare) {
     memory_free((void**) &stack);
 }
 
+void array_list_reverse(ArrayList* array_list) {
+    for (int i = 0; i < array_list->size / 2; i++) {
+        void* swap = array_list->elements[i];
+        array_list->elements[i] = array_list->elements[array_list->size - i - 1];
+        array_list->elements[array_list->size - i - 1] = swap;
+    }
+}
+
 void array_list_clear(ArrayList* array_list) {
     for (int i = 0; i < array_list->size; i++) {
         array_list->elements[i] = nullptr;

@@ -458,11 +458,13 @@ To retrieve the index of the last occurrence of an element:
 int last_index = array_list_last_index_of(array_list, &value); // -1 if not found
 ```
 
-These functions rely on the equals function provided in `ArrayListOptions`.
-By default, equality is based on memory address comparison, but this behavior can be customized:
+These functions rely on the `equals` function provided in `ArrayListOptions`. The library provides default
+`equals` implementations for the following data types: `char`, `int`, `long`, `float`, `double`, `void*` and `string`. The one
+defined in `DEFAULT_ARRAY_LIST_OPTIONS` compares the memory addresses of the elements. Use the `DEFAULT_EQUALS(T)` macro
+to choose between default `equals` implementations. To customize:
 
 ```c++
-bool int_equals(void* element_a, void* element_b) {
+bool my_equals(void* element_a, void* element_b) {
     return *(int*) element_a == *(int*) element_b;
 }
 ```

@@ -19,6 +19,8 @@ static bool has_next(void* array_list, void* index);
 
 static void* next(void* array_list, void* index);
 
+static void reset(void* index);
+
 static void bubble_sort(ArrayList*, Comparator);
 
 static void selection_sort(ArrayList*, Comparator);
@@ -248,7 +250,7 @@ bool array_list_is_empty(ArrayList* array_list) {
 Iterator* array_list_iterator(ArrayList* array_list) {
     int* index = memory_alloc(sizeof(int));
     *index = 0;
-    return iterator_new(array_list, index, &has_next, &next);
+    return iterator_new(array_list, index, &has_next, &next, &reset);
 }
 
 static bool has_next(void* array_list, void* index) {
@@ -260,6 +262,10 @@ static void* next(void* array_list, void* index) {
         return nullptr;
     }
     return ((ArrayList*) array_list)->elements[(*(int*) index)++];
+}
+
+static void reset(void* index) {
+    *(int*) index = 0;
 }
 
 void array_list_for_each(ArrayList* array_list, Consumer action) {

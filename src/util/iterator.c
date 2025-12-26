@@ -7,19 +7,22 @@ struct Iterator {
     void* internal_state;
     bool (*has_next)(void* iterable_structure, void* internal_state);
     void* (*next)(void* iterable_structure, void* internal_state);
+    void (*reset)(void* internal_state);
 };
 
 Iterator* iterator_new(
     void* iterable_structure,
     void* internal_state,
     bool (*has_next)(void* iterable_structure, void* internal_state),
-    void* (*next)(void* iterable_structure, void* internal_state)
+    void* (*next)(void* iterable_structure, void* internal_state),
+    void (*reset)(void* internal_state)
 ) {
     Iterator* iterator = memory_alloc(sizeof(Iterator));
     iterator->iterable_structure = iterable_structure;
     iterator->internal_state = internal_state;
     iterator->has_next = has_next;
     iterator->next = next;
+    iterator->reset = reset;
     return iterator;
 }
 
@@ -29,6 +32,10 @@ bool iterator_has_next(Iterator* iterator) {
 
 void *iterator_next(Iterator* iterator) {
     return iterator->next(iterator->iterable_structure, iterator->internal_state);
+}
+
+void iterator_reset(Iterator* iterator) {
+    iterator->reset(iterator->internal_state);
 }
 
 void iterator_delete(Iterator* iterator) {

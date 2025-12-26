@@ -205,8 +205,9 @@ void array_list_replace_all(ArrayList* array_list, UnaryOperator operator_apply)
 }
 
 void array_list_retain_all(ArrayList* array_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+
     for (int i = array_list->size - 1; i >= 0; i--) {
-        Iterator* iterator = collection_iterator(collection);
         bool found = false;
 
         while (iterator_has_next(iterator)) {
@@ -218,8 +219,9 @@ void array_list_retain_all(ArrayList* array_list, Collection collection) {
         if (!found) {
             array_list_remove(array_list, i);
         }
-        iterator_delete(iterator);
+        iterator_reset(iterator);
     }
+    iterator_delete(iterator);
 }
 
 int array_list_size(ArrayList* array_list) {

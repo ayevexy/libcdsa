@@ -398,6 +398,12 @@ while(iterator_has_next(iterator)) {
 }
 ```
 
+To reset an iterator to reuse it to loop again:
+
+```c++
+iterator_reset(iterator);
+```
+
 After use, delete the iterator to free memory:
 
 ```c++

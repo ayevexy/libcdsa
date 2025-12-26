@@ -141,9 +141,7 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
         fprintf(stderr, "Warning: array_list_swap index out of bounds\n");
         return;
     }
-    void* swap = array_list->elements[index_a];
-    array_list->elements[index_a] = array_list->elements[index_b];
-    array_list->elements[index_b] = swap;
+    swap(&array_list->elements[index_a], &array_list->elements[index_b]);
 }
 
 void array_list_remove(ArrayList* array_list, int index) {

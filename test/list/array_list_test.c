@@ -42,7 +42,7 @@ void setUp() {
 }
 
 void tearDown() {
-    array_list_delete(array_list);
+    array_list_delete(&array_list);
 }
 
 void test_create_array_list() {
@@ -73,7 +73,7 @@ void test_create_array_list_from_collection() {
     TEST_ASSERT_NOT_NULL(new_array_list);
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, new_array_list);
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_do_not_create_array_list_with_invalid_options_from_collection() {
@@ -87,6 +87,15 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
         .equals = nullptr,
         .to_string = nullptr
     });
+    // then
+    TEST_ASSERT_NULL(new_array_list);
+}
+
+void test_delete_array_list_set_it_to_null() {
+    // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // when
+    array_list_delete(&new_array_list);
     // then
     TEST_ASSERT_NULL(new_array_list);
 }
@@ -191,7 +200,7 @@ void test_add_all_elements_from_collection_to_array_list() {
     TEST_ASSERT_EQUAL(SIZE(values), array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     // clean up
-    array_list_delete(existing_array_list);
+    array_list_delete(&existing_array_list);
 }
 
 void test_add_all_elements_from_collection_to_array_list_at_index() {
@@ -214,7 +223,7 @@ void test_add_all_elements_from_collection_to_array_list_at_index() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 
     // clean up
-    array_list_delete(existing_array_list);
+    array_list_delete(&existing_array_list);
 }
 
 void test_get_element_from_array_list() {
@@ -392,7 +401,7 @@ void test_remove_all_elements_from_array_list_matching_collection() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_remove_elements_in_range_from_array_list() {
@@ -489,7 +498,7 @@ void test_retain_all_elements_from_collection_in_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_trim_array_list_capacity_to_match_size() {
@@ -665,7 +674,7 @@ void test_array_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_empty_array_list_contains_all_elements_of_empty_collection() {
@@ -676,7 +685,7 @@ void test_empty_array_list_contains_all_elements_of_empty_collection() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_array_list_does_not_contains_all_elements() {
@@ -695,7 +704,7 @@ void test_array_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_get_index_of_element_from_array_list() {
@@ -757,7 +766,7 @@ void test_clone_array_list() {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, copy_array_list);
     // clean up
-    array_list_delete(copy_array_list);
+    array_list_delete(&copy_array_list);
 }
 
 void test_create_sub_list_of_array_list() {
@@ -775,7 +784,7 @@ void test_create_sub_list_of_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(sub_list_values, new_array_list);
 
     // clean up
-    array_list_delete(new_array_list);
+    array_list_delete(&new_array_list);
 }
 
 void test_create_empty_sub_list_of_array_list() {
@@ -852,6 +861,7 @@ int main(void) {
     RUN_TEST(test_do_not_create_array_list_with_invalid_options);
     RUN_TEST(test_create_array_list_from_collection);
     RUN_TEST(test_do_not_create_array_list_with_invalid_options_from_collection);
+    RUN_TEST(test_delete_array_list_set_it_to_null);
 
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);

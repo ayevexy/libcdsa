@@ -26,7 +26,7 @@ ArrayList* array_list_new(ArrayListOptions);
 
 ArrayList* array_list_from(Collection, ArrayListOptions);
 
-void array_list_delete(ArrayList*);
+void array_list_delete(ArrayList**);
 
 void array_list_add(ArrayList*, int index, void* element);
 

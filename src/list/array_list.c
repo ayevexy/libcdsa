@@ -52,9 +52,15 @@ ArrayList* array_list_from(Collection collection, ArrayListOptions options) {
     return array_list;
 }
 
-void array_list_delete(ArrayList* array_list) {
+void array_list_delete(ArrayList** array_list_pointer) {
+    if (!*array_list_pointer) {
+        fprintf(stderr, "Warning: array_list_delete null pointer\n");
+        return;
+    }
+    ArrayList* array_list = *array_list_pointer;
     memory_free((void**) &array_list->elements);
     memory_free((void**) &array_list);
+    *array_list_pointer = nullptr;
 }
 
 void array_list_add(ArrayList* array_list, int index, void* element) {

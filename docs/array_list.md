@@ -117,10 +117,15 @@ See [To Collection](#to-collection) for more details about the `Collection` type
 Once you are done using an array list, free its allocated memory:
 
 ```c++
-array_list_delete(array_list);
+array_list_delete(&array_list);
 ```
 
-This safely releases the memory used back to the operating system.
+This safely releases the memory used back to the operating system and set the array list pointer to null.
+If a null pointer is provided, the program will continue running normally and the following message will be printed to `stderr`:
+
+```c++
+array_list_delete(&array_list); // Warning: array_list_delete null pointer
+```
 
 ---
 

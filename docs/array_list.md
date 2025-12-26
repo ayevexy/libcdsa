@@ -220,6 +220,13 @@ int new_value = 20;
 array_list_set(array_list, 0, &new_value); // [ 20, 2, 3, 4 ]
 ```
 
+To swap two elements given their indexes:
+
+```c++
+// list: [ 1, 2, 3, 4, 5 ]
+array_list_swap(array_list, 1, 3); // [ 1, 4, 3, 2, 5 ]
+```
+
 ---
 
 ### Removing Elements

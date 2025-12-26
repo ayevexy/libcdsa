@@ -46,6 +46,8 @@ void* array_list_get_last(ArrayList*);
 
 void array_list_set(ArrayList*, int index, void* element);
 
+void array_list_swap(ArrayList*, int index_a, int index_b);
+
 void array_list_remove(ArrayList*, int index);
 
 void array_list_remove_first(ArrayList*);

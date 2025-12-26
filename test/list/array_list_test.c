@@ -277,6 +277,43 @@ void test_set_element_of_array_list_negative_index_warns_client() {
     set_index_out_of_bounds_test_helper(-1);
 }
 
+void test_swap_elements_of_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_swap(array_list, 1, 3);
+    // then
+    int swaped_values[] = { 1, 4, 3, 2, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(swaped_values, array_list);
+}
+
+static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_swap(array_list, index_a, index_b);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
+}
+
+void test_swap_elements_of_array_list_index_a_above_bounds_warns_client() {
+    swap_elements_of_array_list_index_out_of_bounds_test_helper(10, 3);
+}
+
+void test_swap_elements_of_array_list_negative_index_a_warns_client() {
+    swap_elements_of_array_list_index_out_of_bounds_test_helper(-1, 3);
+}
+
+void test_swap_elements_of_array_list_index_b_above_bounds_warns_client() {
+    swap_elements_of_array_list_index_out_of_bounds_test_helper(3, 10);
+}
+
+void test_swap_elements_of_array_list_negative_index_b_warns_client() {
+    swap_elements_of_array_list_index_out_of_bounds_test_helper(3, -1);
+}
+
 void test_remove_element_from_array_list() {
     // given
     array_list_add(array_list, &(int){10});
@@ -836,6 +873,12 @@ int main(void) {
     RUN_TEST(test_set_element_of_array_list);
     RUN_TEST(test_set_element_of_array_list_index_above_bounds_warns_client);
     RUN_TEST(test_set_element_of_array_list_negative_index_warns_client);
+
+    RUN_TEST(test_swap_elements_of_array_list);
+    RUN_TEST(test_swap_elements_of_array_list_index_a_above_bounds_warns_client);
+    RUN_TEST(test_swap_elements_of_array_list_negative_index_a_warns_client);
+    RUN_TEST(test_swap_elements_of_array_list_index_b_above_bounds_warns_client);
+    RUN_TEST(test_swap_elements_of_array_list_negative_index_b_warns_client);
 
     RUN_TEST(test_remove_element_from_array_list);
     RUN_TEST(test_remove_element_from_array_list_shifts_its_remaining_elements);

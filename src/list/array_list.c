@@ -15,6 +15,8 @@ struct ArrayList {
 
 static void grow(ArrayList*);
 
+static Iterator* iterator(ArrayList*);
+
 static bool has_next(void* array_list, void* index);
 
 static void* next(void* array_list, void* index);
@@ -29,7 +31,13 @@ static void insertion_sort(ArrayList*, Comparator);
 
 static void merge_sort(ArrayList*, int, int, Comparator);
 
+static void merge(void**, int, int, int, Comparator);
+
 static void quick_sort(ArrayList*, int, int, Comparator);
+
+static int partition(void**, int, int, Comparator);
+
+static void swap(void** a, void** b);
 
 ArrayList* array_list_new(ArrayListOptions options) {
     if (options.initial_capacity < 10 || options.grow_factor <= 1.1 || !options.equals || !options.to_string) {
@@ -78,12 +86,6 @@ void array_list_add(ArrayList* array_list, int index, void* element) {
     }
     array_list->elements[index] = element;
     array_list->size++;
-}
-
-static void grow(ArrayList* array_list) {
-    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
-    array_list->elements = memory_realloc(array_list->elements, new_capacity * sizeof(void*));
-    array_list->capacity = new_capacity;
 }
 
 void array_list_add_first(ArrayList* array_list, void* element) {
@@ -250,24 +252,7 @@ bool array_list_is_empty(ArrayList* array_list) {
 }
 
 Iterator* array_list_iterator(ArrayList* array_list) {
-    int* index = memory_alloc(sizeof(int));
-    *index = 0;
-    return iterator_new(array_list, index, &has_next, &next, &reset);
-}
-
-static bool has_next(void* array_list, void* index) {
-    return *(int*) index < ((ArrayList*) array_list)->size;
-}
-
-static void* next(void* array_list, void* index) {
-    if (*(int*) index >= ((ArrayList*) array_list)->size) {
-        return nullptr;
-    }
-    return ((ArrayList*) array_list)->elements[(*(int*) index)++];
-}
-
-static void reset(void* index) {
-    *(int*) index = 0;
+   return iterator(array_list);
 }
 
 void array_list_for_each(ArrayList* array_list, Consumer action) {
@@ -286,119 +271,6 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
         case SELECTION_SORT: { selection_sort(array_list, comparator); return; }
         case MERGE_SORT: { merge_sort(array_list, 0, array_list->size - 1, comparator); return; }
         case QUICK_SORT: { quick_sort(array_list, 0, array_list->size - 1, comparator); }
-    }
-}
-
-static void swap(void** a, void** b) {
-    void* temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-static void bubble_sort(ArrayList* array_list, Comparator compare) {
-    for (int i = 0; i < array_list->size - 1; i++) {
-        for (int j = 0; j < array_list->size - i - 1; j++) {
-            if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
-                swap(&array_list->elements[j], &array_list->elements[j + 1]);
-            }
-        }
-    }
-}
-
-static void selection_sort(ArrayList* array_list, Comparator compare) {
-    for (int i = 0; i < array_list->size - 1; i++) {
-        int min_index = i;
-        for (int j = i + 1; j < array_list->size; j++) {
-            if (compare(array_list->elements[j], array_list->elements[min_index]) < 0) {
-                min_index = j;
-            }
-        }
-        swap(&array_list->elements[min_index], &array_list->elements[i]);
-    }
-}
-
-static void insertion_sort(ArrayList* array_list, Comparator compare) {
-    for (int i = 1; i < array_list->size; i++) {
-        void* element = array_list->elements[i];
-        int j = i - 1;
-        while (j >= 0 && compare(array_list->elements[j], element) > 0) {
-            array_list->elements[j + 1] = array_list->elements[j];
-            j = j - 1;
-        }
-        array_list->elements[j + 1] = element;
-    }
-}
-
-static void merge(ArrayList* array_list, int start_index, int middle_index, int end_index, Comparator compare) {
-    const int LEFT_ELEMENTS_SIZE = middle_index - start_index + 1;
-    const int RIGHT_ELEMENTS_SIZE = end_index - middle_index;
-
-    void* left_elements[LEFT_ELEMENTS_SIZE];
-    void* right_elements[RIGHT_ELEMENTS_SIZE];
-
-    for (int i = 0; i < LEFT_ELEMENTS_SIZE; i++) {
-        left_elements[i] = array_list->elements[start_index + i];
-    }
-    for (int i = 0; i < RIGHT_ELEMENTS_SIZE; i++) {
-        right_elements[i] = array_list->elements[middle_index + 1 + i];
-    }
-
-    int left_elements_index = 0, right_elements_index = 0, index = start_index;
-
-    while (left_elements_index < LEFT_ELEMENTS_SIZE && right_elements_index < RIGHT_ELEMENTS_SIZE) {
-        if (compare(left_elements[left_elements_index], right_elements[right_elements_index]) <= 0) {
-            array_list->elements[index] = left_elements[left_elements_index];
-            left_elements_index++;
-        } else {
-            array_list->elements[index] = right_elements[right_elements_index];
-            right_elements_index++;
-        }
-        index++;
-    }
-
-    while (left_elements_index < LEFT_ELEMENTS_SIZE) {
-        array_list->elements[index] = left_elements[left_elements_index];
-        left_elements_index++;
-        index++;
-    }
-
-    while (right_elements_index < RIGHT_ELEMENTS_SIZE) {
-        array_list->elements[index] = right_elements[right_elements_index];
-        right_elements_index++;
-        index++;
-    }
-}
-
-static void merge_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
-    if (start_index < end_index) {
-        const int middle_index = start_index + (end_index - start_index) / 2;
-
-        merge_sort(array_list, start_index, middle_index, compare);
-        merge_sort(array_list, middle_index + 1, end_index, compare);
-
-        merge(array_list, start_index, middle_index, end_index, compare);
-    }
-}
-
-static int partition(void** elements, int start_index, int end_index, Comparator compare) {
-    int pivot = start_index - 1;
-
-    for (int i = start_index; i < end_index; i++) {
-        if (compare(elements[i], elements[end_index]) <= 0) {
-            pivot++;
-            swap(&elements[i], &elements[pivot]);
-        }
-    }
-    swap(&elements[pivot + 1], &elements[end_index]);
-    return pivot + 1;
-}
-
-static void quick_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
-    if (start_index < end_index) {
-        const int pivot = partition(array_list->elements, start_index, end_index, compare);
-
-        quick_sort(array_list, start_index, pivot - 1, compare);
-        quick_sort(array_list, pivot + 1, end_index, compare);
     }
 }
 
@@ -540,4 +412,144 @@ char* array_list_to_string(ArrayList* array_list) {
     string = memory_realloc(string, strlen(string) + 3);
     strcat(string, " ]");
     return string;
+}
+
+static void grow(ArrayList* array_list) {
+    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+    array_list->elements = memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    array_list->capacity = new_capacity;
+}
+
+static Iterator* iterator(ArrayList* array_list) {
+    int* index = memory_alloc(sizeof(int));
+    *index = 0;
+    return iterator_new(array_list, index, &has_next, &next, &reset);
+}
+
+static bool has_next(void* array_list, void* index) {
+    return *(int*) index < ((ArrayList*) array_list)->size;
+}
+
+static void* next(void* array_list, void* index) {
+    if (*(int*) index >= ((ArrayList*) array_list)->size) {
+        return nullptr;
+    }
+    return ((ArrayList*) array_list)->elements[(*(int*) index)++];
+}
+
+static void reset(void* index) {
+    *(int*) index = 0;
+}
+
+static void bubble_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 0; i < array_list->size - 1; i++) {
+        for (int j = 0; j < array_list->size - i - 1; j++) {
+            if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
+                swap(&array_list->elements[j], &array_list->elements[j + 1]);
+            }
+        }
+    }
+}
+
+static void selection_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 0; i < array_list->size - 1; i++) {
+        int min_index = i;
+        for (int j = i + 1; j < array_list->size; j++) {
+            if (compare(array_list->elements[j], array_list->elements[min_index]) < 0) {
+                min_index = j;
+            }
+        }
+        swap(&array_list->elements[min_index], &array_list->elements[i]);
+    }
+}
+
+static void insertion_sort(ArrayList* array_list, Comparator compare) {
+    for (int i = 1; i < array_list->size; i++) {
+        void* element = array_list->elements[i];
+        int j = i - 1;
+        while (j >= 0 && compare(array_list->elements[j], element) > 0) {
+            array_list->elements[j + 1] = array_list->elements[j];
+            j = j - 1;
+        }
+        array_list->elements[j + 1] = element;
+    }
+}
+
+static void merge_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
+    if (start_index < end_index) {
+        const int middle_index = start_index + (end_index - start_index) / 2;
+
+        merge_sort(array_list, start_index, middle_index, compare);
+        merge_sort(array_list, middle_index + 1, end_index, compare);
+
+        merge(array_list->elements, start_index, middle_index, end_index, compare);
+    }
+}
+
+static void merge(void** elements, int start_index, int middle_index, int end_index, Comparator compare) {
+    const int LEFT_ELEMENTS_SIZE = middle_index - start_index + 1;
+    const int RIGHT_ELEMENTS_SIZE = end_index - middle_index;
+
+    void* left_elements[LEFT_ELEMENTS_SIZE];
+    void* right_elements[RIGHT_ELEMENTS_SIZE];
+
+    for (int i = 0; i < LEFT_ELEMENTS_SIZE; i++) {
+        left_elements[i] = elements[start_index + i];
+    }
+    for (int i = 0; i < RIGHT_ELEMENTS_SIZE; i++) {
+        right_elements[i] = elements[middle_index + 1 + i];
+    }
+
+    int left_elements_index = 0, right_elements_index = 0, index = start_index;
+
+    while (left_elements_index < LEFT_ELEMENTS_SIZE && right_elements_index < RIGHT_ELEMENTS_SIZE) {
+        if (compare(left_elements[left_elements_index], right_elements[right_elements_index]) <= 0) {
+            elements[index] = left_elements[left_elements_index];
+            left_elements_index++;
+        } else {
+            elements[index] = right_elements[right_elements_index];
+            right_elements_index++;
+        }
+        index++;
+    }
+
+    while (left_elements_index < LEFT_ELEMENTS_SIZE) {
+        elements[index] = left_elements[left_elements_index];
+        left_elements_index++;
+        index++;
+    }
+
+    while (right_elements_index < RIGHT_ELEMENTS_SIZE) {
+        elements[index] = right_elements[right_elements_index];
+        right_elements_index++;
+        index++;
+    }
+}
+
+static void quick_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
+    if (start_index < end_index) {
+        const int pivot = partition(array_list->elements, start_index, end_index, compare);
+
+        quick_sort(array_list, start_index, pivot - 1, compare);
+        quick_sort(array_list, pivot + 1, end_index, compare);
+    }
+}
+
+static int partition(void** elements, int start_index, int end_index, Comparator compare) {
+    int pivot = start_index - 1;
+
+    for (int i = start_index; i < end_index; i++) {
+        if (compare(elements[i], elements[end_index]) <= 0) {
+            pivot++;
+            swap(&elements[i], &elements[pivot]);
+        }
+    }
+    swap(&elements[pivot + 1], &elements[end_index]);
+    return pivot + 1;
+}
+
+static void swap(void** a, void** b) {
+    void* temp = *a;
+    *a = *b;
+    *b = temp;
 }

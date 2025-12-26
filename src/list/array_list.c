@@ -263,6 +263,9 @@ void array_list_for_each(ArrayList* array_list, Consumer action) {
 }
 
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
+    if (array_list->size < 2) {
+        return;
+    }
     switch (algorithm) {
         case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
         case INSERTION_SORT: { insertion_sort(array_list, comparator); return; }

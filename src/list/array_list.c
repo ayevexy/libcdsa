@@ -510,21 +510,21 @@ void** array_list_to_array(ArrayList* array_list) {
 }
 
 char* array_list_to_string(ArrayList* array_list) {
+    char* string = memory_alloc(sizeof(char) * 4);
+    string[0] = '\0'; // initialize string to clear trash data
+
     if (array_list->size == 0) {
-        char* string = memory_alloc(sizeof(char) * 4);
-        sprintf(string, "[]");
+        strcat(string, "[]");
         return string;
     }
 
-    char* element_string = array_list->to_string(array_list->elements[0]);
-    char* string = memory_alloc(5 + (strlen(element_string) + 2) * array_list->size);
-    memory_free((void**) &element_string);
-
-    string[0] = '\0'; // initialize string to clear trash data
     strcat(string, "[ ");
 
     for (int i = 0; i < array_list->size; i++) {
-        element_string = array_list->to_string(array_list->elements[i]);
+        char* element_string = array_list->to_string(array_list->elements[i]);
+        const int extra_space = i < array_list->size - 1 ? 2 : 0;
+
+        string = memory_realloc(string, strlen(string) + strlen(element_string) + extra_space + 1);
         strcat(string, element_string);
 
         if (i < array_list->size - 1) {
@@ -533,6 +533,7 @@ char* array_list_to_string(ArrayList* array_list) {
         memory_free((void**) &element_string);
     }
 
+    string = memory_realloc(string, strlen(string) + 3);
     strcat(string, " ]");
     return string;
 }

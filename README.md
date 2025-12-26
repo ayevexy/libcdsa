@@ -103,7 +103,7 @@ int main() {
     int values[] = { 1, 2, 3, 4 };
     
     for (int i = 0; i < 4; i++) {
-        array_list_add(array_list, &values[i]);
+        array_list_add_last(array_list, &values[i]);
     }
     
     printf("%s\n", array_list_to_string(array_list)); // [ 1, 2, 3, 4 ]

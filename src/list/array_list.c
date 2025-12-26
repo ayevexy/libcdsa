@@ -47,7 +47,7 @@ ArrayList* array_list_new(ArrayListOptions options) {
 ArrayList* array_list_from(Collection collection, ArrayListOptions options) {
     ArrayList* array_list = array_list_new(options);
     if (array_list) {
-        array_list_add_all(array_list, collection);
+        array_list_add_all_last(array_list, collection);
     }
     return array_list;
 }
@@ -57,26 +57,9 @@ void array_list_delete(ArrayList* array_list) {
     memory_free((void**) &array_list);
 }
 
-void array_list_add(ArrayList* array_list, void* element) {
-    if (array_list->size >= array_list->capacity) {
-        grow(array_list);
-    }
-    array_list->elements[array_list->size++] = element;
-}
-
-static void grow(ArrayList* array_list) {
-    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
-    array_list->elements = memory_realloc(array_list->elements, new_capacity * sizeof(void*));
-    array_list->capacity = new_capacity;
-}
-
-void array_list_add_first(ArrayList* array_list, void* element) {
-    array_list_add_at(array_list, 0, element);
-}
-
-void array_list_add_at(ArrayList* array_list, int index, void* element) {
+void array_list_add(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index > array_list->size) {
-        fprintf(stderr, "Warning: array_list_add_at index %d out of bounds\n", index);
+        fprintf(stderr, "Warning: array_list_add index %d out of bounds\n", index);
         return;
     }
     if (array_list->size >= array_list->capacity) {
@@ -89,20 +72,34 @@ void array_list_add_at(ArrayList* array_list, int index, void* element) {
     array_list->size++;
 }
 
-void array_list_add_all(ArrayList* array_list, Collection collection) {
+static void grow(ArrayList* array_list) {
+    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+    array_list->elements = memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    array_list->capacity = new_capacity;
+}
+
+void array_list_add_first(ArrayList* array_list, void* element) {
+    array_list_add(array_list, 0, element);
+}
+
+void array_list_add_last(ArrayList* array_list, void* element) {
+    array_list_add(array_list, array_list->size, element);
+}
+
+void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
     while (iterator_has_next(iterator)) {
-        array_list_add(array_list, iterator_next(iterator));
+        array_list_add(array_list, index++, iterator_next(iterator));
     }
     iterator_delete(iterator);
 }
 
-void array_list_add_all_at(ArrayList* array_list, int index, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
-    while (iterator_has_next(iterator)) {
-        array_list_add_at(array_list, index++, iterator_next(iterator));
-    }
-    iterator_delete(iterator);
+void array_list_add_all_first(ArrayList* array_list, Collection collection) {
+    array_list_add_all(array_list, 0, collection);
+}
+
+void array_list_add_all_last(ArrayList* array_list, Collection collection) {
+    array_list_add_all(array_list, array_list->size, collection);
 }
 
 void* array_list_get(ArrayList* array_list, int index) {
@@ -492,7 +489,7 @@ ArrayList* array_list_sub_list(ArrayList* array_list, int start_index, int end_i
         .to_string = array_list->to_string
     });
     for (int i = start_index; i < end_index; i++) {
-        array_list_add(new_array_list, array_list->elements[i]);
+        array_list_add_last(new_array_list, array_list->elements[i]);
     }
     return new_array_list;
 }

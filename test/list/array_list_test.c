@@ -13,9 +13,9 @@ FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
-#define POPULATE_ARRAY_LIST(array_list, array)      \
-    for (int i = 0; i < SIZE(array); i++) {         \
-        array_list_add(array_list, &array[i]);      \
+#define POPULATE_ARRAY_LIST(array_list, array)          \
+    for (int i = 0; i < SIZE(array); i++) {             \
+        array_list_add_last(array_list, &array[i]);     \
 }
 
 #define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(array, array_list)                \
@@ -95,7 +95,7 @@ void test_add_element_to_array_list() {
     // given
     int value = 10;
     // when
-    array_list_add(array_list, &value);
+    array_list_add_last(array_list, &value);
     // then
     TEST_ASSERT_EQUAL(value, *(int*) array_list_get(array_list, 0));
 }
@@ -125,7 +125,7 @@ void test_add_element_at_index_to_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add_at(array_list, 2, &(int){10});
+    array_list_add(array_list, 2, &(int){10});
     // then
     TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
     // and
@@ -139,7 +139,7 @@ void test_add_element_at_index_to_array_list_index_equals_size() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add_at(array_list, 5, &(int){10});
+    array_list_add(array_list, 5, &(int){10});
     // then
     TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
     // and
@@ -152,7 +152,7 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add_at(array_list, 7, &(int){100});
+    array_list_add(array_list, 7, &(int){100});
     // then
     TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
@@ -163,9 +163,9 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
 
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Warning: array_list_add_at index %d out of bounds\n";
+    const char* message = "Warning: array_list_add index %d out of bounds\n";
     // when
-    array_list_add_at(array_list, index, &(int){10});
+    array_list_add(array_list, index, &(int){10});
     // then
     TEST_ASSERT_EQUAL(0, array_list_size(array_list));
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
@@ -186,7 +186,7 @@ void test_add_all_elements_from_collection_to_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(existing_array_list, values);
     // when
-    array_list_add_all(array_list, array_list_to_collection(existing_array_list));
+    array_list_add_all_last(array_list, array_list_to_collection(existing_array_list));
     // then
     TEST_ASSERT_EQUAL(SIZE(values), array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
@@ -205,7 +205,7 @@ void test_add_all_elements_from_collection_to_array_list_at_index() {
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
 
     // when
-    array_list_add_all_at(array_list, 2, array_list_to_collection(existing_array_list));
+    array_list_add_all(array_list, 2, array_list_to_collection(existing_array_list));
 
     // then
     TEST_ASSERT_EQUAL(SIZE(values) + SIZE(other_values), array_list_size(array_list));
@@ -220,7 +220,7 @@ void test_add_all_elements_from_collection_to_array_list_at_index() {
 void test_get_element_from_array_list() {
     // given
     int value = 10;
-    array_list_add(array_list, &value);
+    array_list_add_last(array_list, &value);
     // when
     int actual_value = *(int*) array_list_get(array_list, 0);
     // then
@@ -230,7 +230,7 @@ void test_get_element_from_array_list() {
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
     const char* message = "Warning: array_list_get index %d out of bounds\n";
-    array_list_add(array_list, &(int){10});
+    array_list_add_last(array_list, &(int){10});
     // when
     void* element = array_list_get(array_list, index);
     // then
@@ -250,7 +250,7 @@ void test_get_element_from_array_list_negative_index_warns_client() {
 void test_set_element_of_array_list() {
     // given
     int value = 10;
-    array_list_add(array_list, &value);
+    array_list_add_last(array_list, &value);
     // when
     int new_value = 20;
     array_list_set(array_list, 0, &new_value);
@@ -316,7 +316,7 @@ void test_swap_elements_of_array_list_negative_index_b_warns_client() {
 
 void test_remove_element_from_array_list() {
     // given
-    array_list_add(array_list, &(int){10});
+    array_list_add_last(array_list, &(int){10});
     // when
     array_list_remove(array_list, 0);
     // then
@@ -357,7 +357,7 @@ void test_remove_element_from_array_list_negative_index_warns_client() {
 void test_remove_element_from_array_list_by_reference() {
     // given
     int value = 10;
-    array_list_add(array_list, &value);
+    array_list_add_last(array_list, &value);
     // when
     array_list_remove_element(array_list, &value);
     // then
@@ -533,7 +533,7 @@ void test_array_list_is_empty() {
 
 void test_array_list_is_not_empty() {
     // given
-    array_list_add(array_list, &(int){10});
+    array_list_add_last(array_list, &(int){10});
     // when
     bool empty = array_list_is_empty(array_list);
     // then
@@ -633,7 +633,7 @@ void test_clear_array_list() {
 void test_array_list_contains_element() {
     // given
     int value = 10;
-    array_list_add(array_list, &value);
+    array_list_add_last(array_list, &value);
     // when
     bool contains = array_list_contains(array_list, &value);
     // then

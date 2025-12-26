@@ -67,7 +67,7 @@ greater than the array list size, but the program will continue running normally
 a warning will be printed to `stderr`:
 
 ```c++
-array_list_add_at(array_list, &value, -1); // "Warning: array_list_add_at index -1 out of bounds
+array_list_add(array_list, -1, &value); // "Warning: array_list_add index -1 out of bounds
 ```
 
 ---
@@ -131,7 +131,7 @@ To append an element to the end of the list:
 ```c++
 // list: [ 1, 2, 3, 4 ]
 int value = 8;
-array_list_add(array_list, &value); // [ 1, 2, 3, 4, 8 ]
+array_list_add_last(array_list, &value); // [ 1, 2, 3, 4, 8 ]
 ```
 
 To insert an element at a specific index:
@@ -139,7 +139,7 @@ To insert an element at a specific index:
 ```c++
 // list: [ 1, 2, 3, 4 ]
 int value = 8;
-array_list_add_at(array_list, &value, 2); // [1, 2, 8, 3, 4 ]
+array_list_add(array_list, 2, &value); // [1, 2, 8, 3, 4 ]
 ```
 
 To insert an element at the beginning of the list:
@@ -154,11 +154,11 @@ array_list_add_first(array_list, &value); // [ 8, 1, 2, 3, 4 ]
 
 ### Adding Multiple Elements
 
-To add all elements from a `Collection`:
+To insert all elements from a `Collection` to the beginning of the list:
 
 ```c++
 // collection: [ 1, 2, 3, 4 ]
-array_list_add_all(array_list, collection); // [ 1, 2, 3, 4 ]
+array_list_add_all_first(array_list, collection); // [ 1, 2, 3, 4 ]
 ```
 
 To insert all elements from a `Collection` starting at a specific index:
@@ -166,7 +166,15 @@ To insert all elements from a `Collection` starting at a specific index:
 ```c++
 // list: [ 1, 2, 3, 4 ]
 // collection: [ 5, 6 ]
-array_list_add_all_at(array_list, 2, collection); // [ 1, 2, 5, 6, 3, 4]
+array_list_add_all(array_list, 2, collection); // [ 1, 2, 5, 6, 3, 4]
+```
+
+To insert all elements from a `Collection` to the end of the list:
+
+```c++
+// list: [ 1, 2, 3, 4 ]
+// collection: [ 5, 6 ]
+array_list_add_all_last(array_list, collection); // [ 1, 2, 3, 4, 5, 6 ]
 ```
 
 ---

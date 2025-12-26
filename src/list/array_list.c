@@ -144,23 +144,25 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
 }
 
-void array_list_remove(ArrayList* array_list, int index) {
+void* array_list_remove(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_remove index %d out of bounds\n", index);
-        return;
+        return nullptr;
     }
+    void* element = array_list->elements[index];
     for (int i = index; i < array_list->size - 1; i++) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
     array_list->size--;
+    return element;
 }
 
-void array_list_remove_first(ArrayList* array_list) {
-    array_list_remove(array_list, 0);
+void* array_list_remove_first(ArrayList* array_list) {
+    return array_list_remove(array_list, 0);
 }
 
-void array_list_remove_last(ArrayList* array_list) {
-    array_list_remove(array_list, array_list->size - 1);
+void* array_list_remove_last(ArrayList* array_list) {
+    return array_list_remove(array_list, array_list->size - 1);
 }
 
 void array_list_remove_element(ArrayList* array_list, void* element) {

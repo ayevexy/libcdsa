@@ -325,10 +325,12 @@ void test_swap_elements_of_array_list_negative_index_b_warns_client() {
 
 void test_remove_element_from_array_list() {
     // given
-    array_list_add_last(array_list, &(int){10});
+    int value = 10;
+    array_list_add_last(array_list, &value);
     // when
-    array_list_remove(array_list, 0);
+    int* element = array_list_remove(array_list, 0);
     // then
+    TEST_ASSERT_EQUAL(value, *element);
     TEST_ASSERT_EQUAL(0, array_list_size(array_list));
     TEST_ASSERT_NULL(array_list_get(array_list, 0));
 }

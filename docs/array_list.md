@@ -265,6 +265,10 @@ To remove the first element of the list:
 array_list_remove_first(array_list); // [ 2, 3, 4 ]
 ```
 
+These 3 operations also returns the removed element.
+
+---
+
 To remove an element by its address:
 
 ```c++

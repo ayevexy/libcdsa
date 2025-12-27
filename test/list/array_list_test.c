@@ -739,6 +739,18 @@ void test_clear_array_list() {
     TEST_ASSERT_NULL(array_list_get(array_list, 2));
 }
 
+void test_clear_array_list_data() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_clear_data(array_list, delete_data);
+    // then
+    int deleted_values[] = { 0, 0, 0, 0, 0 };
+    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
+    TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
+}
+
 void test_array_list_contains_element() {
     // given
     int value = 10;
@@ -1029,6 +1041,7 @@ int main(void) {
 
     RUN_TEST(test_reverse_array_list);
     RUN_TEST(test_clear_array_list);
+    RUN_TEST(test_clear_array_list_data);
 
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);

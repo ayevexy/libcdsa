@@ -300,6 +300,21 @@ To clear the list, removing all elements:
 array_list_clear(array_list); // [] 
 ```
 
+To clear the list, removing all elements and its data via a custom callback:
+
+```c++
+// list: [ 1, 2, 3, 4 ]
+array_list_clear_data(array_list, delete_data); // [] 
+```
+
+Where `delete_data` is a function like the following:
+
+```c++
+void delete_data(void* element) {
+    free(element);
+}
+```
+
 To remove all elements present in a given `Collection`:
 
 ```c++

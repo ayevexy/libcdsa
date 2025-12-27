@@ -90,6 +90,8 @@ void array_list_reverse(ArrayList*);
 
 void array_list_clear(ArrayList*);
 
+void array_list_clear_data(ArrayList*, void (*delete)(void*));
+
 bool array_list_contains(ArrayList*, void* element);
 
 bool array_list_contains_all(ArrayList*, Collection);

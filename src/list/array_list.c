@@ -77,7 +77,18 @@ void array_list_delete(ArrayList** array_list_pointer) {
 
 void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     if (!*array_list_pointer) {
-        fprintf(stderr, "Exception at array_list_destroy(%p) null pointer\n", nullptr);
+        fprintf(stderr, "Warning: array_list_destroy null pointer\n");
+        return;
+    }
+    for (int i = 0; i < (*array_list_pointer)->size; i++) {
+        delete((*array_list_pointer)->elements[i]);
+    }
+    array_list_delete(array_list_pointer);
+}
+
+void array_list_add(ArrayList* array_list, int index, void* element) {
+    if (index < 0 || index > array_list->size) {
+        fprintf(stderr, "Warning: array_list_add index %d out of bounds\n", index);
         return;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {

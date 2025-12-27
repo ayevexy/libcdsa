@@ -30,6 +30,8 @@ void array_list_delete(ArrayList**);
 
 void array_list_destroy(ArrayList**, void (*delete)(void*));
 
+void array_list_add(ArrayList*, int index, void* element);
+
 bool array_list_add(ArrayList*, int index, const void* element);
 
 void array_list_add_first(ArrayList*, const void* element);

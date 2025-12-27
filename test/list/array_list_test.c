@@ -135,8 +135,21 @@ void test_add_element_at_index_to_array_list() {
     bool added = array_list_add(array_list, 2, &(int){10});
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
-    TEST_ASSERT_TRUE(added);
+}
+
+// Edge case
+void test_add_element_at_index_to_array_list_index_equals_size() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_add(array_list, 5, &(int){10});
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5, 10 };
+    TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
 
 void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
@@ -146,7 +159,8 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
     // when
     array_list_add(array_list, 5, &(int){100});
     // then
-    int new_values[] = { 1, 2, 3, 4, 5, 100, 6, 7, 8, 9, 10 };
+    int new_values[] = { 1, 2, 3, 4, 5, 6, 7, 100, 8, 9, 10 };
+    TEST_ASSERT_EQUAL(SIZE(values) + 1, array_list_size(array_list));
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
@@ -208,6 +222,7 @@ void test_add_all_elements_from_collection_at_index_in_array_list() {
 
     // then
     int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(SIZE(values) + SIZE(other_values), array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
     TEST_ASSERT_TRUE(added);
 
@@ -474,6 +489,7 @@ void test_remove_all_elements_from_array_list_matching_collection() {
 
     // then
     int new_values[] = { 1, 5 };
+    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
 
@@ -489,6 +505,7 @@ void test_remove_elements_in_range_from_array_list() {
     int count = array_list_remove_range(array_list, 1, 4);
     // then
     int new_values[] = { 1, 5 };
+    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
 }
@@ -529,6 +546,7 @@ void test_remove_elements_from_array_list_matching_predicate() {
     int count = array_list_remove_if(array_list, odd_predicate);
     // then
     int new_values[] = { 2, 4 };
+    TEST_ASSERT_EQUAL(2, array_list_size(array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
     TEST_ASSERT_EQUAL(4, count);
 }
@@ -973,6 +991,7 @@ void test_create_sub_list_of_array_list() {
 
     // then
     int sub_list_values[] = { 2, 3, 4 };
+    TEST_ASSERT_EQUAL(3, array_list_size(new_array_list));
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(sub_list_values, new_array_list);
 
     // clean up

@@ -290,12 +290,7 @@ void array_list_clear(ArrayList* array_list) {
 }
 
 bool array_list_contains(ArrayList* array_list, void* element) {
-    for (int i = 0; i < array_list->size; i++) {
-        if (array_list->equals(array_list->elements[i], element)) {
-            return true;
-        }
-    }
-    return false;
+    return array_list_index_of(array_list, element) != -1;
 }
 
 bool array_list_contains_all(ArrayList* array_list, Collection collection) {

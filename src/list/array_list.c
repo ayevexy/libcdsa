@@ -399,7 +399,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     return contains;
 }
 
-int array_list_occurrences_of(const ArrayList* array_list, const void* element) {
+int array_list_occurrences_of(ArrayList* array_list, void* element) {
     int count = 0;
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {
@@ -409,7 +409,7 @@ int array_list_occurrences_of(const ArrayList* array_list, const void* element) 
     return count;
 }
 
-int array_list_index_of(const ArrayList* array_list, const void* element) {
+int array_list_index_of(ArrayList* array_list, void* element) {
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {
             return i;

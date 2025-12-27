@@ -96,7 +96,9 @@ bool array_list_contains(ArrayList*, void* element);
 
 void* array_list_find(const ArrayList*, Predicate);
 
-void* array_list_find_last(const ArrayList*, Predicate);
+int array_list_occurrences_of(ArrayList*, void* element);
+
+int array_list_index_of(ArrayList*, void* element);
 
 int array_list_index_where(const ArrayList*, Predicate);
 

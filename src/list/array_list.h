@@ -92,6 +92,8 @@ void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));
 
+bool array_list_contains(ArrayList*, void* element);
+
 void* array_list_find(const ArrayList*, Predicate);
 
 void* array_list_find_last(const ArrayList*, Predicate);

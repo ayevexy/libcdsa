@@ -140,14 +140,15 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
 
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
+    const char* message = "Warning: array_list_add index %d out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
     bool added = array_list_add(array_list, index, &(int){10});
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
-    TEST_ASSERT_FALSE(added);
-    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_add(%p, %d) index out of bounds");
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 void test_add_element_at_index_to_array_list_index_above_bounds_warns_client() {

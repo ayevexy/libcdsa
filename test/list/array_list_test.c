@@ -252,12 +252,12 @@ void test_add_all_elements_from_collection_at_end_of_array_list() {
 
 void test_get_element_from_array_list() {
     // given
-    int value = 10;
-    array_list_add_last(array_list, &value);
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int actual_value = *(int*) array_list_get(array_list, 0);
+    int actual_value = *(int*) array_list_get(array_list, 2);
     // then
-    TEST_ASSERT_EQUAL(value, actual_value);
+    TEST_ASSERT_EQUAL(3, actual_value);
 }
 
 static void get_index_out_of_bounds_test_helper(int index) {
@@ -278,6 +278,26 @@ void test_get_element_from_array_list_index_above_bounds_warns_client() {
 
 void test_get_element_from_array_list_negative_index_warns_client() {
     get_index_out_of_bounds_test_helper(-1);
+}
+
+void test_get_first_element_from_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int actual_value = *(int*) array_list_get_first(array_list);
+    // then
+    TEST_ASSERT_EQUAL(1, actual_value);
+}
+
+void test_get_last_element_from_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int actual_value = *(int*) array_list_get_last(array_list);
+    // then
+    TEST_ASSERT_EQUAL(5, actual_value);
 }
 
 void test_set_element_of_array_list() {
@@ -902,6 +922,8 @@ int main(void) {
     RUN_TEST(test_get_element_from_array_list);
     RUN_TEST(test_get_element_from_array_list_index_above_bounds_warns_client);
     RUN_TEST(test_get_element_from_array_list_negative_index_warns_client);
+    RUN_TEST(test_get_first_element_from_array_list);
+    RUN_TEST(test_get_last_element_from_array_list);
 
     RUN_TEST(test_set_element_of_array_list);
     RUN_TEST(test_set_element_of_array_list_index_above_bounds_warns_client);

@@ -516,6 +516,12 @@ To verify the presence of all elements present in a given `Collection`:
 bool contains_all = array_list_contains_all(array_list, collection);
 ```
 
+To get the number of occurrences of an element:
+
+```c++
+int count = array_list_occurrences_of(array_list, &value); // 0 if none
+```
+
 To retrieve the index of an element:
 
 ```c++

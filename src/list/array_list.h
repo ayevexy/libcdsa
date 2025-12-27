@@ -96,6 +96,8 @@ bool array_list_contains(ArrayList*, void* element);
 
 bool array_list_contains_all(ArrayList*, Collection);
 
+int array_list_occurrences_of(ArrayList*, void* element);
+
 int array_list_index_of(ArrayList*, void* element);
 
 int array_list_last_index_of(ArrayList*, void* element);

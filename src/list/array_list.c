@@ -344,6 +344,16 @@ bool array_list_contains_all(ArrayList* array_list, Collection collection) {
     return contains;
 }
 
+int array_list_occurrences_of(ArrayList* array_list, void* element) {
+    int count = 0;
+    for (int i = 0; i < array_list->size; i++) {
+        if (array_list->equals(array_list->elements[i], element)) {
+            count++;
+        }
+    }
+    return count;
+}
+
 int array_list_index_of(ArrayList* array_list, void* element) {
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {

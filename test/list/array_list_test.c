@@ -819,6 +819,16 @@ void test_array_list_does_not_contains_all_elements() {
     array_list_delete(&new_array_list);
 }
 
+void test_get_occurrences_of_element_in_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int count = array_list_occurrences_of(array_list, &(int){3});
+    // then
+    TEST_ASSERT_EQUAL(3, count);
+}
+
 void test_get_index_of_element_from_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1048,6 +1058,8 @@ int main(void) {
     RUN_TEST(test_array_list_contains_all_elements);
     RUN_TEST(test_empty_array_list_contains_all_elements_of_empty_collection);
     RUN_TEST(test_array_list_does_not_contains_all_elements);
+
+    RUN_TEST(test_get_occurrences_of_element_in_array_list);
 
     RUN_TEST(test_get_index_of_element_from_array_list);
     RUN_TEST(test_get_index_of_nonexistent_element_from_array_list_returns_negative_one);

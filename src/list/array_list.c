@@ -326,6 +326,46 @@ void array_list_clear_data(ArrayList* array_list, void (*delete)(void*)) {
     array_list->size = 0;
 }
 
+void* array_list_find(ArrayList* array_list, Predicate condition) {
+    for (int i = 0; i < array_list->size; i++) {
+        void* element = array_list->elements[i];
+        if (condition(element)) {
+            return element;
+        }
+    }
+    return nullptr;
+}
+
+void* array_list_find_last(ArrayList* array_list, Predicate condition) {
+    void* element = nullptr;
+    for (int i = 0; i < array_list->size; i++) {
+        void* current = array_list->elements[i];
+        if (condition(current)) {
+            element = current;
+        }
+    }
+    return element;
+}
+
+int array_list_index_where(ArrayList* array_list, Predicate condition) {
+    for (int i = 0; i < array_list->size; i++) {
+        if (condition(array_list->elements[i])) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int array_list_last_index_where(ArrayList* array_list, Predicate condition) {
+    int last_index = -1;
+    for (int i = 0; i < array_list->size; i++) {
+        if (condition(array_list->elements[i])) {
+            last_index = i;
+        }
+    }
+    return last_index;
+}
+
 bool array_list_contains(ArrayList* array_list, void* element) {
     return array_list_index_of(array_list, element) != -1;
 }

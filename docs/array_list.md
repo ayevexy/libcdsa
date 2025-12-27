@@ -504,6 +504,38 @@ array_list_reverse(array_list); // [ 5, 4, 3, 2, 1 ]
 
 ### Searching
 
+To find an element matching a predicate:
+
+```c++
+void* element = array_list_find(array_list, is_odd); // nullptr if not found
+```
+
+To find the last element matching a predicate:
+
+```c++
+void* element = array_list_find_last(array_list, is_odd); // nullptr if not found
+```
+
+To get the index of an element matching a predicate:
+
+```c++
+int index = array_list_index_where(array_list, is_odd); // -1 if not found
+```
+
+To get the last index of an element matching a predicate:
+
+```c++
+int index = array_list_last_index_where(array_list, is_odd); // -1 if not found
+```
+
+Where the predicate is a function like the following:
+
+```c++
+bool is_odd(void* element) {
+    return *(int*) element % 2 != 0;
+}
+```
+
 To verify the presence of an element:
 
 ```c++

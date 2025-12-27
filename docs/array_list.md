@@ -129,6 +129,22 @@ array_list_delete(&array_list); // Warning: array_list_delete null pointer
 
 ---
 
+To delete an array list and all its data via a callback function:
+
+```c++
+array_list_destroy(&array_list, delete_data);
+```
+
+Where `delete_data` is a function like the following:
+
+```c++
+void delete_data(void* element) {
+    free(element);
+}
+```
+
+---
+
 ### Adding Elements
 
 To append an element to the end of the list:

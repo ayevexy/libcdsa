@@ -28,6 +28,8 @@ ArrayList* array_list_from(Collection, ArrayListOptions);
 
 void array_list_delete(ArrayList**);
 
+void array_list_destroy(ArrayList**, void (*delete)(void*));
+
 void array_list_add(ArrayList*, int index, void* element);
 
 void array_list_add_first(ArrayList*, void* element);

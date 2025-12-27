@@ -100,6 +100,22 @@ void test_delete_array_list_set_it_to_null() {
     TEST_ASSERT_NULL(new_array_list);
 }
 
+static void delete_data(void* element) {
+   *(int*) element = 0; // in a real scenario, a free call is made here
+}
+
+void test_destroy_array_list_deletes_its_data() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_destroy(&array_list, delete_data);
+    // then
+    int deleted_values[] = { 0, 0, 0, 0, 0 };
+    TEST_ASSERT_NULL(array_list);
+    TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
+}
+
 void test_add_element_to_array_list() {
     // given
     int value = 10;
@@ -864,6 +880,7 @@ int main(void) {
     RUN_TEST(test_create_array_list_from_collection);
     RUN_TEST(test_do_not_create_array_list_with_invalid_options_from_collection);
     RUN_TEST(test_delete_array_list_set_it_to_null);
+    RUN_TEST(test_destroy_array_list_deletes_its_data);
 
     RUN_TEST(test_add_element_to_array_list);
     RUN_TEST(test_add_multiple_elements_to_array_list);

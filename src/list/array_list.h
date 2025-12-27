@@ -30,17 +30,17 @@ void array_list_delete(ArrayList**);
 
 void array_list_destroy(ArrayList**, void (*delete)(void*));
 
-void array_list_add(ArrayList*, int index, void* element);
+bool array_list_add(ArrayList*, int index, void* element);
 
 void array_list_add_first(ArrayList*, void* element);
 
 void array_list_add_last(ArrayList*, void* element);
 
-void array_list_add_all(ArrayList*, int index, Collection);
+bool array_list_add_all(ArrayList*, int index, Collection);
 
-void array_list_add_all_first(ArrayList*, Collection);
+bool array_list_add_all_first(ArrayList*, Collection);
 
-void array_list_add_all_last(ArrayList*, Collection);
+bool array_list_add_all_last(ArrayList*, Collection);
 
 void* array_list_get(ArrayList*, int index);
 
@@ -48,9 +48,9 @@ void* array_list_get_first(ArrayList*);
 
 void* array_list_get_last(ArrayList*);
 
-void array_list_set(ArrayList*, int index, void* element);
+void* array_list_set(ArrayList*, int index, void* element);
 
-void array_list_swap(ArrayList*, int index_a, int index_b);
+bool array_list_swap(ArrayList*, int index_a, int index_b);
 
 void* array_list_remove(ArrayList*, int index);
 
@@ -58,17 +58,17 @@ void* array_list_remove_first(ArrayList*);
 
 void* array_list_remove_last(ArrayList*);
 
-void array_list_remove_element(ArrayList*, void* element);
+bool array_list_remove_element(ArrayList*, void* element);
 
-void array_list_remove_all(ArrayList*, Collection);
+int array_list_remove_all(ArrayList*, Collection);
 
-void array_list_remove_range(ArrayList*, int start_index, int end_index);
+int array_list_remove_range(ArrayList*, int start_index, int end_index);
 
-void array_list_remove_if(ArrayList*, Predicate);
+int array_list_remove_if(ArrayList*, Predicate);
 
 void array_list_replace_all(ArrayList*, UnaryOperator);
 
-void array_list_retain_all(ArrayList*, Collection);
+int array_list_retain_all(ArrayList*, Collection);
 
 int array_list_size(ArrayList*);
 

@@ -84,10 +84,10 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     array_list_delete(array_list_pointer);
 }
 
-void array_list_add(ArrayList* array_list, int index, void* element) {
+bool array_list_add(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index > array_list->size) {
         fprintf(stderr, "Warning: array_list_add index %d out of bounds\n", index);
-        return;
+        return false;
     }
     if (array_list->size >= array_list->capacity) {
         grow(array_list);
@@ -97,6 +97,7 @@ void array_list_add(ArrayList* array_list, int index, void* element) {
     }
     array_list->elements[index] = element;
     array_list->size++;
+    return true;
 }
 
 void array_list_add_first(ArrayList* array_list, void* element) {
@@ -107,20 +108,21 @@ void array_list_add_last(ArrayList* array_list, void* element) {
     array_list_add(array_list, array_list->size, element);
 }
 
-void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
+bool array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
     while (iterator_has_next(iterator)) {
         array_list_add(array_list, index++, iterator_next(iterator));
     }
     iterator_delete(iterator);
+    return index > 0;
 }
 
-void array_list_add_all_first(ArrayList* array_list, Collection collection) {
-    array_list_add_all(array_list, 0, collection);
+bool array_list_add_all_first(ArrayList* array_list, Collection collection) {
+    return array_list_add_all(array_list, 0, collection);
 }
 
-void array_list_add_all_last(ArrayList* array_list, Collection collection) {
-    array_list_add_all(array_list, array_list->size, collection);
+bool array_list_add_all_last(ArrayList* array_list, Collection collection) {
+    return array_list_add_all(array_list, array_list->size, collection);
 }
 
 void* array_list_get(ArrayList* array_list, int index) {
@@ -139,20 +141,23 @@ void* array_list_get_last(ArrayList* array_list) {
     return array_list_get(array_list, array_list->size - 1);
 }
 
-void array_list_set(ArrayList* array_list, int index, void* element) {
+void* array_list_set(ArrayList* array_list, int index, void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);
-        return;
+        return nullptr;
     }
+    void* old_element = array_list->elements[index];;
     array_list->elements[index] = element;
+    return old_element;
 }
 
-void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
+bool array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
         fprintf(stderr, "Warning: array_list_swap index out of bounds\n");
-        return;
+        return false;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
+    return true;
 }
 
 void* array_list_remove(ArrayList* array_list, int index) {
@@ -176,39 +181,49 @@ void* array_list_remove_last(ArrayList* array_list) {
     return array_list_remove(array_list, array_list->size - 1);
 }
 
-void array_list_remove_element(ArrayList* array_list, void* element) {
+bool array_list_remove_element(ArrayList* array_list, void* element) {
     int index = array_list_index_of(array_list, element);
     if (index >= 0) {
         array_list_remove(array_list, index);
+        return true;
     }
+    return false;
 }
 
-void array_list_remove_all(ArrayList* array_list, Collection collection) {
+int array_list_remove_all(ArrayList* array_list, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
+    int count = 0;
     while (iterator_has_next(iterator)) {
-        array_list_remove_element(array_list, iterator_next(iterator));
+        if (array_list_remove_element(array_list, iterator_next(iterator))) {
+            count++;
+        }
     }
     iterator_delete(iterator);
+    return count;
 }
 
-void array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
+int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || end_index > array_list->size || start_index >= end_index) {
         fprintf(stderr, "Warning: array_list_remove_range invalid range: %d to %d\n", start_index, end_index);
-        return;
+        return 0;
     }
     int count = end_index - start_index;
     for (int i = start_index; i < array_list->size - count; i++) {
         array_list->elements[i] = array_list->elements[i + count];
     }
     array_list->size -= count;
+    return count;
 }
 
-void array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
+int array_list_remove_if(ArrayList* array_list, Predicate condition_matches) {
+    int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition_matches(array_list->elements[i])) {
             array_list_remove(array_list, i);
+            count++;
         }
     }
+    return count;
 }
 
 void array_list_replace_all(ArrayList* array_list, UnaryOperator operator_apply) {
@@ -217,8 +232,9 @@ void array_list_replace_all(ArrayList* array_list, UnaryOperator operator_apply)
     }
 }
 
-void array_list_retain_all(ArrayList* array_list, Collection collection) {
+int array_list_retain_all(ArrayList* array_list, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
+    int count = 0;
 
     for (int i = array_list->size - 1; i >= 0; i--) {
         bool found = false;
@@ -231,10 +247,12 @@ void array_list_retain_all(ArrayList* array_list, Collection collection) {
         }
         if (!found) {
             array_list_remove(array_list, i);
+            count++;
         }
         iterator_reset(iterator);
     }
     iterator_delete(iterator);
+    return count;
 }
 
 int array_list_size(ArrayList* array_list) {

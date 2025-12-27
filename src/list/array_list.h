@@ -92,6 +92,14 @@ void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));
 
+void* array_list_find(ArrayList*, Predicate);
+
+void* array_list_find_last(ArrayList*, Predicate);
+
+int array_list_index_where(ArrayList*, Predicate);
+
+int array_list_last_index_where(ArrayList*, Predicate);
+
 bool array_list_contains(ArrayList*, void* element);
 
 void* array_list_find(const ArrayList*, Predicate);

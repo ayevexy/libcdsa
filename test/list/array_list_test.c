@@ -746,6 +746,86 @@ void test_clear_array_list_data() {
     TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
 }
 
+void test_find_element_matching_predicate_in_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* element = array_list_find(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(1, *element);
+}
+
+void test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* element = array_list_find(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_NULL(element);
+}
+
+void test_find_last_element_matching_predicate_in_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* element = array_list_find_last(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_find_last_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* element = array_list_find_last(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_NULL(element);
+}
+
+void test_get_index_matching_predicate_in_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int index = array_list_index_where(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(0, index);
+}
+
+void test_get_index_matching_predicate_in_array_list_no_matching_returns_negative_one() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int index = array_list_index_where(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
+void test_get_last_index_matching_predicate_in_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int index = array_list_last_index_where(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(4, index);
+}
+
+void test_get_last_index_matching_predicate_in_array_list_no_matching_returns_negative_one() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int index = array_list_last_index_where(array_list, odd_predicate);
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
 void test_array_list_contains_element() {
     // given
     int value = 10;
@@ -1045,6 +1125,16 @@ int main(void) {
     RUN_TEST(test_reverse_array_list);
     RUN_TEST(test_clear_array_list);
     RUN_TEST(test_clear_array_list_data);
+
+    RUN_TEST(test_find_element_matching_predicate_in_array_list);
+    RUN_TEST(test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null);
+    RUN_TEST(test_find_last_element_matching_predicate_in_array_list);
+    RUN_TEST(test_find_last_element_matching_predicate_in_array_list_nonexistent_element_returns_null);
+
+    RUN_TEST(test_get_index_matching_predicate_in_array_list);
+    RUN_TEST(test_get_index_matching_predicate_in_array_list_no_matching_returns_negative_one);
+    RUN_TEST(test_get_last_index_matching_predicate_in_array_list);
+    RUN_TEST(test_get_last_index_matching_predicate_in_array_list_no_matching_returns_negative_one);
 
     RUN_TEST(test_array_list_contains_element);
     RUN_TEST(test_array_list_does_not_contains_element);

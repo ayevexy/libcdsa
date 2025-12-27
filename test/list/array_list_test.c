@@ -564,6 +564,16 @@ void test_retain_all_elements_from_collection_in_array_list() {
     array_list_delete(&new_array_list);
 }
 
+void test_get_array_list_size() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int size = array_list_size(array_list);
+    // then
+    TEST_ASSERT_EQUAL(size, SIZE(values));
+}
+
 void test_trim_array_list_capacity_to_match_size() {
     // given
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
@@ -587,6 +597,16 @@ void test_trim_array_list_capacity_to_minimum_capacity_for_size_less_than_2() {
     // then
     TEST_ASSERT_EQUAL(0, array_list_size(array_list));
     TEST_ASSERT_EQUAL(10, array_list_capacity(array_list));
+}
+
+void test_get_array_list_capacity() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int capacity = array_list_capacity(array_list);
+    // then
+    TEST_ASSERT_EQUAL(20, capacity);
 }
 
 void test_ensure_capacity_of_array_list() {
@@ -973,8 +993,10 @@ int main(void) {
     RUN_TEST(test_replace_all_elements_from_array_list);
     RUN_TEST(test_retain_all_elements_from_collection_in_array_list);
 
+    RUN_TEST(test_get_array_list_size);
     RUN_TEST(test_trim_array_list_capacity_to_match_size);
     RUN_TEST(test_trim_array_list_capacity_to_minimum_capacity_for_size_less_than_2);
+    RUN_TEST(test_get_array_list_capacity);
     RUN_TEST(test_ensure_capacity_of_array_list);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_is_not_empty);

@@ -302,22 +302,24 @@ void test_get_last_element_from_array_list() {
 
 void test_set_element_of_array_list() {
     // given
-    int value = 10;
-    array_list_add_last(array_list, &value);
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int new_value = 20;
-    array_list_set(array_list, 0, &new_value);
+    array_list_set(array_list, 2, &(int){10});
     // then
-    int actual_value = *(int*) array_list_get(array_list, 0);
-    TEST_ASSERT_EQUAL(new_value, actual_value);
+    int new_values[] = { 1, 2, 10, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
 }
 
 static void set_index_out_of_bounds_test_helper(int index) {
     // given
     const char* message = "Warning: array_list_set index %d out of bounds\n";
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     array_list_set(array_list, index, &(int){10});
     // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }

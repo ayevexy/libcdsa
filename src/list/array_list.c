@@ -318,12 +318,8 @@ void array_list_clear(ArrayList* array_list) {
     array_list->size = 0;
 }
 
-void array_list_clear_data(ArrayList* array_list, void (*delete)(void*)) {
-    for (int i = 0; i < array_list->size; i++) {
-        delete(array_list->elements[i]);
-        array_list->elements[i] = nullptr;
-    }
-    array_list->size = 0;
+bool array_list_contains(ArrayList* array_list, void* element) {
+    return array_list_index_of(array_list, element) != -1;
 }
 
 void* array_list_find(const ArrayList* array_list, Predicate condition) {

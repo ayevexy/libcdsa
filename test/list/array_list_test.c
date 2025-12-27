@@ -369,64 +369,93 @@ void test_swap_elements_of_array_list_negative_index_b_warns_client() {
     swap_elements_of_array_list_index_out_of_bounds_test_helper(3, -1);
 }
 
-void test_remove_element_from_array_list() {
-    // given
-    int value = 10;
-    array_list_add_last(array_list, &value);
-    // when
-    int* element = array_list_remove(array_list, 0);
-    // then
-    TEST_ASSERT_EQUAL(value, *element);
-    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
-    TEST_ASSERT_NULL(array_list_get(array_list, 0));
-}
-
-void test_remove_element_from_array_list_shifts_its_remaining_elements() {
+void test_remove_element_by_index_from_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_remove(array_list, 2);
+    int* element = array_list_remove(array_list, 2);
     // then
     int new_values[] = { 1, 2, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(new_values), array_list_size(array_list));
+    TEST_ASSERT_EQUAL(3, *element);
 }
 
-void remove_index_out_of_bounds_test_helper(int index) {
+static void remove_index_out_of_bounds_test_helper(int index) {
     // given
     const char* message = "Warning: array_list_remove index %d out of bounds\n";
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+
     // when
-    array_list_remove(array_list, index);
+    int* element = array_list_remove(array_list, index);
+
     // then
-    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(values), array_list_size(array_list));
+    TEST_ASSERT_NULL(element);
+    // and
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
-void test_remove_element_from_array_list_index_above_bounds_warns_client() {
+void test_remove_element_by_index_from_array_list_index_above_bounds_warns_client() {
     remove_index_out_of_bounds_test_helper(10);
 }
 
-void test_remove_element_from_array_list_negative_index_warns_client() {
+void test_remove_element_by_index_from_array_list_negative_index_warns_client() {
     remove_index_out_of_bounds_test_helper(-1);
 }
 
-void test_remove_element_from_array_list_by_reference() {
+void test_remove_first_element_from_array_list() {
     // given
-    int value = 10;
-    array_list_add_last(array_list, &value);
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_remove_element(array_list, &value);
+    int* element = array_list_remove_first(array_list);
     // then
-    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
-    TEST_ASSERT_NULL(array_list_get(array_list, 0));
+    int new_values[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(new_values), array_list_size(array_list));
+    TEST_ASSERT_EQUAL(1, *element);
 }
 
-void test_remove_nonexistent_element_from_array_list_by_reference_does_not_warns_client() {
+void test_remove_last_element_from_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* element = array_list_remove_last(array_list);
+    // then
+    int new_values[] = { 1, 2, 3, 4 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(new_values), array_list_size(array_list));
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_remove_element_by_memory_address_from_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_remove_element(array_list, &values[2]);
+    // then
+    int new_values[] = { 1, 2, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(new_values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(new_values), array_list_size(array_list));
+}
+
+void test_remove_element_by_memory_address_from_array_list_nonexistent_element_fails() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     array_list_remove_element(array_list, &(int){10});
     // then
-    TEST_ASSERT_EQUAL(0, fprintf_fake.call_count);
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
+    TEST_ASSERT_EQUAL(SIZE(values), array_list_size(array_list));
+    TEST_ASSERT_EQUAL(0, fprintf_fake.call_count); // A warning shouldn't be printed in this operation failure
 }
 
 void test_remove_all_elements_from_array_list_matching_collection() {
@@ -468,10 +497,14 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     char message[] = "Warning: array_list_remove_range invalid range: %d to %d\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
+
     // when
     array_list_remove_range(array_list, start_index, end_index);
+
     // then
-    TEST_ASSERT_EQUAL(5, array_list_size(array_list));
+    TEST_ASSERT_EQUAL(SIZE(values), array_list_size(array_list));
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
+    // and
     TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
     TEST_ASSERT_NOT_NULL(fprintf_fake.arg1_val);
     TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
@@ -937,13 +970,14 @@ int main(void) {
     RUN_TEST(test_swap_elements_of_array_list_index_b_above_bounds_warns_client);
     RUN_TEST(test_swap_elements_of_array_list_negative_index_b_warns_client);
 
-    RUN_TEST(test_remove_element_from_array_list);
-    RUN_TEST(test_remove_element_from_array_list_shifts_its_remaining_elements);
-    RUN_TEST(test_remove_element_from_array_list_index_above_bounds_warns_client);
-    RUN_TEST(test_remove_element_from_array_list_negative_index_warns_client);
+    RUN_TEST(test_remove_element_by_index_from_array_list);
+    RUN_TEST(test_remove_element_by_index_from_array_list_index_above_bounds_warns_client);
+    RUN_TEST(test_remove_element_by_index_from_array_list_negative_index_warns_client);
+    RUN_TEST(test_remove_first_element_from_array_list);
+    RUN_TEST(test_remove_last_element_from_array_list);
 
-    RUN_TEST(test_remove_element_from_array_list_by_reference);
-    RUN_TEST(test_remove_nonexistent_element_from_array_list_by_reference_does_not_warns_client);
+    RUN_TEST(test_remove_element_by_memory_address_from_array_list);
+    RUN_TEST(test_remove_element_by_memory_address_from_array_list_nonexistent_element_fails);
     RUN_TEST(test_remove_all_elements_from_array_list_matching_collection);
 
     RUN_TEST(test_remove_elements_in_range_from_array_list);

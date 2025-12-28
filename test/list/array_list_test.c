@@ -34,7 +34,7 @@ ArrayList* array_list;
 void setUp() {
     RESET_FAKE(fprintf);
     FFF_RESET_HISTORY();
-    array_list = array_list_new((ArrayListOptions) {
+    array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = 10,
         .grow_factor = 2,
         .equals = DEFAULT_EQUALS(int),
@@ -59,7 +59,7 @@ void test_do_not_create_array_list_with_invalid_options() {
         .to_string = nullptr
     };
     // when
-    ArrayList* new_array_list = array_list_new(invalid_options);
+    ArrayList* new_array_list = array_list_new(&invalid_options);
     // then
     TEST_ASSERT_NULL(new_array_list);
 }
@@ -82,7 +82,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), (ArrayListOptions) {
+    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {
         .initial_capacity = 0,
         .grow_factor = -1,
         .equals = nullptr,

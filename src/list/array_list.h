@@ -6,7 +6,7 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 
-#define DEFAULT_ARRAY_LIST_OPTIONS (ArrayListOptions) {     \
+#define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
     .initial_capacity = 10,                                 \
     .grow_factor = 2.0,                                     \
     .equals = pointer_equals,                               \
@@ -22,9 +22,9 @@ typedef struct ArrayListOptions {
 
 typedef struct ArrayList ArrayList;
 
-ArrayList* array_list_new(ArrayListOptions);
+ArrayList* array_list_new(const ArrayListOptions*);
 
-ArrayList* array_list_from(Collection, ArrayListOptions);
+ArrayList* array_list_from(Collection, const ArrayListOptions*);
 
 void array_list_delete(ArrayList**);
 

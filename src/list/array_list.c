@@ -39,22 +39,22 @@ static int partition(void**, int, int, Comparator);
 
 static void swap(void** a, void** b);
 
-ArrayList* array_list_new(ArrayListOptions options) {
-    if (options.initial_capacity < 10 || options.grow_factor <= 1.1 || !options.equals || !options.to_string) {
+ArrayList* array_list_new(const ArrayListOptions* options) {
+    if (options->initial_capacity < 10 || options->grow_factor <= 1.1 || !options->equals || !options->to_string) {
         fprintf(stderr, "Warning: array_list_new invalid options\n");
         return nullptr;
     }
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
-    array_list->elements = memory_alloc(options.initial_capacity * sizeof(void*));
+    array_list->elements = memory_alloc(options->initial_capacity * sizeof(void*));
     array_list->size = 0;
-    array_list->capacity = options.initial_capacity;
-    array_list->grow_factor = options.grow_factor;
-    array_list->equals = options.equals;
-    array_list->to_string = options.to_string;
+    array_list->capacity = options->initial_capacity;
+    array_list->grow_factor = options->grow_factor;
+    array_list->equals = options->equals;
+    array_list->to_string = options->to_string;
     return array_list;
 }
 
-ArrayList* array_list_from(Collection collection, ArrayListOptions options) {
+ArrayList* array_list_from(Collection collection, const ArrayListOptions* options) {
     ArrayList* array_list = array_list_new(options);
     if (array_list) {
         array_list_add_all_last(array_list, collection);
@@ -441,7 +441,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         fprintf(stderr, "Warning: array_list_sub_list invalid range: %d to %d\n", start_index, end_index);
         return nullptr;
     }
-    ArrayList* new_array_list = array_list_new((ArrayListOptions) {
+    ArrayList* new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = array_list->capacity,
         .grow_factor = array_list->grow_factor,
         .equals = array_list->equals,

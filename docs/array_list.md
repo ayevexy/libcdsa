@@ -84,7 +84,7 @@ The function takes an `ArrayListOptions` object that defines the list’s behavi
 You may supply custom options or use the default:
 
 ```c++
-#define DEFAULT_ARRAY_LIST_OPTIONS (ArrayListOptions) {     \
+#define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
     .initial_capacity = 10,                                 \
     .grow_factor = 2.0,                                     \
     .equals = pointer_equals,                               \

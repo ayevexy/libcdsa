@@ -41,7 +41,7 @@ static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (options->initial_capacity < 10 || options->grow_factor <= 1.1 || !options->equals || !options->to_string) {
-        fprintf(stderr, "Exception at array_list_new(%p) invalid options\n", (void*) options);
+        fprintf(stderr, "Warning: array_list_new invalid options\n");
         return nullptr;
     }
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));

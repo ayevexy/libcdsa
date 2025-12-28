@@ -29,7 +29,8 @@ FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
 ArrayList* array_list;
 
 void setUp() {
-    INIT_MOCKS();
+    RESET_FAKE(fprintf);
+    FFF_RESET_HISTORY();
     array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = 10,
         .grow_factor = 2,

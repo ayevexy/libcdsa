@@ -15,11 +15,11 @@ struct ArrayList {
 
 static void grow(ArrayList*);
 
-typedef struct IterationContext IterationContext;
-
 static Iterator* iterator(const ArrayList*);
 
-static bool has_next(const ArrayList*, const IterationContext*);
+static bool has_next(const void* array_list, void* index);
+
+static void* next(const void* array_list, void* index);
 
 static void* next(const ArrayList*, IterationContext*);
 
@@ -86,7 +86,7 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     array_list_delete(array_list_pointer);
 }
 
-bool array_list_add(ArrayList* array_list, int index, void* element) {
+bool array_list_add(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index > array_list->size) {
         fprintf(stderr, "Warning: array_list_add index %d out of bounds\n", index);
         return false;
@@ -154,13 +154,13 @@ void* array_list_get_last(const ArrayList* array_list) {
     return array_list_get(array_list, array_list->size - 1);
 }
 
-void* array_list_set(ArrayList* array_list, int index, void* element) {
+void* array_list_set(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index >= array_list->size) {
         fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);
         return nullptr;
     }
     void* old_element = array_list->elements[index];;
-    array_list->elements[index] = element;
+    array_list->elements[index] = (void*) element;
     return old_element;
 }
 
@@ -194,8 +194,8 @@ void* array_list_remove_last(ArrayList* array_list) {
     return array_list_remove(array_list, array_list->size - 1);
 }
 
-bool array_list_remove_element(ArrayList* array_list, void* element) {
-    int index = array_list_index_of(array_list, element);
+bool array_list_remove_element(ArrayList* array_list, const void* element) {
+    const int index = array_list_index_of(array_list, element);
     if (index >= 0) {
         array_list_remove(array_list, index);
         return true;
@@ -337,50 +337,6 @@ void array_list_clear_data(ArrayList* array_list, void (*delete)(void*)) {
     array_list->size = 0;
 }
 
-void* array_list_find(ArrayList* array_list, Predicate condition) {
-    for (int i = 0; i < array_list->size; i++) {
-        void* element = array_list->elements[i];
-        if (condition(element)) {
-            return element;
-        }
-    }
-    return nullptr;
-}
-
-void* array_list_find_last(ArrayList* array_list, Predicate condition) {
-    void* element = nullptr;
-    for (int i = 0; i < array_list->size; i++) {
-        void* current = array_list->elements[i];
-        if (condition(current)) {
-            element = current;
-        }
-    }
-    return element;
-}
-
-int array_list_index_where(ArrayList* array_list, Predicate condition) {
-    for (int i = 0; i < array_list->size; i++) {
-        if (condition(array_list->elements[i])) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-int array_list_last_index_where(ArrayList* array_list, Predicate condition) {
-    int last_index = -1;
-    for (int i = 0; i < array_list->size; i++) {
-        if (condition(array_list->elements[i])) {
-            last_index = i;
-        }
-    }
-    return last_index;
-}
-
-bool array_list_contains(ArrayList* array_list, void* element) {
-    return array_list_index_of(array_list, element) != -1;
-}
-
 void* array_list_find(const ArrayList* array_list, Predicate condition) {
     for (int i = 0; i < array_list->size; i++) {
         void* element = array_list->elements[i];
@@ -439,7 +395,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     return contains;
 }
 
-int array_list_occurrences_of(ArrayList* array_list, void* element) {
+int array_list_occurrences_of(const ArrayList* array_list, const void* element) {
     int count = 0;
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {
@@ -449,7 +405,7 @@ int array_list_occurrences_of(ArrayList* array_list, void* element) {
     return count;
 }
 
-int array_list_index_of(ArrayList* array_list, void* element) {
+int array_list_index_of(const ArrayList* array_list, const void* element) {
     for (int i = 0; i < array_list->size; i++) {
         if (array_list->equals(array_list->elements[i], element)) {
             return i;
@@ -557,22 +513,18 @@ static void grow(ArrayList* array_list) {
     array_list->capacity = new_capacity;
 }
 
-struct IterationContext {
-    int cursor;
-};
-
 static Iterator* iterator(const ArrayList* array_list) {
-    IterationContext* iteration_context = memory_alloc(sizeof(IterationContext));
-    iteration_context->cursor = 0;
-    return iterator_from(array_list, iteration_context, has_next, next, reset);
+    int* index = memory_alloc(sizeof(int));
+    *index = 0;
+    return iterator_new(array_list, index, &has_next, &next, &reset);
 }
 
-static bool has_next(const ArrayList* array_list, const IterationContext* iteration_context) {
-    return iteration_context->cursor < array_list->size;
+static bool has_next(const void* array_list, void* index) {
+    return *(int*) index < ((ArrayList*) array_list)->size;
 }
 
-static void* next(const ArrayList* array_list, IterationContext* iteration_context) {
-    if (iteration_context->cursor >= array_list->size) {
+static void* next(const void* array_list, void* index) {
+    if (*(int*) index >= ((ArrayList*) array_list)->size) {
         return nullptr;
     }
     return array_list->elements[iteration_context->cursor++];

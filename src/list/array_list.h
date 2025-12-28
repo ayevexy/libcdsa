@@ -30,11 +30,11 @@ void array_list_delete(ArrayList**);
 
 void array_list_destroy(ArrayList**, void (*delete)(void*));
 
-bool array_list_add(ArrayList*, int index, void* element);
-
 bool array_list_add(ArrayList*, int index, const void* element);
 
 void array_list_add_first(ArrayList*, const void* element);
+
+void array_list_add_last(ArrayList*, const void* element);
 
 bool array_list_add_all(ArrayList*, int index, Collection);
 
@@ -42,13 +42,13 @@ bool array_list_add_all_first(ArrayList*, Collection);
 
 bool array_list_add_all_last(ArrayList*, Collection);
 
-bool array_list_add_all_last(ArrayList*, Collection);
-
 void* array_list_get(const ArrayList*, int index);
 
 void* array_list_get_first(const ArrayList*);
 
-void* array_list_set(ArrayList*, int index, void* element);
+void* array_list_get_last(const ArrayList*);
+
+void* array_list_set(ArrayList*, int index, const void* element);
 
 bool array_list_swap(ArrayList*, int index_a, int index_b);
 
@@ -58,7 +58,7 @@ void* array_list_remove_first(ArrayList*);
 
 void* array_list_remove_last(ArrayList*);
 
-bool array_list_remove_element(ArrayList*, void* element);
+bool array_list_remove_element(ArrayList*, const void* element);
 
 int array_list_remove_all(ArrayList*, Collection);
 
@@ -92,21 +92,9 @@ void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));
 
-void* array_list_find(ArrayList*, Predicate);
-
-void* array_list_find_last(ArrayList*, Predicate);
-
-int array_list_index_where(ArrayList*, Predicate);
-
-int array_list_last_index_where(ArrayList*, Predicate);
-
-bool array_list_contains(ArrayList*, void* element);
-
 void* array_list_find(const ArrayList*, Predicate);
 
-int array_list_occurrences_of(ArrayList*, void* element);
-
-int array_list_index_of(ArrayList*, void* element);
+void* array_list_find_last(const ArrayList*, Predicate);
 
 int array_list_index_where(const ArrayList*, Predicate);
 

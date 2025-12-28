@@ -3,18 +3,18 @@
 #include "internal/memory.h"
 
 struct Iterator {
-    void* iterable_structure;
+    const void* iterable_structure;
     void* internal_state;
-    bool (*has_next)(void* iterable_structure, void* internal_state);
-    void* (*next)(void* iterable_structure, void* internal_state);
+    bool (*has_next)(const void* iterable_structure, void* internal_state);
+    void* (*next)(const void* iterable_structure, void* internal_state);
     void (*reset)(void* internal_state);
 };
 
 Iterator* iterator_new(
-    void* iterable_structure,
+    const void* iterable_structure,
     void* internal_state,
-    bool (*has_next)(void* iterable_structure, void* internal_state),
-    void* (*next)(void* iterable_structure, void* internal_state),
+    bool (*has_next)(const void* iterable_structure, void* internal_state),
+    void* (*next)(const void* iterable_structure, void* internal_state),
     void (*reset)(void* internal_state)
 ) {
     Iterator* iterator = memory_alloc(sizeof(Iterator));

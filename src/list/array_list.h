@@ -16,8 +16,8 @@
 typedef struct ArrayListOptions {
     int initial_capacity;
     double grow_factor;
-    bool (*equals)(void*, void*);
-    char* (*to_string)(void*);
+    bool (*equals)(const void*, const void*);
+    char* (*to_string)(const void*);
 } ArrayListOptions;
 
 typedef struct ArrayList ArrayList;
@@ -30,11 +30,11 @@ void array_list_delete(ArrayList**);
 
 void array_list_destroy(ArrayList**, void (*delete)(void*));
 
-bool array_list_add(ArrayList*, int index, void* element);
+bool array_list_add(ArrayList*, int index, const void* element);
 
-void array_list_add_first(ArrayList*, void* element);
+void array_list_add_first(ArrayList*, const void* element);
 
-void array_list_add_last(ArrayList*, void* element);
+void array_list_add_last(ArrayList*, const void* element);
 
 bool array_list_add_all(ArrayList*, int index, Collection);
 
@@ -42,13 +42,13 @@ bool array_list_add_all_first(ArrayList*, Collection);
 
 bool array_list_add_all_last(ArrayList*, Collection);
 
-void* array_list_get(ArrayList*, int index);
+void* array_list_get(const ArrayList*, int index);
 
-void* array_list_get_first(ArrayList*);
+void* array_list_get_first(const ArrayList*);
 
-void* array_list_get_last(ArrayList*);
+void* array_list_get_last(const ArrayList*);
 
-void* array_list_set(ArrayList*, int index, void* element);
+void* array_list_set(ArrayList*, int index, const void* element);
 
 bool array_list_swap(ArrayList*, int index_a, int index_b);
 
@@ -58,7 +58,7 @@ void* array_list_remove_first(ArrayList*);
 
 void* array_list_remove_last(ArrayList*);
 
-bool array_list_remove_element(ArrayList*, void* element);
+bool array_list_remove_element(ArrayList*, const void* element);
 
 int array_list_remove_all(ArrayList*, Collection);
 
@@ -70,17 +70,17 @@ void array_list_replace_all(ArrayList*, UnaryOperator);
 
 int array_list_retain_all(ArrayList*, Collection);
 
-int array_list_size(ArrayList*);
+int array_list_size(const ArrayList*);
 
 void array_list_trim_to_size(ArrayList*);
 
-int array_list_capacity(ArrayList*);
+int array_list_capacity(const ArrayList*);
 
 void array_list_ensure_capacity(ArrayList*, int capacity);
 
-bool array_list_is_empty(ArrayList*);
+bool array_list_is_empty(const ArrayList*);
 
-Iterator* array_list_iterator(ArrayList*);
+Iterator* array_list_iterator(const ArrayList*);
 
 void array_list_for_each(ArrayList*, Consumer);
 
@@ -92,34 +92,34 @@ void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));
 
-void* array_list_find(ArrayList*, Predicate);
+void* array_list_find(const ArrayList*, Predicate);
 
-void* array_list_find_last(ArrayList*, Predicate);
+void* array_list_find_last(const ArrayList*, Predicate);
 
-int array_list_index_where(ArrayList*, Predicate);
+int array_list_index_where(const ArrayList*, Predicate);
 
-int array_list_last_index_where(ArrayList*, Predicate);
+int array_list_last_index_where(const ArrayList*, Predicate);
 
-bool array_list_contains(ArrayList*, void* element);
+bool array_list_contains(const ArrayList*, const void* element);
 
-bool array_list_contains_all(ArrayList*, Collection);
+bool array_list_contains_all(const ArrayList*, Collection);
 
-int array_list_occurrences_of(ArrayList*, void* element);
+int array_list_occurrences_of(const ArrayList*, const void* element);
 
-int array_list_index_of(ArrayList*, void* element);
+int array_list_index_of(const ArrayList*, const void* element);
 
-int array_list_last_index_of(ArrayList*, void* element);
+int array_list_last_index_of(const ArrayList*, const void* element);
 
-int array_list_binary_search(ArrayList*, void* element, Comparator);
+int array_list_binary_search(const ArrayList*, const void* element, Comparator);
 
-ArrayList* array_list_clone(ArrayList*);
+ArrayList* array_list_clone(const ArrayList*);
 
-ArrayList* array_list_sub_list(ArrayList*, int start_index, int end_index);
+ArrayList* array_list_sub_list(const ArrayList*, int start_index, int end_index);
 
-Collection array_list_to_collection(ArrayList*);
+Collection array_list_to_collection(const ArrayList*);
 
-void** array_list_to_array(ArrayList*);
+void** array_list_to_array(const ArrayList*);
 
-char* array_list_to_string(ArrayList*);
+char* array_list_to_string(const ArrayList*);
 
 #endif

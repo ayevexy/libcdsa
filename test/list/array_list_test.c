@@ -525,7 +525,7 @@ void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_
     remove_elements_in_range_index_out_of_bounds_test_helper(4, 3);
 }
 
-static bool odd_predicate(void* element) {
+static bool odd_predicate(const void* element) {
     return *(int *) element % 2 != 0;
 }
 

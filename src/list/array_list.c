@@ -17,9 +17,9 @@ static void grow(ArrayList*);
 
 static Iterator* iterator(const ArrayList*);
 
-static bool has_next(const ArrayList* array_list, const int* cursor);
+static bool has_next(const ArrayList*, const int* cursor);
 
-static void* next(const ArrayList* array_list, int* cursor);
+static void* next(const ArrayList*, int* cursor);
 
 static void reset(int* cursor);
 

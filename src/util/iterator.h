@@ -3,6 +3,13 @@
 
 typedef struct Iterator Iterator;
 
+#define iterator_from(iterable_structure, internal_state, has_next, next, reset)    \
+    iterator_new(iterable_structure, internal_state,                                \
+        (bool (*)(const void*, void*)) has_next,                                    \
+        (void* (*)(const void*, void*)) next,                                       \
+        (void (*)(void*)) reset                                                     \
+    )
+
 Iterator* iterator_new(
     const void* iterable_structure,
     void* internal_state,

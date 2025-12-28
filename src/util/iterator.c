@@ -1,13 +1,15 @@
 #include "iterator.h"
 
-#include "internal/memory.h"
-
 struct Iterator {
     const void* iterable_structure;
     void* internal_state;
     bool (*has_next)(const void* iterable_structure, void* internal_state);
     void* (*next)(const void* iterable_structure, void* internal_state);
     void (*reset)(void* internal_state);
+    struct {
+        void* (*memory_alloc)(size_t);
+        void (*memory_free)(void*);
+    };
 };
 
 Iterator* iterator_new(
@@ -15,7 +17,9 @@ Iterator* iterator_new(
     void* internal_state,
     bool (*has_next)(const void* iterable_structure, void* internal_state),
     void* (*next)(const void* iterable_structure, void* internal_state),
-    void (*reset)(void* internal_state)
+    void (*reset)(void* internal_state),
+    void* (*memory_alloc)(size_t),
+    void (*memory_free)(void*)
 ) {
     Iterator* iterator = memory_alloc(sizeof(Iterator));
     iterator->iterable_structure = iterable_structure;
@@ -23,6 +27,8 @@ Iterator* iterator_new(
     iterator->has_next = has_next;
     iterator->next = next;
     iterator->reset = reset;
+    iterator->memory_alloc = memory_alloc;
+    iterator->memory_free = memory_free;
     return iterator;
 }
 
@@ -39,6 +45,6 @@ void iterator_reset(Iterator* iterator) {
 }
 
 void iterator_delete(Iterator* iterator) {
-    memory_free(&iterator->internal_state);
-    memory_free((void**) &iterator);
+    iterator->memory_free(iterator->internal_state);
+    iterator->memory_free(iterator);
 }

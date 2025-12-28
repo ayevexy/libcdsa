@@ -6,11 +6,16 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 
+#include <stddef.h>
+
 #define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
     .initial_capacity = 10,                                 \
     .grow_factor = 2.0,                                     \
     .equals = pointer_equals,                               \
-    .to_string = pointer_to_string                          \
+    .to_string = pointer_to_string,                         \
+    .memory_alloc = malloc,                                 \
+    .memory_realloc = realloc,                              \
+    .memory_free = free                                     \
 }
 
 typedef struct ArrayListOptions {
@@ -18,6 +23,11 @@ typedef struct ArrayListOptions {
     double grow_factor;
     bool (*equals)(const void*, const void*);
     char* (*to_string)(const void*);
+    struct {
+        void* (*memory_alloc)(size_t);
+        void* (*memory_realloc)(void*, size_t);
+        void (*memory_free)(void*);
+    };
 } ArrayListOptions;
 
 typedef struct ArrayList ArrayList;

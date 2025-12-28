@@ -1,9 +1,8 @@
 #include "functions.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
-#include "internal/memory.h"
 
 #define DEFINE_EQUALS(T) bool T##_equals(const void* a, const void* b) {    \
     return *(T*) a == *(T*) b;                                              \
@@ -47,7 +46,7 @@ int compare_strings(const void* a, const void* b) {
 
 #define DEFINE_TO_STRING(T, format) char* T##_to_string(const void* e) {    \
     const int length = snprintf(nullptr, 0, format, *(T*) e) + 1;           \
-    char* string = memory_alloc(sizeof(char) * length);                     \
+    char* string = malloc(sizeof(char) * length);                     \
     snprintf(string, length, format, *(T*) e);                              \
     return string;                                                          \
 }
@@ -62,7 +61,7 @@ DEFINE_TO_STRING(double, "%lf")
 
 char* pointer_to_string(const void* e) {
     const int length = snprintf(nullptr, 0, "%p", e) + 1;
-    char* string = memory_alloc(sizeof(char) * length);
+    char* string = malloc(sizeof(char) * length);
     snprintf(string, length, "%p", e);
     return string;
 }

@@ -12,7 +12,10 @@ void setUp() {
         .initial_capacity = 10,
         .grow_factor = 2,
         .equals = DEFAULT_EQUALS(int),
-        .to_string = DEFAULT_TO_STRING(int)
+        .to_string = DEFAULT_TO_STRING(int),
+        .memory_alloc = malloc,
+        .memory_realloc = realloc,
+        .memory_free = free
     });
 }
 

@@ -305,9 +305,7 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
 
 void array_list_reverse(ArrayList* array_list) {
     for (int i = 0; i < array_list->size / 2; i++) {
-        void* swap = array_list->elements[i];
-        array_list->elements[i] = array_list->elements[array_list->size - i - 1];
-        array_list->elements[array_list->size - i - 1] = swap;
+        swap(&array_list->elements[array_list->size - 1 - i], &array_list->elements[i]);
     }
 }
 

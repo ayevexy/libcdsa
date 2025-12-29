@@ -41,7 +41,7 @@ static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (options->initial_capacity < 10 || options->grow_factor <= 1.1 || !options->equals || !options->to_string) {
-        fprintf(stderr, "Warning: array_list_new invalid options\n");
+        fprintf(stderr, "Exception at array_list_new(%p) invalid options\n", (void*) options);
         return nullptr;
     }
     ArrayList* array_list = memory_alloc(sizeof(ArrayList));
@@ -75,7 +75,7 @@ void array_list_delete(ArrayList** array_list_pointer) {
 
 void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     if (!*array_list_pointer) {
-        fprintf(stderr, "Warning: array_list_destroy null pointer\n");
+        fprintf(stderr, "Exception at array_list_destroy(%p) null pointer\n", nullptr);
         return;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
@@ -86,7 +86,7 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
 
 bool array_list_add(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index > array_list->size) {
-        fprintf(stderr, "Warning: array_list_add index %d out of bounds\n", index);
+        fprintf(stderr,  "Exception at array_list_add(%p, %d) index out of bounds\n", (void*) array_list, index);
         return false;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
@@ -154,7 +154,7 @@ void* array_list_get_last(const ArrayList* array_list) {
 
 void* array_list_set(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_set index %d out of bounds\n", index);
+        fprintf(stderr, "Exception at array_list_set(%p, %d) index out of bounds\n", (void*) array_list, index);
         return nullptr;
     }
     void* old_element = array_list->elements[index];;
@@ -164,7 +164,7 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 
 bool array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
-        fprintf(stderr, "Warning: array_list_swap index out of bounds\n");
+        fprintf(stderr, "Exception at array_list_swap(%p, %d, %d) index out of bounds\n", (void*) array_list, index_a, index_b);
         return false;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
@@ -215,7 +215,7 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || end_index > array_list->size || start_index >= end_index) {
-        fprintf(stderr, "Warning: array_list_remove_range invalid range: %d to %d\n", start_index, end_index);
+        fprintf(stderr, "Exception at array_list_remove_range(%p, %d, %d) invalid range\n", (void*) array_list, start_index, end_index);
         return 0;
     }
     int count = end_index - start_index;

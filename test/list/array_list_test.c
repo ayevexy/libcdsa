@@ -142,7 +142,7 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
 
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Warning: array_list_add index %d out of bounds\n";
+    const char* message = "Exception at array_list_add(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -263,6 +263,7 @@ void test_get_element_from_array_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
+    const char* message = "Exception at array_list_get(%p, %d) index out of bounds\n";
     array_list_add_last(array_list, &(int){10});
     // when
     void* element = array_list_get(array_list, index);
@@ -313,7 +314,7 @@ void test_set_element_of_array_list() {
 
 static void set_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Warning: array_list_set index %d out of bounds\n";
+    const char* message = "Exception at array_list_set(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -387,7 +388,7 @@ void test_remove_element_by_index_from_array_list() {
 
 static void remove_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Warning: array_list_remove index %d out of bounds\n";
+    const char* message = "Exception at array_list_remove(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
 
@@ -494,6 +495,7 @@ void test_remove_elements_in_range_from_array_list() {
 
 static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
+    char message[] = "Exception at array_list_remove_range(%p, %d, %d) invalid range\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
 
@@ -992,6 +994,7 @@ void test_create_empty_sub_list_of_array_list() {
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
+    char message[] = "Exception at array_list_sub_list(%p, %d, %d) invalid range\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when

@@ -15,13 +15,15 @@ struct ArrayList {
 
 static void grow(ArrayList*);
 
+typedef struct IterationContext IterationContext;
+
 static Iterator* iterator(const ArrayList*);
 
-static bool has_next(const ArrayList*, const int* cursor);
+static bool has_next(const ArrayList*, const IterationContext*);
 
-static void* next(const ArrayList*, int* cursor);
+static void* next(const ArrayList*, IterationContext*);
 
-static void reset(int* cursor);
+static void reset(IterationContext*);
 
 static void bubble_sort(ArrayList*, Comparator);
 
@@ -500,25 +502,29 @@ static void grow(ArrayList* array_list) {
     array_list->capacity = new_capacity;
 }
 
+struct IterationContext {
+    int cursor;
+};
+
 static Iterator* iterator(const ArrayList* array_list) {
-    int* cursor = memory_alloc(sizeof(int));
-    *cursor = 0;
-    return iterator_from(array_list, cursor, has_next, next, reset);
+    IterationContext* iteration_context = memory_alloc(sizeof(IterationContext));
+    iteration_context->cursor = 0;
+    return iterator_from(array_list, iteration_context, has_next, next, reset);
 }
 
-static bool has_next(const ArrayList* array_list, const int* cursor) {
-    return *cursor < array_list->size;
+static bool has_next(const ArrayList* array_list, const IterationContext* iteration_context) {
+    return iteration_context->cursor < array_list->size;
 }
 
-static void* next(const ArrayList* array_list, int* cursor) {
-    if (*cursor >= array_list->size) {
+static void* next(const ArrayList* array_list, IterationContext* iteration_context) {
+    if (iteration_context->cursor >= array_list->size) {
         return nullptr;
     }
-    return array_list->elements[(*cursor)++];
+    return array_list->elements[iteration_context->cursor++];
 }
 
-static void reset(int* cursor) {
-    *cursor = 0;
+static void reset(IterationContext* iteration_context) {
+    iteration_context->cursor = 0;
 }
 
 static void bubble_sort(ArrayList* array_list, Comparator compare) {

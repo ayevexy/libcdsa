@@ -42,9 +42,9 @@ void array_list_destroy(ArrayList**, void (*delete)(void*));
 
 bool array_list_add(ArrayList*, int index, const void* element);
 
-void array_list_add_first(ArrayList*, const void* element);
+bool array_list_add_first(ArrayList*, const void* element);
 
-void array_list_add_last(ArrayList*, const void* element);
+bool array_list_add_last(ArrayList*, const void* element);
 
 bool array_list_add_all(ArrayList*, int index, Collection);
 
@@ -82,11 +82,11 @@ int array_list_retain_all(ArrayList*, Collection);
 
 int array_list_size(const ArrayList*);
 
-void array_list_trim_to_size(ArrayList*);
+bool array_list_trim_to_size(ArrayList*);
 
 int array_list_capacity(const ArrayList*);
 
-void array_list_ensure_capacity(ArrayList*, int capacity);
+bool array_list_ensure_capacity(ArrayList*, int capacity);
 
 bool array_list_is_empty(const ArrayList*);
 

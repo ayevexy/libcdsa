@@ -17,7 +17,7 @@ struct ArrayList {
     };
 };
 
-static void grow(ArrayList*);
+static bool grow(ArrayList*);
 
 typedef struct IterationContext IterationContext;
 
@@ -50,10 +50,17 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
         fprintf(stderr, "Exception at array_list_new(%p) invalid options\n", (void*) options);
         return nullptr;
     }
-    // TODO: handle allocation failure for array_list
     ArrayList* array_list = options->memory_alloc(sizeof(ArrayList));
-    // TODO: handle allocation failure for array_list->elements
+    if (!array_list) {
+        fprintf(stderr, "Error: memory allocation failure at array_list_new()\n");
+        return nullptr;
+    }
     array_list->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
+    if (!array_list->elements) {
+        fprintf(stderr, "Error: memory allocation failure at array_list_new()\n");
+        options->memory_free(array_list);
+        return nullptr;
+    }
     array_list->size = 0;
     array_list->capacity = options->initial_capacity;
     array_list->grow_factor = options->grow_factor;
@@ -112,7 +119,7 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
         return false;
     }
     if (array_list->size >= array_list->capacity) {
-        grow(array_list);
+        if (!grow(array_list)) return false;
     }
     for (int i = array_list->size; i > index; i--) {
         array_list->elements[i] = array_list->elements[i - 1];
@@ -122,21 +129,24 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
     return true;
 }
 
-void array_list_add_first(ArrayList* array_list, const void* element) {
-    array_list_add(array_list, 0, element);
+bool array_list_add_first(ArrayList* array_list, const void* element) {
+   return array_list_add(array_list, 0, element);
 }
 
-void array_list_add_last(ArrayList* array_list, const void* element) {
-    array_list_add(array_list, array_list->size, element);
+bool array_list_add_last(ArrayList* array_list, const void* element) {
+   return array_list_add(array_list, array_list->size, element);
 }
 
 bool array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
+    int count = 0;
     while (iterator_has_next(iterator)) {
-        array_list_add(array_list, index++, iterator_next(iterator));
+        if (array_list_add(array_list, index++, iterator_next(iterator))) {
+            count++;
+        }
     }
     iterator_delete(iterator);
-    return index > 0;
+    return count == collection_size(collection);
 }
 
 bool array_list_add_all_first(ArrayList* array_list, Collection collection) {
@@ -281,22 +291,29 @@ int array_list_size(const ArrayList* array_list) {
     return array_list->size;
 }
 
-void array_list_trim_to_size(ArrayList* array_list) {
+bool array_list_trim_to_size(ArrayList* array_list) {
     constexpr int MIN_CAPACITY = 10;
     const int new_capacity = (array_list->size < MIN_CAPACITY) ? MIN_CAPACITY : array_list->size;
-    // TODO: handle allocation failure for array_list->elements
-    array_list->elements = array_list->memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
+    void** elements = array_list->memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
+    if (!elements) {
+        fprintf(stderr, "Error: memory reallocation failure at array_list_trim_to_size()\n");
+        return false;
+    }
+    array_list->elements = elements;
     array_list->capacity = new_capacity;
+    return true;
 }
 
 int array_list_capacity(const ArrayList* array_list) {
     return array_list->capacity;
 }
 
-void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
+bool array_list_ensure_capacity(ArrayList* array_list, int capacity) {
+    // TODO: improve grow logic
     while (array_list->capacity < capacity) {
-        grow(array_list);
+        if (!grow(array_list)) return false;
     }
+    return true;
 }
 
 bool array_list_is_empty(const ArrayList* array_list) {
@@ -464,7 +481,6 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         fprintf(stderr, "Exception at array_list_sub_list(%p, %d, %d) invalid range\n", (void*) array_list, start_index, end_index);
         return nullptr;
     }
-    // TODO: handle allocation failure for new_array_list
     ArrayList* new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = array_list->capacity,
         .grow_factor = array_list->grow_factor,
@@ -474,6 +490,10 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_realloc = array_list->memory_realloc,
         .memory_free = array_list->memory_free
     });
+    if (!new_array_list) {
+        fprintf(stderr, "Error: array_list_sub_list() failed to create new list\n");
+        return nullptr;
+    }
     for (int i = start_index; i < end_index; i++) {
         array_list_add_last(new_array_list, array_list->elements[i]);
     }
@@ -485,8 +505,11 @@ Collection array_list_to_collection(const ArrayList* array_list) {
 }
 
 void** array_list_to_array(const ArrayList* array_list) {
-    // TODO: handle allocation failure for elements
     void** elements = array_list->memory_alloc(sizeof(void*) * array_list->size);
+    if (!elements) {
+        fprintf(stderr, "Error: memory allocation failure at array_list_to_array()\n");
+        return nullptr;
+    }
     for (int i = 0; i < array_list->size; i++) {
         elements[i] = array_list->elements[i];
     }
@@ -523,11 +546,16 @@ char* array_list_to_string(const ArrayList* array_list) {
     return string;
 }
 
-static void grow(ArrayList* array_list) {
+static bool grow(ArrayList* array_list) {
     const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
-    // TODO: handle allocation failure for array_list->elements
-    array_list->elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    if (!elements) {
+        fprintf(stderr, "Error: memory allocation failure at array_list grow()\n");
+        return false;
+    }
+    array_list->elements = elements;
     array_list->capacity = new_capacity;
+    return true;
 }
 
 struct IterationContext {
@@ -535,8 +563,11 @@ struct IterationContext {
 };
 
 static Iterator* iterator(const ArrayList* array_list) {
-    // TODO: handle allocation failure for iteration_context
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
+    if (!iteration_context) {
+        fprintf(stderr, "Error: memory allocation failure at array_list iterator()\n");
+        return nullptr;
+    }
     iteration_context->cursor = 0;
     return iterator_from(array_list, iteration_context, has_next, next, reset);
 }

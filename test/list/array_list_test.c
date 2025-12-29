@@ -49,6 +49,7 @@ void test_create_array_list() {
 
 void test_do_not_create_array_list_with_invalid_options() {
     // given
+    const char* message = "Exception at array_list_new(%p) invalid options\n";
     ArrayListOptions invalid_options = {
         .initial_capacity = 0,
         .grow_factor = -1,
@@ -59,7 +60,9 @@ void test_do_not_create_array_list_with_invalid_options() {
     ArrayList* new_array_list = array_list_new(&invalid_options);
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_new(%p) invalid options");
+    // and
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 void test_create_array_list_from_collection() {
@@ -77,6 +80,7 @@ void test_create_array_list_from_collection() {
 
 void test_do_not_create_array_list_with_invalid_options_from_collection() {
     // given
+    const char* message = "Exception at array_list_new(%p) invalid options\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -88,7 +92,9 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     });
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_new(%p) invalid options");
+    // and
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 void test_delete_array_list_set_it_to_null() {
@@ -98,6 +104,17 @@ void test_delete_array_list_set_it_to_null() {
     array_list_delete(&new_array_list);
     // then
     TEST_ASSERT_NULL(new_array_list);
+}
+
+void test_delete_null_array_list_warns_client() {
+    // given
+    const char* message = "Exception at array_list_delete(%p) null pointer\n";
+    ArrayList* new_array_list = nullptr;
+    // when
+    array_list_delete(&new_array_list);
+    // then
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 static void delete_data(void* element) {
@@ -114,6 +131,17 @@ void test_destroy_array_list_deletes_its_data() {
     int deleted_values[] = { 0, 0, 0, 0, 0 };
     TEST_ASSERT_NULL(array_list);
     TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
+}
+
+void test_destroy_null_array_list_warns_client() {
+    // given
+    const char* message = "Exception at array_list_destroy(%p) null pointer\n";
+    ArrayList* new_array_list = nullptr;
+    // when
+    array_list_destroy(&new_array_list, delete_data);
+    // then
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 void test_add_element_at_index_to_array_list() {
@@ -349,6 +377,7 @@ void test_swap_elements_of_array_list() {
 
 static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
     // given
+    const char* message = "Exception at array_list_swap(%p, %d, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -356,6 +385,9 @@ static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int inde
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(swapped);
+    // and
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
+    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
 }
 
 void test_swap_elements_of_array_list_index_a_above_bounds_warns_client() {
@@ -1061,7 +1093,9 @@ int main(void) {
     RUN_TEST(test_do_not_create_array_list_with_invalid_options_from_collection);
 
     RUN_TEST(test_delete_array_list_set_it_to_null);
+    RUN_TEST(test_delete_null_array_list_warns_client);
     RUN_TEST(test_destroy_array_list_deletes_its_data);
+    RUN_TEST(test_destroy_null_array_list_warns_client);
 
     RUN_TEST(test_add_element_at_index_to_array_list);
     RUN_TEST(test_add_element_at_index_to_array_list_exceeding_capacity_resize_it);

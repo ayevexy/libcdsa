@@ -52,12 +52,12 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     }
     ArrayList* array_list = options->memory_alloc(sizeof(ArrayList));
     if (!array_list) {
-        fprintf(stderr, "Error: memory allocation failure at array_list_new()\n");
+        fprintf(stderr, "Fatal Error at array_list_new(%p) memory allocation failure!\n", (void*) options);
         return nullptr;
     }
     array_list->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
     if (!array_list->elements) {
-        fprintf(stderr, "Error: memory allocation failure at array_list_new()\n");
+        fprintf(stderr, "Fatal Error at array_list_new(%p) memory allocation failure!\n", (void*) options);
         options->memory_free(array_list);
         return nullptr;
     }
@@ -296,7 +296,7 @@ bool array_list_trim_to_size(ArrayList* array_list) {
     const int new_capacity = (array_list->size < MIN_CAPACITY) ? MIN_CAPACITY : array_list->size;
     void** elements = array_list->memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
     if (!elements) {
-        fprintf(stderr, "Error: memory reallocation failure at array_list_trim_to_size()\n");
+        fprintf(stderr, "Fatal Error at array_list_trim_to_size(%p) memory reallocation failure!\n", (void*) array_list);
         return false;
     }
     array_list->elements = elements;
@@ -491,7 +491,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_free = array_list->memory_free
     });
     if (!new_array_list) {
-        fprintf(stderr, "Error: array_list_sub_list() failed to create new list\n");
+        fprintf(stderr, "Exception at array_list_sub_list(%p, %d, %d) failed to create new list\n", (void*) array_list, start_index, end_index);
         return nullptr;
     }
     for (int i = start_index; i < end_index; i++) {
@@ -507,7 +507,7 @@ Collection array_list_to_collection(const ArrayList* array_list) {
 void** array_list_to_array(const ArrayList* array_list) {
     void** elements = array_list->memory_alloc(sizeof(void*) * array_list->size);
     if (!elements) {
-        fprintf(stderr, "Error: memory allocation failure at array_list_to_array()\n");
+        fprintf(stderr, "Fatal Error at array_list_to_array(%p) memory allocation failure!\n", (void*) array_list);
         return nullptr;
     }
     for (int i = 0; i < array_list->size; i++) {
@@ -550,7 +550,7 @@ static bool grow(ArrayList* array_list) {
     const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
     void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
     if (!elements) {
-        fprintf(stderr, "Error: memory allocation failure at array_list grow()\n");
+        fprintf(stderr, "Fatal Error at array_list grow(%p) memory allocation failure!\n", (void*) array_list);
         return false;
     }
     array_list->elements = elements;
@@ -565,7 +565,7 @@ struct IterationContext {
 static Iterator* iterator(const ArrayList* array_list) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
     if (!iteration_context) {
-        fprintf(stderr, "Error: memory allocation failure at array_list iterator()\n");
+        fprintf(stderr, "Fatal Error at array_list iterator(%p) memory allocation failure!\n", (void*) array_list);
         return nullptr;
     }
     iteration_context->cursor = 0;

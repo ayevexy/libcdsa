@@ -29,6 +29,10 @@ FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
         TEST_ASSERT_EQUAL(array_a[i], *(int*) array_b[i]);      \
     }
 
+#define TEST_ASSERT_ERROR_MESSAGE(message)                      \
+    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);           \
+    TEST_ASSERT_EQUAL_STRING(message"\n", fprintf_fake.arg1_val)
+
 ArrayList* array_list;
 
 void setUp() {
@@ -52,7 +56,6 @@ void test_create_array_list() {
 
 void test_do_not_create_array_list_with_invalid_options() {
     // given
-    const char* message = "Exception at array_list_new(%p) invalid options\n";
     ArrayListOptions invalid_options = {
         .initial_capacity = 0,
         .grow_factor = -1,
@@ -63,9 +66,7 @@ void test_do_not_create_array_list_with_invalid_options() {
     ArrayList* new_array_list = array_list_new(&invalid_options);
     // then
     TEST_ASSERT_NULL(new_array_list);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_new(%p) invalid options");
 }
 
 void test_create_array_list_from_collection() {
@@ -83,7 +84,6 @@ void test_create_array_list_from_collection() {
 
 void test_do_not_create_array_list_with_invalid_options_from_collection() {
     // given
-    const char* message = "Exception at array_list_new(%p) invalid options\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -95,9 +95,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     });
     // then
     TEST_ASSERT_NULL(new_array_list);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_new(%p) invalid options");
 }
 
 void test_delete_array_list_set_it_to_null() {
@@ -111,13 +109,11 @@ void test_delete_array_list_set_it_to_null() {
 
 void test_delete_null_array_list_warns_client() {
     // given
-    const char* message = "Exception at array_list_delete(%p) null pointer\n";
     ArrayList* new_array_list = nullptr;
     // when
     array_list_delete(&new_array_list);
     // then
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_delete(%p) null pointer");
 }
 
 static void delete_data(void* element) {
@@ -138,13 +134,11 @@ void test_destroy_array_list_deletes_its_data() {
 
 void test_destroy_null_array_list_warns_client() {
     // given
-    const char* message = "Exception at array_list_destroy(%p) null pointer\n";
     ArrayList* new_array_list = nullptr;
     // when
     array_list_destroy(&new_array_list, delete_data);
     // then
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_destroy(%p) null pointer");
 }
 
 void test_add_element_at_index_to_array_list() {
@@ -173,7 +167,6 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
 
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Exception at array_list_add(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -181,9 +174,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(added);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_add(%p, %d) index out of bounds");
 }
 
 void test_add_element_at_index_to_array_list_index_above_bounds_warns_client() {
@@ -294,14 +285,12 @@ void test_get_element_from_array_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Exception at array_list_get(%p, %d) index out of bounds\n";
     array_list_add_last(array_list, &(int){10});
     // when
     void* element = array_list_get(array_list, index);
     // then
     TEST_ASSERT_NULL(element);
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_get(%p, %d) index out of bounds");
 }
 
 void test_get_element_from_array_list_index_above_bounds_warns_client() {
@@ -346,7 +335,6 @@ void test_set_element_of_array_list() {
 
 static void set_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Exception at array_list_set(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -354,9 +342,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(old_value);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_set(%p, %d) index out of bounds");
 }
 
 void test_set_element_of_array_list_index_above_bounds_warns_client() {
@@ -381,7 +367,6 @@ void test_swap_elements_of_array_list() {
 
 static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
     // given
-    const char* message = "Exception at array_list_swap(%p, %d, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
@@ -389,9 +374,7 @@ static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int inde
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(swapped);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_swap(%p, %d, %d) index out of bounds");
 }
 
 void test_swap_elements_of_array_list_index_a_above_bounds_warns_client() {
@@ -424,19 +407,14 @@ void test_remove_element_by_index_from_array_list() {
 
 static void remove_index_out_of_bounds_test_helper(int index) {
     // given
-    const char* message = "Exception at array_list_remove(%p, %d) index out of bounds\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
-
     // when
     int* element = array_list_remove(array_list, index);
-
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(element);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_remove(%p, %d) index out of bounds");
 }
 
 void test_remove_element_by_index_from_array_list_index_above_bounds_warns_client() {
@@ -531,20 +509,14 @@ void test_remove_elements_in_range_from_array_list() {
 
 static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
-    char message[] = "Exception at array_list_remove_range(%p, %d, %d) invalid range\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
-
     // when
     int count = array_list_remove_range(array_list, start_index, end_index);
-
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_EQUAL(0, count);
-    // and
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_NOT_NULL(fprintf_fake.arg1_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_remove_range(%p, %d, %d) invalid range");
 }
 
 void test_remove_elements_in_range_from_array_list_end_index_above_bounds_warns_client() {
@@ -1030,15 +1002,13 @@ void test_create_empty_sub_list_of_array_list() {
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
-    char message[] = "Exception at array_list_sub_list(%p, %d, %d) invalid range\n";
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
     ArrayList* sub_list = array_list_sub_list(array_list, start_index, end_index);
     // then
     TEST_ASSERT_NULL(sub_list);
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);
-    TEST_ASSERT_EQUAL_STRING(message, fprintf_fake.arg1_val);
+    TEST_ASSERT_ERROR_MESSAGE("Exception at array_list_sub_list(%p, %d, %d) invalid range");
 }
 
 void test_create_sub_list_end_index_above_bounds_returns_null_and_warns_client() {

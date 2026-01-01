@@ -646,6 +646,8 @@ void test_array_list_iterator() {
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_NULL(iterator_next(iterator));
+    // clean up
+    iterator_delete(&iterator);
 }
 
 static void action_add_one(void* element) {

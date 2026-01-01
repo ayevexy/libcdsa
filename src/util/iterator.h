@@ -30,6 +30,6 @@ void* iterator_next(Iterator*);
 
 void iterator_reset(Iterator*);
 
-void iterator_delete(Iterator*);
+void iterator_delete(Iterator**);
 
 #endif

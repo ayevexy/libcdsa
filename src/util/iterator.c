@@ -50,7 +50,13 @@ void iterator_reset(Iterator* iterator) {
     iterator->reset(iterator->internal_state);
 }
 
-void iterator_delete(Iterator* iterator) {
+void iterator_delete(Iterator** iterator_pointer) {
+    if (!*iterator_pointer) {
+        set_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
+        return;
+    }
+    Iterator* iterator = *iterator_pointer;
     iterator->memory_free(iterator->internal_state);
     iterator->memory_free(iterator);
+    *iterator_pointer = nullptr;
 }

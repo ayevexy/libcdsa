@@ -168,7 +168,7 @@ bool array_list_add_all(ArrayList* array_list, int index, Collection collection)
             count++;
         }
     }
-    iterator_delete(iterator);
+    iterator_delete(&iterator);
     return count == collection_size(collection);
 }
 
@@ -259,7 +259,7 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
             count++;
         }
     }
-    iterator_delete(iterator);
+    iterator_delete(&iterator);
     return count;
 }
 
@@ -318,7 +318,7 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
         }
         iterator_reset(iterator);
     }
-    iterator_delete(iterator);
+    iterator_delete(&iterator);
     return count;
 }
 
@@ -459,7 +459,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
             break;
         }
     }
-    iterator_delete(iterator);
+    iterator_delete(&iterator);
     return contains;
 }
 

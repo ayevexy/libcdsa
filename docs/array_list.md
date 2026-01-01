@@ -436,7 +436,7 @@ iterator_reset(iterator);
 After use, delete the iterator to free memory:
 
 ```c++
-iterator_delete(iterator);
+iterator_delete(&iterator);
 ```
 
 ---

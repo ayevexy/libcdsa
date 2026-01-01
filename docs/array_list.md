@@ -82,15 +82,21 @@ You may supply custom options or use the default:
     .initial_capacity = 10,                                 \
     .grow_factor = 2.0,                                     \
     .equals = pointer_equals,                               \
-    .to_string = pointer_to_string                          \
+    .to_string = pointer_to_string,                         \
+    .memory_alloc = malloc,                                 \
+    .memory_realloc = realloc,                              \
+    .memory_free = free                                     \
 }
 ```
 
 For an options object to be valid it has to constraint the following rules:
-- `initial_capacity >= 10`
+- `initial_capacity >= 10 and < INT_MAX`
 - `grow_factor >= 1.1`
 - `equals != nullptr`
 - `to_string != nullptr`
+- `memory_alloc != nullptr`
+- `memory_realloc != nullptr`
+- `memory_free != nullptr`
 
 The function returns a pointer to a newly allocated `ArrayList` or null if options are invalid.
 

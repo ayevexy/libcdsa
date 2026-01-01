@@ -2,8 +2,11 @@
 
 #include "util/error.h"
 #include <string.h>
+#include <limits.h>
 
 #define MIN_CAPACITY 10
+#define MAX_CAPACITY (INT_MAX - 1)
+#define MIN_GROW_FACTOR 1.1
 
 struct ArrayList {
     void** elements;
@@ -48,7 +51,15 @@ static int partition(void**, int, int, Comparator);
 static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
-    if (options->initial_capacity < 10 || options->grow_factor <= 1.1 || !options->equals || !options->to_string) {
+    if (options->initial_capacity < MIN_CAPACITY
+        || options->initial_capacity > MAX_CAPACITY
+        || options->grow_factor < MIN_GROW_FACTOR
+        || !options->equals
+        || !options->to_string
+        || !options->memory_alloc
+        || !options->memory_realloc
+        || !options->memory_free
+    ) {
         set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid argument(s)", __func__);
         return nullptr;
     }
@@ -592,6 +603,7 @@ char* array_list_to_string(const ArrayList* array_list) {
 
 static bool resize(ArrayList* array_list, int new_capacity) {
     new_capacity = new_capacity < MIN_CAPACITY ? MIN_CAPACITY : new_capacity;
+    new_capacity = new_capacity > MAX_CAPACITY ? MAX_CAPACITY : new_capacity;
 
     void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
     if (!elements) {

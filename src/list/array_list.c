@@ -3,6 +3,8 @@
 #include "util/error.h"
 #include <string.h>
 
+#define MIN_CAPACITY 10
+
 struct ArrayList {
     void** elements;
     int size;
@@ -327,7 +329,6 @@ int array_list_size(const ArrayList* array_list) {
 }
 
 bool array_list_trim_to_size(ArrayList* array_list) {
-    constexpr int MIN_CAPACITY = 10;
     const int new_capacity = (array_list->size < MIN_CAPACITY) ? MIN_CAPACITY : array_list->size;
     void** elements = array_list->memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
     if (!elements) {
@@ -344,10 +345,22 @@ int array_list_capacity(const ArrayList* array_list) {
 }
 
 bool array_list_ensure_capacity(ArrayList* array_list, int capacity) {
-    // TODO: improve grow logic
-    while (array_list->capacity < capacity) {
-        if (!grow(array_list)) return false;
+    if (array_list->capacity >= capacity) {
+        return true;
     }
+
+    int new_capacity = array_list->capacity;
+    while (new_capacity < capacity) {
+        new_capacity = (int) (new_capacity * array_list->grow_factor);
+    }
+
+    void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
+        return false;
+    }
+    array_list->elements = elements;
+    array_list->capacity = new_capacity;
     return true;
 }
 
@@ -528,7 +541,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         return nullptr;
     }
     ArrayList* new_array_list = array_list_new(&(ArrayListOptions) {
-        .initial_capacity = array_list->capacity,
+        .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
         .grow_factor = array_list->grow_factor,
         .equals = array_list->equals,
         .to_string = array_list->to_string,

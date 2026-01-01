@@ -605,7 +605,14 @@ void test_get_array_list_capacity() {
     TEST_ASSERT_EQUAL(20, capacity);
 }
 
-void test_ensure_capacity_of_array_list() {
+void test_ensure_capacity_of_array_list_is_sufficient() {
+    // when
+    array_list_ensure_capacity(array_list, 5);
+    // then
+    TEST_ASSERT_EQUAL(10, array_list_capacity(array_list));
+}
+
+void test_ensure_capacity_of_array_list_is_insufficient_then_expand_it() {
     // when
     array_list_ensure_capacity(array_list, 25);
     // then
@@ -1097,7 +1104,8 @@ int main(void) {
     RUN_TEST(test_trim_array_list_capacity_to_match_size);
     RUN_TEST(test_trim_array_list_capacity_to_minimum_capacity_for_size_less_than_2);
     RUN_TEST(test_get_array_list_capacity);
-    RUN_TEST(test_ensure_capacity_of_array_list);
+    RUN_TEST(test_ensure_capacity_of_array_list_is_sufficient);
+    RUN_TEST(test_ensure_capacity_of_array_list_is_insufficient_then_expand_it);
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_is_not_empty);
 

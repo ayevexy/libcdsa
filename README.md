@@ -54,7 +54,6 @@ This project is being built using the following technologies:
 - The C Programming Language
 - CMake Build System
 - Unity Test Framework
-- Fake Function Framework
 
 ---
 

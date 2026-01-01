@@ -62,13 +62,7 @@ Now, all the functions and types of this module will be accessible to your code.
 
 ### Error Handling
 
-All operations that take indexes as parameters fail if those are negative or
-greater than the array list size, but the program will continue running normally and
-a warning will be printed to `stderr`:
-
-```c++
-array_list_add(array_list, -1, &value); // "Warning: array_list_add index -1 out of bounds
-```
+Before continuing, read how the library error handling mechanism works [here](error_handling.md).
 
 ---
 

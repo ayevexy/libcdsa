@@ -2,14 +2,6 @@
 #define ARRAY_LIST_TEST_H
 
 #include <stdio.h>
-#include "fff.h"
-
-DEFINE_FFF_GLOBALS;
-FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
-
-#define INIT_MOCKS()        \
-    RESET_FAKE(fprintf);    \
-    FFF_RESET_HISTORY();    \
 
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
@@ -34,8 +26,8 @@ FAKE_VALUE_FUNC_VARARG(int, fprintf, FILE*, const char*, ...);
     }
 
 
-#define TEST_ASSERT_ERROR_MESSAGE(message)                      \
-    TEST_ASSERT_EQUAL(stderr, fprintf_fake.arg0_val);           \
-    TEST_ASSERT_EQUAL_STRING(message"\n", fprintf_fake.arg1_val)
+#define TEST_ASSERT_ERROR_CODE(error_code)  \
+    TEST_ASSERT_EQUAL(error_code, global_error);
+
 
 #endif

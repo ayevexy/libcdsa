@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME}
         src/list/array_list.c
         src/util/iterator.c
         src/util/functions.c
+        src/util/error.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -98,20 +99,6 @@ target_include_directories(unity_test_framework PUBLIC
         ${unity_SOURCE_DIR}/src
 )
 
-# FFF (Fake Function Framework)
-FetchContent_Declare(
-        fff
-        GIT_REPOSITORY https://github.com/meekrosoft/fff.git
-        GIT_TAG v1.1
-        EXCLUDE_FROM_ALL
-)
-FetchContent_MakeAvailable(fff)
-
-add_library(fake_function_framework INTERFACE)
-target_include_directories(fake_function_framework INTERFACE
-        ${fff_SOURCE_DIR}
-)
-
 # ---- Tests ----
 
 enable_testing()
@@ -132,7 +119,6 @@ foreach(TEST_FILE ${TEST_FILES})
     target_link_libraries(${EXECUTABLE} PRIVATE
             ${PROJECT_NAME}
             unity_test_framework
-            fake_function_framework
     )
 
     add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})

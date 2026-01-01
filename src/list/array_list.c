@@ -19,7 +19,7 @@ struct ArrayList {
     };
 };
 
-static bool grow(ArrayList*);
+static bool resize(ArrayList*, int);
 
 typedef struct IterationContext IterationContext;
 
@@ -138,7 +138,8 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
         return false;
     }
     if (array_list->size >= array_list->capacity) {
-        if (!grow(array_list)) return false;
+        const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+        if (!resize(array_list, new_capacity)) return false;
     }
     for (int i = array_list->size; i > index; i--) {
         array_list->elements[i] = array_list->elements[i - 1];
@@ -329,15 +330,7 @@ int array_list_size(const ArrayList* array_list) {
 }
 
 bool array_list_trim_to_size(ArrayList* array_list) {
-    const int new_capacity = (array_list->size < MIN_CAPACITY) ? MIN_CAPACITY : array_list->size;
-    void** elements = array_list->memory_realloc(array_list->elements, sizeof(void*) * new_capacity);
-    if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return false;
-    }
-    array_list->elements = elements;
-    array_list->capacity = new_capacity;
-    return true;
+    return resize(array_list, array_list->size);
 }
 
 int array_list_capacity(const ArrayList* array_list) {
@@ -353,15 +346,7 @@ bool array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     while (new_capacity < capacity) {
         new_capacity = (int) (new_capacity * array_list->grow_factor);
     }
-
-    void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
-    if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
-        return false;
-    }
-    array_list->elements = elements;
-    array_list->capacity = new_capacity;
-    return true;
+    return resize(array_list, new_capacity);
 }
 
 bool array_list_is_empty(const ArrayList* array_list) {
@@ -605,8 +590,9 @@ char* array_list_to_string(const ArrayList* array_list) {
     return string;
 }
 
-static bool grow(ArrayList* array_list) {
-    const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+static bool resize(ArrayList* array_list, int new_capacity) {
+    new_capacity = new_capacity < MIN_CAPACITY ? MIN_CAPACITY : new_capacity;
+
     void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);

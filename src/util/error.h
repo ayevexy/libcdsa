@@ -1,6 +1,8 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+#include <string.h>
+
 typedef enum {
     NO_ERROR = 0,
     NULL_POINTER_ERROR,
@@ -14,6 +16,14 @@ extern _Thread_local Error global_error;
 extern _Thread_local char global_error_message[];
 
 #define ERROR_MESSAGE global_error_message
+
+#define ERROR_MESSAGE_VALUE error_message_value()
+
+static inline char* error_message_value() {
+    static _Thread_local char error_message[256];
+    strcpy(error_message, global_error_message);
+    return error_message;
+}
 
 #define attempt(expression) (global_error = NO_ERROR, (expression), attempt_get_error())
 

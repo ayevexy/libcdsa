@@ -1,5 +1,7 @@
 #include "iterator.h"
 
+#include "error.h"
+
 struct Iterator {
     const void* iterable_structure;
     void* internal_state;
@@ -22,6 +24,10 @@ Iterator* iterator_new(
     void (*memory_free)(void*)
 ) {
     Iterator* iterator = memory_alloc(sizeof(Iterator));
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
     iterator->iterable_structure = iterable_structure;
     iterator->internal_state = internal_state;
     iterator->has_next = has_next;

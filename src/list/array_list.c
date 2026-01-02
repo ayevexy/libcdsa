@@ -369,7 +369,7 @@ bool array_list_is_empty(const ArrayList* array_list) {
 }
 
 Iterator* array_list_iterator(const ArrayList* array_list) {
-   return iterator((ArrayList*) array_list);
+   return iterator(array_list);
 }
 
 void array_list_for_each(ArrayList* array_list, Consumer action) {

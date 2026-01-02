@@ -37,10 +37,10 @@ void test_do_not_create_array_list_with_invalid_options() {
         .to_string = nullptr
     };
     // when
-    ArrayList* new_array_list = array_list_new(&invalid_options);
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&invalid_options));
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR(INVALID_ARGUMENTS_ERROR);
+    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
 }
 
 void test_create_array_list_from_collection() {
@@ -61,15 +61,15 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {
         .initial_capacity = 0,
         .grow_factor = -1,
         .equals = nullptr,
         .to_string = nullptr
-    });
+    }));
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR(INVALID_ARGUMENTS_ERROR);
+    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
 }
 
 void test_delete_array_list_set_it_to_null() {
@@ -85,9 +85,9 @@ void test_delete_null_array_list_fails() {
     // given
     ArrayList* new_array_list = nullptr;
     // when
-    array_list_delete(&new_array_list);
+    Error error = attempt(array_list_delete(&new_array_list));
     // then
-    TEST_ASSERT_ERROR(NULL_POINTER_ERROR);
+    TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
 static void delete_data(void* element) {
@@ -110,9 +110,9 @@ void test_destroy_null_array_list_fails() {
     // given
     ArrayList* new_array_list = nullptr;
     // when
-    array_list_destroy(&new_array_list, delete_data);
+    Error error = attempt(array_list_destroy(&new_array_list, delete_data));
     // then
-    TEST_ASSERT_ERROR(NULL_POINTER_ERROR);
+    TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
 void test_add_element_at_index_to_array_list() {
@@ -144,11 +144,11 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool added = array_list_add(array_list, index, &(int){10});
+    bool added; Error error = attempt(added = array_list_add(array_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(added);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_add_element_at_index_to_array_list_index_above_bounds_fails() {
@@ -261,10 +261,10 @@ static void get_index_out_of_bounds_test_helper(int index) {
     // given
     array_list_add_last(array_list, &(int){10});
     // when
-    void* element = array_list_get(array_list, index);
+    void* element; Error error = attempt(element = array_list_get(array_list, index));
     // then
     TEST_ASSERT_NULL(element);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_get_element_from_array_list_index_above_bounds_fails() {
@@ -312,11 +312,11 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* old_value = array_list_set(array_list, index, &(int){10});
+    int* old_value; Error error = attempt(old_value = array_list_set(array_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(old_value);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_set_element_of_array_list_index_above_bounds_fails() {
@@ -344,11 +344,11 @@ static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int inde
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool swapped = array_list_swap(array_list, index_a, index_b);
+    bool swapped; Error error = attempt(swapped = array_list_swap(array_list, index_a, index_b));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(swapped);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_swap_elements_of_array_list_index_a_above_bounds_fails() {
@@ -384,11 +384,11 @@ static void remove_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* element = array_list_remove(array_list, index);
+    int* element; Error error = attempt(element = array_list_remove(array_list, index));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(element);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_remove_element_by_index_from_array_list_index_above_bounds_fails() {
@@ -485,11 +485,11 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int count = array_list_remove_range(array_list, start_index, end_index);
+    int count; Error error = attempt(count = array_list_remove_range(array_list, start_index, end_index));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_EQUAL(0, count);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_remove_elements_in_range_from_array_list_end_index_above_bounds_fails() {
@@ -987,10 +987,10 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* sub_list = array_list_sub_list(array_list, start_index, end_index);
+    ArrayList* sub_list; Error error = attempt(sub_list = array_list_sub_list(array_list, start_index, end_index));
     // then
     TEST_ASSERT_NULL(sub_list);
-    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
 void test_create_sub_list_end_index_above_bounds_fails() {

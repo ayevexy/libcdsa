@@ -3,7 +3,6 @@
 #include "util/error.h"
 #include <string.h>
 #include <limits.h>
-#include <stdio.h>
 
 #define MIN_CAPACITY 10
 #define MAX_CAPACITY (INT_MAX - 1)
@@ -89,9 +88,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
 }
 
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options) {
-    ArrayList* array_list;
-
-    Error error = attempt(array_list = array_list_new(options));
+    ArrayList* array_list; Error error = attempt(array_list = array_list_new(options));
 
     if (error == INVALID_ARGUMENTS_ERROR) {
         set_error(error, "Error at %s(): invalid argument(s)", __func__);
@@ -106,7 +103,7 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 
     if (error == MEMORY_ALLOCATION_ERROR) {
         array_list_delete(&array_list);
-        set_error(error, "Error at %s(): %s", __func__, ERROR_MESSAGE_VALUE);
+        set_error(error, "Error at %s(): %s", __func__, error_message());
         return nullptr;
     }
 

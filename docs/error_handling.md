@@ -27,15 +27,14 @@ Also, checking a global variable outside the context of a function looks like it
 Luckily the library provides the `attempt` macro to hide this complexity:
 
 ```c++
-ArrayList* list;
+// attempt to execute a function expression and capture its error
+ArrayList* list; Error error = attempt(array_list = array_list_new(&options));
 
-Error error = attempt(array_list = array_list_new(&options));   // attempt to execute a function expression and capture its error
-
-if (error == INVALID_ARGUMENTS_ERROR) {                         // handle INVALID_ARGUMENTS_ERROR
-    printf("%s", ERROR_MESSAGE);                                // Exception at array_list_new(): invalid argument(s)
+if (error == INVALID_ARGUMENTS_ERROR) {     // handle INVALID_ARGUMENTS_ERROR
+    printf("%s", error_message());          // Exception at array_list_new(): invalid argument(s)
 }
-if (error == MEMORY_ALLOCATION_ERROR) {                         // handle MEMORY_ALLOCATION_ERROR
-    printf("%s", ERROR_MESSAGE);                                // Fatal Error at array_list_new(%p): memory allocation failure!
+if (error == MEMORY_ALLOCATION_ERROR) {     // handle MEMORY_ALLOCATION_ERROR
+    printf("%s", error_message());          // Fatal Error at array_list_new(%p): memory allocation failure!
 }
 ```
 
@@ -45,26 +44,16 @@ The snippet above expands to the following code:
 ArrayList* list;
 
 Error error = (
-    global_error = NO_ERROR,                    // ensure global error is in valid state
-    (array_list = array_list_new(options)),     // execute the function expression which may set an error
-    get_error()                                 // return the captured error and reset global error state
+    set_error(NO_ERROR, "\0"),              // ensure global error is in a valid state
+    (list = array_list_new(options)),       // execute the function expression which may set an error
+    get_error()                             // return the captured error and reset global error state
 );
 
-if (error == INVALID_ARGUMENTS_ERROR) {          // handle INVALID_ARGUMENTS_ERROR
-    printf("%s", global_error_message);          // Exception at array_list_new(): invalid argument(s)
+if (error == INVALID_ARGUMENTS_ERROR) {     // handle INVALID_ARGUMENTS_ERROR
+    printf("%s", global_error_message);     // Exception at array_list_new(): invalid argument(s)
 }
 
-if (error == MEMORY_ALLOCATION_ERROR) {          // handle MEMORY_ALLOCATION_ERROR
-    printf("%s", global_error_message);          // Fatal Error at array_list_new(%p): memory allocation failure!
-}
-```
-
-Where `get_error` is the following function:
-
-```c++
-static inline Error get_error(void){
-    Error error = global_error;                 // capture current error
-    global_error = NO_ERROR;                    // reset global error
-    return error;                               // return current error
+if (error == MEMORY_ALLOCATION_ERROR) {     // handle MEMORY_ALLOCATION_ERROR
+    printf("%s", global_error_message);     // Fatal Error at array_list_new(%p): memory allocation failure!
 }
 ```

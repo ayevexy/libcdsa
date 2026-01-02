@@ -26,8 +26,8 @@
     }
 
 
-#define TEST_ASSERT_ERROR_CODE(error_code)  \
-    TEST_ASSERT_EQUAL(error_code, global_error);
+#define TEST_ASSERT_ERROR(error)                \
+    TEST_ASSERT_EQUAL(error, global_error);
 
 
 #endif

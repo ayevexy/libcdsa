@@ -40,7 +40,7 @@ void test_do_not_create_array_list_with_invalid_options() {
     ArrayList* new_array_list = array_list_new(&invalid_options);
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR_CODE(INVALID_ARGUMENTS_ERROR);
+    TEST_ASSERT_ERROR(INVALID_ARGUMENTS_ERROR);
 }
 
 void test_create_array_list_from_collection() {
@@ -69,7 +69,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     });
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ERROR_CODE(INVALID_ARGUMENTS_ERROR);
+    TEST_ASSERT_ERROR(INVALID_ARGUMENTS_ERROR);
 }
 
 void test_delete_array_list_set_it_to_null() {
@@ -87,7 +87,7 @@ void test_delete_null_array_list_fails() {
     // when
     array_list_delete(&new_array_list);
     // then
-    TEST_ASSERT_ERROR_CODE(NULL_POINTER_ERROR);
+    TEST_ASSERT_ERROR(NULL_POINTER_ERROR);
 }
 
 static void delete_data(void* element) {
@@ -112,7 +112,7 @@ void test_destroy_null_array_list_fails() {
     // when
     array_list_destroy(&new_array_list, delete_data);
     // then
-    TEST_ASSERT_ERROR_CODE(NULL_POINTER_ERROR);
+    TEST_ASSERT_ERROR(NULL_POINTER_ERROR);
 }
 
 void test_add_element_at_index_to_array_list() {
@@ -148,7 +148,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(added);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_add_element_at_index_to_array_list_index_above_bounds_fails() {
@@ -264,7 +264,7 @@ static void get_index_out_of_bounds_test_helper(int index) {
     void* element = array_list_get(array_list, index);
     // then
     TEST_ASSERT_NULL(element);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_get_element_from_array_list_index_above_bounds_fails() {
@@ -316,7 +316,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(old_value);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_set_element_of_array_list_index_above_bounds_fails() {
@@ -348,7 +348,7 @@ static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int inde
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_FALSE(swapped);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_swap_elements_of_array_list_index_a_above_bounds_fails() {
@@ -388,7 +388,7 @@ static void remove_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_NULL(element);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_remove_element_by_index_from_array_list_index_above_bounds_fails() {
@@ -489,7 +489,7 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(values, array_list);
     TEST_ASSERT_EQUAL(0, count);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_remove_elements_in_range_from_array_list_end_index_above_bounds_fails() {
@@ -990,7 +990,7 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
     ArrayList* sub_list = array_list_sub_list(array_list, start_index, end_index);
     // then
     TEST_ASSERT_NULL(sub_list);
-    TEST_ASSERT_ERROR_CODE(INDEX_OUT_OF_BOUNDS_ERROR);
+    TEST_ASSERT_ERROR(INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_create_sub_list_end_index_above_bounds_fails() {

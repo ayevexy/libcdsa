@@ -647,10 +647,7 @@ The output format depends on the `to_string` function defined in `ArrayListOptio
 defined in `DEFAULT_ARRAY_LIST_OPTIONS` prints the memory addresses of the elements. To customize:
 
 ```c++
-char* my_to_string(void* element) {
-    int length = 10; // length of the string representation of the element
-    char* string = malloc(length * sizeof(char)); // This is mandatory, that pointer will be freed internally later
-    snprintf(string, length, "%p", element);
-    return string;
-};
+int my_to_string(const void* element, char* string, size_t length) {
+    return snprintf(string, length, "%p", element); // change format and vaargs
+}
 ```

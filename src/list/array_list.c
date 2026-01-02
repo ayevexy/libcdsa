@@ -3,6 +3,7 @@
 #include "util/error.h"
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 #define MIN_CAPACITY 10
 #define MAX_CAPACITY (INT_MAX - 1)
@@ -14,13 +15,15 @@ struct ArrayList {
     int capacity;
     double grow_factor;
     bool (*equals)(const void*, const void*);
-    char* (*to_string)(const void*);
+    int (*to_string)(const void*, char*, size_t);
     struct {
         void* (*memory_alloc)(size_t);
         void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 };
+
+static size_t calculate_string_size(const ArrayList*);
 
 static bool resize(ArrayList*, int);
 
@@ -571,23 +574,18 @@ void** array_list_to_array(const ArrayList* array_list) {
     return elements;
 }
 
-// TODO: redesign, currently it uses two different allocators
 char* array_list_to_string(const ArrayList* array_list) {
-    char* string = array_list->memory_alloc(sizeof(char) * 4);
+    char* string = array_list->memory_alloc(calculate_string_size(array_list));
     string[0] = '\0'; // initialize string to clear trash data
 
-    if (array_list->size == 0) {
-        strcat(string, "[]");
-        return string;
-    }
-
-    strcat(string, "[ ");
-
+    strcat(string, array_list->size == 0 ? "[" : "[ ");
     for (int i = 0; i < array_list->size; i++) {
-        char* element_string = array_list->to_string(array_list->elements[i]);
-        const int extra_space = i < array_list->size - 1 ? 2 : 0;
+        constexpr int NULL_TERMINATOR = 1;
 
-        string = array_list->memory_realloc(string, strlen(string) + strlen(element_string) + extra_space + 1);
+        const int length = array_list->to_string(array_list->elements[i], nullptr, 0) + NULL_TERMINATOR;
+        char* element_string = array_list->memory_alloc(length);
+
+        array_list->to_string(array_list->elements[i], element_string, length);
         strcat(string, element_string);
 
         if (i < array_list->size - 1) {
@@ -595,10 +593,23 @@ char* array_list_to_string(const ArrayList* array_list) {
         }
         array_list->memory_free(element_string);
     }
+    strcat(string, array_list->size == 0 ? "]" : " ]");
 
-    string = array_list->memory_realloc(string, strlen(string) + 3);
-    strcat(string, " ]");
     return string;
+}
+
+static size_t calculate_string_size(const ArrayList* array_list) {
+    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (int i = 0; i < array_list->size; i++) {
+        length += array_list->to_string(array_list->elements[i], nullptr, 0);
+
+        if (i == 0) length += 1; // space after opening bracket
+        if (i < array_list->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (i == array_list->size - 1) length += 1; // space before closing bracket
+    }
+    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static bool resize(ArrayList* array_list, int new_capacity) {

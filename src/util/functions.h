@@ -1,6 +1,8 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#include <stddef.h>
+
 typedef void (*Consumer)(void*);
 
 typedef bool (*Predicate)(const void*);
@@ -69,18 +71,18 @@ int compare_strings(const void*, const void*);
     string*: string_to_string                   \
 )
 
-char* char_to_string(const void*);
+int char_to_string(const void*, char*, size_t);
 
-char* int_to_string(const void*);
+int int_to_string(const void*, char*, size_t);
 
-char* long_to_string(const void* e);
+int long_to_string(const void*, char*, size_t);
 
-char* float_to_string(const void* e);
+int float_to_string(const void*, char*, size_t);
 
-char* double_to_string(const void* e);
+int double_to_string(const void*, char*, size_t);
 
-char* pointer_to_string(const void*);
+int pointer_to_string(const void*, char*, size_t);
 
-char* string_to_string(const void* e);
+int string_to_string(const void*, char*, size_t);
 
 #endif

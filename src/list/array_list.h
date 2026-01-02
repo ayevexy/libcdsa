@@ -22,7 +22,7 @@ typedef struct ArrayListOptions {
     int initial_capacity;
     double grow_factor;
     bool (*equals)(const void*, const void*);
-    char* (*to_string)(const void*);
+    int (*to_string)(const void*, char*, size_t);
     struct {
         void* (*memory_alloc)(size_t);
         void* (*memory_realloc)(void*, size_t);

@@ -19,8 +19,8 @@
 - [Searching](#searching)
 - [Cloning](#cloning)
 - [SubList](#sublist)
-- [To Array](#to-array)
 - [To Collection](#to-collection)
+- [To Array](#to-array)
 - [String Representation](#string-representation)
 
 ---
@@ -89,7 +89,7 @@ You may supply custom options or use the default:
 }
 ```
 
-For an options object to be valid it has to constraint the following rules:
+For an options object to be valid, it must satisfy the following rules:
 - `initial_capacity >= 10 and < INT_MAX`
 - `grow_factor >= 1.1`
 - `equals != nullptr`
@@ -98,7 +98,12 @@ For an options object to be valid it has to constraint the following rules:
 - `memory_realloc != nullptr`
 - `memory_free != nullptr`
 
-The function returns a pointer to a newly allocated `ArrayList` or null if options are invalid.
+The function returns a pointer to a newly allocated `ArrayList` or `nullptr` on failure.
+
+#### Errors:
+
+- `INVALID_ARGUMENTS_ERROR` = invalid options.
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed.
 
 ---
 
@@ -109,6 +114,11 @@ ArrayList* array_list = array_list_from(collection, DEFAULT_ARRAY_LIST_OPTIONS);
 ```
 
 See [To Collection](#to-collection) for more details about the `Collection` type.
+
+#### Errors:
+
+- `INVALID_ARGUMENTS_ERROR` = invalid options.
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed.
 
 ---
 
@@ -121,11 +131,10 @@ array_list_delete(&array_list);
 ```
 
 This safely releases the memory used back to the operating system and set the array list pointer to null.
-If a null pointer is provided, the program will continue running normally and the following message will be printed to `stderr`:
 
-```c++
-array_list_delete(&array_list); // Warning: array_list_delete null pointer
-```
+#### Errors:
+
+- `NULL_POINTER_ERROR` = null pointer argument provided.
 
 ---
 
@@ -143,6 +152,10 @@ void delete_data(void* element) {
 }
 ```
 
+#### Errors:
+
+- `NULL_POINTER_ERROR` = null pointer argument provided.
+
 ---
 
 ### Adding Elements
@@ -152,24 +165,41 @@ To append an element to the end of the list:
 ```c++
 // list: [ 1, 2, 3, 4 ]
 int value = 8;
-array_list_add_last(array_list, &value); // [ 1, 2, 3, 4, 8 ]
+bool added = array_list_add_last(array_list, &value); // [ 1, 2, 3, 4, 8 ]
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize.
+
+---
 
 To insert an element at a specific index:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
 int value = 8;
-array_list_add(array_list, 2, &value); // [1, 2, 8, 3, 4 ]
+bool added = array_list_add(array_list, 2, &value); // [1, 2, 8, 3, 4 ]
 ```
+
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize.
+
+---
 
 To insert an element at the beginning of the list:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
 int value = 8;
-array_list_add_first(array_list, &value); // [ 8, 1, 2, 3, 4 ]
+bool added = array_list_add_first(array_list, &value); // [ 8, 1, 2, 3, 4 ]
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize.
 
 ---
 
@@ -179,16 +209,29 @@ To insert all elements from a `Collection` to the beginning of the list:
 
 ```c++
 // collection: [ 1, 2, 3, 4 ]
-array_list_add_all_first(array_list, collection); // [ 1, 2, 3, 4 ]
+bool added_all = array_list_add_all_first(array_list, collection); // [ 1, 2, 3, 4 ]
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize or getting the collection iterator.
+
+---
 
 To insert all elements from a `Collection` starting at a specific index:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
 // collection: [ 5, 6 ]
-array_list_add_all(array_list, 2, collection); // [ 1, 2, 5, 6, 3, 4]
+bool added_all = array_list_add_all(array_list, 2, collection); // [ 1, 2, 5, 6, 3, 4]
 ```
+
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize or getting the collection iterator.
+
+---
 
 To insert all elements from a `Collection` to the end of the list:
 
@@ -197,6 +240,9 @@ To insert all elements from a `Collection` to the end of the list:
 // collection: [ 5, 6 ]
 array_list_add_all_last(array_list, collection); // [ 1, 2, 3, 4, 5, 6 ]
 ```
+
+#### Errors:
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize or getting the collection iterator.
 
 ---
 
@@ -221,6 +267,10 @@ Or more concisely:
 int value = *(int*) array_list_get(array_list, 2); // 3
 ```
 
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
+
 ---
 
 To retrieve the last element of the list:
@@ -229,6 +279,8 @@ To retrieve the last element of the list:
 // list: [ 1, 2, 3, 4 ]
 int value = *(int*) array_list_get_last(array_list); // 4
 ```
+
+---
 
 To retrieve the first element of the list:
 
@@ -249,12 +301,22 @@ int new_value = 20;
 array_list_set(array_list, 0, &new_value); // [ 20, 2, 3, 4 ]
 ```
 
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
+
+---
+
 To swap two elements given their indexes:
 
 ```c++
 // list: [ 1, 2, 3, 4, 5 ]
 array_list_swap(array_list, 1, 3); // [ 1, 4, 3, 2, 5 ]
 ```
+
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
 
 ---
 
@@ -264,31 +326,35 @@ To remove an element by index:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
-array_list_remove(array_list, 2); // [ 1, 2, 4 ]
+void* removed_element = array_list_remove(array_list, 2); // [ 1, 2, 4 ]
 ```
+
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = index is greater than array list size or is negative.
+
+---
 
 To remove the last element of the list:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
-array_list_remove_last(array_list); // [ 1, 2, 3 ]
+void* removed_element = array_list_remove_last(array_list); // [ 1, 2, 3 ]
 ```
 
 To remove the first element of the list:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
-array_list_remove_first(array_list); // [ 2, 3, 4 ]
+void* removed_element = array_list_remove_first(array_list); // [ 2, 3, 4 ]
 ```
-
-These 3 operations also returns the removed element.
 
 ---
 
-To remove an element by its address:
+To remove an element by its memory address:
 
 ```c++
-array_list_remove_element(array_list, &value);
+bool removed = array_list_remove_element(array_list, &value);
 ```
 
 ### Removing Multiple Elements
@@ -299,6 +365,8 @@ To clear the list, removing all elements:
 // list: [ 1, 2, 3, 4 ]
 array_list_clear(array_list); // [] 
 ```
+
+---
 
 To clear the list, removing all elements and its data via a custom callback:
 
@@ -315,26 +383,40 @@ void delete_data(void* element) {
 }
 ```
 
+---
+
 To remove all elements present in a given `Collection`:
 
 ```c++
 // list: [ 1, 2, 3, 4 ]
 // collection: [ 2, 3 ]
-array_list_remove_all(array_list, collection); // [ 3, 4]
+int removed_count = array_list_remove_all(array_list, collection); // [ 3, 4]
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed while getting the collection iterator.
+
+---
 
 To remove all elements from a start index (inclusive) to an end index (exclusive):
 
 ```c++
 // list: [ 1, 2, 3, 4, 5 ]
-array_list_remove_range(array_list, 1, 4); // [ 1, 5 ]
+int removed_count = array_list_remove_range(array_list, 1, 4); // [ 1, 5 ]
 ```
+
+#### Errors:
+
+- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is less than 0, end index is greater than array list size or start index is greater than end index.
+
+---
 
 To remove all elements matching a predicate:
 
 ```c++
 // list: [ 1, 2, 3, 4, 5, 6 ]
-array_list_remove_if(array_list, is_odd); // [ 2, 4, 6 ]
+int removed_count = array_list_remove_if(array_list, is_odd); // [ 2, 4, 6 ]
 ```
 
 Where the predicate is a function like the following:
@@ -344,6 +426,8 @@ bool is_odd(void* element) {
     return *(int*) element % 2 != 0;
 }
 ```
+
+---
 
 To replace all elements using an operator function:
 
@@ -366,11 +450,17 @@ void* replace_odd_by_next_even(void* element) {
 }
 ```
 
+---
+
 To retain all elements present in a given `Collection` while removing all other elements:
 
 ```c++
-array_list_retain_all(array_list, collection);
+int removed_count = array_list_retain_all(array_list, collection);
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed while getting the collection iterator.
 
 ---
 
@@ -382,17 +472,27 @@ To retrieve the current size:
 int size = array_list_size(array_list); // 0 if empty
 ```
 
+---
+
 To retrieve the current capacity:
 
 ```c++
 int capacity = array_list_capacity(array_list); // 10 if not grown yet
 ```
 
+---
+
 To trim the capacity to match current size:
 
 ```c++
-array_list_trim_to_size(array_list);
+bool trimmed = array_list_trim_to_size(array_list);
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize.
+
+---
 
 To ensure the provided number of elements can be added, expanding the capacity if necessary:
 
@@ -400,6 +500,10 @@ To ensure the provided number of elements can be added, expanding the capacity i
 //list capacity: 10
 array_list_ensure_capacity(array_list, 25); // capacity: 40
 ```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on resize.
 
 ---
 
@@ -423,6 +527,12 @@ Create an iterator:
 Iterator* iterator = array_list_iterator(array_list);
 ```
 
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed for creating the iterator.
+
+---
+
 Iterate through elements:
 
 ```c++
@@ -433,17 +543,25 @@ while(iterator_has_next(iterator)) {
 }
 ```
 
+---
+
 To reset an iterator to reuse it to loop again:
 
 ```c++
 iterator_reset(iterator);
 ```
 
+---
+
 After use, delete the iterator to free memory:
 
 ```c++
 iterator_delete(&iterator);
 ```
+
+#### Errors:
+
+- `NULL_POINTER_ERROR` = provided iterator pointer is null.
 
 ---
 
@@ -510,11 +628,15 @@ To find an element matching a predicate:
 void* element = array_list_find(array_list, is_odd); // nullptr if not found
 ```
 
+---
+
 To find the last element matching a predicate:
 
 ```c++
 void* element = array_list_find_last(array_list, is_odd); // nullptr if not found
 ```
+
+---
 
 To get the index of an element matching a predicate:
 
@@ -522,11 +644,15 @@ To get the index of an element matching a predicate:
 int index = array_list_index_where(array_list, is_odd); // -1 if not found
 ```
 
+---
+
 To get the last index of an element matching a predicate:
 
 ```c++
 int index = array_list_last_index_where(array_list, is_odd); // -1 if not found
 ```
+
+---
 
 Where the predicate is a function like the following:
 
@@ -536,17 +662,26 @@ bool is_odd(void* element) {
 }
 ```
 
+---
+
 To verify the presence of an element:
 
 ```c++
 bool contains = array_list_contains(array_list, &value); // true or false
 ```
 
+---
+
 To verify the presence of all elements present in a given `Collection`:
 
 ```c++
 bool contains_all = array_list_contains_all(array_list, collection);
 ```
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed while getting the collection iterator.
+
+---
 
 To get the number of occurrences of an element:
 
@@ -554,17 +689,23 @@ To get the number of occurrences of an element:
 int count = array_list_occurrences_of(array_list, &value); // 0 if none
 ```
 
+---
+
 To retrieve the index of an element:
 
 ```c++
 int index = array_list_index_of(array_list, &value); // -1 if not found
 ```
 
+---
+
 To retrieve the index of the last occurrence of an element:
 
 ```c++
 int last_index = array_list_last_index_of(array_list, &value); // -1 if not found
 ```
+
+---
 
 These functions rely on the `equals` function provided in `ArrayListOptions`. The library provides default
 `equals` implementations for the following data types: `char`, `int`, `long`, `float`, `double`, `void*` and `string`. The one
@@ -576,6 +717,8 @@ bool my_equals(void* element_a, void* element_b) {
     return *(int*) element_a == *(int*) element_b;
 }
 ```
+
+---
 
 To search for an element index, using the binary search algorithm:
 
@@ -599,6 +742,12 @@ To create a shallow copy of the array list:
 ArrayList* copy = array_list_clone(array_list); // [ 1, 2, 3, 4 ]
 ```
 
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on creating new array list.
+
+---
+
 ### SubList
 
 To create a view of the array list from a start index (inclusive) to an end index (exclusive):
@@ -608,20 +757,12 @@ To create a view of the array list from a start index (inclusive) to an end inde
 ArrayList* sub_list = array_list_sub_list(array_list, 1, 5); // [ 2, 3, 4, 5 ]
 ```
 
-### To Array
+#### Errors:
 
-To convert an array list to an array:
+- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is negative, end index is greater than array list size or start index is greater than end index.
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on creating new array list.
 
-```c++
-// list: [ 1, 2, 3, 4 ]
-void** array = array_list_to_array(array_list); // [ 1, 2, 3, 4 ]
-```
-
-Or, more precisely:
-
-```c++
-int* values = *array_list_to_array(array_list); // [ 1, 2, 3, 4 ]
-```
+---
 
 ### To Collection
 
@@ -632,6 +773,29 @@ Collection collection = array_list_to_collection(array_list);
 ```
 
 That abstraction is used to achieve polymorphism-like behavior.
+
+---
+
+### To Array
+
+To convert an array list to an array:
+
+```c++
+// list: [ 1, 2, 3, 4 ]
+void** array = array_list_to_array(array_list); // [ 1, 2, 3, 4 ]
+```
+
+Or, more precisely (with casting):
+
+```c++
+int* values = *array_list_to_array(array_list); // [ 1, 2, 3, 4 ]
+```
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed on creating the array.
+
+---
 
 ### String Representation
 
@@ -648,6 +812,13 @@ defined in `DEFAULT_ARRAY_LIST_OPTIONS` prints the memory addresses of the eleme
 
 ```c++
 int my_to_string(const void* element, char* string, size_t length) {
-    return snprintf(string, length, "%p", element); // change format and vaargs
+    return snprintf(string, length, "%p", element); // change format and variadic arguments
 }
 ```
+
+
+On failure, it will return `nullptr`.
+
+#### Errors:
+
+- `MEMORY_ALLOCATION_ERROR` = memory allocation failed.

@@ -181,7 +181,8 @@ bool array_list_add_all(ArrayList* array_list, int index, Collection collection)
 
     int count = 0;
     while (iterator_has_next(iterator)) {
-        if (array_list_add(array_list, index++, iterator_next(iterator))) {
+        if (array_list_add(array_list, index, iterator_next(iterator))) {
+            index++;
             count++;
         }
     }

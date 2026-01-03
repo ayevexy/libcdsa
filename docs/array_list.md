@@ -629,6 +629,19 @@ array_list_reverse(array_list); // [ 5, 4, 3, 2, 1 ]
 
 ---
 
+To shuffle the elements of an array list:
+
+```c++
+// list: [ 1, 2, 3, 4, 5 ]
+array_list_shuffle(array_list, rand, DURSTENFELD_SHUFFLE); // [ 3, 2, 5, 4, 1 ]
+```
+
+It takes a function that generates random integers and a `ShufflingAlgortihm` as arguments.
+
+The supported algorithms are: `DURSTENFELD_SHUFFLE`, `SATTOLO_SHUFFLE`, `NAIVE_SHUFFLE`.
+
+---
+
 ### Searching
 
 To find an element matching a predicate:

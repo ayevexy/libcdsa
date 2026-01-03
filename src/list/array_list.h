@@ -96,6 +96,8 @@ void array_list_for_each(ArrayList*, Consumer);
 
 void array_list_sort(ArrayList*, Comparator, SortingAlgorithm);
 
+void array_list_shuffle(ArrayList*, int (*random)(void), ShufflingAlgorithm);
+
 void array_list_reverse(ArrayList*);
 
 void array_list_clear(ArrayList*);

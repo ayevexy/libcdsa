@@ -50,6 +50,12 @@ static void quick_sort(ArrayList*, int, int, Comparator);
 
 static int partition(void**, int, int, Comparator);
 
+static void durstenfeld_shuffle(ArrayList*, int (*random)(void));
+
+static void sattolo_shuffle(ArrayList*, int (*random)(void));
+
+static void naive_shuffle(ArrayList*, int (*random)(void));
+
 static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
@@ -408,6 +414,14 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
         case SELECTION_SORT: { selection_sort(array_list, comparator); return; }
         case MERGE_SORT: { merge_sort(array_list, 0, array_list->size - 1, comparator); return; }
         case QUICK_SORT: { quick_sort(array_list, 0, array_list->size - 1, comparator); }
+    }
+}
+
+void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm) {
+    switch (algorithm) {
+        case DURSTENFELD_SHUFFLE: { durstenfeld_shuffle(array_list, random); return; }
+        case SATTOLO_SHUFFLE: { sattolo_shuffle(array_list, random); return; }
+        case NAIVE_SHUFFLE: { naive_shuffle(array_list, random); }
     }
 }
 
@@ -807,6 +821,27 @@ static int partition(void** elements, int start_index, int end_index, Comparator
     }
     swap(&elements[pivot + 1], &elements[end_index]);
     return pivot + 1;
+}
+
+static void durstenfeld_shuffle(ArrayList* array_list, int (*random)(void)) {
+    for (int i = array_list->size - 1; i > 0; i--) {
+        const int j = random() % (i + 1);
+        swap(&array_list->elements[i], &array_list->elements[j]);
+    }
+}
+
+static void sattolo_shuffle(ArrayList* array_list, int (*random)(void)) {
+    for (int i = array_list->size - 1; i > 0; i--) {
+        const int j = random() % i;
+        swap(&array_list->elements[i], &array_list->elements[j]);
+    }
+}
+
+static void naive_shuffle(ArrayList* array_list, int (*random)(void)) {
+    for (int i = 0; i < array_list->size; i++) {
+        const int j = random() % array_list->size;
+        swap(&array_list->elements[i], &array_list->elements[j]);
+    }
 }
 
 static void swap(void** a, void** b) {

@@ -9,4 +9,10 @@ typedef enum SortingAlgorithm {
     QUICK_SORT
 } SortingAlgorithm;
 
+typedef enum ShufflingAlgorithm {
+    DURSTENFELD_SHUFFLE,
+    SATTOLO_SHUFFLE,
+    NAIVE_SHUFFLE
+} ShufflingAlgorithm;
+
 #endif

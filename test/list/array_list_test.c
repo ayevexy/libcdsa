@@ -735,6 +735,44 @@ void test_quick_sort_array_list() {
     sort_array_list_test_helper(QUICK_SORT);
 }
 
+static int random_number(void) {
+    static int count = 0; // use a true random number generator here
+    return count++;
+}
+
+void test_durstenfeld_shuffle_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_shuffle(array_list, random_number, DURSTENFELD_SHUFFLE);
+    // then
+    int shuffled_values[] = { 7, 6, 9, 8, 10, 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+}
+
+void test_sattolo_shuffle_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_shuffle(array_list, random_number, SATTOLO_SHUFFLE);
+    // then
+    int shuffled_values[] = { 2, 8, 6, 7, 9, 4, 10, 5, 3, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+}
+
+void test_naive_shuffle_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_shuffle(array_list, random_number, NAIVE_SHUFFLE);
+    // then
+    int shuffled_values[] = { 3, 4, 5, 6, 7, 8, 1, 2, 9, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+}
+
 void test_reverse_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1153,6 +1191,10 @@ int main(void) {
     RUN_TEST(test_insertion_sort_array_list);
     RUN_TEST(test_merge_sort_array_list);
     RUN_TEST(test_quick_sort_array_list);
+
+    RUN_TEST(test_durstenfeld_shuffle_array_list);
+    RUN_TEST(test_sattolo_shuffle_array_list);
+    RUN_TEST(test_naive_shuffle_array_list);
 
     RUN_TEST(test_reverse_array_list);
     RUN_TEST(test_clear_array_list);

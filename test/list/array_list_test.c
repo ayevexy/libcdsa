@@ -285,6 +285,14 @@ void test_get_first_element_from_array_list() {
     TEST_ASSERT_EQUAL(1, actual_value);
 }
 
+void test_get_first_element_from_empty_array_list_fails() {
+    // when
+    void* element; Error error = attempt(element = array_list_get_first(array_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_get_last_element_from_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -293,6 +301,14 @@ void test_get_last_element_from_array_list() {
     int actual_value = *(int*) array_list_get_last(array_list);
     // then
     TEST_ASSERT_EQUAL(5, actual_value);
+}
+
+void test_get_last_element_from_empty_array_list_fails() {
+    // when
+    void* element; Error error = attempt(element = array_list_get_last(array_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
 void test_set_element_of_array_list() {
@@ -411,6 +427,14 @@ void test_remove_first_element_from_array_list() {
     TEST_ASSERT_EQUAL(1, *element);
 }
 
+void test_remove_first_element_from_empty_array_list_fails() {
+    // when
+    void* element; Error error = attempt(element = array_list_remove_first(array_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_remove_last_element_from_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -421,6 +445,14 @@ void test_remove_last_element_from_array_list() {
     int new_values[] = { 1, 2, 3, 4 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_remove_last_element_from_empty_array_list_fails() {
+    // when
+    void* element; Error error = attempt(element = array_list_remove_last(array_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
 void test_remove_element_by_memory_address_from_array_list() {
@@ -1069,7 +1101,9 @@ int main(void) {
     RUN_TEST(test_get_element_from_array_list_index_above_bounds_fails);
     RUN_TEST(test_get_element_from_array_list_negative_index_fails);
     RUN_TEST(test_get_first_element_from_array_list);
+    RUN_TEST(test_get_first_element_from_empty_array_list_fails);
     RUN_TEST(test_get_last_element_from_array_list);
+    RUN_TEST(test_get_last_element_from_empty_array_list_fails);
 
     RUN_TEST(test_set_element_of_array_list);
     RUN_TEST(test_set_element_of_array_list_index_above_bounds_fails);
@@ -1085,7 +1119,9 @@ int main(void) {
     RUN_TEST(test_remove_element_by_index_from_array_list_index_above_bounds_fails);
     RUN_TEST(test_remove_element_by_index_from_array_list_negative_index_fails);
     RUN_TEST(test_remove_first_element_from_array_list);
+    RUN_TEST(test_remove_first_element_from_empty_array_list_fails);
     RUN_TEST(test_remove_last_element_from_array_list);
+    RUN_TEST(test_remove_last_element_from_empty_array_list_fails);
 
     RUN_TEST(test_remove_element_by_memory_address_from_array_list);
     RUN_TEST(test_remove_element_by_memory_address_from_array_list_nonexistent_element_fails);

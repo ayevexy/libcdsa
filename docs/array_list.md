@@ -280,6 +280,10 @@ To retrieve the last element of the list:
 int value = *(int*) array_list_get_last(array_list); // 4
 ```
 
+#### Errors:
+
+- `NO_SUCH_ELEMENT_ERROR` = array list is empty.
+
 ---
 
 To retrieve the first element of the list:
@@ -288,6 +292,10 @@ To retrieve the first element of the list:
 // list: [ 1, 2, 3, 4 ]
 int value = *(int*) array_list_get_first(array_list); // 1
 ```
+
+#### Errors:
+
+- `NO_SUCH_ELEMENT_ERROR` = array list is empty.
 
 ---
 

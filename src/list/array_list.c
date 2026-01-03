@@ -204,10 +204,18 @@ void* array_list_get(const ArrayList* array_list, int index) {
 }
 
 void* array_list_get_first(const ArrayList* array_list) {
+    if (array_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
     return array_list_get(array_list, 0);
 }
 
 void* array_list_get_last(const ArrayList* array_list) {
+    if (array_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
     return array_list_get(array_list, array_list->size - 1);
 }
 
@@ -244,10 +252,18 @@ void* array_list_remove(ArrayList* array_list, int index) {
 }
 
 void* array_list_remove_first(ArrayList* array_list) {
+    if (array_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
     return array_list_remove(array_list, 0);
 }
 
 void* array_list_remove_last(ArrayList* array_list) {
+    if (array_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
     return array_list_remove(array_list, array_list->size - 1);
 }
 

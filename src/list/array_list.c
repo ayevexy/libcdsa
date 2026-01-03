@@ -295,8 +295,12 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 }
 
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
-    if (start_index < 0 || end_index > array_list->size || start_index >= end_index) {
+    if (start_index < 0 || end_index > array_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return 0;
+    }
+    if (start_index > end_index) {
+        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
         return 0;
     }
     int count = end_index - start_index;
@@ -549,8 +553,12 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
 }
 
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
-    if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
+    if (start_index < 0 || end_index > array_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return nullptr;
+    }
+    if (start_index > end_index) {
+        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
         return nullptr;
     }
     ArrayList* new_array_list = array_list_new(&(ArrayListOptions) {

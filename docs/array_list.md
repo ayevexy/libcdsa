@@ -416,7 +416,8 @@ int removed_count = array_list_remove_range(array_list, 1, 4); // [ 1, 5 ]
 
 #### Errors:
 
-- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is less than 0, end index is greater than array list size or start index is greater than end index.
+- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is less than 0 or end index is greater than array list size.
+- `INVALID_ARGUMENTS_ERROR` =  start index is greater than end index.
 
 ---
 
@@ -767,7 +768,8 @@ ArrayList* sub_list = array_list_sub_list(array_list, 1, 5); // [ 2, 3, 4, 5 ]
 
 #### Errors:
 
-- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is negative, end index is greater than array list size or start index is greater than end index.
+- `INDEX_OUT_OF_BOUNDS_ERROR` = start index is negative, end index is greater than array list size.
+- `INVALID_ARGUMENTS_ERROR` =  start index is greater than end index.
 - `MEMORY_ALLOCATION_ERROR` = memory allocation failed on creating new array list.
 
 ---

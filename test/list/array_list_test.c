@@ -512,7 +512,7 @@ void test_remove_elements_in_range_from_array_list() {
     TEST_ASSERT_EQUAL(3, count);
 }
 
-static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index) {
+static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index, Error expected_error) {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
@@ -521,19 +521,19 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
     TEST_ASSERT_EQUAL(0, count);
-    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+    TEST_ASSERT_EQUAL(expected_error, error);
 }
 
 void test_remove_elements_in_range_from_array_list_end_index_above_bounds_fails() {
-    remove_elements_in_range_index_out_of_bounds_test_helper(0, 10);
+    remove_elements_in_range_index_out_of_bounds_test_helper(0, 10, INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_remove_elements_in_range_from_array_list_negative_start_index_fails() {
-    remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3);
+    remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3, INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_index_fails() {
-    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3);
+    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
 }
 
 static bool odd_predicate(const void* element) {
@@ -1014,7 +1014,7 @@ void test_create_empty_sub_list_of_array_list() {
     TEST_ASSERT_EQUAL(0, array_list_size(new_array_list));
 }
 
-static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
+static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index, Error expected_error) {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
@@ -1022,19 +1022,19 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
     ArrayList* sub_list; Error error = attempt(sub_list = array_list_sub_list(array_list, start_index, end_index));
     // then
     TEST_ASSERT_NULL(sub_list);
-    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+    TEST_ASSERT_EQUAL(expected_error, error);
 }
 
 void test_create_sub_list_end_index_above_bounds_fails() {
-    sub_list_index_out_of_bounds_test_helper(0, 10);
+    sub_list_index_out_of_bounds_test_helper(0, 10, INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_create_sub_list_negative_start_index_fails() {
-    sub_list_index_out_of_bounds_test_helper(-1, 4);
+    sub_list_index_out_of_bounds_test_helper(-1, 4, INDEX_OUT_OF_BOUNDS_ERROR);
 }
 
 void test_create_sub_list_start_index_greater_than_end_index_fails() {
-    sub_list_index_out_of_bounds_test_helper(4, 3);
+    sub_list_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
 }
 
 void test_convert_array_list_to_collection() {

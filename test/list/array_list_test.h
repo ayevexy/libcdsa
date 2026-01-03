@@ -1,8 +1,6 @@
 #ifndef ARRAY_LIST_TEST_H
 #define ARRAY_LIST_TEST_H
 
-#include <stdio.h>
-
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
@@ -13,7 +11,7 @@
 }
 
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAYLIST(array, array_list)                \
+#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)                \
     for (int i = 0; i < SIZE(array); i++) {                                     \
         TEST_ASSERT_EQUAL(array[i], *(int*) array_list_get(array_list, i));     \
     }                                                                           \

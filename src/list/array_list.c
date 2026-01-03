@@ -244,6 +244,8 @@ void* array_list_remove(ArrayList* array_list, int index) {
         return nullptr;
     }
     void* element = array_list->elements[index];
+    array_list->elements[index] = nullptr;
+
     for (int i = index; i < array_list->size - 1; i++) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
@@ -306,6 +308,7 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
     int count = end_index - start_index;
     for (int i = start_index; i < array_list->size - count; i++) {
         array_list->elements[i] = array_list->elements[i + count];
+        array_list->elements[i + count] = nullptr;
     }
     array_list->size -= count;
     return count;

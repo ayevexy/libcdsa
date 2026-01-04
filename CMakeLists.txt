@@ -23,6 +23,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 
 add_library(${PROJECT_NAME}
         src/list/array_list.c
+        src/list/linked_list.c
         src/util/iterator.c
         src/util/functions.c
         src/util/errors.c

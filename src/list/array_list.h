@@ -6,6 +6,7 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 
+#include <stdlib.h>
 #include <stddef.h>
 
 #define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \

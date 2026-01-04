@@ -443,9 +443,7 @@ void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlg
 }
 
 void array_list_reverse(ArrayList* array_list) {
-    for (int i = 0; i < array_list->size / 2; i++) {
-        swap(&array_list->elements[array_list->size - 1 - i], &array_list->elements[i]);
-    }
+    reverse(array_list, 0, array_list->size - 1);
 }
 
 void array_list_rotate(ArrayList* array_list, int distance) {

@@ -30,9 +30,9 @@ typedef struct IterationContext IterationContext;
 
 static Iterator* iterator(const ArrayList*);
 
-static bool has_next(const ArrayList*, const IterationContext*);
+static bool has_next(const IterationContext*);
 
-static void* next(const ArrayList*, IterationContext*);
+static void* next(IterationContext*);
 
 static void reset(IterationContext*);
 
@@ -707,6 +707,7 @@ static bool resize(ArrayList* array_list, int new_capacity) {
 }
 
 struct IterationContext {
+    ArrayList* array_list;
     int cursor;
 };
 
@@ -717,6 +718,7 @@ static Iterator* iterator(const ArrayList* array_list) {
         set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
+    iteration_context->array_list = (ArrayList*) array_list;
     iteration_context->cursor = 0;
 
     Iterator* iterator = iterator_from(array_list, iteration_context, has_next, next, reset);
@@ -730,15 +732,15 @@ static Iterator* iterator(const ArrayList* array_list) {
     return iterator;
 }
 
-static bool has_next(const ArrayList* array_list, const IterationContext* iteration_context) {
-    return iteration_context->cursor < array_list->size;
+static bool has_next(const IterationContext* iteration_context) {
+    return iteration_context->cursor < iteration_context->array_list->size;
 }
 
-static void* next(const ArrayList* array_list, IterationContext* iteration_context) {
-    if (iteration_context->cursor >= array_list->size) {
-        return nullptr;
+static void* next(IterationContext* iteration_context) {
+    if (has_next(iteration_context)) {
+        return iteration_context->array_list->elements[iteration_context->cursor++];
     }
-    return array_list->elements[iteration_context->cursor++];
+    return nullptr;
 }
 
 static void reset(IterationContext* iteration_context) {

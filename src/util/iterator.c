@@ -3,10 +3,9 @@
 #include "error.h"
 
 struct Iterator {
-    const void* iterable_structure;
     void* internal_state;
-    bool (*has_next)(const void* iterable_structure, void* internal_state);
-    void* (*next)(const void* iterable_structure, void* internal_state);
+    bool (*has_next)(const void* internal_state);
+    void* (*next)(void* internal_state);
     void (*reset)(void* internal_state);
     struct {
         void* (*memory_alloc)(size_t);
@@ -15,10 +14,9 @@ struct Iterator {
 };
 
 Iterator* iterator_new(
-    const void* iterable_structure,
     void* internal_state,
-    bool (*has_next)(const void* iterable_structure, void* internal_state),
-    void* (*next)(const void* iterable_structure, void* internal_state),
+    bool (*has_next)(const void* internal_state),
+    void* (*next)(void* internal_state),
     void (*reset)(void* internal_state),
     void* (*memory_alloc)(size_t),
     void (*memory_free)(void*)
@@ -28,7 +26,6 @@ Iterator* iterator_new(
         set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
-    iterator->iterable_structure = iterable_structure;
     iterator->internal_state = internal_state;
     iterator->has_next = has_next;
     iterator->next = next;
@@ -38,12 +35,12 @@ Iterator* iterator_new(
     return iterator;
 }
 
-bool iterator_has_next(Iterator* iterator) {
-    return iterator->has_next(iterator->iterable_structure, iterator->internal_state);
+bool iterator_has_next(const Iterator* iterator) {
+    return iterator->has_next(iterator->internal_state);
 }
 
-void *iterator_next(Iterator* iterator) {
-    return iterator->next(iterator->iterable_structure, iterator->internal_state);
+void* iterator_next(Iterator* iterator) {
+    return iterator->next(iterator->internal_state);
 }
 
 void iterator_reset(Iterator* iterator) {

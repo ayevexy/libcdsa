@@ -102,6 +102,8 @@ void array_list_shuffle(ArrayList*, int (*random)(void), ShufflingAlgorithm);
 
 void array_list_reverse(ArrayList*);
 
+void array_list_rotate(ArrayList*, int distance);
+
 void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));

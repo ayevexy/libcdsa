@@ -659,6 +659,15 @@ The supported algorithms are: `DURSTENFELD_SHUFFLE`, `SATTOLO_SHUFFLE`, `NAIVE_S
 
 ---
 
+To rotate an array list:
+
+```c++
+// list: [ 1, 2, 3, 4, 5 ]
+array_list_rotate(array_list, 2); // [ 4, 5, 1, 2, 3 ]
+```
+
+---
+
 ### Searching
 
 To find an element matching a predicate:

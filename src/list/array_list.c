@@ -56,6 +56,8 @@ static void sattolo_shuffle(ArrayList*, int (*random)(void));
 
 static void naive_shuffle(ArrayList*, int (*random)(void));
 
+static void reverse(ArrayList*, int, int);
+
 static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
@@ -444,6 +446,20 @@ void array_list_reverse(ArrayList* array_list) {
     for (int i = 0; i < array_list->size / 2; i++) {
         swap(&array_list->elements[array_list->size - 1 - i], &array_list->elements[i]);
     }
+}
+
+void array_list_rotate(ArrayList* array_list, int distance) {
+    if (array_list->size <= 1) return;
+
+    distance %= array_list->size;
+    if (distance < 0) {
+        distance += array_list->size;
+    }
+    if (distance == 0) return;
+
+    reverse(array_list, 0, array_list->size - 1);
+    reverse(array_list, 0, distance - 1);
+    reverse(array_list, distance, array_list->size - 1);
 }
 
 void array_list_clear(ArrayList* array_list) {
@@ -856,6 +872,16 @@ static void naive_shuffle(ArrayList* array_list, int (*random)(void)) {
     for (int i = 0; i < array_list->size; i++) {
         const int j = random() % array_list->size;
         swap(&array_list->elements[i], &array_list->elements[j]);
+    }
+}
+
+static void reverse(ArrayList* array_list, int start_index, int end_index) {
+    while (start_index < end_index) {
+        void* temporary = array_list->elements[start_index];
+        array_list->elements[start_index] = array_list->elements[end_index];
+        array_list->elements[end_index] = temporary;
+        start_index++;
+        end_index--;
     }
 }
 

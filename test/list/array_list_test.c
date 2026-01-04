@@ -841,6 +841,28 @@ void test_reverse_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(reversed_values, array_list);
 }
 
+void test_rotate_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_rotate(array_list, 2);
+    // then
+    int rotated_values[] = { 4, 5, 1, 2, 3 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(rotated_values, array_list);
+}
+
+void test_rotate_array_list_backward() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    array_list_rotate(array_list, -2);
+    // then
+    int rotated_values[] = { 3, 4, 5, 1, 2 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(rotated_values, array_list);
+}
+
 void test_clear_array_list() {
     // given
     int values[] = { 1, 2, 3 };
@@ -1258,6 +1280,9 @@ int main(void) {
     RUN_TEST(test_naive_shuffle_array_list);
 
     RUN_TEST(test_reverse_array_list);
+    RUN_TEST(test_rotate_array_list);
+    RUN_TEST(test_rotate_array_list_backward);
+
     RUN_TEST(test_clear_array_list);
     RUN_TEST(test_clear_array_list_data);
 

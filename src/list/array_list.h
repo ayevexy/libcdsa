@@ -92,6 +92,8 @@ bool array_list_is_empty(const ArrayList*);
 
 Iterator* array_list_iterator(const ArrayList*);
 
+bool array_list_equals(const ArrayList*, const ArrayList*);
+
 void array_list_for_each(ArrayList*, Consumer);
 
 void array_list_sort(ArrayList*, Comparator, SortingAlgorithm);

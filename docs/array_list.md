@@ -13,6 +13,7 @@
 - [Removing Elements](#removing-elements)
 - [Size and Capacity](#size-and-capacity)
 - [Checking Emptiness](#checking-emptiness)
+- [Checking Equality](#checking-equality)
 - [Iterator](#iterator)
 - [For-Each Action](#for-each-action)
 - [Sorting](#sorting)
@@ -525,6 +526,22 @@ bool empty = array_list_is_empty(array_list); // true or false
 ```
 
 ---
+
+### Checking Equality
+
+Check whether two array lists are equals:
+
+```c++
+bool equals = array_list_equals(array_list, other_array_list);
+```
+
+Two array lists are considered equal if either of the following conditions is true:
+
+1. They reference the same memory location.
+2. They have the same size, and each corresponding element in the first array list is considered equal to the element
+at the same position in the second array list according to the `equals` function of the first array list.
+
+___
 
 ### Iterator
 

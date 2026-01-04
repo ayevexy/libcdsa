@@ -398,6 +398,21 @@ Iterator* array_list_iterator(const ArrayList* array_list) {
    return iterator(array_list);
 }
 
+bool array_list_equals(const ArrayList* array_list, const ArrayList* another) {
+    if (array_list == another) {
+        return true;
+    }
+    if (array_list->size != another->size) {
+        return false;
+    }
+    for (int i = 0; i < array_list->size; i++) {
+        if (!array_list->equals(array_list->elements[i], another->elements[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void array_list_for_each(ArrayList* array_list, Consumer action) {
     for (int i = 0; i < array_list->size; i++) {
         action(array_list->elements[i]);

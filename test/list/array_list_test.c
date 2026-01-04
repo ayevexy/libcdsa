@@ -689,6 +689,63 @@ void test_array_list_iterator() {
     iterator_delete(&iterator);
 }
 
+void test_array_list_is_equal_to_it_self() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    bool equals = array_list_equals(array_list, array_list);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_array_list_is_equal_to_another_array_list() {
+    // given
+    ArrayList* other_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(other_array_list, values);
+    // when
+    bool equals = array_list_equals(array_list, other_array_list);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
+    // given
+    ArrayList* other_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    POPULATE_ARRAY_LIST(other_array_list, values);
+    array_list_add_last(other_array_list, &(int){10});
+
+    // when
+    bool equals = array_list_equals(array_list, other_array_list);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+}
+
+void test_array_list_is_not_equal_to_another_array_list_with_different_elements() {
+    // given
+    ArrayList* other_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    int other_values[] = { 2, 3, 4, 5, 6 };
+    POPULATE_ARRAY_LIST(other_array_list, other_values);
+
+    // when
+    bool equals = array_list_equals(array_list, other_array_list);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+}
+
 static void action_add_one(void* element) {
     *(int*) element += 1;
 }
@@ -1184,6 +1241,10 @@ int main(void) {
     RUN_TEST(test_array_list_is_not_empty);
 
     RUN_TEST(test_array_list_iterator);
+    RUN_TEST(test_array_list_is_equal_to_it_self);
+    RUN_TEST(test_array_list_is_equal_to_another_array_list);
+    RUN_TEST(test_array_list_is_not_equal_to_another_array_list_with_different_size);
+    RUN_TEST(test_array_list_is_not_equal_to_another_array_list_with_different_elements);
     RUN_TEST(test_perform_action_for_each_element_of_array_list);
 
     RUN_TEST(test_bubble_sort_array_list);

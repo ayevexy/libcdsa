@@ -463,6 +463,29 @@ void test_remove_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_remove_element_by_memory_address_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool removed = linked_list_remove_element(linked_list, &values[2]);
+    // then
+    int new_values[] = { 1, 2, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_TRUE(removed);
+}
+
+void test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool removed = linked_list_remove_element(linked_list, &(int){10});
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
+    TEST_ASSERT_FALSE(removed);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -536,6 +559,9 @@ int main(void) {
     RUN_TEST(test_remove_first_element_from_empty_linked_list_fails);
     RUN_TEST(test_remove_last_element_from_linked_list);
     RUN_TEST(test_remove_last_element_from_empty_linked_list_fails);
+
+    RUN_TEST(test_remove_element_by_memory_address_from_linked_list);
+    RUN_TEST(test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

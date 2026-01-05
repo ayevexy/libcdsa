@@ -25,6 +25,10 @@ static Node* create_node(const LinkedList*, void*);
 
 static Node* get_node(const LinkedList*, int);
 
+static Node* find_node(const LinkedList*, const void*);
+
+static void* remove_node(LinkedList*, Node*);
+
 typedef struct IterationContext IterationContext;
 
 static Iterator* iterator(const LinkedList*);
@@ -257,26 +261,8 @@ void* linked_list_remove(LinkedList* linked_list, int index) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return nullptr;
     }
-
     Node* node = get_node(linked_list, index);
-    void* element = node->element;
-
-    if (node->prev) {
-        node->prev->next = node->next;
-    }
-    if (!node->prev) {
-        linked_list->head = node->next;
-    }
-    if (!node->next) {
-        linked_list->tail = node->prev;
-    }
-    if (node->next) {
-        node->next->prev = node->prev;
-    }
-    linked_list->memory_free(node);
-    linked_list->size--;
-
-    return element;
+    return remove_node(linked_list, node);
 }
 
 void* linked_list_remove_first(LinkedList* linked_list) {
@@ -293,6 +279,15 @@ void* linked_list_remove_last(LinkedList* linked_list) {
         return nullptr;
     }
     return linked_list_remove(linked_list, linked_list->size - 1);
+}
+
+bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
+    Node* node = find_node(linked_list, element);
+    if (node) {
+        remove_node(linked_list, node);
+        return true;
+    }
+    return false;
 }
 
 int linked_list_size(const LinkedList* linked_list) {
@@ -334,6 +329,39 @@ static Node* get_node(const LinkedList* linked_list, int index) {
     }
     return node;
 }
+
+static Node* find_node(const LinkedList* linked_list, const void* element) {
+    Node* node = linked_list->head;
+    while (node) {
+        if (linked_list->equals(node->element, element)) {
+            return node;
+        }
+        node = node->next;
+    }
+    return nullptr;
+}
+
+static void* remove_node(LinkedList* linked_list, Node* node) {
+    void* element = node->element;
+    if (node->prev) {
+        node->prev->next = node->next;
+    }
+    if (!node->prev) {
+        linked_list->head = node->next;
+    }
+    if (!node->next) {
+        linked_list->tail = node->prev;
+    }
+    if (node->next) {
+        node->next->prev = node->prev;
+    }
+
+    linked_list->memory_free(node);
+    linked_list->size--;
+
+    return element;
+}
+
 
 struct IterationContext {
     Node* head;

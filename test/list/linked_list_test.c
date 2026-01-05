@@ -251,6 +251,28 @@ void test_get_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_linked_list_iterator() {
+    // given
+    int values[] = { 1, 2, 3 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    Iterator* iterator = linked_list_iterator(linked_list);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(values[0], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(values[1], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(values[2], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_NULL(iterator_next(iterator));
+    // clean up
+    iterator_delete(&iterator);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_linked_list);
@@ -284,5 +306,6 @@ int main(void) {
     RUN_TEST(test_get_last_element_from_linked_list);
     RUN_TEST(test_get_last_element_from_empty_linked_list_fails);
 
+    RUN_TEST(test_linked_list_iterator);
     UNITY_END();
 }

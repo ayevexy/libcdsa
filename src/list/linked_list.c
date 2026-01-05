@@ -25,6 +25,16 @@ static Node* create_node(const LinkedList*, void*);
 
 static Node* get_node(const LinkedList*, int);
 
+typedef struct IterationContext IterationContext;
+
+static Iterator* iterator(const LinkedList*);
+
+static bool has_next(const IterationContext*);
+
+static void* next(IterationContext*);
+
+static void reset(IterationContext*);
+
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_realloc || !options->memory_free) {
         set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid argument(s)", __func__);
@@ -174,6 +184,10 @@ int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }
 
+Iterator* linked_list_iterator(const LinkedList* linked_list) {
+    return iterator(linked_list);
+}
+
 static Node* create_node(const LinkedList* linked_list, void* element) {
     Node* node = linked_list->memory_alloc(sizeof(Node));
     if (!node) {
@@ -200,4 +214,47 @@ static Node* get_node(const LinkedList* linked_list, int index) {
         }
     }
     return node;
+}
+
+struct IterationContext {
+    Node* head;
+    Node* current;
+};
+
+static Iterator* iterator(const LinkedList* linked_list) {
+    IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+    iteration_context->head = linked_list->head;
+    iteration_context->current = linked_list->head;
+
+    Iterator* iterator = iterator_from(linked_list, iteration_context, has_next, next, reset);
+
+    if (!iterator) {
+        linked_list->memory_free(iteration_context);
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+
+    return iterator;
+}
+
+static bool has_next(const IterationContext* iteration_context) {
+    return iteration_context->current;
+}
+
+static void* next(IterationContext* iteration_context) {
+    if (has_next(iteration_context)) {
+        void* element = iteration_context->current->element;
+        iteration_context->current = iteration_context->current->next;
+        return element;
+    }
+    return nullptr;
+}
+
+static void reset(IterationContext* iteration_context) {
+    iteration_context->current = iteration_context->head;
 }

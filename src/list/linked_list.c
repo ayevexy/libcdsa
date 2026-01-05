@@ -252,6 +252,49 @@ bool linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
     return true;
 }
 
+void* linked_list_remove(LinkedList* linked_list, int index) {
+    if (index < 0 || index >= linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return nullptr;
+    }
+
+    Node* node = get_node(linked_list, index);
+    void* element = node->element;
+
+    if (node->prev) {
+        node->prev->next = node->next;
+    }
+    if (!node->prev) {
+        linked_list->head = node->next;
+    }
+    if (!node->next) {
+        linked_list->tail = node->prev;
+    }
+    if (node->next) {
+        node->next->prev = node->prev;
+    }
+    linked_list->memory_free(node);
+    linked_list->size--;
+
+    return element;
+}
+
+void* linked_list_remove_first(LinkedList* linked_list) {
+    if (linked_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
+    return linked_list_remove(linked_list, 0);
+}
+
+void* linked_list_remove_last(LinkedList* linked_list) {
+    if (linked_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        return nullptr;
+    }
+    return linked_list_remove(linked_list, linked_list->size - 1);
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

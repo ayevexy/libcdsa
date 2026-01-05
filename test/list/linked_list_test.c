@@ -391,6 +391,78 @@ void test_swap_elements_of_linked_list_negative_index_b_fails() {
     swap_elements_of_linked_list_index_out_of_bounds_test_helper(3, -1);
 }
 
+void test_remove_element_by_index_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_remove(linked_list, 2);
+    // then
+    int new_values[] = { 1, 2, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(3, *element);
+}
+
+static void remove_index_out_of_bounds_test_helper(int index) {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element; Error error = attempt(element = linked_list_remove(linked_list, index));
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+}
+
+void test_remove_element_by_index_from_linked_list_index_above_bounds_fails() {
+    remove_index_out_of_bounds_test_helper(10);
+}
+
+void test_remove_element_by_index_from_linked_list_negative_index_fails() {
+    remove_index_out_of_bounds_test_helper(-1);
+}
+
+void test_remove_first_element_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_remove_first(linked_list);
+    // then
+    int new_values[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(1, *element);
+}
+
+void test_remove_first_element_from_empty_linked_list_fails() {
+    // when
+    void* element; Error error = attempt(element = linked_list_remove_first(linked_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_remove_last_element_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_remove_last(linked_list);
+    // then
+    int new_values[] = { 1, 2, 3, 4 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_remove_last_element_from_empty_linked_list_fails() {
+    // when
+    void* element; Error error = attempt(element = linked_list_remove_last(linked_list));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -455,6 +527,15 @@ int main(void) {
     RUN_TEST(test_swap_elements_of_linked_list_negative_index_a_fails);
     RUN_TEST(test_swap_elements_of_linked_list_index_b_above_bounds_fails);
     RUN_TEST(test_swap_elements_of_linked_list_negative_index_b_fails);
+
+    RUN_TEST(test_remove_element_by_index_from_linked_list);
+    RUN_TEST(test_remove_element_by_index_from_linked_list_index_above_bounds_fails);
+    RUN_TEST(test_remove_element_by_index_from_linked_list_negative_index_fails);
+
+    RUN_TEST(test_remove_first_element_from_linked_list);
+    RUN_TEST(test_remove_first_element_from_empty_linked_list_fails);
+    RUN_TEST(test_remove_last_element_from_linked_list);
+    RUN_TEST(test_remove_last_element_from_empty_linked_list_fails);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

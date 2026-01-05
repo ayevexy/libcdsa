@@ -486,6 +486,28 @@ void test_remove_element_by_memory_address_from_linked_list_nonexistent_element_
     TEST_ASSERT_FALSE(removed);
 }
 
+void test_remove_all_elements_from_linked_list_matching_collection() {
+    // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int sub_values[] = { 2, 3, 4 };
+    POPULATE_LINKED_LIST(new_linked_list, sub_values);
+
+    // when
+    int count = linked_list_remove_all(linked_list, linked_list_to_collection(new_linked_list));
+
+    // then
+    int new_values[] = { 1, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(3, count);
+
+    // clean up
+    linked_list_delete(&new_linked_list);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -562,6 +584,8 @@ int main(void) {
 
     RUN_TEST(test_remove_element_by_memory_address_from_linked_list);
     RUN_TEST(test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails);
+
+    RUN_TEST(test_remove_all_elements_from_linked_list_matching_collection);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

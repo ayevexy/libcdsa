@@ -290,6 +290,24 @@ bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
     return false;
 }
 
+int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        return 0;
+    }
+
+    int count = 0;
+    while (iterator_has_next(iterator)) {
+        if (linked_list_remove_element(linked_list, iterator_next(iterator))) {
+            count++;
+        }
+    }
+    iterator_delete(&iterator);
+    return count;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

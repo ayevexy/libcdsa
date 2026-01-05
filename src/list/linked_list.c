@@ -270,7 +270,7 @@ void* linked_list_remove_first(LinkedList* linked_list) {
         set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
-    return linked_list_remove(linked_list, 0);
+    return remove_node(linked_list, linked_list->head);
 }
 
 void* linked_list_remove_last(LinkedList* linked_list) {
@@ -278,7 +278,7 @@ void* linked_list_remove_last(LinkedList* linked_list) {
         set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
-    return linked_list_remove(linked_list, linked_list->size - 1);
+    return remove_node(linked_list, linked_list->tail);
 }
 
 bool linked_list_remove_element(LinkedList* linked_list, const void* element) {

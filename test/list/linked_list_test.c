@@ -351,6 +351,46 @@ void test_set_element_of_linked_list_negative_index_fails() {
     set_index_out_of_bounds_test_helper(-1);
 }
 
+void test_swap_elements_of_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool swapped = linked_list_swap(linked_list, 1, 3);
+    // then
+    int swaped_values[] = { 1, 4, 3, 2, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(swaped_values, linked_list);
+    TEST_ASSERT_TRUE(swapped);
+}
+
+static void swap_elements_of_linked_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool swapped; Error error = attempt(swapped = linked_list_swap(linked_list, index_a, index_b));
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
+    TEST_ASSERT_FALSE(swapped);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+}
+
+void test_swap_elements_of_linked_list_index_a_above_bounds_fails() {
+    swap_elements_of_linked_list_index_out_of_bounds_test_helper(10, 3);
+}
+
+void test_swap_elements_of_linked_list_negative_index_a_fails() {
+    swap_elements_of_linked_list_index_out_of_bounds_test_helper(-1, 3);
+}
+
+void test_swap_elements_of_linked_list_index_b_above_bounds_fails() {
+    swap_elements_of_linked_list_index_out_of_bounds_test_helper(3, 10);
+}
+
+void test_swap_elements_of_linked_list_negative_index_b_fails() {
+    swap_elements_of_linked_list_index_out_of_bounds_test_helper(3, -1);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -409,6 +449,12 @@ int main(void) {
     RUN_TEST(test_set_element_of_linked_list);
     RUN_TEST(test_set_element_of_linked_list_index_above_bounds_fails);
     RUN_TEST(test_set_element_of_linked_list_negative_index_fails);
+
+    RUN_TEST(test_swap_elements_of_linked_list);
+    RUN_TEST(test_swap_elements_of_linked_list_index_a_above_bounds_fails);
+    RUN_TEST(test_swap_elements_of_linked_list_negative_index_a_fails);
+    RUN_TEST(test_swap_elements_of_linked_list_index_b_above_bounds_fails);
+    RUN_TEST(test_swap_elements_of_linked_list_negative_index_b_fails);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

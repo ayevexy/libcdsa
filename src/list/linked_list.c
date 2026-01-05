@@ -35,6 +35,8 @@ static void* next(IterationContext*);
 
 static void reset(IterationContext*);
 
+static void swap(void**, void**);
+
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_realloc || !options->memory_free) {
         set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid argument(s)", __func__);
@@ -241,6 +243,15 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
     return old_element;
 }
 
+bool linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
+    if (index_a < 0 || index_a >= linked_list->size || index_b < 0 || index_b >= linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return false;
+    }
+    swap(&get_node(linked_list, index_a)->element, &get_node(linked_list, index_b)->element);
+    return true;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }
@@ -322,4 +333,10 @@ static void* next(IterationContext* iteration_context) {
 
 static void reset(IterationContext* iteration_context) {
     iteration_context->current = iteration_context->head;
+}
+
+static void swap(void** a, void** b) {
+    void* temp = *a;
+    *a = *b;
+    *b = temp;
 }

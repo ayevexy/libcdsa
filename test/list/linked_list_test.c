@@ -39,14 +39,31 @@ void test_do_not_create_linked_list_with_invalid_options() {
     TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
 }
 
-// TODO
 void test_create_linked_list_from_collection() {
-    TEST_FAIL();
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    LinkedList* new_linked_list = linked_list_from(linked_list_to_collection(linked_list), DEFAULT_LINKED_LIST_OPTIONS);
+    // then
+    TEST_ASSERT_NOT_NULL(new_linked_list);
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, new_linked_list);
+    // clean up
+    linked_list_delete(&new_linked_list);
 }
 
-// TODO
 void test_do_not_create_linked_list_with_invalid_options_from_collection() {
-    TEST_FAIL();
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {
+        .equals = nullptr,
+        .to_string = nullptr
+    }));
+    // then
+    TEST_ASSERT_NULL(new_linked_list);
+    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
 }
 
 void test_delete_linked_list_set_it_to_null() {
@@ -172,19 +189,70 @@ void test_add_element_at_end_of_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 }
 
-// TODO
 void test_add_all_elements_from_collection_at_index_in_linked_list() {
-    TEST_FAIL();
+    // given
+    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_LINKED_LIST(existing_linked_list, other_values);
+
+    // when
+    bool added = linked_list_add_all(linked_list, 2, linked_list_to_collection(existing_linked_list));
+
+    // then
+    int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_TRUE(added);
+
+    // clean up
+    linked_list_delete(&existing_linked_list);
 }
 
-// TODO
 void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
-    TEST_FAIL();
+    // given
+    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_LINKED_LIST(existing_linked_list, other_values);
+
+    // when
+    bool added = linked_list_add_all_first(linked_list, linked_list_to_collection(existing_linked_list));
+
+    // then
+    int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_TRUE(added);
+
+    // clean up
+    linked_list_delete(&existing_linked_list);
 }
 
-// TODO
 void test_add_all_elements_from_collection_at_end_of_linked_list() {
-    TEST_FAIL();
+    // given
+    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_LINKED_LIST(existing_linked_list, other_values);
+
+    // when
+    bool added = linked_list_add_all_last(linked_list, linked_list_to_collection(existing_linked_list));
+
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_TRUE(added);
+
+    // clean up
+    linked_list_delete(&existing_linked_list);
 }
 
 void test_get_element_from_linked_list() {

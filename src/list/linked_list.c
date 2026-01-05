@@ -56,6 +56,29 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     return linked_list;
 }
 
+LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options) {
+    LinkedList* linked_list; Error error = attempt(linked_list = linked_list_new(options));
+
+    if (error == INVALID_ARGUMENTS_ERROR) {
+        set_error(error, "Error at %s(): invalid argument(s)", __func__);
+        return nullptr;
+    }
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "Error at %s(): memory allocation failure", __func__);
+        return nullptr;
+    }
+
+    error = attempt(linked_list_add_all_last(linked_list, collection));
+
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        linked_list_delete(&linked_list);
+        set_error(error, "Error at %s(): %s", __func__, error_message());
+        return nullptr;
+    }
+
+    return linked_list;
+}
+
 void linked_list_delete(LinkedList** linked_list_pointer) {
     if (!*linked_list_pointer) {
         set_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
@@ -156,6 +179,33 @@ bool linked_list_add_last(LinkedList* linked_list, const void* element) {
     return true;
 }
 
+bool linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        return false;
+    }
+
+    int count = 0;
+    while (iterator_has_next(iterator)) {
+        if (linked_list_add(linked_list, index, iterator_next(iterator))) {
+            index++;
+            count++;
+        }
+    }
+    iterator_delete(&iterator);
+    return count == collection_size(collection);
+}
+
+bool linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
+    return linked_list_add_all(linked_list, 0, collection);
+}
+
+bool linked_list_add_all_last(LinkedList* linked_list, Collection collection) {
+    return linked_list_add_all(linked_list, linked_list->size, collection);
+}
+
 void* linked_list_get(const LinkedList* linked_list, int index) {
     if (index < 0 || index >= linked_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
@@ -186,6 +236,10 @@ int linked_list_size(const LinkedList* linked_list) {
 
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
     return iterator(linked_list);
+}
+
+Collection linked_list_to_collection(const LinkedList* linked_list) {
+    return collection_from(linked_list);
 }
 
 static Node* create_node(const LinkedList* linked_list, void* element) {

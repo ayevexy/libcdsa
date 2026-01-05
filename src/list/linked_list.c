@@ -230,6 +230,17 @@ void* linked_list_get_last(const LinkedList* linked_list) {
     return linked_list->tail->element;
 }
 
+void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
+    if (index < 0 || index >= linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return nullptr;
+    }
+    Node* node = get_node(linked_list, index);
+    void* old_element = node->element;
+    node->element = (void*) element;
+    return old_element;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

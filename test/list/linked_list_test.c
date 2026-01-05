@@ -319,6 +319,38 @@ void test_get_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_set_element_of_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* old_value = linked_list_set(linked_list, 2, &(int){10});
+    // then
+    int new_values[] = { 1, 2, 10, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(3, *old_value);
+}
+
+static void set_index_out_of_bounds_test_helper(int index) {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, &(int){10}));
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
+    TEST_ASSERT_NULL(old_value);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+}
+
+void test_set_element_of_linked_list_index_above_bounds_fails() {
+    set_index_out_of_bounds_test_helper(10);
+}
+
+void test_set_element_of_linked_list_negative_index_fails() {
+    set_index_out_of_bounds_test_helper(-1);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -373,6 +405,10 @@ int main(void) {
     RUN_TEST(test_get_first_element_from_empty_linked_list_fails);
     RUN_TEST(test_get_last_element_from_linked_list);
     RUN_TEST(test_get_last_element_from_empty_linked_list_fails);
+
+    RUN_TEST(test_set_element_of_linked_list);
+    RUN_TEST(test_set_element_of_linked_list_index_above_bounds_fails);
+    RUN_TEST(test_set_element_of_linked_list_negative_index_fails);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

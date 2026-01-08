@@ -177,22 +177,35 @@ bool array_list_add_last(ArrayList* array_list, const void* element) {
 }
 
 bool array_list_add_all(ArrayList* array_list, int index, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
+    if (index < 0 || index > array_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return false;
+    }
 
+    Iterator* iterator = collection_iterator(collection);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
         return false;
     }
 
-    int count = 0;
-    while (iterator_has_next(iterator)) {
-        if (array_list_add(array_list, index, iterator_next(iterator))) {
-            index++;
-            count++;
-        }
+    const int new_capacity = array_list->size + collection_size(collection);
+    if (!array_list_ensure_capacity(array_list, new_capacity)) {
+        iterator_delete(&iterator);
+        return false;
     }
+
+    const int offset = collection_size(collection);
+    for (int i = array_list->size - 1; i >= index; i--) {
+        array_list->elements[i + offset] = array_list->elements[i];
+    }
+
+    while (iterator_has_next(iterator)) {
+        array_list->elements[index++] = iterator_next(iterator);
+    }
+    array_list->size += collection_size(collection);
+
     iterator_delete(&iterator);
-    return count == collection_size(collection);
+    return true;
 }
 
 bool array_list_add_all_first(ArrayList* array_list, Collection collection) {

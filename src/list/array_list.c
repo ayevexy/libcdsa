@@ -720,7 +720,7 @@ static bool resize(ArrayList* array_list, int new_capacity) {
 }
 
 struct IterationContext {
-    ArrayList* array_list;
+    const ArrayList* array_list;
     int cursor;
 };
 
@@ -731,7 +731,7 @@ static Iterator* iterator(const ArrayList* array_list) {
         set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
-    iteration_context->array_list = (ArrayList*) array_list;
+    iteration_context->array_list = array_list;
     iteration_context->cursor = 0;
 
     Iterator* iterator = iterator_from(array_list, iteration_context, has_next, next, reset);

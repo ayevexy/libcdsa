@@ -508,6 +508,42 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     linked_list_delete(&new_linked_list);
 }
 
+void test_remove_elements_in_range_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int count = linked_list_remove_range(linked_list, 1, 4);
+    // then
+    int new_values[] = { 1, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(3, count);
+}
+
+static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index, Error expected_error) {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int count; Error error = attempt(count = linked_list_remove_range(linked_list, start_index, end_index));
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
+    TEST_ASSERT_EQUAL(0, count);
+    TEST_ASSERT_EQUAL(expected_error, error);
+}
+
+void test_remove_elements_in_range_from_linked_list_end_index_above_bounds_fails() {
+    remove_elements_in_range_index_out_of_bounds_test_helper(0, 10, INDEX_OUT_OF_BOUNDS_ERROR);
+}
+
+void test_remove_elements_in_range_from_linked_list_negative_start_index_fails() {
+    remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3, INDEX_OUT_OF_BOUNDS_ERROR);
+}
+
+void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails() {
+    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -584,8 +620,12 @@ int main(void) {
 
     RUN_TEST(test_remove_element_by_memory_address_from_linked_list);
     RUN_TEST(test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails);
-
     RUN_TEST(test_remove_all_elements_from_linked_list_matching_collection);
+
+    RUN_TEST(test_remove_elements_in_range_from_linked_list);
+    RUN_TEST(test_remove_elements_in_range_from_linked_list_end_index_above_bounds_fails);
+    RUN_TEST(test_remove_elements_in_range_from_linked_list_negative_start_index_fails);
+    RUN_TEST(test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

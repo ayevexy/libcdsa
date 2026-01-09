@@ -308,6 +308,24 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
     return count;
 }
 
+int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
+    if (start_index < 0 || end_index > linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return 0;
+    }
+    if (start_index > end_index) {
+        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
+        return 0;
+    }
+    Node* node = get_node(linked_list, start_index);
+    for (int i = start_index; i < end_index; i++) {
+        Node* next = node->next;
+        remove_node(linked_list, node);
+        node = next;
+    }
+    return end_index - start_index;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

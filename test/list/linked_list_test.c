@@ -600,6 +600,16 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     linked_list_delete(&new_linked_list);
 }
 
+void test_get_linked_list_size() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int size = linked_list_size(linked_list);
+    // then
+    TEST_ASSERT_EQUAL(size, SIZE(values));
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -686,6 +696,8 @@ int main(void) {
     RUN_TEST(test_remove_elements_from_linked_list_matching_predicate);
     RUN_TEST(test_replace_all_elements_from_linked_list);
     RUN_TEST(test_retain_all_elements_from_collection_in_linked_list);
+
+    RUN_TEST(test_get_linked_list_size);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

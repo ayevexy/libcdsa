@@ -326,6 +326,18 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
     return end_index - start_index;
 }
 
+int linked_list_remove_if(LinkedList* linked_list, Predicate condition_matches) {
+    int count = 0;
+    for (Node* node = linked_list->head, * next; node; node = next) {
+        next = node->next;
+        if (condition_matches(node->element)) {
+            remove_node(linked_list, node);
+            count++;
+        }
+    }
+    return count;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

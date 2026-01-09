@@ -544,6 +544,22 @@ void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end
     remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
 }
 
+static bool is_odd(const void* element) {
+    return *(int *) element % 2 != 0;
+}
+
+void test_remove_elements_from_linked_list_matching_predicate() {
+    // given
+    int values[] = { 1, 2, 3, 3, 4, 5 }; // the duplicated 3 ensure it will not be skipped
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int count = linked_list_remove_if(linked_list, is_odd);
+    // then
+    int new_values[] = { 2, 4 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(4, count);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -626,6 +642,8 @@ int main(void) {
     RUN_TEST(test_remove_elements_in_range_from_linked_list_end_index_above_bounds_fails);
     RUN_TEST(test_remove_elements_in_range_from_linked_list_negative_start_index_fails);
     RUN_TEST(test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails);
+
+    RUN_TEST(test_remove_elements_from_linked_list_matching_predicate);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

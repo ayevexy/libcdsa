@@ -610,6 +610,22 @@ void test_get_linked_list_size() {
     TEST_ASSERT_EQUAL(size, SIZE(values));
 }
 
+void test_linked_list_is_empty() {
+    // when
+    bool empty = linked_list_is_empty(linked_list);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
+void test_linked_list_is_not_empty() {
+    // given
+    linked_list_add_last(linked_list, &(int){10});
+    // when
+    bool empty = linked_list_is_empty(linked_list);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -698,6 +714,8 @@ int main(void) {
     RUN_TEST(test_retain_all_elements_from_collection_in_linked_list);
 
     RUN_TEST(test_get_linked_list_size);
+    RUN_TEST(test_linked_list_is_empty);
+    RUN_TEST(test_linked_list_is_not_empty);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

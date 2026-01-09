@@ -379,6 +379,10 @@ int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }
 
+bool linked_list_is_empty(const LinkedList* linked_list) {
+    return linked_list->size == 0;
+}
+
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
     return iterator(linked_list);
 }

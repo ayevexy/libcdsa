@@ -338,6 +338,12 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition_matches) 
     return count;
 }
 
+void linked_list_replace_all(LinkedList* linked_list, UnaryOperator operator_apply) {
+    for (Node* node = linked_list->head; node; node = node->next) {
+        node->element = operator_apply(node->element);
+    }
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

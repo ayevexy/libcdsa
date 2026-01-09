@@ -560,6 +560,26 @@ void test_remove_elements_from_linked_list_matching_predicate() {
     TEST_ASSERT_EQUAL(4, count);
 }
 
+static void* replace_by_2_times_original(void* element) {
+    int* value = malloc(sizeof(int));
+    *value = *(int*) element * 2;
+    // free(element); free original element, since that pointer will be lost now.
+    // since element is in the stack, it's not necessary
+    // if the element was in the heap, a free call MUST be made here
+    return value;
+}
+
+void test_replace_all_elements_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_replace_all(linked_list, replace_by_2_times_original);
+    // then
+    int new_values[] = { 2, 4, 6, 8, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -644,6 +664,7 @@ int main(void) {
     RUN_TEST(test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails);
 
     RUN_TEST(test_remove_elements_from_linked_list_matching_predicate);
+    RUN_TEST(test_replace_all_elements_from_linked_list);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

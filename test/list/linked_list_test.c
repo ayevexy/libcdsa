@@ -580,6 +580,26 @@ void test_replace_all_elements_from_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 }
 
+void test_retain_all_elements_from_collection_in_linked_list() {
+    // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int new_values[] = { 2, 4 }; // empty value between `2` and `4` to ensure `3` will not be skipped
+    POPULATE_LINKED_LIST(new_linked_list, new_values);
+
+    // when
+    int count = linked_list_retain_all(linked_list, linked_list_to_collection(new_linked_list));
+
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+    TEST_ASSERT_EQUAL(3, count);
+    // clean up
+    linked_list_delete(&new_linked_list);
+}
+
 void test_linked_list_iterator() {
     // given
     int values[] = { 1, 2, 3 };
@@ -665,6 +685,7 @@ int main(void) {
 
     RUN_TEST(test_remove_elements_from_linked_list_matching_predicate);
     RUN_TEST(test_replace_all_elements_from_linked_list);
+    RUN_TEST(test_retain_all_elements_from_collection_in_linked_list);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

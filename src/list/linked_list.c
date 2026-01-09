@@ -344,6 +344,37 @@ void linked_list_replace_all(LinkedList* linked_list, UnaryOperator operator_app
     }
 }
 
+int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        return 0;
+    }
+
+    int count = 0;
+
+    for (Node* node = linked_list->head, * next; node; node = next) {
+        bool found = false;
+        next = node->next;
+
+        while (iterator_has_next(iterator)) {
+            if (linked_list->equals(node->element, iterator_next(iterator))) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            remove_node(linked_list, node);
+            count++;
+        }
+        iterator_reset(iterator);
+    }
+    iterator_delete(&iterator);
+
+    return count;
+}
+
 int linked_list_size(const LinkedList* linked_list) {
     return linked_list->size;
 }

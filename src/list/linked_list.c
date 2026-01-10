@@ -53,6 +53,12 @@ static Node* split(Node*);
 
 static Node* merge(Node*, Node*, Comparator);
 
+static void quick_sort(LinkedList*, Comparator);
+
+static void quick_sort_internal(Node*, Node*, Comparator);
+
+static Node* partition(Node*, Node*, Comparator);
+
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
@@ -434,6 +440,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
         case SELECTION_SORT: { selection_sort(linked_list, comparator); return; }
         case INSERTION_SORT: { insertion_sort(linked_list, comparator); return; }
         case MERGE_SORT: { merge_sort(linked_list, comparator); return; }
+        case QUICK_SORT: { quick_sort(linked_list, comparator); }
     }
 }
 
@@ -642,6 +649,35 @@ static Node* merge(Node* first, Node* second, Comparator compare) {
         second->prev = nullptr;
         return second;
     }
+}
+
+static void quick_sort(LinkedList* linked_list, Comparator compare) {
+    quick_sort_internal(linked_list->head, linked_list->tail, compare);
+}
+
+static void quick_sort_internal(Node* low, Node* high, Comparator compare) {
+    if (!low || !high || low == high || low == high->next) {
+        return;
+    }
+    const Node* pivot = partition(low, high, compare);
+
+    quick_sort_internal(low, pivot->prev, compare);
+    quick_sort_internal(pivot->next, high, compare);
+}
+
+static Node* partition(Node* low, Node* high, Comparator compare) {
+    Node* i = low->prev;
+
+    for (Node* j = low; j != high; j = j->next) {
+        if (compare(j->element, high->element) <= 0) {
+            i = (i == nullptr) ? low : i->next;
+            swap(&i->element, &j->element);
+        }
+    }
+    i = i == nullptr ? low : i->next;
+    swap(&i->element, &high->element);
+
+    return i;
 }
 
 static void swap(void** a, void** b) {

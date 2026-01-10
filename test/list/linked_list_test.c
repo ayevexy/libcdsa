@@ -720,6 +720,20 @@ void test_perform_action_for_each_element_of_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 }
 
+static void sort_linked_list_test_helper(SortingAlgorithm sorting_algorithm) {
+    // given
+    int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_sort(linked_list, DEFAULT_COMPARATOR(int), sorting_algorithm);
+    // then
+    int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(sorted_values, linked_list);
+}
+
+void test_bubble_sort_linked_list() {
+    sort_linked_list_test_helper(BUBBLE_SORT);
+}
 
 int main(void) {
     UNITY_BEGIN();
@@ -796,6 +810,8 @@ int main(void) {
     RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_size);
     RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_elements);
     RUN_TEST(test_perform_action_for_each_element_of_linked_list);
+
+    RUN_TEST(test_bubble_sort_linked_list);
 
     UNITY_END();
 }

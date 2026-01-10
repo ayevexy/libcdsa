@@ -39,6 +39,8 @@ static void* next(IterationContext*);
 
 static void reset(IterationContext*);
 
+static void bubble_sort(LinkedList*, Comparator);
+
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
@@ -411,6 +413,14 @@ void linked_list_for_each(LinkedList* linked_list, Consumer action) {
     }
 }
 
+void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm) {
+    if (linked_list->size < 2) {
+        return;
+    }
+    switch (algorithm) {
+        case BUBBLE_SORT: { bubble_sort(linked_list, comparator); return; }
+    }
+}
 
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
@@ -476,7 +486,6 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
     return element;
 }
 
-
 struct IterationContext {
     Node* head;
     Node* current;
@@ -518,6 +527,19 @@ static void* next(IterationContext* iteration_context) {
 
 static void reset(IterationContext* iteration_context) {
     iteration_context->current = iteration_context->head;
+}
+
+static void bubble_sort(LinkedList* linked_list, Comparator compare) {
+    for (int i = 0; i < linked_list->size - 1; i++) {
+        Node* node = linked_list->head;
+        for (int j = 0; j < linked_list->size - i - 1; j++) {
+            Node* next = node->next;
+            if (compare(node->element, next->element) > 0) {
+                swap(&node->element, &next->element);
+            }
+            node = next;
+        }
+    }
 }
 
 static void swap(void** a, void** b) {

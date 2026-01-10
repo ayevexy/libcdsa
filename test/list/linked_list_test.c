@@ -648,6 +648,64 @@ void test_linked_list_iterator() {
     iterator_delete(&iterator);
 }
 
+void test_linked_list_is_equal_to_it_self() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool equals = linked_list_equals(linked_list, linked_list);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_linked_list_is_equal_to_another_linked_list() {
+    // given
+    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    POPULATE_LINKED_LIST(other_linked_list, values);
+    // when
+    bool equals = linked_list_equals(linked_list, other_linked_list);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() {
+    // given
+    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    POPULATE_LINKED_LIST(other_linked_list, values);
+    linked_list_add_last(other_linked_list, &(int){10});
+
+    // when
+    bool equals = linked_list_equals(linked_list, other_linked_list);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+}
+
+void test_linked_list_is_not_equal_to_another_linked_list_with_different_elements() {
+    // given
+    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 2, 3, 4, 5, 6 };
+    POPULATE_LINKED_LIST(other_linked_list, other_values);
+
+    // when
+    bool equals = linked_list_equals(linked_list, other_linked_list);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+}
+
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_linked_list);
@@ -716,6 +774,11 @@ int main(void) {
     RUN_TEST(test_get_linked_list_size);
     RUN_TEST(test_linked_list_is_empty);
     RUN_TEST(test_linked_list_is_not_empty);
+
+    RUN_TEST(test_linked_list_is_equal_to_it_self);
+    RUN_TEST(test_linked_list_is_equal_to_another_linked_list);
+    RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_size);
+    RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_elements);
 
     RUN_TEST(test_linked_list_iterator);
     UNITY_END();

@@ -387,6 +387,24 @@ Iterator* linked_list_iterator(const LinkedList* linked_list) {
     return iterator(linked_list);
 }
 
+bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other) {
+    if (linked_list == other) {
+        return true;
+    }
+    if (linked_list->size != other->size) {
+        return false;
+    }
+    const Node* node = linked_list->head, * other_node = other->head;
+    while (node) {
+        if (!linked_list->equals(node->element, other_node->element)) {
+            return false;
+        }
+        node = node->next;
+        other_node = other_node->next;
+    }
+    return true;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

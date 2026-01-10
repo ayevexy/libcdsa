@@ -735,6 +735,10 @@ void test_bubble_sort_linked_list() {
     sort_linked_list_test_helper(BUBBLE_SORT);
 }
 
+void test_selection_sort_linked_list() {
+    sort_linked_list_test_helper(SELECTION_SORT);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_linked_list);
@@ -812,6 +816,7 @@ int main(void) {
     RUN_TEST(test_perform_action_for_each_element_of_linked_list);
 
     RUN_TEST(test_bubble_sort_linked_list);
+    RUN_TEST(test_selection_sort_linked_list);
 
     UNITY_END();
 }

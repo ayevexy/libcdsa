@@ -45,6 +45,14 @@ static void selection_sort(LinkedList*, Comparator);
 
 static void insertion_sort(LinkedList*, Comparator);
 
+static void merge_sort(LinkedList*, Comparator);
+
+static Node* merge_sort_internal(Node*, Comparator);
+
+static Node* split(Node*);
+
+static Node* merge(Node*, Node*, Comparator);
+
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
@@ -425,6 +433,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
         case BUBBLE_SORT: { bubble_sort(linked_list, comparator); return; }
         case SELECTION_SORT: { selection_sort(linked_list, comparator); return; }
         case INSERTION_SORT: { insertion_sort(linked_list, comparator); return; }
+        case MERGE_SORT: { merge_sort(linked_list, comparator); return; }
     }
 }
 
@@ -581,6 +590,59 @@ static void insertion_sort(LinkedList* linked_list, Comparator compare) {
     }
 }
 
+static void merge_sort(LinkedList* linked_list, Comparator compare) {
+    linked_list->head = merge_sort_internal(linked_list->head, compare);
+
+    Node* node = linked_list->head;
+    while (node && node->next) {
+        node = node->next;
+    }
+    linked_list->tail = node;
+}
+
+static Node* merge_sort_internal(Node* head, Comparator compare) {
+    if (!head || !head->next) {
+        return head;
+    }
+    Node* second = split(head);
+
+    head = merge_sort_internal(head, compare);
+    second = merge_sort_internal(second, compare);
+
+    return merge(head, second, compare);
+}
+
+
+static Node* split(Node* head) {
+    Node* slow = head, * fast = head;
+    while (fast->next && fast->next->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    Node* second = slow->next;
+    slow->next = nullptr;
+    if (second) second->prev = nullptr;
+
+    return second;
+}
+
+static Node* merge(Node* first, Node* second, Comparator compare) {
+    if (!first) return second;
+    if (!second) return first;
+
+    if (compare(first->element, second->element) <= 0) {
+        first->next = merge(first->next, second, compare);
+        if (first->next) first->next->prev = first;
+        first->prev = nullptr;
+        return first;
+    } else {
+        second->next = merge(first, second->next, compare);
+        if (second->next) second->next->prev = second;
+        second->prev = nullptr;
+        return second;
+    }
+}
 
 static void swap(void** a, void** b) {
     void* temp = *a;

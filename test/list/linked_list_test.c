@@ -743,6 +743,10 @@ void test_insertion_sort_linked_list() {
     sort_linked_list_test_helper(INSERTION_SORT);
 }
 
+void test_merge_sort_linked_list() {
+    sort_linked_list_test_helper(MERGE_SORT);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_linked_list);
@@ -822,6 +826,7 @@ int main(void) {
     RUN_TEST(test_bubble_sort_linked_list);
     RUN_TEST(test_selection_sort_linked_list);
     RUN_TEST(test_insertion_sort_linked_list);
+    RUN_TEST(test_merge_sort_linked_list);
 
     UNITY_END();
 }

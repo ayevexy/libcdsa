@@ -43,6 +43,8 @@ static void bubble_sort(LinkedList*, Comparator);
 
 static void selection_sort(LinkedList*, Comparator);
 
+static void insertion_sort(LinkedList*, Comparator);
+
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
@@ -422,6 +424,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
     switch (algorithm) {
         case BUBBLE_SORT: { bubble_sort(linked_list, comparator); return; }
         case SELECTION_SORT: { selection_sort(linked_list, comparator); return; }
+        case INSERTION_SORT: { insertion_sort(linked_list, comparator); return; }
     }
 }
 
@@ -559,6 +562,25 @@ static void selection_sort(LinkedList* linked_list, Comparator compare) {
         node = node->next;
     }
 }
+
+static void insertion_sort(LinkedList* linked_list, Comparator compare) {
+    const Node* node = linked_list->head->next;
+    while (node) {
+        void* element = node->element;
+        const Node* prev = node->prev;
+
+        while (prev && compare(prev->element, element) > 0) {
+            prev->next->element = prev->element;
+            prev = prev->prev;
+        }
+
+        if (prev) prev->next->element = element;
+        else linked_list->head->element = element;
+
+        node = node->next;
+    }
+}
+
 
 static void swap(void** a, void** b) {
     void* temp = *a;

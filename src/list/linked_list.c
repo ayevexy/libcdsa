@@ -405,6 +405,13 @@ bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other) 
     return true;
 }
 
+void linked_list_for_each(LinkedList* linked_list, Consumer action) {
+    for (Node* node = linked_list->head; node; node = node->next) {
+        action(node->element);
+    }
+}
+
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

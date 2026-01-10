@@ -705,6 +705,21 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_element
     TEST_ASSERT_FALSE(equals);
 }
 
+static void action_add_one(void* element) {
+    *(int*) element += 1;
+}
+
+void test_perform_action_for_each_element_of_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_for_each(linked_list, action_add_one);
+    // then
+    int new_values[] = { 2, 3, 4, 5, 6 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
+}
+
 
 int main(void) {
     UNITY_BEGIN();
@@ -775,11 +790,12 @@ int main(void) {
     RUN_TEST(test_linked_list_is_empty);
     RUN_TEST(test_linked_list_is_not_empty);
 
+    RUN_TEST(test_linked_list_iterator);
     RUN_TEST(test_linked_list_is_equal_to_it_self);
     RUN_TEST(test_linked_list_is_equal_to_another_linked_list);
     RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_size);
     RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_elements);
+    RUN_TEST(test_perform_action_for_each_element_of_linked_list);
 
-    RUN_TEST(test_linked_list_iterator);
     UNITY_END();
 }

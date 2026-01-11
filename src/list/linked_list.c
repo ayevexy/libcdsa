@@ -460,6 +460,15 @@ void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), Shuffling
     }
 }
 
+void linked_list_reverse(LinkedList* linked_list) {
+    Node* first = linked_list->head, * second = linked_list->tail;
+    while (first != second && first->prev != second) {
+        swap(&first->element, &second->element);
+        first = first->next;
+        second = second->prev;
+    }
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

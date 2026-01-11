@@ -537,6 +537,28 @@ void* linked_list_find_last(const LinkedList* linked_list, Predicate condition) 
     return element;
 }
 
+int linked_list_index_where(const LinkedList* linked_list, Predicate condition) {
+    int index = 0;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (condition(node->element)) {
+            return index;
+        }
+        index++;
+    }
+    return -1;
+}
+
+int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition) {
+    int index = -1, count = 0;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (condition(node->element)) {
+            index = count;
+        }
+        count++;
+    }
+    return index;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

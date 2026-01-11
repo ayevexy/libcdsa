@@ -887,6 +887,46 @@ void test_find_last_element_matching_predicate_in_linked_list_nonexistent_elemen
     TEST_ASSERT_NULL(element);
 }
 
+void test_get_index_matching_predicate_in_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_index_where(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(0, index);
+}
+
+void test_get_index_matching_predicate_in_linked_list_no_matching_returns_negative_one() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_index_where(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
+void test_get_last_index_matching_predicate_in_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_last_index_where(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(4, index);
+}
+
+void test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_negative_one() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_last_index_where(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -994,6 +1034,11 @@ int main(void) {
     RUN_TEST(test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null);
     RUN_TEST(test_find_last_element_matching_predicate_in_linked_list);
     RUN_TEST(test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null);
+
+    RUN_TEST(test_get_index_matching_predicate_in_linked_list);
+    RUN_TEST(test_get_index_matching_predicate_in_linked_list_no_matching_returns_negative_one);
+    RUN_TEST(test_get_last_index_matching_predicate_in_linked_list);
+    RUN_TEST(test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_negative_one);
 
     RUN_TEST(test_convert_linked_list_to_array);
 

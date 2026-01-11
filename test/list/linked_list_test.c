@@ -1104,6 +1104,15 @@ void test_create_sub_list_start_index_greater_than_end_index_fails() {
     sub_list_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
 }
 
+void test_convert_linked_list_to_collection() {
+    // when
+    Collection collection = linked_list_to_collection(linked_list);
+    // then
+    TEST_ASSERT_EQUAL(linked_list, collection.data_structure);
+    TEST_ASSERT_EQUAL(linked_list_size, collection.size);
+    TEST_ASSERT_EQUAL(linked_list_iterator, collection.iterator);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1237,6 +1246,7 @@ int main(void) {
     RUN_TEST(test_create_sub_list_negative_start_index_fails);
     RUN_TEST(test_create_sub_list_start_index_greater_than_end_index_fails);
 
+    RUN_TEST(test_convert_linked_list_to_collection);
     RUN_TEST(test_convert_linked_list_to_array);
 
     UNITY_END();

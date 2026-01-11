@@ -59,6 +59,14 @@ static void quick_sort_internal(Node*, Node*, Comparator);
 
 static Node* partition(Node*, Node*, Comparator);
 
+static void durstenfeld_shuffle(LinkedList*, int (*random)(void));
+
+static void sattolo_shuffle(LinkedList*, int (*random)(void));
+
+static void naive_shuffle(LinkedList*, int (*random)(void));
+
+static void array_to_linked_list(void**, LinkedList*);
+
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
@@ -444,8 +452,30 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
     }
 }
 
+void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm) {
+    switch (algorithm) {
+        case DURSTENFELD_SHUFFLE: { durstenfeld_shuffle(linked_list, random); return; }
+        case SATTOLO_SHUFFLE: { sattolo_shuffle(linked_list, random); return; }
+        case NAIVE_SHUFFLE: { naive_shuffle(linked_list, random); }
+    }
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
+}
+
+void** linked_list_to_array(const LinkedList* linked_list) {
+    void** elements = linked_list->memory_alloc(sizeof(void*) * linked_list->size);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+    const Node* node = linked_list->head;
+    for (int i = 0; i < linked_list->size; i++) {
+        elements[i] = node->element;
+        node = node->next;
+    }
+    return elements;
 }
 
 static Node* create_node(const LinkedList* linked_list, void* element) {
@@ -678,6 +708,56 @@ static Node* partition(Node* low, Node* high, Comparator compare) {
     swap(&i->element, &high->element);
 
     return i;
+}
+
+static void durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
+    void** elements = linked_list_to_array(linked_list);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
+        return;
+    }
+    for (int i = linked_list->size - 1; i > 0; i--) {
+        const int j = random() % (i + 1);
+        swap(&elements[i], &elements[j]);
+    }
+    array_to_linked_list(elements, linked_list);
+    linked_list->memory_free(elements);
+}
+
+static void sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
+    void** elements = linked_list_to_array(linked_list);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
+        return;
+    }
+    for (int i = linked_list->size - 1; i > 0; i--) {
+        const int j = random() % i;
+        swap(&elements[i], &elements[j]);
+    }
+    array_to_linked_list(elements, linked_list);
+    linked_list->memory_free(elements);
+}
+
+static void naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
+    void** elements = linked_list_to_array(linked_list);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
+        return;
+    }
+    for (int i = 0; i < linked_list->size; i++) {
+        const int j = random() % linked_list->size;
+        swap(&elements[i], &elements[j]);
+    }
+    array_to_linked_list(elements, linked_list);
+    linked_list->memory_free(elements);
+}
+
+static void array_to_linked_list(void** elements, LinkedList* linked_list) {
+    Node* node = linked_list->head;
+    for (int i = 0; i < linked_list->size; i++) {
+        node->element = elements[i];
+        node = node->next;
+    }
 }
 
 static void swap(void** a, void** b) {

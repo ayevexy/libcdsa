@@ -751,6 +751,53 @@ void test_quick_sort_linked_list() {
     sort_linked_list_test_helper(QUICK_SORT);
 }
 
+static int random_number(void) {
+    static int count = 0; // use a true random number generator here
+    return count++;
+}
+
+void test_durstenfeld_shuffle_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_shuffle(linked_list, random_number, DURSTENFELD_SHUFFLE);
+    // then
+    int shuffled_values[] = { 7, 6, 9, 8, 10, 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(shuffled_values, linked_list);
+}
+
+void test_sattolo_shuffle_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_shuffle(linked_list, random_number, SATTOLO_SHUFFLE);
+    // then
+    int shuffled_values[] = { 2, 8, 6, 7, 9, 4, 10, 5, 3, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(shuffled_values, linked_list);
+}
+
+void test_naive_shuffle_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_shuffle(linked_list, random_number, NAIVE_SHUFFLE);
+    // then
+    int shuffled_values[] = { 3, 4, 5, 6, 7, 8, 1, 2, 9, 10 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(shuffled_values, linked_list);
+}
+
+void test_convert_linked_list_to_array() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    void** elements = linked_list_to_array(linked_list);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+}
 
 int main(void) {
     UNITY_BEGIN();
@@ -833,6 +880,12 @@ int main(void) {
     RUN_TEST(test_insertion_sort_linked_list);
     RUN_TEST(test_merge_sort_linked_list);
     RUN_TEST(test_quick_sort_linked_list);
+
+    RUN_TEST(test_durstenfeld_shuffle_linked_list);
+    RUN_TEST(test_sattolo_shuffle_linked_list);
+    RUN_TEST(test_naive_shuffle_linked_list);
+
+    RUN_TEST(test_convert_linked_list_to_array);
 
     UNITY_END();
 }

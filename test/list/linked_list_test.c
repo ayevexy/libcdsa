@@ -1123,6 +1123,23 @@ void test_convert_linked_list_to_array() {
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
 }
 
+void test_get_linked_list_string_representation() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    char* string = linked_list_to_string(linked_list);
+    // then
+    TEST_ASSERT_EQUAL_STRING("{ 1 -> 2 -> 3 -> 4 -> 5 }", string);
+}
+
+void test_get_empty_linked_list_string_representation() {
+    // when
+    char* string = linked_list_to_string(linked_list);
+    // then
+    TEST_ASSERT_EQUAL_STRING("{}", string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_linked_list);
@@ -1248,6 +1265,7 @@ int main(void) {
 
     RUN_TEST(test_convert_linked_list_to_collection);
     RUN_TEST(test_convert_linked_list_to_array);
-
+    RUN_TEST(test_get_linked_list_string_representation);
+    RUN_TEST(test_get_empty_linked_list_string_representation);
     UNITY_END();
 }

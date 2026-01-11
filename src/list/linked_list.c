@@ -1,6 +1,7 @@
 #include "linked_list.h"
 
 #include "util/error.h"
+#include <string.h>
 
 typedef struct Node {
     void* element;
@@ -20,6 +21,8 @@ struct LinkedList {
         void (*memory_free)(void*);
     };
 };
+
+static size_t calculate_string_size(const LinkedList*);
 
 static Node* create_node(const LinkedList*, void*);
 
@@ -671,6 +674,54 @@ void** linked_list_to_array(const LinkedList* linked_list) {
         node = node->next;
     }
     return elements;
+}
+
+char* linked_list_to_string(const LinkedList* linked_list) {
+    char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to clear trash data
+
+    strcat(string, linked_list->size == 0 ? "{" : "{ ");
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        constexpr int NULL_TERMINATOR = 1;
+
+        const int length = linked_list->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
+        char* element_string = linked_list->memory_alloc(length);
+
+        if (!element_string) {
+            linked_list->memory_free(string);
+            set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+            return nullptr;
+        }
+
+        linked_list->to_string(node->element, element_string, length);
+        strcat(string, element_string);
+
+        if (node->next) {
+            strcat(string, " -> ");
+        }
+        linked_list->memory_free(element_string);
+    }
+    strcat(string, linked_list->size == 0 ? "}" : " }");
+
+    return string;
+}
+
+static size_t calculate_string_size(const LinkedList* linked_list) {
+    constexpr int BRACES = 2; constexpr int SEPARATOR = 4; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        length += linked_list->to_string(node->element, nullptr, 0);
+
+        if (node == linked_list->head) length += 1; // space after opening brace
+        if (node != linked_list->tail) length += SEPARATOR; // prevent separator on the last element
+        if (node == linked_list->tail) length += 1; // space before closing brace
+    }
+    return length + BRACES + NULL_TERMINATOR;
 }
 
 static Node* create_node(const LinkedList* linked_list, void* element) {

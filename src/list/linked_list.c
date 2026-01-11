@@ -563,12 +563,7 @@ int linked_list_last_index_where(const LinkedList* linked_list, Predicate condit
 }
 
 bool linked_list_contains(const LinkedList* linked_list, const void* element) {
-    for (const Node* node = linked_list->head; node; node = node->next) {
-        if (linked_list->equals(node->element, element)) {
-            return true;
-        }
-    }
-    return false;
+    return linked_list_index_of(linked_list, element) != -1;
 }
 
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection) {

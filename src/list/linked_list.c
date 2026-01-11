@@ -469,6 +469,32 @@ void linked_list_reverse(LinkedList* linked_list) {
     }
 }
 
+void linked_list_rotate(LinkedList* linked_list, int distance) {
+    if (linked_list->size <= 1) return;
+
+    distance %= linked_list->size;
+    if (distance < 0) {
+        distance += linked_list->size;
+    }
+    if (distance == 0) return;
+
+    linked_list->tail->next = linked_list->head;
+    linked_list->head->prev = linked_list->tail;
+
+    Node* new_tail = linked_list->head;
+    for (int i = 0; i < linked_list->size - distance - 1; i++) {
+        new_tail = new_tail->next;
+    }
+    Node* new_head = new_tail->next;
+
+    new_tail->next = nullptr;
+    new_head->prev = nullptr;
+
+    linked_list->head = new_head;
+    linked_list->tail = new_tail;
+}
+
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

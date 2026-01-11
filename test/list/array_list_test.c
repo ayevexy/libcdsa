@@ -1097,6 +1097,16 @@ void test_binary_search_element_of_array_list() {
     TEST_ASSERT_EQUAL(8, index);
 }
 
+void test_binary_search_nonexistent_element_of_array_list_returns_negative_one() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int index = array_list_binary_search(array_list, &(int){42}, DEFAULT_COMPARATOR(int));
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
 void test_clone_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1311,6 +1321,7 @@ int main(void) {
     RUN_TEST(test_get_last_index_of_nonexistent_element_from_array_list_returns_negative_one);
 
     RUN_TEST(test_binary_search_element_of_array_list);
+    RUN_TEST(test_binary_search_nonexistent_element_of_array_list_returns_negative_one);
 
     RUN_TEST(test_clone_array_list);
 

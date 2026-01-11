@@ -970,19 +970,20 @@ void test_get_last_index_matching_predicate_in_array_list_no_matching_returns_ne
 
 void test_array_list_contains_element() {
     // given
-    int value = 10;
-    array_list_add_last(array_list, &value);
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool contains = array_list_contains(array_list, &value);
+    bool contains = array_list_contains(array_list, &(int){3});
     // then
     TEST_ASSERT_TRUE(contains);
 }
 
 void test_array_list_does_not_contains_element() {
     // given
-    int value = 10;
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool contains = array_list_contains(array_list, &value);
+    bool contains = array_list_contains(array_list, &(int){10});
     // then
     TEST_ASSERT_FALSE(contains);
 }

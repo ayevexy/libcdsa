@@ -494,6 +494,29 @@ void linked_list_rotate(LinkedList* linked_list, int distance) {
     linked_list->tail = new_tail;
 }
 
+void linked_list_clear(LinkedList* linked_list) {
+    Node* current = linked_list->head;
+    while (current) {
+        Node* temporary = current;
+        current = current->next;
+        linked_list->memory_free(temporary);
+    }
+    linked_list->head = linked_list->tail = nullptr;
+    linked_list->size = 0;
+}
+
+void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*)) {
+    Node* current = linked_list->head;
+    while (current) {
+        delete(current->element);
+        Node* temporary = current;
+
+        current = current->next;
+        linked_list->memory_free(temporary);
+    }
+    linked_list->head = linked_list->tail = nullptr;
+    linked_list->size = 0;
+}
 
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);

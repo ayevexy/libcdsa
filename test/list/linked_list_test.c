@@ -822,6 +822,31 @@ void test_rotate_linked_list_backward() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(rotated_values, linked_list);
 }
 
+void test_clear_linked_list() {
+    // given
+    int values[] = { 1, 2, 3 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_clear(linked_list);
+    // then
+    TEST_ASSERT_EQUAL(0, linked_list_size(linked_list));
+    TEST_ASSERT_NULL(linked_list_get(linked_list, 0));
+    TEST_ASSERT_NULL(linked_list_get(linked_list, 1));
+    TEST_ASSERT_NULL(linked_list_get(linked_list, 2));
+}
+
+void test_clear_linked_list_data() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    linked_list_clear_data(linked_list, delete_data);
+    // then
+    int deleted_values[] = { 0, 0, 0, 0, 0 };
+    TEST_ASSERT_EQUAL(0, linked_list_size(linked_list));
+    TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -921,6 +946,9 @@ int main(void) {
     RUN_TEST(test_reverse_linked_list);
     RUN_TEST(test_rotate_linked_list);
     RUN_TEST(test_rotate_linked_list_backward);
+
+    RUN_TEST(test_clear_linked_list);
+    RUN_TEST(test_clear_linked_list_data);
 
     RUN_TEST(test_convert_linked_list_to_array);
 

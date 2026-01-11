@@ -586,6 +586,38 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
     return contains;
 }
 
+int linked_list_occurrences_of(const LinkedList* linked_list, const void* element) {
+    int count = 0;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (linked_list->equals(node->element, element)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int linked_list_index_of(const LinkedList* linked_list, const void* element) {
+    int index = 0;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (linked_list->equals(node->element, element)) {
+            return index;
+        }
+        index++;
+    }
+    return -1;
+}
+
+int linked_list_last_index_of(const LinkedList* linked_list, const void* element) {
+    int index = -1, count = 0;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (linked_list->equals(node->element, element)) {
+            index = count;
+        }
+        count++;
+    }
+    return index;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

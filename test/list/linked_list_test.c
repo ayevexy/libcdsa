@@ -996,6 +996,56 @@ void test_linked_list_does_not_contains_all_elements() {
     linked_list_delete(&new_linked_list);
 }
 
+void test_get_occurrences_of_element_in_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int count = linked_list_occurrences_of(linked_list, &(int){3});
+    // then
+    TEST_ASSERT_EQUAL(3, count);
+}
+
+void test_get_index_of_element_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_index_of(linked_list, &(int){3});
+    // then
+    TEST_ASSERT_EQUAL(2, index);
+}
+
+void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int index = linked_list_index_of(linked_list, &(int){10});
+    // then
+    TEST_ASSERT_EQUAL(-1, index);
+}
+
+void test_get_last_index_of_element_from_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int last_index = linked_list_last_index_of(linked_list, &(int){3});
+    // then
+    TEST_ASSERT_EQUAL(4, last_index);
+}
+
+void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negative_one() {
+    // given
+    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int last_index = linked_list_last_index_of(linked_list, &(int){10});
+    // then
+    TEST_ASSERT_EQUAL(-1, last_index);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1114,6 +1164,12 @@ int main(void) {
     RUN_TEST(test_linked_list_contains_all_elements);
     RUN_TEST(test_empty_linked_list_contains_all_elements_of_empty_collection);
     RUN_TEST(test_linked_list_does_not_contains_all_elements);
+
+    RUN_TEST(test_get_occurrences_of_element_in_linked_list);
+    RUN_TEST(test_get_index_of_element_from_linked_list);
+    RUN_TEST(test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one);
+    RUN_TEST(test_get_last_index_of_element_from_linked_list);
+    RUN_TEST(test_get_last_index_of_nonexistent_element_from_linked_list_returns_negative_one);
 
     RUN_TEST(test_convert_linked_list_to_array);
 

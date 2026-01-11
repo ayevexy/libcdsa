@@ -1079,6 +1079,8 @@ void test_create_empty_sub_list_of_linked_list() {
     LinkedList* new_linked_list = linked_list_sub_list(linked_list, 0, 0);
     // then
     TEST_ASSERT_EQUAL(0, linked_list_size(new_linked_list));
+    // clean up
+    linked_list_delete(&new_linked_list);
 }
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index, Error expected_error) {
@@ -1121,6 +1123,8 @@ void test_convert_linked_list_to_array() {
     void** elements = linked_list_to_array(linked_list);
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    // clean up
+    free(elements);
 }
 
 void test_get_linked_list_string_representation() {
@@ -1131,6 +1135,8 @@ void test_get_linked_list_string_representation() {
     char* string = linked_list_to_string(linked_list);
     // then
     TEST_ASSERT_EQUAL_STRING("{ 1 -> 2 -> 3 -> 4 -> 5 }", string);
+    // clean up
+    free(string);
 }
 
 void test_get_empty_linked_list_string_representation() {
@@ -1138,6 +1144,8 @@ void test_get_empty_linked_list_string_representation() {
     char* string = linked_list_to_string(linked_list);
     // then
     TEST_ASSERT_EQUAL_STRING("{}", string);
+    // clean up
+    free(string);
 }
 
 int main(void) {

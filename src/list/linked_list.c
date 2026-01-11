@@ -559,6 +559,33 @@ int linked_list_last_index_where(const LinkedList* linked_list, Predicate condit
     return index;
 }
 
+bool linked_list_contains(const LinkedList* linked_list, const void* element) {
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (linked_list->equals(node->element, element)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool linked_list_contains_all(const LinkedList* linked_list, Collection collection) {
+    Iterator* iterator = collection_iterator(collection);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!linked_list_contains(linked_list, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_delete(&iterator);
+    return contains;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

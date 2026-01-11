@@ -927,6 +927,75 @@ void test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_n
     TEST_ASSERT_EQUAL(-1, index);
 }
 
+void test_linked_list_contains_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool contains = linked_list_contains(linked_list, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_linked_list_does_not_contains_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    bool contains = linked_list_contains(linked_list, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
+void test_linked_list_contains_all_elements() {
+    // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 2, 3, 4};
+    POPULATE_LINKED_LIST(new_linked_list, other_values);
+
+    // when
+    bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
+
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    linked_list_delete(&new_linked_list);
+}
+
+void test_empty_linked_list_contains_all_elements_of_empty_collection() {
+    // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // when
+    bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    linked_list_delete(&new_linked_list);
+}
+
+void test_linked_list_does_not_contains_all_elements() {
+    // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    int other_values[] = { 2, 10, 4};
+    POPULATE_LINKED_LIST(new_linked_list, other_values);
+
+    // when
+    bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
+
+    // then
+    TEST_ASSERT_FALSE(contains_all);
+    // clean up
+    linked_list_delete(&new_linked_list);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1039,6 +1108,12 @@ int main(void) {
     RUN_TEST(test_get_index_matching_predicate_in_linked_list_no_matching_returns_negative_one);
     RUN_TEST(test_get_last_index_matching_predicate_in_linked_list);
     RUN_TEST(test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_negative_one);
+
+    RUN_TEST(test_linked_list_contains_element);
+    RUN_TEST(test_linked_list_does_not_contains_element);
+    RUN_TEST(test_linked_list_contains_all_elements);
+    RUN_TEST(test_empty_linked_list_contains_all_elements_of_empty_collection);
+    RUN_TEST(test_linked_list_does_not_contains_all_elements);
 
     RUN_TEST(test_convert_linked_list_to_array);
 

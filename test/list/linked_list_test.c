@@ -847,6 +847,46 @@ void test_clear_linked_list_data() {
     TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
 }
 
+void test_find_element_matching_predicate_in_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_find(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(1, *element);
+}
+
+void test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_find(linked_list, is_odd);
+    // then
+    TEST_ASSERT_NULL(element);
+}
+
+void test_find_last_element_matching_predicate_in_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_find_last(linked_list, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
+    // given
+    int values[] = { 2, 4, 6, 8, 10 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* element = linked_list_find_last(linked_list, is_odd);
+    // then
+    TEST_ASSERT_NULL(element);
+}
+
 void test_convert_linked_list_to_array() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -949,6 +989,11 @@ int main(void) {
 
     RUN_TEST(test_clear_linked_list);
     RUN_TEST(test_clear_linked_list_data);
+
+    RUN_TEST(test_find_element_matching_predicate_in_linked_list);
+    RUN_TEST(test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null);
+    RUN_TEST(test_find_last_element_matching_predicate_in_linked_list);
+    RUN_TEST(test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null);
 
     RUN_TEST(test_convert_linked_list_to_array);
 

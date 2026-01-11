@@ -518,6 +518,25 @@ void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*)) {
     linked_list->size = 0;
 }
 
+void* linked_list_find(const LinkedList* linked_list, Predicate condition) {
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (condition(node->element)) {
+            return node->element;
+        }
+    }
+    return nullptr;
+}
+
+void* linked_list_find_last(const LinkedList* linked_list, Predicate condition) {
+    void* element = nullptr;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        if (condition(node->element)) {
+            element = node->element;
+        }
+    }
+    return element;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

@@ -618,6 +618,43 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
     return index;
 }
 
+LinkedList* linked_list_clone(const LinkedList* linked_list) {
+    LinkedList* new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size);
+    if (!new_linked_list) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+    return new_linked_list;
+}
+
+LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index) {
+    if (start_index < 0 || end_index > linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        return nullptr;
+    }
+    if (start_index > end_index) {
+        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
+        return nullptr;
+    }
+    LinkedList* new_linked_list = linked_list_new(&(LinkedListOptions) {
+        .equals = linked_list->equals,
+        .to_string = linked_list->to_string,
+        .memory_alloc = linked_list->memory_alloc,
+        .memory_realloc = linked_list->memory_realloc,
+        .memory_free = linked_list->memory_free
+    });
+    if (!new_linked_list) {
+        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        return nullptr;
+    }
+    const Node* node = get_node(linked_list, start_index);
+    for (int i = start_index; i < end_index; i++) {
+        linked_list_add_last(new_linked_list, node->element);
+        node = node->next;
+    }
+    return new_linked_list;
+}
+
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     return collection_from(linked_list);
 }

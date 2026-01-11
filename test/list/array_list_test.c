@@ -1140,6 +1140,8 @@ void test_create_empty_sub_list_of_array_list() {
     ArrayList* new_array_list = array_list_sub_list(array_list, 0, 0);
     // then
     TEST_ASSERT_EQUAL(0, array_list_size(new_array_list));
+    // clean up
+    array_list_delete(&new_array_list);
 }
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index, Error expected_error) {
@@ -1182,6 +1184,8 @@ void test_convert_array_list_to_array() {
     void** elements = array_list_to_array(array_list);
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    // clean up
+    free(elements);
 }
 
 void test_get_array_list_string_representation() {
@@ -1192,6 +1196,8 @@ void test_get_array_list_string_representation() {
     char* string = array_list_to_string(array_list);
     // then
     TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string);
+    // clean up
+    free(string);
 }
 
 void test_get_empty_array_list_string_representation() {
@@ -1199,6 +1205,8 @@ void test_get_empty_array_list_string_representation() {
     char* string = array_list_to_string(array_list);
     // then
     TEST_ASSERT_EQUAL_STRING("[]", string);
+    // clean up
+    free(string);
 }
 
 int main(void) {

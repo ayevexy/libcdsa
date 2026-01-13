@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/algorithms.h"
 #include "util/collection.h"
+#include "util/optional.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -109,9 +110,9 @@ void array_list_clear(ArrayList*);
 
 void array_list_clear_data(ArrayList*, void (*delete)(void*));
 
-void* array_list_find(const ArrayList*, Predicate);
+Optional array_list_find(const ArrayList*, Predicate);
 
-void* array_list_find_last(const ArrayList*, Predicate);
+Optional array_list_find_last(const ArrayList*, Predicate);
 
 int array_list_index_where(const ArrayList*, Predicate);
 

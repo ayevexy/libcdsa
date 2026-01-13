@@ -893,9 +893,10 @@ void test_find_element_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* element = array_list_find(array_list, odd_predicate);
+    Optional result = array_list_find(array_list, odd_predicate);
     // then
-    TEST_ASSERT_EQUAL(1, *element);
+    TEST_ASSERT_EQUAL(1, *(int*) result.value);
+    TEST_ASSERT_TRUE(result.value_present);
 }
 
 void test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
@@ -903,9 +904,9 @@ void test_find_element_matching_predicate_in_array_list_nonexistent_element_retu
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* element = array_list_find(array_list, odd_predicate);
+    Optional result = array_list_find(array_list, odd_predicate);
     // then
-    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_FALSE(result.value_present);
 }
 
 void test_find_last_element_matching_predicate_in_array_list() {
@@ -913,9 +914,10 @@ void test_find_last_element_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* element = array_list_find_last(array_list, odd_predicate);
+    Optional result = array_list_find_last(array_list, odd_predicate);
     // then
-    TEST_ASSERT_EQUAL(5, *element);
+    TEST_ASSERT_EQUAL(5, *(int*) result.value);
+    TEST_ASSERT_TRUE(result.value_present);
 }
 
 void test_find_last_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
@@ -923,9 +925,9 @@ void test_find_last_element_matching_predicate_in_array_list_nonexistent_element
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* element = array_list_find_last(array_list, odd_predicate);
+    Optional result = array_list_find_last(array_list, odd_predicate);
     // then
-    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_FALSE(result.value_present);
 }
 
 void test_get_index_matching_predicate_in_array_list() {

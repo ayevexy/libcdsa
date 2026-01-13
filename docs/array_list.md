@@ -673,7 +673,7 @@ array_list_rotate(array_list, 2); // [ 4, 5, 1, 2, 3 ]
 To find an element matching a predicate:
 
 ```c++
-void* element = array_list_find(array_list, is_odd); // nullptr if not found
+Optional result = array_list_find(array_list, is_odd);
 ```
 
 ---
@@ -681,8 +681,10 @@ void* element = array_list_find(array_list, is_odd); // nullptr if not found
 To find the last element matching a predicate:
 
 ```c++
-void* element = array_list_find_last(array_list, is_odd); // nullptr if not found
+Optional result = array_list_find_last(array_list, is_odd);
 ```
+
+See [Optional](optional.md) for more details about the `Optional` type.
 
 ---
 

@@ -488,17 +488,17 @@ void array_list_clear_data(ArrayList* array_list, void (*delete)(void*)) {
     array_list->size = 0;
 }
 
-void* array_list_find(const ArrayList* array_list, Predicate condition) {
+Optional array_list_find(const ArrayList* array_list, Predicate condition) {
     for (int i = 0; i < array_list->size; i++) {
         void* element = array_list->elements[i];
         if (condition(element)) {
-            return element;
+            return optional_of(element);
         }
     }
-    return nullptr;
+    return optional_empty();
 }
 
-void* array_list_find_last(const ArrayList* array_list, Predicate condition) {
+Optional array_list_find_last(const ArrayList* array_list, Predicate condition) {
     void* element = nullptr;
     for (int i = 0; i < array_list->size; i++) {
         void* current = array_list->elements[i];
@@ -506,7 +506,7 @@ void* array_list_find_last(const ArrayList* array_list, Predicate condition) {
             element = current;
         }
     }
-    return element;
+    return element ? optional_of(element) : optional_empty();
 }
 
 int array_list_index_where(const ArrayList* array_list, Predicate condition) {

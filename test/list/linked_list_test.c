@@ -852,9 +852,10 @@ void test_find_element_matching_predicate_in_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* element = linked_list_find(linked_list, is_odd);
+    Optional result = linked_list_find(linked_list, is_odd);
     // then
-    TEST_ASSERT_EQUAL(1, *element);
+    TEST_ASSERT_EQUAL(1, *(int*) result.value);
+    TEST_ASSERT_TRUE(result.value_present);
 }
 
 void test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
@@ -862,9 +863,9 @@ void test_find_element_matching_predicate_in_linked_list_nonexistent_element_ret
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* element = linked_list_find(linked_list, is_odd);
+    Optional result = linked_list_find(linked_list, is_odd);
     // then
-    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_FALSE(result.value_present);
 }
 
 void test_find_last_element_matching_predicate_in_linked_list() {
@@ -872,9 +873,10 @@ void test_find_last_element_matching_predicate_in_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* element = linked_list_find_last(linked_list, is_odd);
+    Optional result = linked_list_find_last(linked_list, is_odd);
     // then
-    TEST_ASSERT_EQUAL(5, *element);
+    TEST_ASSERT_EQUAL(5, *(int*) result.value);
+    TEST_ASSERT_TRUE(result.value_present);
 }
 
 void test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
@@ -882,9 +884,9 @@ void test_find_last_element_matching_predicate_in_linked_list_nonexistent_elemen
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* element = linked_list_find_last(linked_list, is_odd);
+    Optional result = linked_list_find_last(linked_list, is_odd);
     // then
-    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_FALSE(result.value_present);
 }
 
 void test_get_index_matching_predicate_in_linked_list() {

@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/algorithms.h"
 #include "util/collection.h"
+#include "util/optional.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -99,9 +100,9 @@ void linked_list_clear(LinkedList*);
 
 void linked_list_clear_data(LinkedList*, void (*delete)(void*));
 
-void* linked_list_find(const LinkedList*, Predicate);
+Optional linked_list_find(const LinkedList*, Predicate);
 
-void* linked_list_find_last(const LinkedList*, Predicate);
+Optional linked_list_find_last(const LinkedList*, Predicate);
 
 int linked_list_index_where(const LinkedList*, Predicate);
 

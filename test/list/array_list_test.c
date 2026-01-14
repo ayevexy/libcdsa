@@ -96,13 +96,15 @@ static void delete_data(void* element) {
 
 void test_destroy_array_list_deletes_its_data() {
     // given
+    ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
+    // and
     int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(new_array_list, values);
     // when
-    array_list_destroy(&array_list, delete_data);
+    array_list_destroy(&new_array_list, delete_data);
     // then
     int deleted_values[] = { 0, 0, 0, 0, 0 };
-    TEST_ASSERT_NULL(array_list);
+    TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
 }
 

@@ -90,13 +90,15 @@ static void delete_data(void* element) {
 
 void test_destroy_linked_list_deletes_its_data() {
     // given
+    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS);
+    // and
     int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_LINKED_LIST(linked_list, values);
+    POPULATE_LINKED_LIST(new_linked_list, values);
     // when
-    linked_list_destroy(&linked_list, delete_data);
+    linked_list_destroy(&new_linked_list, delete_data);
     // then
     int deleted_values[] = { 0, 0, 0, 0, 0 };
-    TEST_ASSERT_NULL(linked_list);
+    TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
 }
 

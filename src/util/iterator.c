@@ -23,7 +23,7 @@ Iterator* iterator_new(
 ) {
     Iterator* iterator = memory_alloc(sizeof(Iterator));
     if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     iterator->internal_state = internal_state;
@@ -49,7 +49,7 @@ void iterator_reset(Iterator* iterator) {
 
 void iterator_delete(Iterator** iterator_pointer) {
     if (!*iterator_pointer) {
-        set_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
+        raise_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
         return;
     }
     Iterator* iterator = *iterator_pointer;

@@ -70,18 +70,18 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
         || !options->memory_realloc
         || !options->memory_free
     ) {
-        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid argument(s)", __func__);
+        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
         return nullptr;
     }
     ArrayList* array_list = options->memory_alloc(sizeof(ArrayList));
     if (!array_list) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     array_list->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
     if (!array_list->elements) {
         options->memory_free(array_list);
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     array_list->size = 0;
@@ -98,12 +98,12 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options) {
     ArrayList* array_list; Error error = attempt(array_list = array_list_new(options));
 
-    if (error == INVALID_ARGUMENTS_ERROR) {
-        set_error(error, "Error at %s(): invalid argument(s)", __func__);
+    if (error == ILLEGAL_ARGUMENT_ERROR) {
+        raise_error(error, "Error at %s(): illegal argument(s)", __func__);
         return nullptr;
     }
     if (error == MEMORY_ALLOCATION_ERROR) {
-        set_error(error, "Error at %s(): memory allocation failure", __func__);
+        raise_error(error, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
 
@@ -111,7 +111,7 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 
     if (error == MEMORY_ALLOCATION_ERROR) {
         array_list_delete(&array_list);
-        set_error(error, "Error at %s(): %s", __func__, error_message());
+        raise_error(error, "Error at %s(): %s", __func__, error_message());
         return nullptr;
     }
 
@@ -120,7 +120,7 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 
 void array_list_delete(ArrayList** array_list_pointer) {
     if (!*array_list_pointer) {
-        set_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
+        raise_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
         return;
     }
     ArrayList* array_list = *array_list_pointer;
@@ -131,7 +131,7 @@ void array_list_delete(ArrayList** array_list_pointer) {
 
 void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     if (!*array_list_pointer) {
-        set_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
+        raise_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
         return;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
@@ -142,7 +142,7 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
 
 bool array_list_add(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index > array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return false;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
@@ -178,13 +178,13 @@ bool array_list_add_last(ArrayList* array_list, const void* element) {
 
 bool array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     if (index < 0 || index > array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return false;
     }
 
     Iterator* iterator = collection_iterator(collection);
     if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
         return false;
     }
 
@@ -218,7 +218,7 @@ bool array_list_add_all_last(ArrayList* array_list, Collection collection) {
 
 void* array_list_get(const ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return nullptr;
     }
     return array_list->elements[index];
@@ -226,7 +226,7 @@ void* array_list_get(const ArrayList* array_list, int index) {
 
 void* array_list_get_first(const ArrayList* array_list) {
     if (array_list->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
     return array_list_get(array_list, 0);
@@ -234,7 +234,7 @@ void* array_list_get_first(const ArrayList* array_list) {
 
 void* array_list_get_last(const ArrayList* array_list) {
     if (array_list->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
     return array_list_get(array_list, array_list->size - 1);
@@ -242,7 +242,7 @@ void* array_list_get_last(const ArrayList* array_list) {
 
 void* array_list_set(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index >= array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return nullptr;
     }
     void* old_element = array_list->elements[index];
@@ -252,7 +252,7 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 
 bool array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return false;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
@@ -261,7 +261,7 @@ bool array_list_swap(ArrayList* array_list, int index_a, int index_b) {
 
 void* array_list_remove(ArrayList* array_list, int index) {
     if (index < 0 || index >= array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return nullptr;
     }
     void* element = array_list->elements[index];
@@ -276,7 +276,7 @@ void* array_list_remove(ArrayList* array_list, int index) {
 
 void* array_list_remove_first(ArrayList* array_list) {
     if (array_list->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
     return array_list_remove(array_list, 0);
@@ -284,7 +284,7 @@ void* array_list_remove_first(ArrayList* array_list) {
 
 void* array_list_remove_last(ArrayList* array_list) {
     if (array_list->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
+        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
         return nullptr;
     }
     return array_list_remove(array_list, array_list->size - 1);
@@ -303,7 +303,7 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
 
     if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
         return 0;
     }
 
@@ -319,11 +319,11 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || end_index > array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return 0;
     }
     if (start_index > end_index) {
-        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
+        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
         return 0;
     }
     int count = end_index - start_index;
@@ -356,7 +356,7 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
     Iterator* iterator = collection_iterator(collection);
 
     if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
         return 0;
     }
 
@@ -536,7 +536,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     Iterator* iterator = collection_iterator(collection);
 
     if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
         return false;
     }
 
@@ -605,7 +605,7 @@ int array_list_binary_search(const ArrayList* array_list, const void* element, C
 ArrayList* array_list_clone(const ArrayList* array_list) {
     ArrayList* new_array_list = array_list_sub_list(array_list, 0, array_list->size);
     if (!new_array_list) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     return new_array_list;
@@ -613,11 +613,11 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
 
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
     if (start_index < 0 || end_index > array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
+        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
         return nullptr;
     }
     if (start_index > end_index) {
-        set_error(INVALID_ARGUMENTS_ERROR, "Error at %s(): invalid arguments", __func__);
+        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
         return nullptr;
     }
     ArrayList* new_array_list = array_list_new(&(ArrayListOptions) {
@@ -630,7 +630,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_free = array_list->memory_free
     });
     if (!new_array_list) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     for (int i = start_index; i < end_index; i++) {
@@ -646,7 +646,7 @@ Collection array_list_to_collection(const ArrayList* array_list) {
 void** array_list_to_array(const ArrayList* array_list) {
     void** elements = array_list->memory_alloc(sizeof(void*) * array_list->size);
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
     for (int i = 0; i < array_list->size; i++) {
@@ -659,7 +659,7 @@ char* array_list_to_string(const ArrayList* array_list) {
     char* string = array_list->memory_alloc(calculate_string_size(array_list));
 
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
         return nullptr;
     }
 
@@ -674,7 +674,7 @@ char* array_list_to_string(const ArrayList* array_list) {
 
         if (!element_string) {
             array_list->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
+            raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
             return nullptr;
         }
 
@@ -711,7 +711,7 @@ static bool resize(ArrayList* array_list, int new_capacity) {
 
     void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
         return false;
     }
     array_list->elements = elements;
@@ -728,7 +728,7 @@ static Iterator* iterator(const ArrayList* array_list) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
     iteration_context->array_list = array_list;
@@ -738,7 +738,7 @@ static Iterator* iterator(const ArrayList* array_list) {
 
     if (!iterator) {
         array_list->memory_free(iteration_context);
-        set_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
+        raise_error(MEMORY_ALLOCATION_ERROR, "Error at array_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
 

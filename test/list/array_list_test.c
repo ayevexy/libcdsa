@@ -40,7 +40,7 @@ void test_do_not_create_array_list_with_invalid_options() {
     ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&invalid_options));
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
 void test_create_array_list_from_collection() {
@@ -69,7 +69,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     }));
     // then
     TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
 void test_delete_array_list_set_it_to_null() {
@@ -535,7 +535,7 @@ void test_remove_elements_in_range_from_array_list_negative_start_index_fails() 
 }
 
 void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_index_fails() {
-    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
+    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, ILLEGAL_ARGUMENT_ERROR);
 }
 
 static bool odd_predicate(const void* element) {
@@ -873,9 +873,9 @@ void test_clear_array_list() {
     array_list_clear(array_list);
     // then
     TEST_ASSERT_EQUAL(0, array_list_size(array_list));
-    TEST_ASSERT_NULL(array_list_get(array_list, 0));
-    TEST_ASSERT_NULL(array_list_get(array_list, 1));
-    TEST_ASSERT_NULL(array_list_get(array_list, 2));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(array_list_get(array_list, 0)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(array_list_get(array_list, 1)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(array_list_get(array_list, 2)));
 }
 
 void test_clear_array_list_data() {
@@ -1168,7 +1168,7 @@ void test_create_sub_list_negative_start_index_fails() {
 }
 
 void test_create_sub_list_start_index_greater_than_end_index_fails() {
-    sub_list_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
+    sub_list_index_out_of_bounds_test_helper(4, 3, ILLEGAL_ARGUMENT_ERROR);
 }
 
 void test_convert_array_list_to_collection() {

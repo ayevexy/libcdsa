@@ -36,7 +36,7 @@ void test_do_not_create_linked_list_with_invalid_options() {
     LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&invalid_options));
     // then
     TEST_ASSERT_NULL(new_linked_list);
-    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
 void test_create_linked_list_from_collection() {
@@ -63,7 +63,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     }));
     // then
     TEST_ASSERT_NULL(new_linked_list);
-    TEST_ASSERT_EQUAL(INVALID_ARGUMENTS_ERROR, error);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
 void test_delete_linked_list_set_it_to_null() {
@@ -543,7 +543,7 @@ void test_remove_elements_in_range_from_linked_list_negative_start_index_fails()
 }
 
 void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails() {
-    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
+    remove_elements_in_range_index_out_of_bounds_test_helper(4, 3, ILLEGAL_ARGUMENT_ERROR);
 }
 
 static bool is_odd(const void* element) {
@@ -832,9 +832,9 @@ void test_clear_linked_list() {
     linked_list_clear(linked_list);
     // then
     TEST_ASSERT_EQUAL(0, linked_list_size(linked_list));
-    TEST_ASSERT_NULL(linked_list_get(linked_list, 0));
-    TEST_ASSERT_NULL(linked_list_get(linked_list, 1));
-    TEST_ASSERT_NULL(linked_list_get(linked_list, 2));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 0)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 1)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 2)));
 }
 
 void test_clear_linked_list_data() {
@@ -1107,7 +1107,7 @@ void test_create_sub_list_negative_start_index_fails() {
 }
 
 void test_create_sub_list_start_index_greater_than_end_index_fails() {
-    sub_list_index_out_of_bounds_test_helper(4, 3, INVALID_ARGUMENTS_ERROR);
+    sub_list_index_out_of_bounds_test_helper(4, 3, ILLEGAL_ARGUMENT_ERROR);
 }
 
 void test_convert_linked_list_to_collection() {

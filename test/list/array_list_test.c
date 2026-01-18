@@ -122,11 +122,10 @@ void test_add_element_at_index_to_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool added = array_list_add(array_list, 2, &(int){10});
+    array_list_add(array_list, 2, &(int){10});
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-    TEST_ASSERT_TRUE(added);
 }
 
 void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
@@ -146,10 +145,9 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool added; Error error = attempt(added = array_list_add(array_list, index, &(int){10}));
+    Error error = attempt(array_list_add(array_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
-    TEST_ASSERT_FALSE(added);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
@@ -194,12 +192,11 @@ void test_add_all_elements_from_collection_at_index_in_array_list() {
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
 
     // when
-    bool added = array_list_add_all(array_list, 2, array_list_to_collection(existing_array_list));
+    array_list_add_all(array_list, 2, array_list_to_collection(existing_array_list));
 
     // then
     int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-    TEST_ASSERT_TRUE(added);
 
     // clean up
     array_list_delete(&existing_array_list);
@@ -216,12 +213,11 @@ void test_add_all_elements_from_collection_at_beginning_of_array_list() {
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
 
     // when
-    bool added = array_list_add_all_first(array_list, array_list_to_collection(existing_array_list));
+    array_list_add_all_first(array_list, array_list_to_collection(existing_array_list));
 
     // then
     int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-    TEST_ASSERT_TRUE(added);
 
     // clean up
     array_list_delete(&existing_array_list);
@@ -238,12 +234,11 @@ void test_add_all_elements_from_collection_at_end_of_array_list() {
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
 
     // when
-    bool added = array_list_add_all_last(array_list, array_list_to_collection(existing_array_list));
+    array_list_add_all_last(array_list, array_list_to_collection(existing_array_list));
 
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-    TEST_ASSERT_TRUE(added);
 
     // clean up
     array_list_delete(&existing_array_list);
@@ -350,11 +345,10 @@ void test_swap_elements_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool swapped = array_list_swap(array_list, 1, 3);
+    array_list_swap(array_list, 1, 3);
     // then
     int swaped_values[] = { 1, 4, 3, 2, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(swaped_values, array_list);
-    TEST_ASSERT_TRUE(swapped);
 }
 
 static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
@@ -362,10 +356,9 @@ static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int inde
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool swapped; Error error = attempt(swapped = array_list_swap(array_list, index_a, index_b));
+    Error error = attempt(array_list_swap(array_list, index_a, index_b));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
-    TEST_ASSERT_FALSE(swapped);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 

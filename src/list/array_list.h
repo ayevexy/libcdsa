@@ -42,17 +42,17 @@ void array_list_delete(ArrayList**);
 
 void array_list_destroy(ArrayList**, void (*delete)(void*));
 
-bool array_list_add(ArrayList*, int index, const void* element);
+void array_list_add(ArrayList*, int index, const void* element);
 
-bool array_list_add_first(ArrayList*, const void* element);
+void array_list_add_first(ArrayList*, const void* element);
 
-bool array_list_add_last(ArrayList*, const void* element);
+void array_list_add_last(ArrayList*, const void* element);
 
-bool array_list_add_all(ArrayList*, int index, Collection);
+void array_list_add_all(ArrayList*, int index, Collection);
 
-bool array_list_add_all_first(ArrayList*, Collection);
+void array_list_add_all_first(ArrayList*, Collection);
 
-bool array_list_add_all_last(ArrayList*, Collection);
+void array_list_add_all_last(ArrayList*, Collection);
 
 void* array_list_get(const ArrayList*, int index);
 
@@ -62,7 +62,7 @@ void* array_list_get_last(const ArrayList*);
 
 void* array_list_set(ArrayList*, int index, const void* element);
 
-bool array_list_swap(ArrayList*, int index_a, int index_b);
+void array_list_swap(ArrayList*, int index_a, int index_b);
 
 void* array_list_remove(ArrayList*, int index);
 
@@ -84,11 +84,11 @@ int array_list_retain_all(ArrayList*, Collection);
 
 int array_list_size(const ArrayList*);
 
-bool array_list_trim_to_size(ArrayList*);
+void array_list_trim_to_size(ArrayList*);
 
 int array_list_capacity(const ArrayList*);
 
-bool array_list_ensure_capacity(ArrayList*, int capacity);
+void array_list_ensure_capacity(ArrayList*, int capacity);
 
 bool array_list_is_empty(const ArrayList*);
 

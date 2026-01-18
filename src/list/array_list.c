@@ -129,10 +129,10 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     array_list_delete(array_list_pointer);
 }
 
-bool array_list_add(ArrayList* array_list, int index, const void* element) {
+void array_list_add(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index > array_list->size) {
         raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
-        return false;
+        return;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
         delete((*array_list_pointer)->elements[i]);
@@ -149,7 +149,7 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
         const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
         if (!resize(array_list, new_capacity)) {
             raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
-            return false;
+            return;
         }
     }
     for (int i = array_list->size; i > index; i--) {
@@ -157,45 +157,40 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
     }
     array_list->elements[index] = (void*) element;
     array_list->size++;
-    return true;
 }
 
-bool array_list_add_first(ArrayList* array_list, const void* element) {
+void array_list_add_first(ArrayList* array_list, const void* element) {
     const Error error = attempt(array_list_add(array_list, 0, element));
     if (error) {
         raise_error(error, "%s", plain_error_message());
-        return false;
     }
-    return true;
 }
 
-bool array_list_add_last(ArrayList* array_list, const void* element) {
+void array_list_add_last(ArrayList* array_list, const void* element) {
     const Error error = attempt(array_list_add(array_list, array_list->size, element));
     if (error) {
         raise_error(error, "%s", plain_error_message());
-        return false;
     }
-    return true;
 }
 
-bool array_list_add_all(ArrayList* array_list, int index, Collection collection) {
+void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     if (index < 0 || index > array_list->size) {
         raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
-        return false;
+        return;
     }
     Error error = NO_ERROR;
 
     Iterator* iterator;
     if ((error = attempt(iterator = collection_iterator(collection))) == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s of 'collection'", plain_error_message());
-        return false;
+        return;
     }
 
     const int new_capacity = array_list->size + collection_size(collection);
     if ((error = attempt(array_list_ensure_capacity(array_list, new_capacity))) == MEMORY_ALLOCATION_ERROR) {
         iterator_delete(&iterator);
         raise_error(error, "%s", plain_error_message());
-        return false;
+        return;
     }
 
     const int offset = collection_size(collection);
@@ -209,25 +204,20 @@ bool array_list_add_all(ArrayList* array_list, int index, Collection collection)
     array_list->size += collection_size(collection);
 
     iterator_delete(&iterator);
-    return true;
 }
 
-bool array_list_add_all_first(ArrayList* array_list, Collection collection) {
+void array_list_add_all_first(ArrayList* array_list, Collection collection) {
     const Error error = attempt(array_list_add_all(array_list, 0, collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s", plain_error_message());
-        return false;
     }
-    return true;
 }
 
-bool array_list_add_all_last(ArrayList* array_list, Collection collection) {
+void array_list_add_all_last(ArrayList* array_list, Collection collection) {
     const Error error = attempt(array_list_add_all(array_list, array_list->size, collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s", plain_error_message());
-        return false;
     }
-    return true;
 }
 
 void* array_list_get(const ArrayList* array_list, int index) {
@@ -264,13 +254,12 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
     return old_element;
 }
 
-bool array_list_swap(ArrayList* array_list, int index_a, int index_b) {
+void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
         raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, array_list->size);
-        return false;
+        return;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
-    return true;
 }
 
 void* array_list_remove(ArrayList* array_list, int index) {
@@ -390,32 +379,27 @@ int array_list_size(const ArrayList* array_list) {
     return array_list->size;
 }
 
-bool array_list_trim_to_size(ArrayList* array_list) {
+void array_list_trim_to_size(ArrayList* array_list) {
     if (!resize(array_list, array_list->size)) {
         raise_error(MEMORY_ALLOCATION_ERROR, "failed to shrink 'array_list' capacity");
-        return false;
     }
-    return true;
 }
 
 int array_list_capacity(const ArrayList* array_list) {
     return array_list->capacity;
 }
 
-bool array_list_ensure_capacity(ArrayList* array_list, int capacity) {
+void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     if (array_list->capacity >= capacity) {
-        return true;
+        return;
     }
-
     int new_capacity = array_list->capacity;
     while (new_capacity < capacity) {
         new_capacity = (int) (new_capacity * array_list->grow_factor);
     }
     if (!resize(array_list, new_capacity)) {
         raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
-        return false;
     }
-    return true;
 }
 
 bool array_list_is_empty(const ArrayList* array_list) {

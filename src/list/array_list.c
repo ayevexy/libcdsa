@@ -1,7 +1,7 @@
 #include "array_list.h"
 
 #include "util/error.h"
-#include "util/non_null.h"
+#include "util/constraints.h"
 #include <string.h>
 #include <limits.h>
 

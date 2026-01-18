@@ -1,7 +1,7 @@
 #include "iterator.h"
 
 #include "error.h"
-#include "non_null.h"
+#include "constraints.h"
 
 struct Iterator {
     void* internal_state;

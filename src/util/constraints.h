@@ -1,5 +1,5 @@
-#ifndef NON_NULL_H
-#define NON_NULL_H
+#ifndef CONSTRAINTS_H
+#define CONSTRAINTS_H
 
 #include <assert.h>
 

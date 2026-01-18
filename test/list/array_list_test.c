@@ -531,7 +531,7 @@ void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_
     remove_elements_in_range_index_out_of_bounds_test_helper(4, 3);
 }
 
-static bool odd_predicate(const void* element) {
+static bool is_odd(const void* element) {
     return *(int *) element % 2 != 0;
 }
 
@@ -540,7 +540,7 @@ void test_remove_elements_from_array_list_matching_predicate() {
     int values[] = { 1, 2, 3, 3, 4, 5 }; // the duplicated 3 ensure it will not be skipped
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int count = array_list_remove_if(array_list, odd_predicate);
+    int count = array_list_remove_if(array_list, is_odd);
     // then
     int new_values[] = { 2, 4 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -888,7 +888,7 @@ void test_find_element_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    Optional result = array_list_find(array_list, odd_predicate);
+    Optional result = array_list_find(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(1, *(int*) result.value);
     TEST_ASSERT_TRUE(result.value_present);
@@ -899,7 +899,7 @@ void test_find_element_matching_predicate_in_array_list_nonexistent_element_retu
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    Optional result = array_list_find(array_list, odd_predicate);
+    Optional result = array_list_find(array_list, is_odd);
     // then
     TEST_ASSERT_FALSE(result.value_present);
 }
@@ -909,7 +909,7 @@ void test_find_last_element_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    Optional result = array_list_find_last(array_list, odd_predicate);
+    Optional result = array_list_find_last(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(5, *(int*) result.value);
     TEST_ASSERT_TRUE(result.value_present);
@@ -920,7 +920,7 @@ void test_find_last_element_matching_predicate_in_array_list_nonexistent_element
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    Optional result = array_list_find_last(array_list, odd_predicate);
+    Optional result = array_list_find_last(array_list, is_odd);
     // then
     TEST_ASSERT_FALSE(result.value_present);
 }
@@ -930,7 +930,7 @@ void test_get_index_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_where(array_list, odd_predicate);
+    int index = array_list_index_where(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(0, index);
 }
@@ -940,7 +940,7 @@ void test_get_index_matching_predicate_in_array_list_no_matching_returns_negativ
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_where(array_list, odd_predicate);
+    int index = array_list_index_where(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -950,7 +950,7 @@ void test_get_last_index_matching_predicate_in_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_last_index_where(array_list, odd_predicate);
+    int index = array_list_last_index_where(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(4, index);
 }
@@ -960,7 +960,7 @@ void test_get_last_index_matching_predicate_in_array_list_no_matching_returns_ne
     int values[] = { 2, 4, 6, 8, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_last_index_where(array_list, odd_predicate);
+    int index = array_list_last_index_where(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

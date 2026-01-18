@@ -13,7 +13,25 @@ _Thread_local static char global_error_message[LENGTH] = "";
 _Thread_local static int error_scope = 0;
 _Thread_local static bool abort_on_error = true;
 
+const char* error_strings[] = {
+    "NO_ERROR",
+    "NULL_POINTER_ERROR",
+    "INDEX_OUT_OF_BOUNDS_ERROR",
+    "NO_SUCH_ELEMENT_ERROR",
+    "ILLEGAL_ARGUMENT_ERROR",
+    "MEMORY_ALLOCATION_ERROR"
+};
+
 const char* error_message(void) {
+    return global_error_message;
+}
+
+const char* plain_error_message(void) {
+    for (int i = 0; global_error_message[i] != '\0'; i++) {
+        if (global_error_message[i] == '-') {
+            return global_error_message + i + 2;
+        }
+    }
     return global_error_message;
 }
 
@@ -33,7 +51,9 @@ Error capture_error(void) {
     return error;
 }
 
-void raise_error(Error error, const char *error_message_format, ...) {
+void raise_plain_error(Error error, const char* error_message_format, ...) {
+    assert(error != NO_ERROR);
+
     _Thread_local static char global_error_message_copy[LENGTH];
     global_error = error;
 
@@ -44,12 +64,10 @@ void raise_error(Error error, const char *error_message_format, ...) {
     va_end(parameters);
 
     assert(length >= 0 && length < LENGTH);
-
-    snprintf(global_error_message_copy + length, LENGTH - length,"\n");
     strcpy(global_error_message, global_error_message_copy);
 
     if (global_error && abort_on_error && error_scope == 0) {
-        fprintf(stderr, "%s", global_error_message);
+        fprintf(stderr, "%s\n", global_error_message);
         exit(EXIT_FAILURE);
     }
 }

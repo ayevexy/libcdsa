@@ -10,7 +10,11 @@ typedef enum {
     MEMORY_ALLOCATION_ERROR
 } Error;
 
+extern const char* error_strings[];
+
 const char* error_message(void);
+
+const char* plain_error_message(void);
 
 #define attempt(expression) (isolate_error(), (expression), capture_error())
 
@@ -18,6 +22,14 @@ void isolate_error(void);
 
 Error capture_error(void);
 
-void raise_error(Error error, const char* error_message_format, ...);
+#define raise_error(error, message, ...)                                            \
+    raise_plain_error(error,                                                        \
+        message[0] == '\0' ? "Error at %s(): %s" : "Error at %s(): %s - "message,   \
+        __func__,                                                                   \
+        error_strings[error],                                                       \
+        ##__VA_ARGS__                                                               \
+    )
+
+void raise_plain_error(Error error, const char* error_message_format, ...);
 
 #endif

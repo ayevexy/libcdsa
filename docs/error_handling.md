@@ -8,12 +8,12 @@ To handle errors gracefully, you can use the `attempt` macro. For example:
 // Attempt to execute a function and capture any resulting error
 ArrayList* list; Error error = attempt(list = array_list_new(&options));
 
-if (error == ILLEGAL_ARGUMENT_ERROR) {       // Handle illegal argument(s)
-    printf("%s\n", error_message());         // e.g., "Error at array_list_new(): illegal argument(s)"
+if (error == ILLEGAL_ARGUMENT_ERROR) {       // Handle illegal argument error
+    printf("%s\n", error_message());         // e.g., "Error at array_list_new(): ILLEGAL_ARGUMENT_ERROR - 'options' argument must adhere to its constraints
 }
 
-if (error == MEMORY_ALLOCATION_ERROR) {      // Handle memory allocation failure
-    printf("%s\n", error_message());         // e.g., "Error at array_list_new(): memory allocation failed"
+if (error == MEMORY_ALLOCATION_ERROR) {      // Handle memory allocation error
+    printf("%s\n", error_message());         // e.g., "Error at array_list_new(): MEMORY_ALLOCATION_ERROR - failed to allocate memory for 'array_list'"
 }
 ```
 

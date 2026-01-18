@@ -233,7 +233,7 @@ void* array_list_get_first(const ArrayList* array_list) {
         raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
         return nullptr;
     }
-    return array_list_get(array_list, 0);
+    return array_list->elements[0];
 }
 
 void* array_list_get_last(const ArrayList* array_list) {
@@ -241,7 +241,7 @@ void* array_list_get_last(const ArrayList* array_list) {
         raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
         return nullptr;
     }
-    return array_list_get(array_list, array_list->size - 1);
+    return array_list->elements[array_list->size - 1];
 }
 
 void* array_list_set(ArrayList* array_list, int index, const void* element) {

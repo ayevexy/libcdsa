@@ -28,7 +28,7 @@ Error capture_error(void);
         __func__,                                                                   \
         error_strings[error],                                                       \
         ##__VA_ARGS__                                                               \
-    )
+    ); return
 
 void raise_plain_error(Error error, const char* error_message_format, ...);
 

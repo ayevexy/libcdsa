@@ -12,7 +12,7 @@
 
 #define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
     .initial_capacity = 10,                                 \
-    .grow_factor = 2.0,                                     \
+    .growth_factor = 2.0,                                   \
     .equals = pointer_equals,                               \
     .to_string = pointer_to_string,                         \
     .memory_alloc = malloc,                                 \
@@ -22,7 +22,7 @@
 
 typedef struct ArrayListOptions {
     int initial_capacity;
-    double grow_factor;
+    double growth_factor;
     bool (*equals)(const void*, const void*);
     int (*to_string)(const void*, char*, size_t);
     struct {

@@ -7,13 +7,13 @@
 
 #define MIN_CAPACITY 10
 #define MAX_CAPACITY (INT_MAX - 1)
-#define MIN_GROW_FACTOR 1.1
+#define MIN_GROWTH_FACTOR 1.1
 
 struct ArrayList {
     void** elements;
     int size;
     int capacity;
-    double grow_factor;
+    double growth_factor;
     bool (*equals)(const void*, const void*);
     int (*to_string)(const void*, char*, size_t);
     struct {
@@ -65,7 +65,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     require_non_null(options);
 
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->grow_factor < MIN_GROW_FACTOR || !options->equals || !options->to_string
+        || options->growth_factor < MIN_GROWTH_FACTOR || !options->equals || !options->to_string
         || !options->memory_alloc || !options->memory_realloc || !options->memory_free
     ) {
         raise_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints") nullptr;
@@ -81,7 +81,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     }
     array_list->size = 0;
     array_list->capacity = options->initial_capacity;
-    array_list->grow_factor = options->grow_factor;
+    array_list->growth_factor = options->growth_factor;
     array_list->equals = options->equals;
     array_list->to_string = options->to_string;
     array_list->memory_alloc = options->memory_alloc;
@@ -146,7 +146,7 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
         return false;
     }
     if (array_list->size >= array_list->capacity) {
-        const int new_capacity = (int) (array_list->capacity * array_list->grow_factor);
+        const int new_capacity = (int) (array_list->capacity * array_list->growth_factor);
         if (!resize(array_list, new_capacity)) {
             raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
         }
@@ -407,7 +407,7 @@ void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     }
     int new_capacity = array_list->capacity;
     while (new_capacity < capacity) {
-        new_capacity = (int) (new_capacity * array_list->grow_factor);
+        new_capacity = (int) (new_capacity * array_list->growth_factor);
     }
     if (!resize(array_list, new_capacity)) {
         raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
@@ -650,7 +650,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
     }
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
-        .grow_factor = array_list->grow_factor,
+        .growth_factor = array_list->growth_factor,
         .equals = array_list->equals,
         .to_string = array_list->to_string,
         .memory_alloc = array_list->memory_alloc,

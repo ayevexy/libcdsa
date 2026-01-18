@@ -11,7 +11,7 @@ static ArrayList* array_list;
 void setUp() {
     array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = 10,
-        .grow_factor = 2,
+        .growth_factor = 2,
         .equals = (bool (*)(const void*, const void*)) int_equals,
         .to_string = (int (*)(const void*, char*, size_t)) int_to_string,
         .memory_alloc = malloc,
@@ -32,7 +32,7 @@ void test_do_not_create_array_list_with_invalid_options() {
     // given
     ArrayListOptions invalid_options = {
         .initial_capacity = 0,
-        .grow_factor = -1,
+        .growth_factor = -1,
         .equals = nullptr,
         .to_string = nullptr
     };
@@ -63,7 +63,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     // when
     ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {
         .initial_capacity = 0,
-        .grow_factor = -1,
+        .growth_factor = -1,
         .equals = nullptr,
         .to_string = nullptr
     }));

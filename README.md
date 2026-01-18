@@ -33,7 +33,7 @@ on the Java Collections Framework and shares many similarities with it.
 
 This library is designed for ease of use and currently implements the following data structures:
 
-- [Array List](docs/array_list.md): A linear generic and dynamic data structure that stores data consecutively in memory.
+- [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
 
 ## Features
 
@@ -112,7 +112,8 @@ int main() {
 
 ### Documentation
 
-Each data structure is documented separately in a respective markdown file in the [docs](./docs) folder.
+Each data structure is documented in its corresponding header file within the `src` folder.
+For usage examples, see the corresponding test file in the `test` folder.
 
 ---
 

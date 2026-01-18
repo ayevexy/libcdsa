@@ -1,5 +1,5 @@
-#ifndef SORTING_ALGORITHM_H
-#define SORTING_ALGORITHM_H
+#ifndef ALGORITHMS_H
+#define ALGORITHMS_H
 
 /**
  * @brief Enumeration of supported sorting algorithms.

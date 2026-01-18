@@ -1,6 +1,6 @@
 #include "iterator.h"
 
-#include "error.h"
+#include "errors.h"
 #include "constraints.h"
 
 struct Iterator {

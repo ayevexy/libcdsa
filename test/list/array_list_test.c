@@ -1,7 +1,7 @@
 #include "array_list_test.h"
 
 #include "list/array_list.h"
-#include "util/error.h"
+#include "util/errors.h"
 
 #include "unity.h"
 #include <stdlib.h>

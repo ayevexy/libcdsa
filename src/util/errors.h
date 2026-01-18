@@ -1,5 +1,5 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef ERRORS_H
+#define ERRORS_H
 
 /**
  * @brief Enumeration of possible runtime errors.

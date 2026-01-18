@@ -1,6 +1,6 @@
 #include "array_list.h"
 
-#include "util/error.h"
+#include "util/errors.h"
 #include "util/constraints.h"
 #include <string.h>
 #include <limits.h>

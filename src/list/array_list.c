@@ -689,7 +689,6 @@ struct IterationContext {
 
 static Iterator* create_iterator(const ArrayList* array_list) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
-
     if (!iteration_context) {
         return nullptr;
     }
@@ -697,12 +696,10 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     iteration_context->cursor = 0;
 
     Iterator* iterator = iterator_from(array_list, iteration_context, has_next, next, reset);
-
     if (!iterator) {
         array_list->memory_free(iteration_context);
         return nullptr;
     }
-
     return iterator;
 }
 

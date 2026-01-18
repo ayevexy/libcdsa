@@ -1,6 +1,7 @@
 #include "iterator.h"
 
 #include "error.h"
+#include "non_null.h"
 
 struct Iterator {
     void* internal_state;
@@ -21,6 +22,7 @@ Iterator* iterator_new(
     void* (*memory_alloc)(size_t),
     void (*memory_free)(void*)
 ) {
+    require_non_null(internal_state, has_next, next, reset, memory_alloc, memory_free);
     Iterator* iterator = memory_alloc(sizeof(Iterator));
     if (!iterator) {
         return nullptr;
@@ -35,10 +37,12 @@ Iterator* iterator_new(
 }
 
 bool iterator_has_next(const Iterator* iterator) {
+    require_non_null(iterator);
     return iterator->has_next(iterator->internal_state);
 }
 
 void* iterator_next(Iterator* iterator) {
+    require_non_null(iterator);
     void* element; const Error error = attempt(element = iterator->next(iterator->internal_state));
     if (error == NO_SUCH_ELEMENT_ERROR) {
         raise_error(error, "iterator has no more elements") nullptr;
@@ -47,10 +51,12 @@ void* iterator_next(Iterator* iterator) {
 }
 
 void iterator_reset(Iterator* iterator) {
+    require_non_null(iterator);
     iterator->reset(iterator->internal_state);
 }
 
 void iterator_delete(Iterator** iterator_pointer) {
+    require_non_null(iterator_pointer);
     if (!*iterator_pointer) {
         raise_error(NULL_POINTER_ERROR, "'iterator' must not be null");
     }

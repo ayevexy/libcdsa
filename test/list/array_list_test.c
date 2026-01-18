@@ -12,8 +12,8 @@ void setUp() {
     array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = 10,
         .grow_factor = 2,
-        .equals = DEFAULT_EQUALS(int),
-        .to_string = DEFAULT_TO_STRING(int),
+        .equals = (bool (*)(const void*, const void*)) int_equals,
+        .to_string = (int (*)(const void*, char*, size_t)) int_to_string,
         .memory_alloc = malloc,
         .memory_realloc = realloc,
         .memory_free = free
@@ -761,7 +761,7 @@ static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
     int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_sort(array_list, DEFAULT_COMPARATOR(int), sorting_algorithm);
+    array_list_sort(array_list, (Comparator) &compare_ints, sorting_algorithm);
     // then
     int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sorted_values, array_list);
@@ -1089,7 +1089,7 @@ void test_binary_search_element_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){9}, DEFAULT_COMPARATOR(int));
+    int index = array_list_binary_search(array_list, &(int){9}, (Comparator) &compare_ints);
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
@@ -1099,7 +1099,7 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){42}, DEFAULT_COMPARATOR(int));
+    int index = array_list_binary_search(array_list, &(int){42}, (Comparator) &compare_ints);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

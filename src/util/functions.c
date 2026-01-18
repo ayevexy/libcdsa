@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEFINE_EQUALS(T) bool T##_equals(const void* a, const void* b) {    \
-    return *(T*) a == *(T*) b;                                              \
+#define DEFINE_EQUALS(T) bool T##_equals(const T* a, const T* b) {  \
+    return *a == *b;                                                \
 }
 
 DEFINE_EQUALS(char)
@@ -19,12 +19,12 @@ bool pointer_equals(const void* a, const void* b) {
     return a == b;
 }
 
-bool string_equals(const void* a, const void* b) {
+bool string_equals(const char* a, const char* b) {
     return strcmp(a, b) == 0;
 }
 
-#define DEFINE_COMPARATOR(T) int compare_##T##s(const void* a, const void* b) {     \
-    return (*(T*) a > *(T*) b) - (*(T*) a < *(T*) b);                               \
+#define DEFINE_COMPARATOR(T) int compare_##T##s(const T* a, const T* b) {   \
+    return (*a > *b) - (*a < *b);                                           \
 }
 
 DEFINE_COMPARATOR(char)
@@ -39,12 +39,12 @@ int compare_pointers(const void* a, const void* b) {
     return (a > b) - (a < b);
 }
 
-int compare_strings(const void* a, const void* b) {
+int compare_strings(const char* a, const char* b) {
     return strcmp(a, b);
 }
 
-#define DEFINE_TO_STRING(T, format) int T##_to_string(const void* e, char* string, size_t length) {     \
-    return snprintf(string, length, format, *(T*) e);                                                   \
+#define DEFINE_TO_STRING(T, format) int T##_to_string(const T* e, char* string, size_t length) {    \
+    return snprintf(string, length, format, *e);                                                    \
 }
 
 DEFINE_TO_STRING(char, "%c")
@@ -59,6 +59,6 @@ int pointer_to_string(const void* e, char* string, size_t length) {
     return snprintf(string, length, "%p", e);
 }
 
-int string_to_string(const void* e, char* string, size_t length) {
-    return snprintf(string, length, "%s", (char*) e);
+int string_to_string(const char* e, char* string, size_t length) {
+    return snprintf(string, length, "%s", e);
 }

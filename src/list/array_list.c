@@ -25,6 +25,8 @@ struct ArrayList {
 
 static size_t calculate_string_size(const ArrayList*);
 
+static bool ensure_capacity(ArrayList*, int);
+
 static bool resize(ArrayList*, int);
 
 typedef struct IterationContext IterationContext;
@@ -63,7 +65,6 @@ static void swap(void** a, void** b);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
     require_non_null(options);
-
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->growth_factor < MIN_GROWTH_FACTOR || !options->equals || !options->to_string
         || !options->memory_alloc || !options->memory_realloc || !options->memory_free
@@ -134,22 +135,8 @@ void array_list_add(ArrayList* array_list, int index, const void* element) {
     if (index < 0 || index > array_list->size) {
         raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
     }
-    for (int i = 0; i < (*array_list_pointer)->size; i++) {
-        delete((*array_list_pointer)->elements[i]);
-    }
-    array_list_delete(array_list_pointer);
-}
-
-bool array_list_add(ArrayList* array_list, int index, const void* element) {
-    if (index < 0 || index > array_list->size) {
-        fprintf(stderr,  "Exception at array_list_add(%p, %d) index out of bounds\n", (void*) array_list, index);
-        return false;
-    }
-    if (array_list->size >= array_list->capacity) {
-        const int new_capacity = (int) (array_list->capacity * array_list->growth_factor);
-        if (!resize(array_list, new_capacity)) {
-            raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
-        }
+    if (!ensure_capacity(array_list, array_list->size + 1)) {
+        raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
     }
     for (int i = array_list->size; i > index; i--) {
         array_list->elements[i] = array_list->elements[i - 1];
@@ -161,7 +148,7 @@ bool array_list_add(ArrayList* array_list, int index, const void* element) {
 void array_list_add_first(ArrayList* array_list, const void* element) {
     require_non_null(array_list);
     const Error error = attempt(array_list_add(array_list, 0, element));
-    if (error) {
+    if (error == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s", plain_error_message());
     }
 }
@@ -169,7 +156,7 @@ void array_list_add_first(ArrayList* array_list, const void* element) {
 void array_list_add_last(ArrayList* array_list, const void* element) {
     require_non_null(array_list);
     const Error error = attempt(array_list_add(array_list, array_list->size, element));
-    if (error) {
+    if (error == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s", plain_error_message());
     }
 }
@@ -180,17 +167,15 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
     if (index < 0 || index > array_list->size) {
         raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
     }
-    Error error = NO_ERROR;
 
-    Iterator* iterator;
-    if ((error = attempt(iterator = collection_iterator(collection))) == MEMORY_ALLOCATION_ERROR) {
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
         raise_error(error, "%s of 'collection'", plain_error_message());
     }
 
-    const int new_capacity = array_list->size + collection_size(collection);
-    if ((error = attempt(array_list_ensure_capacity(array_list, new_capacity))) == MEMORY_ALLOCATION_ERROR) {
+    if (!ensure_capacity(array_list, array_list->size + collection_size(collection))) {
         iterator_delete(&iterator);
-        raise_error(error, "%s", plain_error_message());
+        raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
     }
 
     const int offset = collection_size(collection);
@@ -402,14 +387,7 @@ int array_list_capacity(const ArrayList* array_list) {
 
 void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     require_non_null(array_list);
-    if (array_list->capacity >= capacity) {
-        return;
-    }
-    int new_capacity = array_list->capacity;
-    while (new_capacity < capacity) {
-        new_capacity = (int) (new_capacity * array_list->growth_factor);
-    }
-    if (!resize(array_list, new_capacity)) {
+    if (!ensure_capacity(array_list, capacity)) {
         raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
     }
 }
@@ -730,6 +708,17 @@ static size_t calculate_string_size(const ArrayList* array_list) {
         if (i == array_list->size - 1) length += 1; // space before closing bracket
     }
     return length + BRACKETS + NULL_TERMINATOR;
+}
+
+static bool ensure_capacity(ArrayList* array_list, int capacity) {
+    if (array_list->capacity >= capacity) {
+        return true;
+    }
+    int new_capacity = array_list->capacity;
+    while (new_capacity < capacity) {
+        new_capacity = (int) (new_capacity * array_list->growth_factor);
+    }
+    return resize(array_list, new_capacity);
 }
 
 static bool resize(ArrayList* array_list, int new_capacity) {

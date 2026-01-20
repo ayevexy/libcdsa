@@ -45,14 +45,14 @@ void isolate_error(void) {
 Error capture_error(void) {
     const Error error = global_error;
     global_error = NO_ERROR;
-    assert(error_scope > 0);
+    assert(error_scope > 0 && "error_scope can't be negative");
     error_scope--;
     abort_on_error = true;
     return error;
 }
 
 void raise_plain_error(Error error, const char* error_message_format, ...) {
-    assert(error != NO_ERROR);
+    assert(error != NO_ERROR && "can't raise NO_ERROR");
 
     _Thread_local static char global_error_message_copy[LENGTH];
     global_error = error;
@@ -63,7 +63,7 @@ void raise_plain_error(Error error, const char* error_message_format, ...) {
     const int length = vsnprintf(global_error_message_copy,LENGTH, error_message_format, parameters);
     va_end(parameters);
 
-    assert(length >= 0 && length < LENGTH);
+    assert(length >= 0 && length < LENGTH && "formatted string is too big");
     strcpy(global_error_message, global_error_message_copy);
 
     if (global_error && abort_on_error && error_scope == 0) {

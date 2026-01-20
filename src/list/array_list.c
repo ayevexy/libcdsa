@@ -147,18 +147,12 @@ void array_list_add(ArrayList* array_list, int index, const void* element) {
 
 void array_list_add_first(ArrayList* array_list, const void* element) {
     require_non_null(array_list);
-    const Error error = attempt(array_list_add(array_list, 0, element));
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message());
-    }
+    array_list_add(array_list, 0, element);
 }
 
 void array_list_add_last(ArrayList* array_list, const void* element) {
     require_non_null(array_list);
-    const Error error = attempt(array_list_add(array_list, array_list->size, element));
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message());
-    }
+    array_list_add(array_list, array_list->size, element);
 }
 
 void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
@@ -193,20 +187,12 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
 
 void array_list_add_all_first(ArrayList* array_list, Collection collection) {
     require_non_null(array_list); require_non_empty_collection(collection);
-
-    const Error error = attempt(array_list_add_all(array_list, 0, collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message());
-    }
+    array_list_add_all(array_list, 0, collection);
 }
 
 void array_list_add_all_last(ArrayList* array_list, Collection collection) {
     require_non_null(array_list); require_non_empty_collection(collection);
-
-    const Error error = attempt(array_list_add_all(array_list, array_list->size, collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message());
-    }
+    array_list_add_all(array_list, array_list->size, collection);
 }
 
 void* array_list_get(const ArrayList* array_list, int index) {

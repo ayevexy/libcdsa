@@ -886,7 +886,7 @@ void test_find_element_matching_predicate_in_array_list() {
     Optional result = array_list_find(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(1, *(int*) result.value);
-    TEST_ASSERT_TRUE(result.value_present);
+    TEST_ASSERT_TRUE(result.present);
 }
 
 void test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
@@ -896,7 +896,7 @@ void test_find_element_matching_predicate_in_array_list_nonexistent_element_retu
     // when
     Optional result = array_list_find(array_list, is_odd);
     // then
-    TEST_ASSERT_FALSE(result.value_present);
+    TEST_ASSERT_FALSE(result.present);
 }
 
 void test_find_last_element_matching_predicate_in_array_list() {
@@ -907,7 +907,7 @@ void test_find_last_element_matching_predicate_in_array_list() {
     Optional result = array_list_find_last(array_list, is_odd);
     // then
     TEST_ASSERT_EQUAL(5, *(int*) result.value);
-    TEST_ASSERT_TRUE(result.value_present);
+    TEST_ASSERT_TRUE(result.present);
 }
 
 void test_find_last_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
@@ -917,7 +917,7 @@ void test_find_last_element_matching_predicate_in_array_list_nonexistent_element
     // when
     Optional result = array_list_find_last(array_list, is_odd);
     // then
-    TEST_ASSERT_FALSE(result.value_present);
+    TEST_ASSERT_FALSE(result.present);
 }
 
 void test_get_index_matching_predicate_in_array_list() {

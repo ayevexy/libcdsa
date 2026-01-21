@@ -11,7 +11,7 @@
  */
 typedef struct {
     void* const value;
-    const bool value_present;
+    const bool present;
 } Optional;
 
 /**
@@ -21,7 +21,7 @@ typedef struct {
  *
  * @return an empty `Optional`
  */
-#define optional_empty() (Optional) { .value = (void*) 0xDEADBEEF, .value_present = false }
+#define optional_empty() (Optional) { .value = (void*) 0xDEADBEEF, .present = false }
 
 /**
  * @brief Creates an `Optional` containing the specified value.
@@ -32,6 +32,6 @@ typedef struct {
  *
  * @pre _value may be `nullptr`, but the `Optional` will be considered present
  */
-#define optional_of(_value) (Optional) { .value = _value, .value_present = true }
+#define optional_of(_value) (Optional) { .value = _value, .present = true }
 
 #endif

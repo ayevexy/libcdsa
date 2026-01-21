@@ -67,14 +67,15 @@ typedef struct ArrayListOptions {
 /**
  * A utility macro that provides a reasonable default `ArrayListOptions` structure.
  */
-#define DEFAULT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
-    .initial_capacity = 10,                                 \
-    .growth_factor = 2.0,                                   \
-    .equals = pointer_equals,                               \
-    .to_string = pointer_to_string,                         \
-    .memory_alloc = malloc,                                 \
-    .memory_realloc = realloc,                              \
-    .memory_free = free                                     \
+#define DEFAULT_ARRAY_LIST_OPTIONS(...) &(ArrayListOptions) {   \
+    .initial_capacity = 10,                                     \
+    .growth_factor = 2.0,                                       \
+    .equals = pointer_equals,                                   \
+    .to_string = pointer_to_string,                             \
+    .memory_alloc = malloc,                                     \
+    .memory_realloc = realloc,                                  \
+    .memory_free = free,                                        \
+    __VA_ARGS__                                                 \
 }
 
 /**

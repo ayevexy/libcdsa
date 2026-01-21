@@ -26,6 +26,4 @@
 
 #define REQUIRE_NON_NULL_6(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_5(__VA_ARGS__)
 
-#define require_non_empty_collection(collection) assert(collection.data_structure != nullptr && collection.size != nullptr && collection.iterator != nullptr )
-
 #endif

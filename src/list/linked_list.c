@@ -1,6 +1,7 @@
 #include "linked_list.h"
 
-#include "util/error.h"
+#include "util/errors.h"
+#include "util/constraints.h"
 #include <string.h>
 
 typedef struct Node {
@@ -34,7 +35,7 @@ static void* remove_node(LinkedList*, Node*);
 
 typedef struct IterationContext IterationContext;
 
-static Iterator* iterator(const LinkedList*);
+static Iterator* create_iterator(const LinkedList*);
 
 static bool has_next(const IterationContext*);
 
@@ -73,14 +74,13 @@ static void array_to_linked_list(void**, LinkedList*);
 static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
+    require_non_null (options) nullptr;
     if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_realloc || !options->memory_free) {
-        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
-        return nullptr;
+        raise_error (ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints") nullptr;
     }
     LinkedList* linked_list = options->memory_alloc(sizeof(LinkedList));
     if (!linked_list) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+        raise_error (MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'linked_list'") nullptr;
     }
     linked_list->head = nullptr;
     linked_list->tail = nullptr;
@@ -94,32 +94,25 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
 }
 
 LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options) {
-    LinkedList* linked_list; Error error = attempt(linked_list = linked_list_new(options));
+    require_non_null (options) nullptr;
+    LinkedList* linked_list; Error error;
 
-    if (error == ILLEGAL_ARGUMENT_ERROR) {
-        raise_error(error, "Error at %s(): illegal argument(s)", __func__);
-        return nullptr;
-    }
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+    if ((error = attempt (linked_list = linked_list_new(options)))) {
+        raise_error (error, "%s", plain_error_message()) nullptr;
     }
 
-    error = attempt(linked_list_add_all_last(linked_list, collection));
-
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt (linked_list_add_all_last(linked_list, collection)))) {
         linked_list_delete(&linked_list);
-        raise_error(error, "Error at %s(): %s", __func__, error_message());
-        return nullptr;
+        raise_error (error, "%s", plain_error_message()) nullptr;
     }
 
     return linked_list;
 }
 
 void linked_list_delete(LinkedList** linked_list_pointer) {
+    require_non_null (linked_list_pointer);
     if (!*linked_list_pointer) {
-        raise_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
-        return;
+        raise_error (NULL_POINTER_ERROR, "'linked_list' must not be null");
     }
     LinkedList* linked_list = *linked_list_pointer;
 
@@ -135,9 +128,10 @@ void linked_list_delete(LinkedList** linked_list_pointer) {
 }
 
 void linked_list_destroy(LinkedList** linked_list_pointer, void (*delete)(void*)) {
+    require_non_null (linked_list_pointer);
+    require_non_null (delete);
     if (!*linked_list_pointer) {
-        raise_error(NULL_POINTER_ERROR, "Error at %s(): null pointer", __func__);
-        return;
+        raise_error (NULL_POINTER_ERROR, "'array_list' must not be null");
     }
     LinkedList* linked_list = *linked_list_pointer;
 
@@ -154,21 +148,25 @@ void linked_list_destroy(LinkedList** linked_list_pointer, void (*delete)(void*)
     *linked_list_pointer = nullptr;
 }
 
-bool linked_list_add(LinkedList* linked_list, int index, const void* element) {
+void linked_list_add(LinkedList* linked_list, int index, const void* element) {
+    require_non_null (linked_list);
     if (index < 0 || index > linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return false;
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size);
     }
 
     if (index == 0) {
-        return linked_list_add_first(linked_list, element);
+        linked_list_add_first(linked_list, element);
+        return;
     }
     if (index == linked_list->size) {
-        return linked_list_add_last(linked_list, element);
+        linked_list_add_last(linked_list, element);
+        return;
     }
 
     Node* new_node = create_node(linked_list, (void*) element);
-    if (!new_node) return false;
+    if (!new_node) {
+        raise_error (MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
+    }
 
     Node* node = get_node(linked_list, index);
 
@@ -178,14 +176,14 @@ bool linked_list_add(LinkedList* linked_list, int index, const void* element) {
     node->prev = new_node;
 
     linked_list->size++;
-
-    return true;
 }
 
-bool linked_list_add_first(LinkedList* linked_list, const void* element) {
+void linked_list_add_first(LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list);
     Node* new_node = create_node(linked_list, (void*) element);
-    if (!new_node) return false;
-
+    if (!new_node) {
+        raise_error (MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
+    }
     if (linked_list->size == 0) {
         linked_list->head = new_node;
         linked_list->tail = new_node;
@@ -195,14 +193,14 @@ bool linked_list_add_first(LinkedList* linked_list, const void* element) {
         linked_list->head = new_node;
     }
     linked_list->size++;
-
-    return true;
 }
 
-bool linked_list_add_last(LinkedList* linked_list, const void* element) {
+void linked_list_add_last(LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list);
     Node* new_node = create_node(linked_list, (void*) element);
-    if (!new_node) return false;
-
+    if (!new_node) {
+        raise_error (MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
+    }
     if (linked_list->size == 0) {
         linked_list->head = new_node;
         linked_list->tail = new_node;
@@ -212,65 +210,60 @@ bool linked_list_add_last(LinkedList* linked_list, const void* element) {
         linked_list->tail = new_node;
     }
     linked_list->size++;
-
-    return true;
 }
 
-bool linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
+// TODO: handle linked_list_add failure
+void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
+    require_non_null (linked_list);
 
-    if (!iterator) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
-        return false;
+    Iterator* iterator; const Error error = attempt (iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s of 'collection'", plain_error_message());
     }
 
-    int count = 0;
     while (iterator_has_next(iterator)) {
-        if (linked_list_add(linked_list, index, iterator_next(iterator))) {
-            index++;
-            count++;
-        }
+        linked_list_add(linked_list, index, iterator_next(iterator));
+        index++;
     }
     iterator_delete(&iterator);
-    return count == collection_size(collection);
 }
 
-bool linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
-    return linked_list_add_all(linked_list, 0, collection);
+void linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
+    linked_list_add_all(linked_list, 0, collection);
 }
 
-bool linked_list_add_all_last(LinkedList* linked_list, Collection collection) {
-    return linked_list_add_all(linked_list, linked_list->size, collection);
+void linked_list_add_all_last(LinkedList* linked_list, Collection collection) {
+    linked_list_add_all(linked_list, linked_list->size, collection);
 }
 
 void* linked_list_get(const LinkedList* linked_list, int index) {
+    require_non_null (linked_list) nullptr;
     if (index < 0 || index >= linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return nullptr;
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size) nullptr;
     }
     return get_node(linked_list, index)->element;
 }
 
 void* linked_list_get_first(const LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     if (!linked_list->head) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
-        return nullptr;
+        raise_error (NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty") nullptr;
     }
     return linked_list->head->element;
 }
 
 void* linked_list_get_last(const LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     if (!linked_list->tail) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
-        return nullptr;
+        raise_error (NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty") nullptr;
     }
     return linked_list->tail->element;
 }
 
 void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
+    require_non_null (linked_list) nullptr;
     if (index < 0 || index >= linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return nullptr;
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size) nullptr;
     }
     Node* node = get_node(linked_list, index);
     void* old_element = node->element;
@@ -278,41 +271,41 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
     return old_element;
 }
 
-bool linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
+void linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
+    require_non_null (linked_list);
     if (index_a < 0 || index_a >= linked_list->size || index_b < 0 || index_b >= linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return false;
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, linked_list->size);
     }
     swap(&get_node(linked_list, index_a)->element, &get_node(linked_list, index_b)->element);
-    return true;
 }
 
 void* linked_list_remove(LinkedList* linked_list, int index) {
+    require_non_null (linked_list) nullptr;
     if (index < 0 || index >= linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return nullptr;
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size) nullptr;
     }
     Node* node = get_node(linked_list, index);
     return remove_node(linked_list, node);
 }
 
 void* linked_list_remove_first(LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     if (linked_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
-        return nullptr;
+        raise_error (NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty") nullptr;
     }
     return remove_node(linked_list, linked_list->head);
 }
 
 void* linked_list_remove_last(LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     if (linked_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "Error at %s(): no such element", __func__);
-        return nullptr;
+        raise_error (NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty") nullptr;
     }
     return remove_node(linked_list, linked_list->tail);
 }
 
 bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list) false;
     Node* node = find_node(linked_list, element);
     if (node) {
         remove_node(linked_list, node);
@@ -322,11 +315,12 @@ bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
 }
 
 int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
+    require_non_null (linked_list) 0;
 
-    if (!iterator) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
-        return 0;
+
+    Iterator* iterator; const Error error = attempt (iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s of 'collection'", plain_error_message()) 0;
     }
 
     int count = 0;
@@ -340,13 +334,9 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
 }
 
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
-    if (start_index < 0 || end_index > linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return 0;
-    }
-    if (start_index > end_index) {
-        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
-        return 0;
+    require_non_null (linked_list) 0;
+    if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size) 0;
     }
     Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
@@ -357,11 +347,13 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
     return end_index - start_index;
 }
 
-int linked_list_remove_if(LinkedList* linked_list, Predicate condition_matches) {
+int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
+    require_non_null (linked_list) 0;
+    require_non_null (condition) 0;
     int count = 0;
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
-        if (condition_matches(node->element)) {
+        if (condition(node->element)) {
             remove_node(linked_list, node);
             count++;
         }
@@ -369,18 +361,20 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition_matches) 
     return count;
 }
 
-void linked_list_replace_all(LinkedList* linked_list, UnaryOperator operator_apply) {
+void linked_list_replace_all(LinkedList* linked_list, UnaryOperator operator) {
+    require_non_null (linked_list);
+    require_non_null (operator);
     for (Node* node = linked_list->head; node; node = node->next) {
-        node->element = operator_apply(node->element);
+        node->element = operator(node->element);
     }
 }
 
 int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
+    require_non_null (linked_list) 0;
 
-    if (!iterator) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
-        return 0;
+    Iterator* iterator; const Error error = attempt (iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s of 'collection'", plain_error_message()) 0;
     }
 
     int count = 0;
@@ -407,25 +401,34 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
 }
 
 int linked_list_size(const LinkedList* linked_list) {
+    require_non_null (linked_list) 0;
     return linked_list->size;
 }
 
 bool linked_list_is_empty(const LinkedList* linked_list) {
+    require_non_null (linked_list) false;
     return linked_list->size == 0;
 }
 
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
-    return iterator(linked_list);
+    require_non_null (linked_list) nullptr;
+    Iterator* iterator = create_iterator(linked_list);
+    if (!iterator) {
+        raise_error (MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'") nullptr;
+    }
+    return iterator;
 }
 
-bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other) {
-    if (linked_list == other) {
+bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_linked_list) {
+    require_non_null (linked_list) false;
+    require_non_null (other_linked_list) false;
+    if (linked_list == other_linked_list) {
         return true;
     }
-    if (linked_list->size != other->size) {
+    if (linked_list->size != other_linked_list->size) {
         return false;
     }
-    const Node* node = linked_list->head, * other_node = other->head;
+    const Node* node = linked_list->head, * other_node = other_linked_list->head;
     while (node) {
         if (!linked_list->equals(node->element, other_node->element)) {
             return false;
@@ -437,12 +440,16 @@ bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other) 
 }
 
 void linked_list_for_each(LinkedList* linked_list, Consumer action) {
-    for (Node* node = linked_list->head; node; node = node->next) {
+    require_non_null (linked_list);
+    require_non_null (action);
+    for (const Node* node = linked_list->head; node; node = node->next) {
         action(node->element);
     }
 }
 
 void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm) {
+    require_non_null (linked_list);
+    require_non_null (comparator);
     if (linked_list->size < 2) {
         return;
     }
@@ -456,6 +463,8 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
 }
 
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm) {
+    require_non_null (linked_list);
+    require_non_null (random);
     switch (algorithm) {
         case DURSTENFELD_SHUFFLE: { durstenfeld_shuffle(linked_list, random); return; }
         case SATTOLO_SHUFFLE: { sattolo_shuffle(linked_list, random); return; }
@@ -464,6 +473,7 @@ void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), Shuffling
 }
 
 void linked_list_reverse(LinkedList* linked_list) {
+    require_non_null (linked_list);
     Node* first = linked_list->head, * second = linked_list->tail;
     while (first != second && first->prev != second) {
         swap(&first->element, &second->element);
@@ -473,6 +483,7 @@ void linked_list_reverse(LinkedList* linked_list) {
 }
 
 void linked_list_rotate(LinkedList* linked_list, int distance) {
+    require_non_null (linked_list);
     if (linked_list->size <= 1) return;
 
     distance %= linked_list->size;
@@ -498,6 +509,7 @@ void linked_list_rotate(LinkedList* linked_list, int distance) {
 }
 
 void linked_list_clear(LinkedList* linked_list) {
+    require_non_null (linked_list);
     Node* current = linked_list->head;
     while (current) {
         Node* temporary = current;
@@ -509,6 +521,8 @@ void linked_list_clear(LinkedList* linked_list) {
 }
 
 void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*)) {
+    require_non_null (linked_list);
+    require_non_null (delete);
     Node* current = linked_list->head;
     while (current) {
         delete(current->element);
@@ -522,6 +536,8 @@ void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*)) {
 }
 
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
+    require_non_null (linked_list) optional_empty();
+    require_non_null (condition) optional_empty();
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
             return optional_of(node->element);
@@ -531,6 +547,8 @@ Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
 }
 
 Optional linked_list_find_last(const LinkedList* linked_list, Predicate condition) {
+    require_non_null (linked_list) optional_empty();
+    require_non_null (condition) optional_empty();
     void* element = nullptr;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
@@ -541,6 +559,8 @@ Optional linked_list_find_last(const LinkedList* linked_list, Predicate conditio
 }
 
 int linked_list_index_where(const LinkedList* linked_list, Predicate condition) {
+    require_non_null (linked_list) 0;
+    require_non_null (condition) 0;
     int index = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
@@ -552,6 +572,8 @@ int linked_list_index_where(const LinkedList* linked_list, Predicate condition) 
 }
 
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition) {
+    require_non_null (linked_list) 0;
+    require_non_null (condition) 0;
     int index = -1, count = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
@@ -563,14 +585,16 @@ int linked_list_last_index_where(const LinkedList* linked_list, Predicate condit
 }
 
 bool linked_list_contains(const LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list) false;
     return linked_list_index_of(linked_list, element) != -1;
 }
 
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection) {
-    Iterator* iterator = collection_iterator(collection);
-    if (!iterator) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): failed to allocate memory for collection_iterator()", __func__);
-        return false;
+    require_non_null (linked_list) false;
+
+    Iterator* iterator; const Error error = attempt (iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s of 'collection'", plain_error_message()) false;
     }
     bool contains = true;
     while (iterator_has_next(iterator)) {
@@ -585,6 +609,7 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
 }
 
 int linked_list_occurrences_of(const LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list) 0;
     int count = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (linked_list->equals(node->element, element)) {
@@ -595,6 +620,7 @@ int linked_list_occurrences_of(const LinkedList* linked_list, const void* elemen
 }
 
 int linked_list_index_of(const LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list) 0;
     int index = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (linked_list->equals(node->element, element)) {
@@ -606,6 +632,7 @@ int linked_list_index_of(const LinkedList* linked_list, const void* element) {
 }
 
 int linked_list_last_index_of(const LinkedList* linked_list, const void* element) {
+    require_non_null (linked_list) 0;
     int index = -1, count = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (linked_list->equals(node->element, element)) {
@@ -617,33 +644,29 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
 }
 
 LinkedList* linked_list_clone(const LinkedList* linked_list) {
-    LinkedList* new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size);
-    if (!new_linked_list) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+    require_non_null (linked_list) nullptr;
+    LinkedList* new_linked_list; const Error error = attempt (new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s", plain_error_message()) nullptr;
     }
     return new_linked_list;
 }
 
+// TODO: handle linked_list_add_last failure
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index) {
-    if (start_index < 0 || end_index > linked_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "Error at %s(): index out of bounds", __func__);
-        return nullptr;
+    require_non_null (linked_list) nullptr;
+    if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
+        raise_error (INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size) nullptr;
     }
-    if (start_index > end_index) {
-        raise_error(ILLEGAL_ARGUMENT_ERROR, "Error at %s(): illegal argument(s)", __func__);
-        return nullptr;
-    }
-    LinkedList* new_linked_list = linked_list_new(&(LinkedListOptions) {
+    LinkedList* new_linked_list; const Error error = attempt (new_linked_list = linked_list_new(&(LinkedListOptions) {
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
         .memory_realloc = linked_list->memory_realloc,
         .memory_free = linked_list->memory_free
-    });
-    if (!new_linked_list) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+    }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        raise_error (error, "%s", plain_error_message()) nullptr;
     }
     const Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
@@ -654,14 +677,15 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
 }
 
 Collection linked_list_to_collection(const LinkedList* linked_list) {
+    require_non_null (linked_list) (Collection) {};
     return collection_from(linked_list);
 }
 
 void** linked_list_to_array(const LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     void** elements = linked_list->memory_alloc(sizeof(void*) * linked_list->size);
     if (!elements) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+        raise_error (MEMORY_ALLOCATION_ERROR, "") nullptr;
     }
     const Node* node = linked_list->head;
     for (int i = 0; i < linked_list->size; i++) {
@@ -672,11 +696,13 @@ void** linked_list_to_array(const LinkedList* linked_list) {
 }
 
 char* linked_list_to_string(const LinkedList* linked_list) {
+    require_non_null (linked_list) nullptr;
     char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
+
     if (!string) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-        return nullptr;
+        raise_error (MEMORY_ALLOCATION_ERROR, "") nullptr;
     }
+
     string[0] = '\0'; // initialize string to clear trash data
 
     strcat(string, linked_list->size == 0 ? "{" : "{ ");
@@ -688,8 +714,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
 
         if (!element_string) {
             linked_list->memory_free(string);
-            raise_error(MEMORY_ALLOCATION_ERROR, "Error at %s(): memory allocation failed", __func__);
-            return nullptr;
+            raise_error (MEMORY_ALLOCATION_ERROR, "") nullptr;
         }
 
         linked_list->to_string(node->element, element_string, length);
@@ -722,7 +747,6 @@ static size_t calculate_string_size(const LinkedList* linked_list) {
 static Node* create_node(const LinkedList* linked_list, void* element) {
     Node* node = linked_list->memory_alloc(sizeof(Node));
     if (!node) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
     node->element = element;
@@ -784,24 +808,19 @@ struct IterationContext {
     Node* current;
 };
 
-static Iterator* iterator(const LinkedList* linked_list) {
+static Iterator* create_iterator(const LinkedList* linked_list) {
     IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
-
     if (!iteration_context) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
     iteration_context->head = linked_list->head;
     iteration_context->current = linked_list->head;
 
     Iterator* iterator = iterator_from(linked_list, iteration_context, has_next, next, reset);
-
     if (!iterator) {
         linked_list->memory_free(iteration_context);
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed", __func__);
         return nullptr;
     }
-
     return iterator;
 }
 
@@ -810,12 +829,12 @@ static bool has_next(const IterationContext* iteration_context) {
 }
 
 static void* next(IterationContext* iteration_context) {
-    if (has_next(iteration_context)) {
-        void* element = iteration_context->current->element;
-        iteration_context->current = iteration_context->current->next;
-        return element;
+    if (!has_next(iteration_context)) {
+        raise_error (NO_SUCH_ELEMENT_ERROR, "") nullptr;
     }
-    return nullptr;
+    void* element = iteration_context->current->element;
+    iteration_context->current = iteration_context->current->next;
+    return element;
 }
 
 static void reset(IterationContext* iteration_context) {
@@ -954,8 +973,7 @@ static Node* partition(Node* low, Node* high, Comparator compare) {
 static void durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
-        return;
+        raise_error (MEMORY_ALLOCATION_ERROR, "");
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % (i + 1);
@@ -968,8 +986,7 @@ static void durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
 static void sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
-        return;
+        raise_error (MEMORY_ALLOCATION_ERROR, "");
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % i;
@@ -982,8 +999,7 @@ static void sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
 static void naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "Error at linked_list %s(): memory allocation failed while converting to array", __func__);
-        return;
+        raise_error (MEMORY_ALLOCATION_ERROR, "");
     }
     for (int i = 0; i < linked_list->size; i++) {
         const int j = random() % linked_list->size;

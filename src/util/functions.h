@@ -13,8 +13,8 @@ typedef void (*Consumer)(void*);
 /** @brief Predicate function returning true or false for a given element */
 typedef bool (*Predicate)(const void*);
 
-/** @brief Unary operator function that transforms an element and returns the result */
-typedef void* (*UnaryOperator)(void*);
+/** @brief Operator function that transforms an element and returns the result */
+typedef void* (*Operator)(void*);
 
 /** @brief Comparator function returning negative, zero, or positive value */
 typedef int (*Comparator)(const void*, const void*);

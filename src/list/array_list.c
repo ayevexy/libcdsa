@@ -338,7 +338,7 @@ int array_list_remove_if(ArrayList* array_list, Predicate condition) {
     return count;
 }
 
-void array_list_replace_all(ArrayList* array_list, UnaryOperator operator) {
+void array_list_replace_all(ArrayList* array_list, Operator operator) {
     require_non_null(array_list, operator);
     for (int i = 0; i < array_list->size; i++) {
         array_list->elements[i] = operator(array_list->elements[i]);

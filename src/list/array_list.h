@@ -374,7 +374,7 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
 int array_list_remove_if(ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Replaces all elements using the given `UnaryOperator` of the provided `ArrayList`.
+ * @brief Replaces all elements using the given `Operator` of the provided `ArrayList`.
  *
  * @param array_list pointer to an `ArrayList`
  * @param operator the operator to replace elements
@@ -382,7 +382,7 @@ int array_list_remove_if(ArrayList* array_list, Predicate condition);
  * @pre array_list != `nullptr`
  * @pre operator != `nullptr`
  */
-void array_list_replace_all(ArrayList* array_list, UnaryOperator operator);
+void array_list_replace_all(ArrayList* array_list, Operator operator);
 
 /**
  * @brief Retains all elements of the given collection present in the provided `ArrayList` while removing all other elements.

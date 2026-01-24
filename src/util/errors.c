@@ -8,10 +8,10 @@
 
 #define LENGTH 256
 
-_Thread_local static Error global_error = NO_ERROR;
-_Thread_local static char global_error_message[LENGTH] = "";
-_Thread_local static int error_scope = 0;
-_Thread_local static bool abort_on_error = true;
+thread_local static Error global_error = NO_ERROR;
+thread_local static char global_error_message[LENGTH] = "";
+thread_local static int error_scope = 0;
+thread_local static bool abort_on_error = true;
 
 const char* error_strings[] = {
     "NO_ERROR",

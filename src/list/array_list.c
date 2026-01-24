@@ -772,7 +772,7 @@ static bool has_next(const IterationContext* iteration_context) {
 
 static void* next(IterationContext* iteration_context) {
     if (!has_next(iteration_context)) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "");
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
     return iteration_context->array_list->elements[iteration_context->cursor++];

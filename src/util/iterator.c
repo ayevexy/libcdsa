@@ -43,12 +43,7 @@ bool iterator_has_next(const Iterator* iterator) {
 
 void* iterator_next(Iterator* iterator) {
     require_non_null(iterator);
-    void* element; const Error error = attempt(element = iterator->next(iterator->internal_state));
-    if (error == NO_SUCH_ELEMENT_ERROR) {
-        set_error(error, "iterator has no more elements");
-        return nullptr;
-    }
-    return element;
+    return iterator->next(iterator->internal_state);
 }
 
 void iterator_reset(Iterator* iterator) {

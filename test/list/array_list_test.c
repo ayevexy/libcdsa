@@ -24,15 +24,11 @@ void test_create_array_list() {
 }
 
 void test_do_not_create_array_list_with_invalid_options() {
-    // given
-    ArrayListOptions invalid_options = {
-        .initial_capacity = 0,
-        .growth_factor = -1,
-        .equals = nullptr,
-        .to_string = nullptr
-    };
     // when
-    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&invalid_options));
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
+        .initial_capacity = 0,
+        .growth_factor = -1
+    }));
     // then
     TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);

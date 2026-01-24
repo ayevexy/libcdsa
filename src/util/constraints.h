@@ -3,6 +3,16 @@
 
 #include <assert.h>
 
+/**
+ * @brief Asserts that one or more pointers are not null.
+ *
+ * This macro can accept 1 to 6 pointer arguments. Each pointer is
+ * checked using `assert(pointer != nullptr)`.
+ *
+ * @param ... one or more pointers to check.
+ *
+ * @note Assertions are active only if `NDEBUG` is not defined.
+ */
 #define require_non_null(...) GET_MACRO(__VA_ARGS__,    \
     REQUIRE_NON_NULL_6,                                 \
     REQUIRE_NON_NULL_5,                                 \

@@ -72,29 +72,26 @@ void isolate_error(void);
 Error capture_error(void);
 
 /**
- * @brief Raises an error with a formatted message and returns from the caller.
+ * @brief Sets an error with a formatted message.
  *
- * This macro reports an error using the provided message and immediately
- * returns from the calling function.
+ * This macro reports an error using the provided message.
  *
  * If `message` is an empty string, a default message format is used.
  *
  * @param error the error code to raise
  * @param message additional context message (maybe empty)
  * @param ... optional format arguments
- *
- * @note This macro performs a `return` statement.
  */
-#define raise_error(error, message, ...)                                            \
-    raise_plain_error(error,                                                        \
+#define set_error(error, message, ...)                                              \
+    set_plain_error(error,                                                          \
         message[0] == '\0' ? "Error at %s(): %s" : "Error at %s(): %s - "message,   \
         __func__,                                                                   \
         error_strings[error],                                                       \
         ##__VA_ARGS__                                                               \
-    ); return
+    )
 
 /**
- * @brief Raises an error with a formatted message.
+ * @brief Sets an error with a formatted message.
  *
  * This function records the given error and formats the provided message
  * using `printf`-style formatting.
@@ -103,6 +100,6 @@ Error capture_error(void);
  * @param error_message_format format string
  * @param ... format arguments
  */
-void raise_plain_error(Error error, const char* error_message_format, ...);
+void set_plain_error(Error error, const char* error_message_format, ...);
 
 #endif

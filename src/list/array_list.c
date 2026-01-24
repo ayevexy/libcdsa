@@ -69,16 +69,19 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
         || options->growth_factor < MIN_GROWTH_FACTOR || !options->equals || !options->to_string
         || !options->memory_alloc || !options->memory_realloc || !options->memory_free
     ) {
-        raise_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints") nullptr;
+        set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
+        return nullptr;
     }
     ArrayList* array_list = options->memory_alloc(sizeof(ArrayList));
     if (!array_list) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array_list'") nullptr;
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array_list'");
+        return nullptr;
     }
     array_list->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
     if (!array_list->elements) {
         options->memory_free(array_list);
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array_list'") nullptr;
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array_list'");
+        return nullptr;
     }
     array_list->size = 0;
     array_list->capacity = options->initial_capacity;
@@ -96,12 +99,14 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
     ArrayList* array_list; Error error;
 
     if ((error = attempt(array_list = array_list_new(options)))) {
-        raise_error(error, "%s", plain_error_message()) nullptr;
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
     }
 
     if ((error = attempt(array_list_add_all_last(array_list, collection)))) {
         array_list_delete(&array_list);
-        raise_error(error, "%s", plain_error_message()) nullptr;
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
     }
 
     return array_list;
@@ -110,7 +115,8 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_delete(ArrayList** array_list_pointer) {
     require_non_null(array_list_pointer);
     if (!*array_list_pointer) {
-        raise_error(NULL_POINTER_ERROR, "'array_list' must not be null");
+        set_error(NULL_POINTER_ERROR, "'array_list' must not be null");
+        return;
     }
     ArrayList* array_list = *array_list_pointer;
     array_list->memory_free(array_list->elements);
@@ -121,7 +127,8 @@ void array_list_delete(ArrayList** array_list_pointer) {
 void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
     require_non_null(array_list_pointer, delete);
     if (!*array_list_pointer) {
-        raise_error(NULL_POINTER_ERROR, "'array_list' must not be null");
+        set_error(NULL_POINTER_ERROR, "'array_list' must not be null");
+        return;
     }
     for (int i = 0; i < (*array_list_pointer)->size; i++) {
         delete((*array_list_pointer)->elements[i]);
@@ -132,10 +139,12 @@ void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
 void array_list_add(ArrayList* array_list, int index, const void* element) {
     require_non_null(array_list);
     if (index < 0 || index > array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        return;
     }
     if (!ensure_capacity(array_list, array_list->size + 1)) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        return;
     }
     for (int i = array_list->size; i > index; i--) {
         array_list->elements[i] = array_list->elements[i - 1];
@@ -156,17 +165,20 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
     require_non_null(array_list);
 
     if (index < 0 || index > array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        return;
     }
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return;
     }
 
     if (!ensure_capacity(array_list, array_list->size + collection_size(collection))) {
         iterator_delete(&iterator);
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        return;
     }
 
     const int offset = collection_size(collection);
@@ -193,7 +205,8 @@ void array_list_add_all_last(ArrayList* array_list, Collection collection) {
 void* array_list_get(const ArrayList* array_list, int index) {
     require_non_null(array_list);
     if (index < 0 || index >= array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size) nullptr;
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        return nullptr;
     }
     return array_list->elements[index];
 }
@@ -201,7 +214,8 @@ void* array_list_get(const ArrayList* array_list, int index) {
 void* array_list_get_first(const ArrayList* array_list) {
     require_non_null(array_list);
     if (array_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty") nullptr;
+        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
+        return nullptr;
     }
     return array_list->elements[0];
 }
@@ -209,7 +223,8 @@ void* array_list_get_first(const ArrayList* array_list) {
 void* array_list_get_last(const ArrayList* array_list) {
     require_non_null(array_list);
     if (array_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty") nullptr;
+        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
+        return nullptr;
     }
     return array_list->elements[array_list->size - 1];
 }
@@ -217,7 +232,8 @@ void* array_list_get_last(const ArrayList* array_list) {
 void* array_list_set(ArrayList* array_list, int index, const void* element) {
     require_non_null(array_list);
     if (index < 0 || index >= array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size) nullptr;
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        return nullptr;
     }
     void* old_element = array_list->elements[index];
     array_list->elements[index] = (void*) element;
@@ -227,7 +243,8 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     require_non_null(array_list);
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, array_list->size);
+        return;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
 }
@@ -235,7 +252,8 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
 void* array_list_remove(ArrayList* array_list, int index) {
     require_non_null(array_list);
     if (index < 0 || index >= array_list->size) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size) nullptr;
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
+        return nullptr;
     }
     void* element = array_list->elements[index];
     array_list->elements[index] = nullptr;
@@ -250,7 +268,8 @@ void* array_list_remove(ArrayList* array_list, int index) {
 void* array_list_remove_first(ArrayList* array_list) {
     require_non_null(array_list);
     if (array_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty") nullptr;
+        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
+        return nullptr;
     }
     return array_list_remove(array_list, 0);
 }
@@ -258,7 +277,8 @@ void* array_list_remove_first(ArrayList* array_list) {
 void* array_list_remove_last(ArrayList* array_list) {
     require_non_null(array_list);
     if (array_list->size == 0) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty") nullptr;
+        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
+        return nullptr;
     }
     return array_list_remove(array_list, array_list->size - 1);
 }
@@ -278,7 +298,8 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s of 'collection'", plain_error_message()) 0;
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return 0;
     }
     int count = 0;
     while (iterator_has_next(iterator)) {
@@ -293,7 +314,8 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     require_non_null(array_list);
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size) 0;
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
+        return 0;
     }
     const int count = end_index - start_index;
     for (int i = start_index; i < array_list->size - count; i++) {
@@ -328,7 +350,8 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s of 'collection'", plain_error_message()) 0;
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return 0;
     }
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
@@ -357,7 +380,7 @@ int array_list_size(const ArrayList* array_list) {
 void array_list_trim_to_size(ArrayList* array_list) {
     require_non_null(array_list);
     if (!resize(array_list, array_list->size)) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to shrink 'array_list' capacity");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to shrink 'array_list' capacity");
     }
 }
 
@@ -369,7 +392,7 @@ int array_list_capacity(const ArrayList* array_list) {
 void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     require_non_null(array_list);
     if (!ensure_capacity(array_list, capacity)) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
     }
 }
 
@@ -382,7 +405,7 @@ Iterator* array_list_iterator(const ArrayList* array_list) {
     require_non_null(array_list);
     Iterator* iterator = create_iterator(array_list);
     if (!iterator) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'") nullptr;
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
     }
     return iterator;
 }
@@ -524,7 +547,8 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s of 'collection'", plain_error_message()) false;
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
     }
     bool contains = true;
     while (iterator_has_next(iterator)) {
@@ -597,7 +621,8 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
     require_non_null(array_list);
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_sub_list(array_list, 0, array_list->size));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message()) nullptr;
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
     }
     return new_array_list;
 }
@@ -605,7 +630,8 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
     require_non_null(array_list);
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
-        raise_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size) nullptr;
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
+        return nullptr;
     }
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
@@ -617,7 +643,8 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_free = array_list->memory_free
     }));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        raise_error(error, "%s", plain_error_message()) nullptr;
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
     }
     for (int i = start_index; i < end_index; i++) {
         array_list_add_last(new_array_list, array_list->elements[i]);
@@ -634,7 +661,8 @@ void** array_list_to_array(const ArrayList* array_list) {
     require_non_null(array_list);
     void** elements = array_list->memory_alloc(sizeof(void*) * array_list->size);
     if (!elements) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "") nullptr;
+        set_error(MEMORY_ALLOCATION_ERROR, "");
+        return nullptr;
     }
     for (int i = 0; i < array_list->size; i++) {
         elements[i] = array_list->elements[i];
@@ -647,7 +675,8 @@ char* array_list_to_string(const ArrayList* array_list) {
     char* string = array_list->memory_alloc(calculate_string_size(array_list));
 
     if (!string) {
-        raise_error(MEMORY_ALLOCATION_ERROR, "") nullptr;
+        set_error(MEMORY_ALLOCATION_ERROR, "");
+        return nullptr;
     }
 
     string[0] = '\0'; // initialize string to clear trash data
@@ -661,7 +690,8 @@ char* array_list_to_string(const ArrayList* array_list) {
 
         if (!element_string) {
             array_list->memory_free(string);
-            raise_error(MEMORY_ALLOCATION_ERROR, "") nullptr;
+            set_error(MEMORY_ALLOCATION_ERROR, "");
+            return nullptr;
         }
 
         array_list->to_string(array_list->elements[i], element_string, length);
@@ -742,7 +772,8 @@ static bool has_next(const IterationContext* iteration_context) {
 
 static void* next(IterationContext* iteration_context) {
     if (!has_next(iteration_context)) {
-        raise_error(NO_SUCH_ELEMENT_ERROR, "") nullptr;
+        set_error(NO_SUCH_ELEMENT_ERROR, "");
+        return nullptr;
     }
     return iteration_context->array_list->elements[iteration_context->cursor++];
 }

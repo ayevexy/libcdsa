@@ -45,7 +45,8 @@ void* iterator_next(Iterator* iterator) {
     require_non_null(iterator);
     void* element; const Error error = attempt(element = iterator->next(iterator->internal_state));
     if (error == NO_SUCH_ELEMENT_ERROR) {
-        raise_error(error, "iterator has no more elements") nullptr;
+        set_error(error, "iterator has no more elements");
+        return nullptr;
     }
     return element;
 }
@@ -58,7 +59,8 @@ void iterator_reset(Iterator* iterator) {
 void iterator_delete(Iterator** iterator_pointer) {
     require_non_null(iterator_pointer);
     if (!*iterator_pointer) {
-        raise_error(NULL_POINTER_ERROR, "'iterator' must not be null");
+        set_error(NULL_POINTER_ERROR, "'iterator' must not be null");
+        return;
     }
     Iterator* iterator = *iterator_pointer;
     iterator->memory_free(iterator->internal_state);

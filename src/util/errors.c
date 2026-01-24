@@ -51,7 +51,7 @@ Error capture_error(void) {
     return error;
 }
 
-void raise_plain_error(Error error, const char* error_message_format, ...) {
+void set_plain_error(Error error, const char* error_message_format, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
     _Thread_local static char global_error_message_copy[LENGTH];

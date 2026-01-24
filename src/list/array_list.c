@@ -627,7 +627,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
 
 Collection array_list_to_collection(const ArrayList* array_list) {
     require_non_null(array_list);
-    return collection_from((void*) array_list);
+    return collection_from(array_list);
 }
 
 void** array_list_to_array(const ArrayList* array_list) {

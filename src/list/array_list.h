@@ -103,7 +103,6 @@ ArrayList* array_list_new(const ArrayListOptions* options);
  * @exception ILLEGAL_ARGUMENT_ERROR If `options` violates its constraints
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for the new `ArrayList` of `collection` iterator fails
  *
- * @pre collection members != `nullptr`
  * @pre options != `nullptr`
  */
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options);
@@ -185,7 +184,6 @@ void array_list_add_last(ArrayList* array_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for the new `ArrayList` of `collection` iterator fails.
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 void array_list_add_all(ArrayList* array_list, int index, Collection collection);
 
@@ -198,7 +196,6 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for the new `ArrayList` of `collection` iterator fails.
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 void array_list_add_all_first(ArrayList* array_list, Collection collection);
 
@@ -211,7 +208,6 @@ void array_list_add_all_first(ArrayList* array_list, Collection collection);
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for the new `ArrayList` of `collection` iterator fails.
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 void array_list_add_all_last(ArrayList* array_list, Collection collection);
 
@@ -346,7 +342,6 @@ bool array_list_remove_element(ArrayList* array_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for`collection` iterator fails
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 int array_list_remove_all(ArrayList* array_list, Collection collection);
 
@@ -400,7 +395,6 @@ void array_list_replace_all(ArrayList* array_list, UnaryOperator operator);
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for`collection` iterator fails
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 int array_list_retain_all(ArrayList* array_list, Collection collection);
 
@@ -642,7 +636,6 @@ bool array_list_contains(const ArrayList* array_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation for `collection` iterator fails
  *
  * @pre array_list != `nullptr`
- * @pre collection members != `nullptr`
  */
 bool array_list_contains_all(const ArrayList* array_list, Collection collection);
 

@@ -507,13 +507,15 @@ Optional array_list_find(const ArrayList* array_list, Predicate condition) {
 Optional array_list_find_last(const ArrayList* array_list, Predicate condition) {
     require_non_null(array_list, condition);
     void* element = nullptr;
+    bool found = false;
     for (int i = 0; i < array_list->size; i++) {
         void* current = array_list->elements[i];
         if (condition(current)) {
+            found = true;
             element = current;
         }
     }
-    return element ? optional_of(element) : optional_empty();
+    return found ? optional_of(element) : optional_empty();
 }
 
 int array_list_index_where(const ArrayList* array_list, Predicate condition) {

@@ -2,6 +2,7 @@
 #define FOR_EACH_H
 
 #include "list/array_list.h"
+#include "list/linked_list.h"
 
 #include "util/collection.h"
 #include "util/iterator.h"
@@ -15,6 +16,7 @@
 #define for_each(variable, collection)                                                          \
     for (Iterator* _iter_ = collection_iterator(_Generic(collection,                            \
             ArrayList*: array_list_to_collection,                                               \
+            LinkedList*: linked_list_to_collection,                                             \
             Collection: collection                                                              \
         )(collection));                                                                         \
         _iter_;                                                                                 \

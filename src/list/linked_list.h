@@ -75,7 +75,7 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
 
 int linked_list_remove_if(LinkedList* linked_list, Predicate condition);
 
-void linked_list_replace_all(LinkedList* linked_list, UnaryOperator operator);
+void linked_list_replace_all(LinkedList* linked_list, Operator operator);
 
 int linked_list_retain_all(LinkedList* linked_list, Collection collection);
 

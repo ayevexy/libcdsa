@@ -24,13 +24,11 @@ void test_create_linked_list() {
 }
 
 void test_do_not_create_linked_list_with_invalid_options() {
-    // given
-    LinkedListOptions invalid_options = {
+    // when
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
         .equals = nullptr,
         .to_string = nullptr
-    };
-    // when
-    LinkedList* new_linked_list; Error error = attempt (new_linked_list = linked_list_new(&invalid_options));
+    }));
     // then
     TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -54,7 +52,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    LinkedList* new_linked_list; Error error = attempt (new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {
         .equals = nullptr,
         .to_string = nullptr
     }));
@@ -76,7 +74,7 @@ void test_delete_null_linked_list_fails() {
     // given
     LinkedList* new_linked_list = nullptr;
     // when
-    Error error = attempt (linked_list_delete(&new_linked_list));
+    Error error = attempt(linked_list_delete(&new_linked_list));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
@@ -103,7 +101,7 @@ void test_destroy_null_linked_list_fails() {
     // given
     LinkedList* new_linked_list = nullptr;
     // when
-    Error error = attempt (linked_list_destroy(&new_linked_list, delete_data));
+    Error error = attempt(linked_list_destroy(&new_linked_list, delete_data));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
@@ -148,7 +146,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    Error error = attempt (linked_list_add(linked_list, index, &(int){10}));
+    Error error = attempt(linked_list_add(linked_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -261,7 +259,7 @@ static void get_index_out_of_bounds_test_helper(int index) {
     // given
     linked_list_add_last(linked_list, &(int){10});
     // when
-    void* element; Error error = attempt (element = linked_list_get(linked_list, index));
+    void* element; Error error = attempt(element = linked_list_get(linked_list, index));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -287,7 +285,7 @@ void test_get_first_element_from_linked_list() {
 
 void test_get_first_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt (element = linked_list_get_first(linked_list));
+    void* element; Error error = attempt(element = linked_list_get_first(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -305,7 +303,7 @@ void test_get_last_element_from_linked_list() {
 
 void test_get_last_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt (element = linked_list_get_last(linked_list));
+    void* element; Error error = attempt(element = linked_list_get_last(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -328,7 +326,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value; Error error = attempt (old_value = linked_list_set(linked_list, index, &(int){10}));
+    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_NULL(old_value);
@@ -359,7 +357,7 @@ static void swap_elements_of_linked_list_index_out_of_bounds_test_helper(int ind
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    Error error = attempt (linked_list_swap(linked_list, index_a, index_b));
+    Error error = attempt(linked_list_swap(linked_list, index_a, index_b));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -398,7 +396,7 @@ static void remove_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* element; Error error = attempt (element = linked_list_remove(linked_list, index));
+    int* element; Error error = attempt(element = linked_list_remove(linked_list, index));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_NULL(element);
@@ -427,7 +425,7 @@ void test_remove_first_element_from_linked_list() {
 
 void test_remove_first_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt (element = linked_list_remove_first(linked_list));
+    void* element; Error error = attempt(element = linked_list_remove_first(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -447,7 +445,7 @@ void test_remove_last_element_from_linked_list() {
 
 void test_remove_last_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt (element = linked_list_remove_last(linked_list));
+    void* element; Error error = attempt(element = linked_list_remove_last(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -515,7 +513,7 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int count; Error error = attempt (count = linked_list_remove_range(linked_list, start_index, end_index));
+    int count; Error error = attempt(count = linked_list_remove_range(linked_list, start_index, end_index));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(0, count);
@@ -633,7 +631,7 @@ void test_linked_list_iterator() {
     TEST_ASSERT_EQUAL(values[2], *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt (iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // clean up
     iterator_delete(&iterator);
 }
@@ -820,9 +818,9 @@ void test_clear_linked_list() {
     linked_list_clear(linked_list);
     // then
     TEST_ASSERT_EQUAL(0, linked_list_size(linked_list));
-    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt (linked_list_get(linked_list, 0)));
-    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt (linked_list_get(linked_list, 1)));
-    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt (linked_list_get(linked_list, 2)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 0)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 1)));
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 2)));
 }
 
 void test_clear_linked_list_data() {
@@ -1080,7 +1078,7 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    LinkedList* sub_list; Error error = attempt (sub_list = linked_list_sub_list(linked_list, start_index, end_index));
+    LinkedList* sub_list; Error error = attempt(sub_list = linked_list_sub_list(linked_list, start_index, end_index));
     // then
     TEST_ASSERT_NULL(sub_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);

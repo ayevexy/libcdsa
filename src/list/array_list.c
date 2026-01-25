@@ -5,9 +5,9 @@
 #include <string.h>
 #include <limits.h>
 
-#define MIN_CAPACITY 10
-#define MAX_CAPACITY (INT_MAX - 1)
-#define MIN_GROWTH_FACTOR 1.1
+constexpr int MIN_CAPACITY = 10;
+constexpr int MAX_CAPACITY = (INT_MAX - 1);
+constexpr double MIN_GROWTH_FACTOR = 1.1;
 
 struct ArrayList {
     void** elements;

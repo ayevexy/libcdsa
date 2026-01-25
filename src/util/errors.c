@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LENGTH 256
+constexpr int LENGTH = 256;
 
 thread_local static Error global_error = NO_ERROR;
 thread_local static char global_error_message[LENGTH] = "";

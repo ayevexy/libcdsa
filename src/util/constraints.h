@@ -11,7 +11,7 @@
  *
  * @param ... one or more pointers to check.
  *
- * @note Assertions are active only if `NDEBUG` is not defined.
+ * @note Assertions are active only if NDEBUG is not defined.
  */
 #define require_non_null(...) GET_MACRO(__VA_ARGS__,    \
     REQUIRE_NON_NULL_6,                                 \

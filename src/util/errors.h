@@ -7,7 +7,7 @@
  * This enumeration defines all error types that can be raised and captured
  * by the error handling subsystem.
  *
- * `NO_ERROR` indicates the absence of an error.
+ * NO_ERROR indicates the absence of an error.
  */
 typedef enum {
     NO_ERROR = 0,
@@ -43,7 +43,7 @@ const char* error_message(void);
 /**
  * @brief Retrieves the plain error message of the last captured error.
  *
- * Unlike `error_message`, this returns only the base error description
+ * Unlike error_message, this returns only the base error description
  * without additional context.
  *
  * @return plain error message
@@ -58,21 +58,21 @@ const char* plain_error_message(void);
  *
  * @param expression expression to be evaluated, must be a single function call (could assign to a variable)
  *
- * @return the captured `Error`
+ * @return the captured Error
  */
 #define attempt(expression) (isolate_error(), (expression), capture_error())
 
 /**
  * @brief Clears the current error state.
  *
- * After calling this function, the error state is reset to `NO_ERROR`.
+ * After calling this function, the error state is reset to NO_ERROR.
  */
 void isolate_error(void);
 
 /**
  * @brief Captures and returns the current error.
  *
- * @return the current `Error`
+ * @return the current Error
  */
 Error capture_error(void);
 
@@ -81,7 +81,7 @@ Error capture_error(void);
  *
  * This macro reports an error using the provided message.
  *
- * If `message` is an empty string, a default message format is used.
+ * If message is an empty string, a default message format is used.
  *
  * @param error the error code to raise
  * @param message additional context message (maybe empty)
@@ -99,7 +99,7 @@ Error capture_error(void);
  * @brief Sets an error with a formatted message.
  *
  * This function records the given error and formats the provided message
- * using `printf`-style formatting.
+ * using printf-style formatting.
  *
  * @param error the error code to raise
  * @param error_message_format format string

@@ -18,12 +18,17 @@ typedef enum {
     MEMORY_ALLOCATION_ERROR
 } Error;
 
+/** Constant expression defining the total numbers of errors. */
+constexpr int ERROR_COUNT = 6;
+
 /**
- * @brief Human-readable error messages corresponding to each `Error` value.
+ * @brief Converts an error enumeration to its string representation.
  *
- * The index of each string matches the corresponding `Error` enum value.
+ * @param error the error to be converted
+ *
+ * @return the string representation of the error
  */
-extern const char* error_strings[];
+const char* error_to_string(Error error);
 
 /**
  * @brief Retrieves the formatted error message of the last captured error.
@@ -86,7 +91,7 @@ Error capture_error(void);
     set_plain_error(error,                                                          \
         message[0] == '\0' ? "Error at %s(): %s" : "Error at %s(): %s - "message,   \
         __func__,                                                                   \
-        error_strings[error],                                                       \
+        error_to_string(error),                                                     \
         ##__VA_ARGS__                                                               \
     )
 

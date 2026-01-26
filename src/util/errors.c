@@ -13,14 +13,17 @@ thread_local static char global_error_message[LENGTH] = "";
 thread_local static int error_scope = 0;
 thread_local static bool abort_on_error = true;
 
-const char* error_strings[] = {
-    "NO_ERROR",
-    "NULL_POINTER_ERROR",
-    "INDEX_OUT_OF_BOUNDS_ERROR",
-    "NO_SUCH_ELEMENT_ERROR",
-    "ILLEGAL_ARGUMENT_ERROR",
-    "MEMORY_ALLOCATION_ERROR"
-};
+const char* error_to_string(Error error) {
+    static const char* error_strings[] = {
+        "NO_ERROR",
+        "NULL_POINTER_ERROR",
+        "INDEX_OUT_OF_BOUNDS_ERROR",
+        "NO_SUCH_ELEMENT_ERROR",
+        "ILLEGAL_ARGUMENT_ERROR",
+        "MEMORY_ALLOCATION_ERROR"
+    };
+    return error > 0 && error < ERROR_COUNT ? error_strings[error] : "UNKNOWN_ERROR";
+}
 
 const char* error_message(void) {
     return global_error_message;
@@ -38,6 +41,7 @@ const char* plain_error_message(void) {
 void isolate_error(void) {
     global_error = NO_ERROR;
     global_error_message[0] = '\0';
+
     error_scope++;
     abort_on_error = false;
 }
@@ -45,9 +49,11 @@ void isolate_error(void) {
 Error capture_error(void) {
     const Error error = global_error;
     global_error = NO_ERROR;
+
     assert(error_scope > 0 && "error_scope can't be negative");
     error_scope--;
     abort_on_error = true;
+
     return error;
 }
 

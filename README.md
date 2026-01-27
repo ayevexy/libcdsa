@@ -34,6 +34,7 @@ on the Java Collections Framework and shares many similarities with it.
 This library is designed for ease of use and currently implements the following data structures:
 
 - [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
+- [Linked List](src/list/linked_list.h): A linear generic and dynamic data structure that stores data in non-consecutive memory locations linked by references.
 
 ## Features
 

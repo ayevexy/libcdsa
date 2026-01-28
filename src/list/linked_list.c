@@ -2,6 +2,7 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
+#include "util/pair.h"
 #include <string.h>
 
 typedef struct Node {
@@ -32,6 +33,8 @@ static Node* get_node(const LinkedList*, int);
 static Node* find_node(const LinkedList*, const void*);
 
 static void* remove_node(LinkedList*, Node*);
+
+static Pair segment_from(LinkedList*, Collection);
 
 typedef struct IterationContext IterationContext;
 
@@ -221,21 +224,39 @@ void linked_list_add_last(LinkedList* linked_list, const void* element) {
     linked_list->size++;
 }
 
-// TODO: handle linked_list_add failure
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
     require_non_null(linked_list);
-
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+    if (index < 0 || index > linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size);
         return;
     }
 
-    while (iterator_has_next(iterator)) {
-        linked_list_add(linked_list, index, iterator_next(iterator));
-        index++;
+    if (collection_size(collection) == 0) return;
+
+    const Pair segment = segment_from(linked_list, collection);
+
+    Node* head = segment.first, * tail = segment.second;
+    if (!(head && tail)) return;
+
+    if (linked_list->size == 0) {
+        linked_list->head = head;
+        linked_list->tail = tail;
+    } else if (index == 0) {
+        tail->next = linked_list->head;
+        linked_list->head->prev = head;
+        linked_list->head = head;
+    } else if (index == linked_list->size) {
+        head->prev = linked_list->tail;
+        linked_list->tail->next = head;
+        linked_list->tail = tail;
+    } else {
+        Node* node = get_node(linked_list, index);
+        head->prev = node->prev;
+        head->prev->next = head;
+        tail->next = node;
+        node->prev = tail;
     }
-    iterator_delete(&iterator);
+    linked_list->size += collection_size(collection);
 }
 
 void linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
@@ -821,6 +842,47 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
     linked_list->size--;
 
     return element;
+}
+
+static Pair segment_from(LinkedList* linked_list, Collection collection) {
+    assert(collection_size(collection) != 0);
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return (Pair) {};
+    }
+
+    Node* head = nullptr, * tail = nullptr;
+    bool failed = false;
+    while (iterator_has_next(iterator)) {
+        Node* node = create_node(linked_list, iterator_next(iterator));
+        if (!node) {
+            failed = true;
+            break;
+        }
+        if (!head) {
+            head = tail = node;
+        } else {
+            tail->next = node;
+            node->prev = tail;
+            tail = tail->next;
+        }
+    }
+    iterator_delete(&iterator);
+
+    if (failed) {
+        Node* node = head;
+        while (node) {
+            Node* temp = node;
+            node = node->next;
+            linked_list->memory_free(temp);
+        }
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for new nodes");
+        return (Pair) {};
+    }
+
+    return (Pair) { .first = head, .second = tail };
 }
 
 struct IterationContext {

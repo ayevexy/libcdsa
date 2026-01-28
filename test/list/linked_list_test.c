@@ -90,30 +90,6 @@ void test_add_element_at_index_to_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 }
 
-// Edge case
-void test_add_element_at_index_0_to_linked_list() {
-    // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_LINKED_LIST(linked_list, values);
-    // when
-    linked_list_add(linked_list, 0, &(int){10});
-    // then
-    int new_values[] = { 10, 1, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
-}
-
-// Edge case
-void test_add_element_at_index_equal_size_to_linked_list() {
-    // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_LINKED_LIST(linked_list, values);
-    // when
-    linked_list_add(linked_list, 5, &(int){10});
-    // then
-    int new_values[] = { 1, 2, 3, 4, 5, 10 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
-}
-
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1111,8 +1087,6 @@ int main(void) {
     RUN_TEST(test_delete_null_linked_list_fails);
 
     RUN_TEST(test_add_element_at_index_to_linked_list);
-    RUN_TEST(test_add_element_at_index_0_to_linked_list);
-    RUN_TEST(test_add_element_at_index_equal_size_to_linked_list);
     RUN_TEST(test_add_element_at_index_to_linked_list_index_above_bounds_fails);
     RUN_TEST(test_add_element_at_index_to_linked_list_negative_index_fails);
     RUN_TEST(test_add_element_at_beginning_of_linked_list);

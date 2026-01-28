@@ -163,65 +163,39 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
         return;
     }
 
-    if (index == 0) {
-        linked_list_add_first(linked_list, element);
-        return;
-    }
-    if (index == linked_list->size) {
-        linked_list_add_last(linked_list, element);
-        return;
-    }
-
     Node* new_node = create_node(linked_list, (void*) element);
     if (!new_node) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
         return;
     }
 
-    Node* node = get_node(linked_list, index);
-
-    new_node->prev = node->prev;
-    new_node->prev->next = new_node;
-    new_node->next = node;
-    node->prev = new_node;
-
+    if (linked_list->size == 0) {
+        linked_list->head = new_node;
+        linked_list->tail = new_node;
+    } else if (index == 0) {
+        new_node->next = linked_list->head;
+        linked_list->head->prev = new_node;
+        linked_list->head = new_node;
+    } else if (index == linked_list->size) {
+        new_node->prev = linked_list->tail;
+        linked_list->tail->next = new_node;
+        linked_list->tail = new_node;
+    } else {
+        Node* node = get_node(linked_list, index);
+        new_node->prev = node->prev;
+        new_node->prev->next = new_node;
+        new_node->next = node;
+        node->prev = new_node;
+    }
     linked_list->size++;
 }
 
 void linked_list_add_first(LinkedList* linked_list, const void* element) {
-    require_non_null(linked_list);
-    Node* new_node = create_node(linked_list, (void*) element);
-    if (!new_node) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
-        return;
-    }
-    if (linked_list->size == 0) {
-        linked_list->head = new_node;
-        linked_list->tail = new_node;
-    } else {
-        new_node->next = linked_list->head;
-        linked_list->head->prev = new_node;
-        linked_list->head = new_node;
-    }
-    linked_list->size++;
+    linked_list_add(linked_list, 0, element);
 }
 
 void linked_list_add_last(LinkedList* linked_list, const void* element) {
-    require_non_null(linked_list);
-    Node* new_node = create_node(linked_list, (void*) element);
-    if (!new_node) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
-        return;
-    }
-    if (linked_list->size == 0) {
-        linked_list->head = new_node;
-        linked_list->tail = new_node;
-    } else {
-        new_node->prev = linked_list->tail;
-        linked_list->tail->next = new_node;
-        linked_list->tail = new_node;
-    }
-    linked_list->size++;
+    linked_list_add(linked_list, linked_list->size, element);
 }
 
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {

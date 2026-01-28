@@ -135,27 +135,6 @@ void linked_list_delete(LinkedList** linked_list_pointer) {
     *linked_list_pointer = nullptr;
 }
 
-void linked_list_destroy(LinkedList** linked_list_pointer, void (*delete)(void*)) {
-    require_non_null(linked_list_pointer, delete);
-    if (!*linked_list_pointer) {
-        set_error(NULL_POINTER_ERROR, "'array_list' must not be null");
-        return;
-    }
-    LinkedList* linked_list = *linked_list_pointer;
-
-    Node* current = linked_list->head;
-    while (current) {
-        delete(current->element);
-        Node* temp = current;
-
-        current = current->next;
-        linked_list->memory_free(temp);
-    }
-
-    linked_list->memory_free(linked_list);
-    *linked_list_pointer = nullptr;
-}
-
 void linked_list_add(LinkedList* linked_list, int index, const void* element) {
     require_non_null(linked_list);
     if (index < 0 || index > linked_list->size) {
@@ -524,20 +503,6 @@ void linked_list_clear(LinkedList* linked_list) {
     Node* current = linked_list->head;
     while (current) {
         Node* temporary = current;
-        current = current->next;
-        linked_list->memory_free(temporary);
-    }
-    linked_list->head = linked_list->tail = nullptr;
-    linked_list->size = 0;
-}
-
-void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*)) {
-    require_non_null(linked_list, delete);
-    Node* current = linked_list->head;
-    while (current) {
-        delete(current->element);
-        Node* temporary = current;
-
         current = current->next;
         linked_list->memory_free(temporary);
     }

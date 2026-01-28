@@ -114,21 +114,6 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_delete(LinkedList** linked_list_pointer);
 
 /**
- * @brief Deletes an existing LinkedList and all its elements using the provided delete function.
- *
- * @param linked_list_pointer pointer to an LinkedList pointer
- * @param delete cleanup function to apply to every element
- *
- * @exception NULL_POINTER_ERROR if *linked_list_pointer is null
- *
- * @pre linked_list_pointer != nullptr
- * @pre delete != nullptr
- *
- * @post *linked_list_pointer == nullptr
- */
-void linked_list_destroy(LinkedList** linked_list_pointer, void (*delete)(void*));
-
-/**
  * @brief Inserts the specified element at the specified position in the provided LinkedList.
  *
  * @param linked_list pointer to an LinkedList.
@@ -506,17 +491,6 @@ void linked_list_rotate(LinkedList* linked_list, int distance);
  * @pre linked_list != nullptr
  */
 void linked_list_clear(LinkedList* linked_list);
-
-/**
- * @brief Removes all elements of the provided LinkedList applying the provided cleanup function for each element.
- *
- * @param linked_list pointer to an LinkedList
- * @param delete clean up function to apply to every element
- *
- * @pre linked_list != nullptr
- * @pre delete != nullptr
- */
-void linked_list_clear_data(LinkedList* linked_list, void (*delete)(void*));
 
 /**
  * @brief Finds the first element matching the given Predicate in the provided LinkedList.

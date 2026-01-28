@@ -123,21 +123,6 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_delete(ArrayList** array_list_pointer);
 
 /**
- * @brief Deletes an existing ArrayList and all its elements using the provided delete function.
- *
- * @param array_list_pointer pointer to an ArrayList pointer
- * @param delete cleanup function to apply to every element
- *
- * @exception NULL_POINTER_ERROR if *array_list_pointer is null
- *
- * @pre array_list_pointer != nullptr
- * @pre delete != nullptr
- *
- * @post *array_list_pointer == nullptr
- */
-void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*));
-
-/**
  * @brief Inserts the specified element at the specified position in the provided ArrayList.
  *
  * @param array_list pointer to an ArrayList.
@@ -549,17 +534,6 @@ void array_list_rotate(ArrayList* array_list, int distance);
  * @pre array_list != nullptr
  */
 void array_list_clear(ArrayList* array_list);
-
-/**
- * @brief Removes all elements of the provided ArrayList applying the provided cleanup function for each element.
- *
- * @param array_list pointer to an ArrayList
- * @param delete clean up function to apply to every element
- *
- * @pre array_list != nullptr
- * @pre delete != nullptr
- */
-void array_list_clear_data(ArrayList* array_list, void (*delete)(void*));
 
 /**
  * @brief Finds the first element matching the given Predicate in the provided ArrayList.

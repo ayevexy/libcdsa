@@ -124,18 +124,6 @@ void array_list_delete(ArrayList** array_list_pointer) {
     *array_list_pointer = nullptr;
 }
 
-void array_list_destroy(ArrayList** array_list_pointer, void (*delete)(void*)) {
-    require_non_null(array_list_pointer, delete);
-    if (!*array_list_pointer) {
-        set_error(NULL_POINTER_ERROR, "'array_list' must not be null");
-        return;
-    }
-    for (int i = 0; i < (*array_list_pointer)->size; i++) {
-        delete((*array_list_pointer)->elements[i]);
-    }
-    array_list_delete(array_list_pointer);
-}
-
 void array_list_add(ArrayList* array_list, int index, const void* element) {
     require_non_null(array_list);
     if (index < 0 || index > array_list->size) {
@@ -479,15 +467,6 @@ void array_list_rotate(ArrayList* array_list, int distance) {
 void array_list_clear(ArrayList* array_list) {
     require_non_null(array_list);
     for (int i = 0; i < array_list->size; i++) {
-        array_list->elements[i] = nullptr;
-    }
-    array_list->size = 0;
-}
-
-void array_list_clear_data(ArrayList* array_list, void (*delete)(void*)) {
-    require_non_null(array_list, delete);
-    for (int i = 0; i < array_list->size; i++) {
-        delete(array_list->elements[i]);
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;

@@ -81,33 +81,6 @@ void test_delete_null_array_list_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-static void delete_data(void* element) {
-   *(int*) element = 0; // in a real scenario, a free call is made here
-}
-
-void test_destroy_array_list_deletes_its_data() {
-    // given
-    ArrayList* new_array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS());
-    // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(new_array_list, values);
-    // when
-    array_list_destroy(&new_array_list, delete_data);
-    // then
-    int deleted_values[] = { 0, 0, 0, 0, 0 };
-    TEST_ASSERT_NULL(new_array_list);
-    TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
-}
-
-void test_destroy_null_array_list_fails() {
-    // given
-    ArrayList* new_array_list = nullptr;
-    // when
-    Error error = attempt(array_list_destroy(&new_array_list, delete_data));
-    // then
-    TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
-}
-
 void test_add_element_at_index_to_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -862,18 +835,6 @@ void test_clear_array_list() {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(array_list_get(array_list, 2)));
 }
 
-void test_clear_array_list_data() {
-    // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // when
-    array_list_clear_data(array_list, delete_data);
-    // then
-    int deleted_values[] = { 0, 0, 0, 0, 0 };
-    TEST_ASSERT_EQUAL(0, array_list_size(array_list));
-    TEST_ASSERT_ARRAY_EQUALS(deleted_values, (void**) &values);
-}
-
 void test_find_element_matching_predicate_in_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1207,8 +1168,6 @@ int main(void) {
 
     RUN_TEST(test_delete_array_list_set_it_to_null);
     RUN_TEST(test_delete_null_array_list_fails);
-    RUN_TEST(test_destroy_array_list_deletes_its_data);
-    RUN_TEST(test_destroy_null_array_list_fails);
 
     RUN_TEST(test_add_element_at_index_to_array_list);
     RUN_TEST(test_add_element_at_index_to_array_list_exceeding_capacity_resize_it);
@@ -1291,7 +1250,6 @@ int main(void) {
     RUN_TEST(test_rotate_array_list_backward);
 
     RUN_TEST(test_clear_array_list);
-    RUN_TEST(test_clear_array_list_data);
 
     RUN_TEST(test_find_element_matching_predicate_in_array_list);
     RUN_TEST(test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null);

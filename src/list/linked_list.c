@@ -662,14 +662,13 @@ LinkedList* linked_list_clone(const LinkedList* linked_list) {
     return new_linked_list;
 }
 
-// TODO: handle linked_list_add_last failure
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index) {
     require_non_null(linked_list);
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size);
         return nullptr;
     }
-    LinkedList* new_linked_list; const Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
@@ -682,7 +681,13 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
     }
     const Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
-        linked_list_add_last(new_linked_list, node->element);
+        error = attempt(linked_list_add_last(new_linked_list, node->element));
+
+        if (error == MEMORY_ALLOCATION_ERROR) {
+            set_error(error, "%s", plain_error_message());
+            linked_list_delete(&new_linked_list);
+            return nullptr;
+        }
         node = node->next;
     }
     return new_linked_list;

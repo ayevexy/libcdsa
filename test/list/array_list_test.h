@@ -1,7 +1,7 @@
 #ifndef ARRAY_LIST_TEST_H
 #define ARRAY_LIST_TEST_H
 
-#include "../macros.h"
+#include "../test_macros.h"
 
 #define POPULATE_ARRAY_LIST(array_list, array)          \
     for (int i = 0; i < SIZE(array); i++) {             \

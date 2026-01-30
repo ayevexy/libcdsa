@@ -1,7 +1,7 @@
 #ifndef LINKED_LIST_TEST_H
 #define LINKED_LIST_TEST_H
 
-#include "../macros.h"
+#include "../test_macros.h"
 
 #define POPULATE_LINKED_LIST(linked_list, array)        \
     for (int i = 0; i < SIZE(array); i++) {             \

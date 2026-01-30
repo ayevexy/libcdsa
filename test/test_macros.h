@@ -1,5 +1,5 @@
-#ifndef MACROS_H
-#define MACROS_H
+#ifndef TEST_MACROS_H
+#define TEST_MACROS_H
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 

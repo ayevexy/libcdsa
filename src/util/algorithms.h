@@ -10,7 +10,7 @@
  * The choice of algorithm may affect performance characteristics
  * such as time complexity, stability, and memory usage.
  */
-typedef enum SortingAlgorithm {
+typedef enum {
     /** Bubble sort (simple, stable, O(n²)) */
     BUBBLE_SORT,
 
@@ -33,7 +33,7 @@ typedef enum SortingAlgorithm {
  * These values specify which shuffling strategy should be used by
  * shuffle functions (e.g., `array_list_shuffle`).
  */
-typedef enum ShufflingAlgorithm {
+typedef enum {
     /** Durstenfeld shuffle (modern Fisher–Yates, unbiased) */
     DURSTENFELD_SHUFFLE,
 

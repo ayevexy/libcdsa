@@ -4,7 +4,7 @@
 /**
  * @brief a container object which contains two independently values.
  */
-typedef struct Pair {
+typedef struct {
     void* first;
     void* second;
 } Pair;

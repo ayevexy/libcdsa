@@ -52,7 +52,7 @@ typedef struct ArrayList ArrayList;
  * @pre memory_realloc != nullptr
  * @pre memory_free != nullptr
  */
-typedef struct ArrayListOptions {
+typedef struct {
     int initial_capacity;
     double growth_factor;
     bool (*equals)(const void*, const void*);

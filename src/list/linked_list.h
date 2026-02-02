@@ -47,7 +47,7 @@ typedef struct LinkedList LinkedList;
  * @pre memory_realloc != nullptr
  * @pre memory_free != nullptr
  */
-typedef struct LinkedListOptions {
+typedef struct {
     bool (*equals)(const void*, const void*);
     int (*to_string)(const void*, char*, size_t);
     struct {

@@ -2,6 +2,7 @@
 
 #include "errors.h"
 #include "constraints.h"
+#include <assert.h>
 
 struct Iterator {
     void* internal_state;
@@ -22,7 +23,7 @@ Iterator* iterator_new(
     void* (*memory_alloc)(size_t),
     void (*memory_free)(void*)
 ) {
-    require_non_null(internal_state, has_next, next, reset, memory_alloc, memory_free);
+    assert(internal_state && has_next && next && reset && memory_alloc && memory_free);
     Iterator* iterator = memory_alloc(sizeof(Iterator));
     if (!iterator) {
         return nullptr;
@@ -37,26 +38,22 @@ Iterator* iterator_new(
 }
 
 bool iterator_has_next(const Iterator* iterator) {
-    require_non_null(iterator);
+    if (set_error_on_null(iterator)) return false;
     return iterator->has_next(iterator->internal_state);
 }
 
 void* iterator_next(Iterator* iterator) {
-    require_non_null(iterator);
+    if (set_error_on_null(iterator)) return nullptr;
     return iterator->next(iterator->internal_state);
 }
 
 void iterator_reset(Iterator* iterator) {
-    require_non_null(iterator);
+    if (set_error_on_null(iterator)) return;
     iterator->reset(iterator->internal_state);
 }
 
 void iterator_delete(Iterator** iterator_pointer) {
-    require_non_null(iterator_pointer);
-    if (!*iterator_pointer) {
-        set_error(NULL_POINTER_ERROR, "'iterator' must not be null");
-        return;
-    }
+    if (set_error_on_null(iterator_pointer, *iterator_pointer)) return;
     Iterator* iterator = *iterator_pointer;
     iterator->memory_free(iterator->internal_state);
     iterator->memory_free(iterator);

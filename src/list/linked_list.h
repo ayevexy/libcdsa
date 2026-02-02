@@ -78,10 +78,9 @@ typedef struct LinkedListOptions {
  *
  * @return Pointer to a newly created LinkedList on success, or nullptr if creation fails
  *
+ * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the LinkedList fails
- *
- * @pre options != nullptr
  */
 LinkedList* linked_list_new(const LinkedListOptions* options);
 
@@ -93,10 +92,9 @@ LinkedList* linked_list_new(const LinkedListOptions* options);
  *
  * @return pointer to a newly created LinkedList on success, or nullptr if creation fails
  *
+ * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates the required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the new LinkedList or collection's iterator fails
- *
- * @pre options != nullptr
  */
 LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options);
 
@@ -105,9 +103,7 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
  *
  * @param linked_list_pointer pointer to an LinkedList pointer
  *
- * @exception NULL_POINTER_ERROR if *linked_list_pointer is null
- *
- * @pre *linked_list_pointer != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list_pointer or *linked_list_pointer is null
  *
  * @post *linked_list_pointer == nullptr
  */
@@ -120,10 +116,9 @@ void linked_list_delete(LinkedList** linked_list_pointer);
  * @param index index at which the specified element is to be inserted
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add(LinkedList* linked_list, int index, const void* element);
 
@@ -133,9 +128,8 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element);
  * @param linked_list pointer to an LinkedList
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add_first(LinkedList* linked_list, const void* element);
 
@@ -145,9 +139,8 @@ void linked_list_add_first(LinkedList* linked_list, const void* element);
  * @param linked_list pointer to an LinkedList
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add_last(LinkedList* linked_list, const void* element);
 
@@ -158,10 +151,9 @@ void linked_list_add_last(LinkedList* linked_list, const void* element);
  * @param index start index at which the elements will be inserted
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection);
 
@@ -171,9 +163,8 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
  * @param linked_list pointer to an LinkedList
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add_all_first(LinkedList* linked_list, Collection collection);
 
@@ -183,9 +174,8 @@ void linked_list_add_all_first(LinkedList* linked_list, Collection collection);
  * @param linked_list pointer to an LinkedList
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre linked_list != nullptr
  */
 void linked_list_add_all_last(LinkedList* linked_list, Collection collection);
 
@@ -197,9 +187,8 @@ void linked_list_add_all_last(LinkedList* linked_list, Collection collection);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_get(const LinkedList* linked_list, int index);
 
@@ -210,9 +199,8 @@ void* linked_list_get(const LinkedList* linked_list, int index);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_get_first(const LinkedList* linked_list);
 
@@ -223,9 +211,8 @@ void* linked_list_get_first(const LinkedList* linked_list);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_get_last(const LinkedList* linked_list);
 
@@ -238,9 +225,8 @@ void* linked_list_get_last(const LinkedList* linked_list);
  *
  * @return pointer to the old element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_set(LinkedList* linked_list, int index, const void* element);
 
@@ -251,9 +237,8 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element);
  * @param index_a index of the first element to be swapped
  * @param index_b index of the second element to be swapped
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- *
- * @pre linked_list != nullptr
  */
 void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
 
@@ -265,9 +250,8 @@ void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_remove(LinkedList* linked_list, int index);
 
@@ -278,9 +262,8 @@ void* linked_list_remove(LinkedList* linked_list, int index);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_remove_first(LinkedList* linked_list);
 
@@ -291,9 +274,8 @@ void* linked_list_remove_first(LinkedList* linked_list);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- *
- * @pre linked_list != nullptr
  */
 void* linked_list_remove_last(LinkedList* linked_list);
 
@@ -305,7 +287,7 @@ void* linked_list_remove_last(LinkedList* linked_list);
  *
  * @return true if removed, false if not present
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 bool linked_list_remove_element(LinkedList* linked_list, const void* element);
 
@@ -317,9 +299,8 @@ bool linked_list_remove_element(LinkedList* linked_list, const void* element);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre linked_list != nullptr
  */
 int linked_list_remove_all(LinkedList* linked_list, Collection collection);
 
@@ -332,9 +313,8 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list_size() || start_index > end_index
- *
- * @pre linked_list != nullptr
  */
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index);
 
@@ -346,8 +326,7 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
  *
  * @return number of elements removed
  *
- * @pre linked_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 int linked_list_remove_if(LinkedList* linked_list, Predicate condition);
 
@@ -357,8 +336,7 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition);
  * @param linked_list pointer to an LinkedList
  * @param operator the operator to replace elements
  *
- * @pre linked_list != nullptr
- * @pre operator != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or operator is null
  */
 void linked_list_replace_all(LinkedList* linked_list, Operator operator);
 
@@ -370,9 +348,8 @@ void linked_list_replace_all(LinkedList* linked_list, Operator operator);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre linked_list != nullptr
  */
 int linked_list_retain_all(LinkedList* linked_list, Collection collection);
 
@@ -383,7 +360,7 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection);
  *
  * @return the current size of the provided LinkedList
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_size(const LinkedList* linked_list);
 
@@ -394,7 +371,7 @@ int linked_list_size(const LinkedList* linked_list);
  *
  * @return true if empty, false otherwise
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 bool linked_list_is_empty(const LinkedList* linked_list);
 
@@ -405,9 +382,8 @@ bool linked_list_is_empty(const LinkedList* linked_list);
  *
  * @return pointer to the newly created Iterator
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
- *
- * @pre linked_list != nullptr
  */
 Iterator* linked_list_iterator(const LinkedList* linked_list);
 
@@ -424,8 +400,7 @@ Iterator* linked_list_iterator(const LinkedList* linked_list);
  *
  * @return true if equal, false otherwise
  *
- * @pre linked_list != nullptr
- * @pre other_linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or other_linked_list is null
  */
 bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_linked_list);
 
@@ -435,8 +410,7 @@ bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_l
  * @param linked_list pointer to an LinkedList
  * @param action the action to be performed
  *
- * @pre linked_list != nullptr
- * @pre action != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or action is null
  */
 void linked_list_for_each(LinkedList* linked_list, Consumer action);
 
@@ -447,8 +421,7 @@ void linked_list_for_each(LinkedList* linked_list, Consumer action);
  * @param comparator the comparator to be used to compare elements
  * @param algorithm the algorithm used to sort the LinkedList
  *
- * @pre linked_list != nullptr
- * @pre comparator != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or comparator is null
  */
 void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm);
 
@@ -459,8 +432,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
  * @param random a function to generate random numbers
  * @param algorithm the algorithm used to shuffle the LinkedList
  *
- * @pre linked_list != nullptr
- * @pre random != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or random is null
  */
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm);
 
@@ -469,7 +441,7 @@ void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), Shuffling
  *
  * @param linked_list pointer to an LinkedList
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_reverse(LinkedList* linked_list);
 
@@ -479,7 +451,7 @@ void linked_list_reverse(LinkedList* linked_list);
  * @param linked_list pointer to an LinkedList
  * @param distance how many positions to shift
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_rotate(LinkedList* linked_list, int distance);
 
@@ -488,7 +460,7 @@ void linked_list_rotate(LinkedList* linked_list, int distance);
  *
  * @param linked_list pointer to an LinkedList
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_clear(LinkedList* linked_list);
 
@@ -500,8 +472,7 @@ void linked_list_clear(LinkedList* linked_list);
  *
  * @return an Optional containing the found element, or an empty Optional if no match is found
  *
- * @pre linked_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition);
 
@@ -513,8 +484,7 @@ Optional linked_list_find(const LinkedList* linked_list, Predicate condition);
  *
  * @return an Optional containing the found element, or an empty Optional if no match is found
  *
- * @pre linked_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 Optional linked_list_find_last(const LinkedList* linked_list, Predicate condition);
 
@@ -526,8 +496,7 @@ Optional linked_list_find_last(const LinkedList* linked_list, Predicate conditio
  *
  * @return the index of the first matching element, or -1 if no match is found
  *
- * @pre linked_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 int linked_list_index_where(const LinkedList* linked_list, Predicate condition);
 
@@ -539,8 +508,7 @@ int linked_list_index_where(const LinkedList* linked_list, Predicate condition);
  *
  * @return the index of the last matching element, or -1 if no match is found
  *
- * @pre linked_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition);
 
@@ -554,7 +522,7 @@ int linked_list_last_index_where(const LinkedList* linked_list, Predicate condit
  *
  * @return true if the element is present, false otherwise
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 bool linked_list_contains(const LinkedList* linked_list, const void* element);
 
@@ -566,9 +534,8 @@ bool linked_list_contains(const LinkedList* linked_list, const void* element);
  *
  * @return true if all elements are present, false otherwise
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre linked_list != nullptr
  */
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection);
 
@@ -582,7 +549,7 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
  *
  * @return the number of occurrences of the specified element
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_occurrences_of(const LinkedList* linked_list, const void* element);
 
@@ -594,7 +561,7 @@ int linked_list_occurrences_of(const LinkedList* linked_list, const void* elemen
  *
  * @return the index of the first occurrence, or -1 if not found
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_index_of(const LinkedList* linked_list, const void* element);
 
@@ -606,7 +573,7 @@ int linked_list_index_of(const LinkedList* linked_list, const void* element);
  *
  * @return the index of the last occurrence, or -1 if not found
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_last_index_of(const LinkedList* linked_list, const void* element);
 
@@ -619,9 +586,8 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
  *
  * @return a newly created LinkedList clone
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre linked_list != nullptr
  */
 LinkedList* linked_list_clone(const LinkedList* linked_list);
 
@@ -637,10 +603,9 @@ LinkedList* linked_list_clone(const LinkedList* linked_list);
  *
  * @return a newly created LinkedList containing the specified range, or nullptr on failure
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list_size() || start_index > end_index
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre linked_list != nullptr
  */
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index);
 
@@ -653,7 +618,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
  *
  * @return a Collection representation of the LinkedList
  *
- * @pre linked_list != nullptr
+ * @exception NULL_POINTER_ERROR if linked_list is null
  */
 Collection linked_list_to_collection(const LinkedList* linked_list);
 
@@ -664,9 +629,8 @@ Collection linked_list_to_collection(const LinkedList* linked_list);
  *
  * @return a newly allocated array containing all elements
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre linked_list != nullptr
  */
 void** linked_list_to_array(const LinkedList* linked_list);
 
@@ -680,9 +644,8 @@ void** linked_list_to_array(const LinkedList* linked_list);
  *
  * @return a newly allocated null-terminated string representation, or nullptr on failure
  *
+ * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre linked_list != nullptr
  */
 char* linked_list_to_string(const LinkedList* linked_list);
 

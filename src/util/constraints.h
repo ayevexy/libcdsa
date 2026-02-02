@@ -1,39 +1,38 @@
 #ifndef CONSTRAINTS_H
 #define CONSTRAINTS_H
 
-#include <assert.h>
+#include "errors.h"
 
 /**
- * @brief Asserts that one or more pointers are not null.
+ * @brief Verifies that one or more pointers are not null
+ * and set NULL_POINTER_ERROR with a predefined message format if true.
  *
- * This macro can accept 1 to 6 pointer arguments. Each pointer is
- * checked using `assert(pointer != nullptr)`.
+* This macro can accept 1 to 6 pointer arguments.
  *
  * @param ... one or more pointers to check.
- *
- * @note Assertions are active only if NDEBUG is not defined.
  */
-#define require_non_null(...) GET_MACRO(__VA_ARGS__,    \
-    REQUIRE_NON_NULL_6,                                 \
-    REQUIRE_NON_NULL_5,                                 \
-    REQUIRE_NON_NULL_4,                                 \
-    REQUIRE_NON_NULL_3,                                 \
-    REQUIRE_NON_NULL_2,                                 \
-    REQUIRE_NON_NULL_1                                  \
+#define set_error_on_null(...) dispatch_set_error_on_null(__VA_ARGS__,  \
+    set_error_on_null_6,                                                \
+    set_error_on_null_5,                                                \
+    set_error_on_null_4,                                                \
+    set_error_on_null_3,                                                \
+    set_error_on_null_2,                                                \
+    set_error_on_null_1,                                                \
 )(__VA_ARGS__)
 
-#define GET_MACRO(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
+#define dispatch_set_error_on_null(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
 
-#define REQUIRE_NON_NULL_1(pointer) assert(pointer != nullptr)
+#define set_error_on_null_6(pointer, ...) (set_error_on_null_1(pointer) || set_error_on_null_5(__VA_ARGS__))
 
-#define REQUIRE_NON_NULL_2(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_1(__VA_ARGS__)
+#define set_error_on_null_5(pointer, ...) (set_error_on_null_1(pointer) || set_error_on_null_4(__VA_ARGS__))
 
-#define REQUIRE_NON_NULL_3(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_2(__VA_ARGS__)
+#define set_error_on_null_4(pointer, ...) (set_error_on_null_1(pointer) || set_error_on_null_3(__VA_ARGS__))
 
-#define REQUIRE_NON_NULL_4(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_3(__VA_ARGS__)
+#define set_error_on_null_3(pointer, ...) (set_error_on_null_1(pointer) || set_error_on_null_2(__VA_ARGS__))
 
-#define REQUIRE_NON_NULL_5(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_4(__VA_ARGS__)
+#define set_error_on_null_2(pointer, ...) (set_error_on_null_1(pointer) || set_error_on_null_1(__VA_ARGS__))
 
-#define REQUIRE_NON_NULL_6(pointer, ...) assert(pointer != nullptr); REQUIRE_NON_NULL_5(__VA_ARGS__)
+#define set_error_on_null_1(pointer) \
+    ((pointer) == nullptr ? set_error(NULL_POINTER_ERROR, "'"#pointer"'"" argument must not be null"), true : false)
 
 #endif

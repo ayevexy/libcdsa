@@ -82,7 +82,7 @@ Iterator* iterator_new(
  *
  * @return true if more elements are available, false otherwise
  *
- * @pre iterator != nullptr
+ * @exception NULL_POINTER_ERROR if iterator is null
  */
 bool iterator_has_next(const Iterator* iterator);
 
@@ -93,9 +93,8 @@ bool iterator_has_next(const Iterator* iterator);
  *
  * @return pointer to the next element
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
- *
- * @pre iterator != nullptr
  */
 void* iterator_next(Iterator* iterator);
 
@@ -104,7 +103,7 @@ void* iterator_next(Iterator* iterator);
  *
  * @param iterator pointer to an Iterator
  *
- * @pre iterator != nullptr
+ * @exception NULL_POINTER_ERROR if iterator is null
  */
 void iterator_reset(Iterator* iterator);
 
@@ -113,9 +112,8 @@ void iterator_reset(Iterator* iterator);
  *
  * @param iterator_pointer pointer to an Iterator*
  *
- * @exception NULL_POINTER_ERROR if *iterator_pointer is null
+ * @exception NULL_POINTER_ERROR if iterator_pointer or *iterator_pointer is null
  *
- * @pre iterator_pointer != nullptr
  * @post *iterator_pointer == nullptr
  */
 void iterator_delete(Iterator** iterator_pointer);

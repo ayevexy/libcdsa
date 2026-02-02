@@ -87,10 +87,9 @@ typedef struct ArrayListOptions {
  *
  * @return Pointer to a newly created ArrayList on success, or nullptr if creation fails
  *
+ * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the ArrayList fails
- *
- * @pre options != nullptr
  */
 ArrayList* array_list_new(const ArrayListOptions* options);
 
@@ -102,10 +101,9 @@ ArrayList* array_list_new(const ArrayListOptions* options);
  *
  * @return pointer to a newly created ArrayList on success, or nullptr if creation fails
  *
+ * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates the required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the new ArrayList or collection's iterator fails
- *
- * @pre options != nullptr
  */
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options);
 
@@ -114,9 +112,7 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
  *
  * @param array_list_pointer pointer to an ArrayList pointer
  *
- * @exception NULL_POINTER_ERROR if *array_list_pointer is null
- *
- * @pre *array_list_pointer != nullptr
+ * @exception NULL_POINTER_ERROR if array_list_pointer or *array_list_pointer is null
  *
  * @post *array_list_pointer == nullptr
  */
@@ -129,10 +125,9 @@ void array_list_delete(ArrayList** array_list_pointer);
  * @param index index at which the specified element is to be inserted
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list_size()
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- *
- * @pre array_list != nullptr
  */
 void array_list_add(ArrayList* array_list, int index, const void* element);
 
@@ -142,9 +137,8 @@ void array_list_add(ArrayList* array_list, int index, const void* element);
  * @param array_list pointer to an ArrayList
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- *
- * @pre array_list != nullptr
  */
 void array_list_add_first(ArrayList* array_list, const void* element);
 
@@ -154,9 +148,8 @@ void array_list_add_first(ArrayList* array_list, const void* element);
  * @param array_list pointer to an ArrayList
  * @param element pointer to the element to be inserted
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- *
- * @pre array_list != nullptr
  */
 void array_list_add_last(ArrayList* array_list, const void* element);
 
@@ -167,10 +160,9 @@ void array_list_add_last(ArrayList* array_list, const void* element);
  * @param index start index at which the elements will be inserted
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list_size()
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre array_list != nullptr
  */
 void array_list_add_all(ArrayList* array_list, int index, Collection collection);
 
@@ -180,9 +172,8 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
  * @param array_list pointer to an ArrayList
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre array_list != nullptr
  */
 void array_list_add_all_first(ArrayList* array_list, Collection collection);
 
@@ -192,9 +183,8 @@ void array_list_add_all_first(ArrayList* array_list, Collection collection);
  * @param array_list pointer to an ArrayList
  * @param collection a Collection containing the elements to be added
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
- *
- * @pre array_list != nullptr
  */
 void array_list_add_all_last(ArrayList* array_list, Collection collection);
 
@@ -206,9 +196,8 @@ void array_list_add_all_last(ArrayList* array_list, Collection collection);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- *
- * @pre array_list != nullptr
  */
 void* array_list_get(const ArrayList* array_list, int index);
 
@@ -219,9 +208,8 @@ void* array_list_get(const ArrayList* array_list, int index);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- *
- * @pre array_list != nullptr
  */
 void* array_list_get_first(const ArrayList* array_list);
 
@@ -232,9 +220,8 @@ void* array_list_get_first(const ArrayList* array_list);
  *
  * @return pointer to the retrieved element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- *
- * @pre array_list != nullptr
  */
 void* array_list_get_last(const ArrayList* array_list);
 
@@ -247,9 +234,8 @@ void* array_list_get_last(const ArrayList* array_list);
  *
  * @return pointer to the old element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- *
- * @pre array_list != nullptr
  */
 void* array_list_set(ArrayList* array_list, int index, const void* element);
 
@@ -260,9 +246,8 @@ void* array_list_set(ArrayList* array_list, int index, const void* element);
  * @param index_a index of the first element to be swapped
  * @param index_b index of the second element to be swapped
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- *
- * @pre array_list != nullptr
  */
 void array_list_swap(ArrayList* array_list, int index_a, int index_b);
 
@@ -274,9 +259,8 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- *
- * @pre array_list != nullptr
  */
 void* array_list_remove(ArrayList* array_list, int index);
 
@@ -287,9 +271,8 @@ void* array_list_remove(ArrayList* array_list, int index);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- *
- * @pre array_list != nullptr
  */
 void* array_list_remove_first(ArrayList* array_list);
 
@@ -300,9 +283,8 @@ void* array_list_remove_first(ArrayList* array_list);
  *
  * @return pointer to the removed element
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- *
- * @pre array_list != nullptr
  */
 void* array_list_remove_last(ArrayList* array_list);
 
@@ -314,7 +296,7 @@ void* array_list_remove_last(ArrayList* array_list);
  *
  * @return true if removed, false if not present
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 bool array_list_remove_element(ArrayList* array_list, const void* element);
 
@@ -326,9 +308,8 @@ bool array_list_remove_element(ArrayList* array_list, const void* element);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre array_list != nullptr
  */
 int array_list_remove_all(ArrayList* array_list, Collection collection);
 
@@ -341,9 +322,8 @@ int array_list_remove_all(ArrayList* array_list, Collection collection);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list_size() || start_index > end_index
- *
- * @pre array_list != nullptr
  */
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index);
 
@@ -355,8 +335,7 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
  *
  * @return number of elements removed
  *
- * @pre array_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 int array_list_remove_if(ArrayList* array_list, Predicate condition);
 
@@ -366,8 +345,7 @@ int array_list_remove_if(ArrayList* array_list, Predicate condition);
  * @param array_list pointer to an ArrayList
  * @param operator the operator to replace elements
  *
- * @pre array_list != nullptr
- * @pre operator != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or operator is null
  */
 void array_list_replace_all(ArrayList* array_list, Operator operator);
 
@@ -379,9 +357,8 @@ void array_list_replace_all(ArrayList* array_list, Operator operator);
  *
  * @return number of elements removed
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre array_list != nullptr
  */
 int array_list_retain_all(ArrayList* array_list, Collection collection);
 
@@ -392,7 +369,7 @@ int array_list_retain_all(ArrayList* array_list, Collection collection);
  *
  * @return the current size of the provided ArrayList
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_size(const ArrayList* array_list);
 
@@ -401,9 +378,8 @@ int array_list_size(const ArrayList* array_list);
  *
  * @param array_list pointer to an ArrayList
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to shrink array_list capacity
- *
- * @pre array_list != nullptr
  */
 void array_list_trim_to_size(ArrayList* array_list);
 
@@ -414,7 +390,7 @@ void array_list_trim_to_size(ArrayList* array_list);
  *
  * @return the current capacity of the provided ArrayList
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_capacity(const ArrayList* array_list);
 
@@ -424,9 +400,8 @@ int array_list_capacity(const ArrayList* array_list);
  * @param array_list pointer to an ArrayList
  * @param capacity the required capacity
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- *
- * @pre array_list != nullptr
  */
 void array_list_ensure_capacity(ArrayList* array_list, int capacity);
 
@@ -437,7 +412,7 @@ void array_list_ensure_capacity(ArrayList* array_list, int capacity);
  *
  * @return true if empty, false otherwise
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 bool array_list_is_empty(const ArrayList* array_list);
 
@@ -448,9 +423,8 @@ bool array_list_is_empty(const ArrayList* array_list);
  *
  * @return pointer to the newly created Iterator
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
- *
- * @pre array_list != nullptr
  */
 Iterator* array_list_iterator(const ArrayList* array_list);
 
@@ -467,8 +441,7 @@ Iterator* array_list_iterator(const ArrayList* array_list);
  *
  * @return true if equal, false otherwise
  *
- * @pre array_list != nullptr
- * @pre other_array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or other_array_list is null
  */
 bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array_list);
 
@@ -478,8 +451,7 @@ bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array
  * @param array_list pointer to an ArrayList
  * @param action the action to be performed
  *
- * @pre array_list != nullptr
- * @pre action != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or action is null
  */
 void array_list_for_each(ArrayList* array_list, Consumer action);
 
@@ -490,8 +462,7 @@ void array_list_for_each(ArrayList* array_list, Consumer action);
  * @param comparator the comparator to be used to compare elements
  * @param algorithm the algorithm used to sort the ArrayList
  *
- * @pre array_list != nullptr
- * @pre comparator != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or comparator is null
  */
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm);
 
@@ -502,8 +473,7 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
  * @param random a function to generate random numbers
  * @param algorithm the algorithm used to shuffle the ArrayList
  *
- * @pre array_list != nullptr
- * @pre random != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or random is null
  */
 void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm);
 
@@ -512,7 +482,7 @@ void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlg
  *
  * @param array_list pointer to an ArrayList
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_reverse(ArrayList* array_list);
 
@@ -522,7 +492,7 @@ void array_list_reverse(ArrayList* array_list);
  * @param array_list pointer to an ArrayList
  * @param distance how many positions to shift
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_rotate(ArrayList* array_list, int distance);
 
@@ -531,7 +501,7 @@ void array_list_rotate(ArrayList* array_list, int distance);
  *
  * @param array_list pointer to an ArrayList
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_clear(ArrayList* array_list);
 
@@ -543,8 +513,7 @@ void array_list_clear(ArrayList* array_list);
  *
  * @return an Optional containing the found element, or an empty Optional if no match is found
  *
- * @pre array_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 Optional array_list_find(const ArrayList* array_list, Predicate condition);
 
@@ -556,8 +525,7 @@ Optional array_list_find(const ArrayList* array_list, Predicate condition);
  *
  * @return an Optional containing the found element, or an empty Optional if no match is found
  *
- * @pre array_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 Optional array_list_find_last(const ArrayList* array_list, Predicate condition);
 
@@ -569,8 +537,7 @@ Optional array_list_find_last(const ArrayList* array_list, Predicate condition);
  *
  * @return the index of the first matching element, or -1 if no match is found
  *
- * @pre array_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 int array_list_index_where(const ArrayList* array_list, Predicate condition);
 
@@ -582,8 +549,7 @@ int array_list_index_where(const ArrayList* array_list, Predicate condition);
  *
  * @return the index of the last matching element, or -1 if no match is found
  *
- * @pre array_list != nullptr
- * @pre condition != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 int array_list_last_index_where(const ArrayList* array_list, Predicate condition);
 
@@ -597,7 +563,7 @@ int array_list_last_index_where(const ArrayList* array_list, Predicate condition
  *
  * @return true if the element is present, false otherwise
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 bool array_list_contains(const ArrayList* array_list, const void* element);
 
@@ -609,9 +575,8 @@ bool array_list_contains(const ArrayList* array_list, const void* element);
  *
  * @return true if all elements are present, false otherwise
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- *
- * @pre array_list != nullptr
  */
 bool array_list_contains_all(const ArrayList* array_list, Collection collection);
 
@@ -625,7 +590,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
  *
  * @return the number of occurrences of the specified element
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_occurrences_of(const ArrayList* array_list, const void* element);
 
@@ -637,7 +602,7 @@ int array_list_occurrences_of(const ArrayList* array_list, const void* element);
  *
  * @return the index of the first occurrence, or -1 if not found
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_index_of(const ArrayList* array_list, const void* element);
 
@@ -649,7 +614,7 @@ int array_list_index_of(const ArrayList* array_list, const void* element);
  *
  * @return the index of the last occurrence, or -1 if not found
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_last_index_of(const ArrayList* array_list, const void* element);
 
@@ -664,8 +629,7 @@ int array_list_last_index_of(const ArrayList* array_list, const void* element);
  *
  * @return the index of the found element, or -1 if not found
  *
- * @pre array_list != nullptr
- * @pre comparator != nullptr
+ * @exception NULL_POINTER_ERROR if array_list or comparator is null
  */
 int array_list_binary_search(const ArrayList* array_list, const void* element, Comparator comparator);
 
@@ -678,9 +642,8 @@ int array_list_binary_search(const ArrayList* array_list, const void* element, C
  *
  * @return a newly created ArrayList clone
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre array_list != nullptr
  */
 ArrayList* array_list_clone(const ArrayList* array_list);
 
@@ -696,10 +659,9 @@ ArrayList* array_list_clone(const ArrayList* array_list);
  *
  * @return a newly created ArrayList containing the specified range, or nullptr on failure
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list_size() || start_index > end_index
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre array_list != nullptr
  */
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index);
 
@@ -712,7 +674,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
  *
  * @return a Collection representation of the ArrayList
  *
- * @pre array_list != nullptr
+ * @exception NULL_POINTER_ERROR if array_list is null
  */
 Collection array_list_to_collection(const ArrayList* array_list);
 
@@ -723,9 +685,8 @@ Collection array_list_to_collection(const ArrayList* array_list);
  *
  * @return a newly allocated array containing all elements
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre array_list != nullptr
  */
 void** array_list_to_array(const ArrayList* array_list);
 
@@ -739,9 +700,8 @@ void** array_list_to_array(const ArrayList* array_list);
  *
  * @return a newly allocated null-terminated string representation, or nullptr on failure
  *
+ * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
- * @pre array_list != nullptr
  */
 char* array_list_to_string(const ArrayList* array_list);
 

@@ -199,16 +199,16 @@ void test_get_element_from_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int actual_value = *(int*) linked_list_get(linked_list, 2);
+    int element = *(int*) linked_list_get(linked_list, 2);
     // then
-    TEST_ASSERT_EQUAL(3, actual_value);
+    TEST_ASSERT_EQUAL(3, element);
 }
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
     linked_list_add_last(linked_list, &(int){10});
     // when
-    void* element; Error error = attempt(element = linked_list_get(linked_list, index));
+    int* element; Error error = attempt(element = linked_list_get(linked_list, index));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -227,14 +227,14 @@ void test_get_first_element_from_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int actual_value = *(int*) linked_list_get_first(linked_list);
+    int element = *(int*) linked_list_get_first(linked_list);
     // then
-    TEST_ASSERT_EQUAL(1, actual_value);
+    TEST_ASSERT_EQUAL(1, element);
 }
 
 void test_get_first_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt(element = linked_list_get_first(linked_list));
+    int* element; Error error = attempt(element = linked_list_get_first(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -245,14 +245,14 @@ void test_get_last_element_from_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int actual_value = *(int*) linked_list_get_last(linked_list);
+    int element = *(int*) linked_list_get_last(linked_list);
     // then
-    TEST_ASSERT_EQUAL(5, actual_value);
+    TEST_ASSERT_EQUAL(5, element);
 }
 
 void test_get_last_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt(element = linked_list_get_last(linked_list));
+    int* element; Error error = attempt(element = linked_list_get_last(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -374,7 +374,7 @@ void test_remove_first_element_from_linked_list() {
 
 void test_remove_first_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt(element = linked_list_remove_first(linked_list));
+    int* element; Error error = attempt(element = linked_list_remove_first(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
@@ -394,7 +394,7 @@ void test_remove_last_element_from_linked_list() {
 
 void test_remove_last_element_from_empty_linked_list_fails() {
     // when
-    void* element; Error error = attempt(element = linked_list_remove_last(linked_list));
+    int* element; Error error = attempt(element = linked_list_remove_last(linked_list));
     // then
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);

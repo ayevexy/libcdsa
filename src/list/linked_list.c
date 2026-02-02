@@ -20,7 +20,6 @@ struct LinkedList {
     int (*to_string)(const void*, char*, size_t);
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 };
@@ -79,7 +78,7 @@ static void swap(void**, void**);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
-    if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_realloc || !options->memory_free) {
+    if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_free) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
@@ -94,7 +93,6 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->equals = options->equals;
     linked_list->to_string = options->to_string;
     linked_list->memory_alloc = options->memory_alloc;
-    linked_list->memory_realloc = options->memory_realloc;
     linked_list->memory_free = options->memory_free;
     return linked_list;
 }
@@ -633,7 +631,6 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
-        .memory_realloc = linked_list->memory_realloc,
         .memory_free = linked_list->memory_free
     }));
     if (error == MEMORY_ALLOCATION_ERROR) {

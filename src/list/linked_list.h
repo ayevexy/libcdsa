@@ -21,7 +21,6 @@
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
  * - the function used internally to allocate memory
- * - the function used internally to reallocate memory
  * - the function used internally to free memory
  *
  * Underlying implementation (simplified):
@@ -44,7 +43,6 @@ typedef struct LinkedList LinkedList;
  * @pre equals != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
- * @pre memory_realloc != nullptr
  * @pre memory_free != nullptr
  */
 typedef struct {
@@ -52,7 +50,6 @@ typedef struct {
     int (*to_string)(const void*, char*, size_t);
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 } LinkedListOptions;
@@ -66,7 +63,6 @@ typedef struct {
     .equals = pointer_equals,                                       \
     .to_string = pointer_to_string,                                 \
     .memory_alloc = malloc,                                         \
-    .memory_realloc = realloc,                                      \
     .memory_free = free,                                            \
     __VA_ARGS__                                                     \
 }

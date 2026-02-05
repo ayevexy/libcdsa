@@ -102,13 +102,11 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
-
     if ((error = attempt(array_list_add_all_last(array_list, collection)))) {
         array_list_delete(&array_list);
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
-
     return array_list;
 }
 

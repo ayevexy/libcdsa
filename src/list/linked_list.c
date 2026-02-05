@@ -105,13 +105,11 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
-
     if ((error = attempt(linked_list_add_all_last(linked_list, collection)))) {
         linked_list_delete(&linked_list);
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
-
     return linked_list;
 }
 

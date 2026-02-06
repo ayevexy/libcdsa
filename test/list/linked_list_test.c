@@ -2,6 +2,7 @@
 
 #include "list/linked_list.h"
 #include "util/errors.h"
+#include "../test_functions.h"
 
 #include "unity.h"
 #include <stdlib.h>
@@ -10,8 +11,8 @@ static LinkedList* linked_list;
 
 void setUp() {
     linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS(
-        .equals = (bool (*)(const void*, const void*)) int_equals,
-        .to_string = (int (*)(const void*, char*, size_t)) int_to_string,
+        .equals = int_pointer_value_equals,
+        .to_string = int_pointer_value_to_string,
     ));
 }
 
@@ -662,7 +663,7 @@ static void sort_linked_list_test_helper(SortingAlgorithm sorting_algorithm) {
     int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_sort(linked_list, (Comparator) &compare_ints, sorting_algorithm);
+    linked_list_sort(linked_list, compare_int_pointers_value, sorting_algorithm);
     // then
     int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(sorted_values, linked_list);

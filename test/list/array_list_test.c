@@ -2,6 +2,7 @@
 
 #include "list/array_list.h"
 #include "util/errors.h"
+#include "../test_functions.h"
 
 #include "unity.h"
 #include <stdlib.h>
@@ -10,8 +11,8 @@ static ArrayList* array_list;
 
 void setUp() {
     array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .equals = (bool (*)(const void*, const void*)) int_equals,
-        .to_string = (int (*)(const void*, char*, size_t)) int_to_string,
+        .equals = int_pointer_value_equals,
+        .to_string = int_pointer_value_to_string,
     ));
 }
 
@@ -725,7 +726,7 @@ static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
     int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_sort(array_list, (Comparator) &compare_ints, sorting_algorithm);
+    array_list_sort(array_list, compare_int_pointers_value, sorting_algorithm);
     // then
     int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sorted_values, array_list);
@@ -1041,7 +1042,7 @@ void test_binary_search_element_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){9}, (Comparator) &compare_ints);
+    int index = array_list_binary_search(array_list, &(int){9}, compare_int_pointers_value);
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
@@ -1051,7 +1052,7 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){42}, (Comparator) &compare_ints);
+    int index = array_list_binary_search(array_list, &(int){42}, compare_int_pointers_value);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

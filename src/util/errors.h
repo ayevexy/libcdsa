@@ -15,12 +15,13 @@ typedef enum {
     INDEX_OUT_OF_BOUNDS_ERROR,
     NO_SUCH_ELEMENT_ERROR,
     ILLEGAL_ARGUMENT_ERROR,
+    ILLEGAL_STATE_ERROR,
     UNSUPPORTED_OPERATION_ERROR,
     MEMORY_ALLOCATION_ERROR
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 7;
+constexpr int ERROR_COUNT = 8;
 
 /**
  * @brief Converts an error enumeration to its string representation.

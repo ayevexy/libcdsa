@@ -91,8 +91,8 @@ Error capture_error(void);
     set_plain_error(error,                                                          \
         message[0] == '\0' ? "Error at %s(): %s" : "Error at %s(): %s - "message,   \
         __func__,                                                                   \
-        error_to_string(error),                                                     \
-        ##__VA_ARGS__                                                               \
+        error_to_string(error) __VA_OPT__(, )                                       \
+        __VA_ARGS__                                                                 \
     )
 
 /**

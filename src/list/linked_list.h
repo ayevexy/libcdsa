@@ -18,6 +18,8 @@
  * The LinkedList type is opaque and can only be modified through the API.
  *
  * It must be configured using an LinkedListOptions structure defining:
+ * - the construct function utilized to alloc memory for elements (optional)
+ * - the destruct function utilized to free elements memory (optional)
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
  * - the function used internally to allocate memory
@@ -46,8 +48,12 @@ typedef struct LinkedList LinkedList;
  * @pre memory_free != nullptr
  */
 typedef struct {
-    bool (*equals)(const void*, const void*);
-    int (*to_string)(const void*, char*, size_t);
+    struct {
+        void* (*construct)(const void*);
+        void (*destruct)(void*);
+        bool (*equals)(const void*, const void*);
+        int (*to_string)(const void*, char*, size_t);
+    };
     struct {
         void* (*memory_alloc)(size_t);
         void (*memory_free)(void*);
@@ -60,6 +66,8 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_LINKED_LIST_OPTIONS(...) &(LinkedListOptions) {     \
+    .construct = nullptr,                                           \
+    .destruct = nullptr,                                            \
     .equals = pointer_equals,                                       \
     .to_string = pointer_to_string,                                 \
     .memory_alloc = malloc,                                         \
@@ -95,7 +103,7 @@ LinkedList* linked_list_new(const LinkedListOptions* options);
 LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options);
 
 /**
- * @brief Deletes an existing LinkedList while keeping its elements intact.
+ * @brief Destroys an existing LinkedList while keeping its elements intact.
  *
  * @param linked_list_pointer pointer to an LinkedList pointer
  *
@@ -103,7 +111,19 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
  *
  * @post *linked_list_pointer == nullptr
  */
-void linked_list_delete(LinkedList** linked_list_pointer);
+void linked_list_destroy(LinkedList** linked_list_pointer);
+
+/**
+ * @brief Obliterates an existing LinkedList and its elements using the provided destruct function.
+ *
+ * @param linked_list_pointer pointer to an LinkedList pointer
+ *
+ * @exception NULL_POINTER_ERROR if linked_list_pointer or *linked_list_pointer is null
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ *
+ * @post *linked_list_pointer == nullptr
+ */
+void linked_list_obliterate(LinkedList** linked_list_pointer);
 
 /**
  * @brief Inserts the specified element at the specified position in the provided LinkedList.
@@ -139,6 +159,44 @@ void linked_list_add_first(LinkedList* linked_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
  */
 void linked_list_add_last(LinkedList* linked_list, const void* element);
+
+/**
+ * @brief Inserts a copy of the specified element at the specified position in the provided LinkedList, using the given construct function.
+ *
+ * @param linked_list pointer to an LinkedList.
+ * @param index index at which the specified element is to be inserted
+ * @param element pointer to the element to be inserted
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
+ * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
+ */
+void linked_list_add_copy(LinkedList* linked_list, int index, const void* element);
+
+/**
+ * @brief Inserts a copy of the specified element at the beginning of the provided LinkedList, using the given construct function.
+ *
+ * @param linked_list pointer to an LinkedList
+ * @param element pointer to the element to be inserted
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
+ */
+void linked_list_add_copy_first(LinkedList* linked_list, const void* element);
+
+/**
+ * @brief Inserts a copy of the specified element at the end of the provided LinkedList, using the given construct function.
+ *
+ * @param linked_list pointer to an LinkedList
+ * @param element pointer to the element to be inserted
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
+ */
+void linked_list_add_copy_last(LinkedList* linked_list, const void* element);
 
 /**
  * @brief Inserts all elements of the specified Collection at the specified position in the provided LinkedList.
@@ -227,6 +285,19 @@ void* linked_list_get_last(const LinkedList* linked_list);
 void* linked_list_set(LinkedList* linked_list, int index, const void* element);
 
 /**
+ * @brief Replaces the element at the specified position of the provided LinkedList, then destructs the old element.
+ *
+ * @param linked_list pointer to an LinkedList
+ * @param index index of the element to be replaced
+ * @param element the new element
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ */
+void linked_list_update(LinkedList* linked_list, int index, const void* element);
+
+/**
  * @brief Swaps the elements at specified positions of the provided LinkedList.
  *
  * @param linked_list pointer to an LinkedList
@@ -274,6 +345,40 @@ void* linked_list_remove_first(LinkedList* linked_list);
  * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
  */
 void* linked_list_remove_last(LinkedList* linked_list);
+
+/**
+ * @brief Deletes the element at the specified position of the provided LinkedList, using the given destruct function.
+ *
+ * @param linked_list pointer to an LinkedList
+ * @param index index of the element to be removed
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ */
+void linked_list_delete(LinkedList* linked_list, int index);
+
+/**
+ * @brief Deletes the first element of the provided LinkedList, using the given destruct function.
+ *
+ * @param linked_list pointer to an LinkedList
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ */
+void linked_list_delete_first(LinkedList* linked_list);
+
+/**
+ * @brief Deletes the last element of the provided LinkedList, using the given destruct function.
+ *
+ * @param linked_list pointer to an LinkedList
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ */
+void linked_list_delete_last(LinkedList* linked_list);
 
 /**
  * @brief Removes the specified element (if present) of the provided LinkedList.
@@ -459,6 +564,16 @@ void linked_list_rotate(LinkedList* linked_list, int distance);
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_clear(LinkedList* linked_list);
+
+/**
+ * @brief Deletes all elements of the provided LinkedList, applying the destruct function to every element.
+ *
+ * @param linked_list pointer to a LinkedList
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
+ */
+void linked_list_purge(LinkedList* linked_list);
 
 /**
  * @brief Finds the first element matching the given Predicate in the provided LinkedList.

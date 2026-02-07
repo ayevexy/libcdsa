@@ -3,9 +3,9 @@
 
 #include "../test_macros.h"
 
-#define POPULATE_LINKED_LIST(linked_list, array)        \
-    for (int i = 0; i < SIZE(array); i++) {             \
-        linked_list_add_last(linked_list, &array[i]);   \
+#define POPULATE_LINKED_LIST(linked_list, array)            \
+    for (int i = 0; i < SIZE(array); i++) {                 \
+        linked_list_add_copy_last(linked_list, &array[i]);  \
     }
 
 #define TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(array, linked_list)             \

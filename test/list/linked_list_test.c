@@ -9,15 +9,20 @@
 
 static LinkedList* linked_list;
 
+#define INT_LINKED_LIST_OPTIONS()                   \
+    DEFAULT_LINKED_LIST_OPTIONS(                    \
+        .construct = int_new,                       \
+        .destruct = free,                           \
+        .equals = int_pointer_value_equals,         \
+        .to_string = int_pointer_value_to_string    \
+    )
+
 void setUp() {
-    linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS(
-        .equals = int_pointer_value_equals,
-        .to_string = int_pointer_value_to_string,
-    ));
+    linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
 }
 
 void tearDown() {
-    linked_list_delete(&linked_list);
+    linked_list_obliterate(&linked_list);
 }
 
 void test_create_linked_list() {
@@ -40,12 +45,12 @@ void test_create_linked_list_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    LinkedList* new_linked_list = linked_list_from(linked_list_to_collection(linked_list), DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_from(linked_list_to_collection(linked_list), INT_LINKED_LIST_OPTIONS());
     // then
     TEST_ASSERT_NOT_NULL(new_linked_list);
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, new_linked_list);
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_do_not_create_linked_list_with_invalid_options_from_collection() {
@@ -62,20 +67,20 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_delete_linked_list_set_it_to_null() {
+void test_destroy_linked_list_set_it_to_null() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // when
-    linked_list_delete(&new_linked_list);
+    linked_list_destroy(&new_linked_list);
     // then
     TEST_ASSERT_NULL(new_linked_list);
 }
 
-void test_delete_null_linked_list_fails() {
+void test_destroy_null_linked_list_fails() {
     // given
     LinkedList* new_linked_list = nullptr;
     // when
-    Error error = attempt(linked_list_delete(&new_linked_list));
+    Error error = attempt(linked_list_destroy(&new_linked_list));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
@@ -85,7 +90,7 @@ void test_add_element_at_index_to_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add(linked_list, 2, &(int){10});
+    linked_list_add_copy(linked_list, 2, &(int){10});
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -96,7 +101,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    Error error = attempt(linked_list_add(linked_list, index, &(int){10}));
+    Error error = attempt(linked_list_add_copy(linked_list, index, &(int){10}));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -115,7 +120,7 @@ void test_add_element_at_beginning_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_first(linked_list, &(int){10});
+    linked_list_add_copy_first(linked_list, &(int){10});
     // then
     int new_values[] = { 10, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -126,7 +131,7 @@ void test_add_element_at_end_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_last(linked_list, &(int){10});
+    linked_list_add_copy_last(linked_list, &(int){10});
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -134,7 +139,7 @@ void test_add_element_at_end_of_linked_list() {
 
 void test_add_all_elements_from_collection_at_index_in_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -150,12 +155,12 @@ void test_add_all_elements_from_collection_at_index_in_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 
     // clean up
-    linked_list_delete(&existing_linked_list);
+    linked_list_destroy(&existing_linked_list);
 }
 
 void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -171,12 +176,12 @@ void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 
     // clean up
-    linked_list_delete(&existing_linked_list);
+    linked_list_destroy(&existing_linked_list);
 }
 
 void test_add_all_elements_from_collection_at_end_of_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -192,7 +197,7 @@ void test_add_all_elements_from_collection_at_end_of_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
 
     // clean up
-    linked_list_delete(&existing_linked_list);
+    linked_list_destroy(&existing_linked_list);
 }
 
 void test_get_element_from_linked_list() {
@@ -207,7 +212,7 @@ void test_get_element_from_linked_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
-    linked_list_add_last(linked_list, &(int){10});
+    linked_list_add_copy_last(linked_list, &(int){10});
     // when
     int* element; Error error = attempt(element = linked_list_get(linked_list, index));
     // then
@@ -264,7 +269,7 @@ void test_set_element_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value = linked_list_set(linked_list, 2, &(int){10});
+    int* old_value = linked_list_set(linked_list, 2, int_new(&(int){10}));
     // then
     int new_values[] = { 1, 2, 10, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -276,7 +281,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, &(int){10}));
+    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, int_new(&(int){10})));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_NULL(old_value);
@@ -426,7 +431,7 @@ void test_remove_element_by_memory_address_from_linked_list_nonexistent_element_
 
 void test_remove_all_elements_from_linked_list_matching_collection() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -443,7 +448,7 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     TEST_ASSERT_EQUAL(3, count);
 
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_obliterate(&new_linked_list);
 }
 
 void test_remove_elements_in_range_from_linked_list() {
@@ -520,7 +525,7 @@ void test_replace_all_elements_from_linked_list() {
 
 void test_retain_all_elements_from_collection_in_linked_list() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -535,7 +540,7 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_obliterate(&new_linked_list);
 }
 
 void test_get_linked_list_size() {
@@ -557,7 +562,7 @@ void test_linked_list_is_empty() {
 
 void test_linked_list_is_not_empty() {
     // given
-    linked_list_add_last(linked_list, &(int){10});
+    linked_list_add_copy_last(linked_list, &(int){10});
     // when
     bool empty = linked_list_is_empty(linked_list);
     // then
@@ -598,7 +603,7 @@ void test_linked_list_is_equal_to_it_self() {
 
 void test_linked_list_is_equal_to_another_linked_list() {
     // given
-    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -607,11 +612,13 @@ void test_linked_list_is_equal_to_another_linked_list() {
     bool equals = linked_list_equals(linked_list, other_linked_list);
     // then
     TEST_ASSERT_TRUE(equals);
+    // clean up
+    linked_list_obliterate(&other_linked_list);
 }
 
 void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() {
     // given
-    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -624,11 +631,14 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
 
     // then
     TEST_ASSERT_FALSE(equals);
+
+    // clean up
+    linked_list_destroy(&other_linked_list);
 }
 
 void test_linked_list_is_not_equal_to_another_linked_list_with_different_elements() {
     // given
-    LinkedList* other_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -641,6 +651,9 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_element
 
     // then
     TEST_ASSERT_FALSE(equals);
+
+    // clean up
+    linked_list_obliterate(&other_linked_list);
 }
 
 static void action_add_one(void* element) {
@@ -877,7 +890,7 @@ void test_linked_list_does_not_contains_element() {
 
 void test_linked_list_contains_all_elements() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -891,23 +904,23 @@ void test_linked_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_obliterate(&new_linked_list);
 }
 
 void test_empty_linked_list_contains_all_elements_of_empty_collection() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // when
     bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_obliterate(&new_linked_list);
 }
 
 void test_linked_list_does_not_contains_all_elements() {
     // given
-    LinkedList* new_linked_list = linked_list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS());
     // and
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
@@ -921,7 +934,7 @@ void test_linked_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_obliterate(&new_linked_list);
 }
 
 void test_get_occurrences_of_element_in_linked_list() {
@@ -983,7 +996,7 @@ void test_clone_linked_list() {
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, copy_linked_list);
     // clean up
-    linked_list_delete(&copy_linked_list);
+    linked_list_destroy(&copy_linked_list);
 }
 
 void test_create_sub_list_of_linked_list() {
@@ -999,7 +1012,7 @@ void test_create_sub_list_of_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(sub_list_values, new_linked_list);
 
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_create_empty_sub_list_of_linked_list() {
@@ -1008,7 +1021,7 @@ void test_create_empty_sub_list_of_linked_list() {
     // then
     TEST_ASSERT_EQUAL(0, linked_list_size(new_linked_list));
     // clean up
-    linked_list_delete(&new_linked_list);
+    linked_list_destroy(&new_linked_list);
 }
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
@@ -1084,8 +1097,8 @@ int main(void) {
     RUN_TEST(test_create_linked_list_from_collection);
     RUN_TEST(test_do_not_create_linked_list_with_invalid_options_from_collection);
 
-    RUN_TEST(test_delete_linked_list_set_it_to_null);
-    RUN_TEST(test_delete_null_linked_list_fails);
+    RUN_TEST(test_destroy_linked_list_set_it_to_null);
+    RUN_TEST(test_destroy_null_linked_list_fails);
 
     RUN_TEST(test_add_element_at_index_to_linked_list);
     RUN_TEST(test_add_element_at_index_to_linked_list_index_above_bounds_fails);

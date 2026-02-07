@@ -20,6 +20,7 @@ const char* error_to_string(Error error) {
         "INDEX_OUT_OF_BOUNDS_ERROR",
         "NO_SUCH_ELEMENT_ERROR",
         "ILLEGAL_ARGUMENT_ERROR",
+        "UNSUPPORTED_OPERATION_ERROR",
         "MEMORY_ALLOCATION_ERROR"
     };
     return error > 0 && error < ERROR_COUNT ? error_strings[error] : "UNKNOWN_ERROR";

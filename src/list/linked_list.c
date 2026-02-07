@@ -16,13 +16,23 @@ struct LinkedList {
     Node* head;
     Node* tail;
     int size;
-    bool (*equals)(const void*, const void*);
-    int (*to_string)(const void*, char*, size_t);
+    struct {
+        void* (*construct)(const void*);
+        void (*destruct)(void*);
+        bool (*equals)(const void*, const void*);
+        int (*to_string)(const void*, char*, size_t);
+    };
     struct {
         void* (*memory_alloc)(size_t);
         void (*memory_free)(void*);
     };
 };
+
+#define construct_element(linked_list, element) \
+    linked_list->construct ? linked_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr) \
+
+#define destruct_element(linked_list, element) \
+    linked_list->destruct ? linked_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned") \
 
 static size_t calculate_string_size(const LinkedList*);
 
@@ -90,6 +100,8 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->head = nullptr;
     linked_list->tail = nullptr;
     linked_list->size = 0;
+    linked_list->construct = options->construct;
+    linked_list->destruct = options->destruct;
     linked_list->equals = options->equals;
     linked_list->to_string = options->to_string;
     linked_list->memory_alloc = options->memory_alloc;
@@ -106,14 +118,14 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
         return nullptr;
     }
     if ((error = attempt(linked_list_add_all_last(linked_list, collection)))) {
-        linked_list_delete(&linked_list);
+        linked_list_destroy(&linked_list);
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
     return linked_list;
 }
 
-void linked_list_delete(LinkedList** linked_list_pointer) {
+void linked_list_destroy(LinkedList** linked_list_pointer) {
     if (set_error_on_null(linked_list_pointer, *linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
 
@@ -121,6 +133,22 @@ void linked_list_delete(LinkedList** linked_list_pointer) {
     while (current) {
         Node* temporary = current;
         current = current->next;
+        linked_list->memory_free(temporary);
+    }
+
+    linked_list->memory_free(linked_list);
+    *linked_list_pointer = nullptr;
+}
+
+void linked_list_obliterate(LinkedList** linked_list_pointer) {
+    if (set_error_on_null(linked_list_pointer, *linked_list_pointer)) return;
+    LinkedList* linked_list = *linked_list_pointer;
+
+    Node* current = linked_list->head;
+    while (current) {
+        Node* temporary = current;
+        current = current->next;
+        destruct_element(linked_list, temporary->element);
         linked_list->memory_free(temporary);
     }
 
@@ -168,6 +196,18 @@ void linked_list_add_first(LinkedList* linked_list, const void* element) {
 
 void linked_list_add_last(LinkedList* linked_list, const void* element) {
     linked_list_add(linked_list, linked_list->size, element);
+}
+
+void linked_list_add_copy(LinkedList* linked_list, int index, const void* element) {
+    linked_list_add(linked_list, index, construct_element(linked_list, element));
+}
+
+void linked_list_add_copy_first(LinkedList* linked_list, const void* element) {
+    linked_list_add_first(linked_list, construct_element(linked_list, element));
+}
+
+void linked_list_add_copy_last(LinkedList* linked_list, const void* element) {
+    linked_list_add_last(linked_list, construct_element(linked_list, element));
 }
 
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
@@ -252,6 +292,10 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
     return old_element;
 }
 
+void linked_list_update(LinkedList* linked_list, int index, const void* element) {
+    destruct_element(linked_list, linked_list_set(linked_list, index, element));
+}
+
 void linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
     if (set_error_on_null(linked_list)) return;
     if (index_a < 0 || index_a >= linked_list->size || index_b < 0 || index_b >= linked_list->size) {
@@ -287,6 +331,18 @@ void* linked_list_remove_last(LinkedList* linked_list) {
         return nullptr;
     }
     return remove_node(linked_list, linked_list->tail);
+}
+
+void linked_list_delete(LinkedList* linked_list, int index) {
+    destruct_element(linked_list, linked_list_remove(linked_list, index));
+}
+
+void linked_list_delete_first(LinkedList* linked_list) {
+    destruct_element(linked_list, linked_list_remove_first(linked_list));
+}
+
+void linked_list_delete_last(LinkedList* linked_list) {
+    destruct_element(linked_list, linked_list_remove_last(linked_list));
 }
 
 bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
@@ -502,6 +558,19 @@ void linked_list_clear(LinkedList* linked_list) {
     linked_list->size = 0;
 }
 
+void linked_list_purge(LinkedList* linked_list) {
+    if (set_error_on_null(linked_list)) return;
+    Node* current = linked_list->head;
+    while (current) {
+        Node* temporary = current;
+        current = current->next;
+        destruct_element(linked_list, temporary->element);
+        linked_list->memory_free(temporary);
+    }
+    linked_list->head = linked_list->tail = nullptr;
+    linked_list->size = 0;
+}
+
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
     if (set_error_on_null(linked_list, condition)) return optional_empty();
     for (const Node* node = linked_list->head; node; node = node->next) {
@@ -626,6 +695,8 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         return nullptr;
     }
     LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
+        .construct = linked_list->construct,
+        .destruct = linked_list->destruct,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
@@ -641,7 +712,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
 
         if (error == MEMORY_ALLOCATION_ERROR) {
             set_error(error, "%s", plain_error_message());
-            linked_list_delete(&new_linked_list);
+            linked_list_destroy(&new_linked_list);
             return nullptr;
         }
         node = node->next;

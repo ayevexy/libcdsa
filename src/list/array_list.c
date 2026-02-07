@@ -14,14 +14,24 @@ struct ArrayList {
     int size;
     int capacity;
     double growth_factor;
-    bool (*equals)(const void*, const void*);
-    int (*to_string)(const void*, char*, size_t);
+    struct {
+        void* (*construct)(const void*);
+        void (*destruct)(void*);
+        bool (*equals)(const void*, const void*);
+        int (*to_string)(const void*, char*, size_t);
+    };
     struct {
         void* (*memory_alloc)(size_t);
         void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 };
+
+#define construct_element(array_list, element) \
+    array_list->construct ? array_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr) \
+
+#define destruct_element(array_list, element) \
+    array_list->destruct ? array_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned") \
 
 static size_t calculate_string_size(const ArrayList*);
 
@@ -86,6 +96,8 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     array_list->size = 0;
     array_list->capacity = options->initial_capacity;
     array_list->growth_factor = options->growth_factor;
+    array_list->construct = options->construct;
+    array_list->destruct = options->destruct;
     array_list->equals = options->equals;
     array_list->to_string = options->to_string;
     array_list->memory_alloc = options->memory_alloc;
@@ -103,16 +115,27 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
         return nullptr;
     }
     if ((error = attempt(array_list_add_all_last(array_list, collection)))) {
-        array_list_delete(&array_list);
+        array_list_destroy(&array_list);
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
     return array_list;
 }
 
-void array_list_delete(ArrayList** array_list_pointer) {
+void array_list_destroy(ArrayList** array_list_pointer) {
     if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
     ArrayList* array_list = *array_list_pointer;
+    array_list->memory_free(array_list->elements);
+    array_list->memory_free(array_list);
+    *array_list_pointer = nullptr;
+}
+
+void array_list_obliterate(ArrayList** array_list_pointer) {
+    if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
+    ArrayList* array_list = *array_list_pointer;
+    for (int i = 0; i < array_list->size; i++) {
+        destruct_element(array_list, array_list->elements[i]);
+    }
     array_list->memory_free(array_list->elements);
     array_list->memory_free(array_list);
     *array_list_pointer = nullptr;
@@ -141,6 +164,18 @@ void array_list_add_first(ArrayList* array_list, const void* element) {
 
 void array_list_add_last(ArrayList* array_list, const void* element) {
     array_list_add(array_list, array_list->size, element);
+}
+
+void array_list_add_copy(ArrayList* array_list, int index, const void* element) {
+    array_list_add(array_list, index, construct_element(array_list, element));
+}
+
+void array_list_add_copy_first(ArrayList* array_list, const void* element) {
+    array_list_add_first(array_list, construct_element(array_list, element));
+}
+
+void array_list_add_copy_last(ArrayList* array_list, const void* element) {
+    array_list_add_last(array_list, construct_element(array_list, element));
 }
 
 void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
@@ -222,6 +257,10 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
     return old_element;
 }
 
+void array_list_update(ArrayList* array_list, int index, const void* element) {
+    destruct_element(array_list, array_list_set(array_list, index, element));
+}
+
 void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (set_error_on_null(array_list)) return;
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
@@ -263,6 +302,18 @@ void* array_list_remove_last(ArrayList* array_list) {
         return nullptr;
     }
     return array_list_remove(array_list, array_list->size - 1);
+}
+
+void array_list_delete(ArrayList* array_list, int index) {
+    destruct_element(array_list, array_list_remove(array_list, index));
+}
+
+void array_list_delete_first(ArrayList* array_list) {
+    destruct_element(array_list, array_list_remove_first(array_list));
+}
+
+void array_list_delete_last(ArrayList* array_list) {
+    destruct_element(array_list, array_list_remove_last(array_list));
 }
 
 bool array_list_remove_element(ArrayList* array_list, const void* element) {
@@ -466,6 +517,15 @@ void array_list_clear(ArrayList* array_list) {
     array_list->size = 0;
 }
 
+void array_list_purge(ArrayList* array_list) {
+    if (set_error_on_null(array_list)) return;
+    for (int i = 0; i < array_list->size; i++) {
+        destruct_element(array_list, array_list->elements[i]);
+        array_list->elements[i] = nullptr;
+    }
+    array_list->size = 0;
+}
+
 Optional array_list_find(const ArrayList* array_list, Predicate condition) {
     if (set_error_on_null(array_list, condition)) return optional_empty();
     for (int i = 0; i < array_list->size; i++) {
@@ -611,6 +671,8 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
         .growth_factor = array_list->growth_factor,
+        .construct = array_list->construct,
+        .destruct = array_list->destruct,
         .equals = array_list->equals,
         .to_string = array_list->to_string,
         .memory_alloc = array_list->memory_alloc,

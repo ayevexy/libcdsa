@@ -1,8 +1,16 @@
 #ifndef TEST_FUNCTIONS_H
 #define TEST_FUNCTIONS_H
 
+#include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
+
+static inline void* int_new(const void* int_ptr) {
+    int* ptr = malloc(sizeof(int));
+    assert(ptr);
+    *ptr = *(int*) int_ptr;
+    return ptr;
+}
 
 static inline bool int_pointer_value_equals(const void* a, const void* b) {
     return *(int*) a == *(int*) b;

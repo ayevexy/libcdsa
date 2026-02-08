@@ -29,10 +29,10 @@ struct LinkedList {
 };
 
 #define construct_element(linked_list, element) \
-    linked_list->construct ? linked_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr) \
+    linked_list->construct ? linked_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr)
 
 #define destruct_element(linked_list, element) \
-    linked_list->destruct ? linked_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned") \
+    linked_list->destruct ? linked_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned")
 
 static size_t calculate_string_size(const LinkedList*);
 

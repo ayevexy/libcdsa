@@ -28,10 +28,10 @@ struct ArrayList {
 };
 
 #define construct_element(array_list, element) \
-    array_list->construct ? array_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr) \
+    array_list->construct ? array_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr)
 
 #define destruct_element(array_list, element) \
-    array_list->destruct ? array_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned") \
+    array_list->destruct ? array_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned")
 
 static size_t calculate_string_size(const ArrayList*);
 

@@ -42,13 +42,13 @@ static bool resize(ArrayList*, int);
 
 typedef struct IterationContext IterationContext;
 
-static Iterator* create_iterator(const ArrayList*);
+static Iterator* internal_iterator_new(const ArrayList*);
 
-static bool has_next(const void*);
+static bool internal_iterator_has_next(const void*);
 
-static void* next(void*);
+static void* internal_iterator_next(void*);
 
-static void reset(void*);
+static void internal_iterator_reset(void*);
 
 static void bubble_sort(ArrayList*, Comparator);
 
@@ -457,7 +457,7 @@ bool array_list_is_empty(const ArrayList* array_list) {
 
 Iterator* array_list_iterator(const ArrayList* array_list) {
     if (set_error_on_null(array_list)) return nullptr;
-    Iterator* iterator = create_iterator(array_list);
+    Iterator* iterator = internal_iterator_new(array_list);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
     }
@@ -811,8 +811,9 @@ struct IterationContext {
     int modification_count;
 };
 
-static Iterator* create_iterator(const ArrayList* array_list) {
+static Iterator* internal_iterator_new(const ArrayList* array_list) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
+
     if (!iteration_context) {
         return nullptr;
     }
@@ -820,7 +821,9 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     iteration_context->cursor = 0;
     iteration_context->modification_count = array_list->modification_count;
 
-    Iterator* iterator = iterator_new(iteration_context, has_next, next, reset, array_list->memory_alloc, array_list->memory_free);
+    Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
+        internal_iterator_next, internal_iterator_reset, array_list->memory_alloc, array_list->memory_free);
+
     if (!iterator) {
         array_list->memory_free(iteration_context);
         return nullptr;
@@ -828,25 +831,25 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     return iterator;
 }
 
-static bool has_next(const void* internal_state) {
+static bool internal_iterator_has_next(const void* internal_state) {
     const IterationContext* iteration_context = internal_state;
     return iteration_context->cursor < iteration_context->array_list->size;
 }
 
-static void* next(void* internal_state) {
+static void* internal_iterator_next(void* internal_state) {
     IterationContext* iteration_context = internal_state;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
     }
-    if (!has_next(iteration_context)) {
+    if (!internal_iterator_has_next(iteration_context)) {
         set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
     return iteration_context->array_list->elements[iteration_context->cursor++];
 }
 
-static void reset(void* internal_state) {
+static void internal_iterator_reset(void* internal_state) {
     IterationContext* iteration_context = internal_state;
     iteration_context->cursor = 0;
 }

@@ -49,13 +49,13 @@ static Pair segment_from(LinkedList*, Collection);
 
 typedef struct IterationContext IterationContext;
 
-static Iterator* create_iterator(const LinkedList*);
+static Iterator* internal_iterator_new(const LinkedList*);
 
-static bool has_next(const void*);
+static bool internal_iterator_has_next(const void*);
 
-static void* next(void*);
+static void* internal_iterator_next(void*);
 
-static void reset(void*);
+static void internal_iterator_reset(void*);
 
 static void bubble_sort(LinkedList*, Comparator);
 
@@ -468,7 +468,7 @@ bool linked_list_is_empty(const LinkedList* linked_list) {
 
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
     if (set_error_on_null(linked_list)) return nullptr;
-    Iterator* iterator = create_iterator(linked_list);
+    Iterator* iterator = internal_iterator_new(linked_list);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -915,8 +915,9 @@ struct IterationContext {
     int modification_count;
 };
 
-static Iterator* create_iterator(const LinkedList* linked_list) {
+static Iterator* internal_iterator_new(const LinkedList* linked_list) {
     IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
+
     if (!iteration_context) {
         return nullptr;
     }
@@ -924,7 +925,9 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     iteration_context->current = linked_list->head;
     iteration_context->modification_count = linked_list->modification_count;
 
-    Iterator* iterator = iterator_new(iteration_context, has_next, next, reset, linked_list->memory_alloc, linked_list->memory_free);
+    Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
+        internal_iterator_next, internal_iterator_reset, linked_list->memory_alloc, linked_list->memory_free);
+
     if (!iterator) {
         linked_list->memory_free(iteration_context);
         return nullptr;
@@ -932,18 +935,18 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     return iterator;
 }
 
-static bool has_next(const void* internal_state) {
+static bool internal_iterator_has_next(const void* internal_state) {
     const IterationContext* iteration_context = internal_state;
     return iteration_context->current;
 }
 
-static void* next(void* internal_state) {
+static void* internal_iterator_next(void* internal_state) {
     IterationContext* iteration_context = internal_state;
     if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
     }
-    if (!has_next(iteration_context)) {
+    if (!internal_iterator_has_next(iteration_context)) {
         set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
@@ -952,7 +955,7 @@ static void* next(void* internal_state) {
     return element;
 }
 
-static void reset(void* internal_state) {
+static void internal_iterator_reset(void* internal_state) {
     IterationContext* iteration_context = internal_state;
     iteration_context->current = iteration_context->linked_list->head;
 }

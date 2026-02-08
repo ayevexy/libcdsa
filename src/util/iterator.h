@@ -109,7 +109,7 @@ void* iterator_next(Iterator* iterator);
 void iterator_reset(Iterator* iterator);
 
 /**
- * @brief Deletes the iterator and releases its resources.
+ * @brief Destroys the iterator and releases its resources.
  *
  * @param iterator_pointer pointer to an Iterator*
  *
@@ -117,6 +117,6 @@ void iterator_reset(Iterator* iterator);
  *
  * @post *iterator_pointer == nullptr
  */
-void iterator_delete(Iterator** iterator_pointer);
+void iterator_destroy(Iterator** iterator_pointer);
 
 #endif

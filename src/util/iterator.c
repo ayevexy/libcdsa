@@ -52,7 +52,7 @@ void iterator_reset(Iterator* iterator) {
     iterator->reset(iterator->internal_state);
 }
 
-void iterator_delete(Iterator** iterator_pointer) {
+void iterator_destroy(Iterator** iterator_pointer) {
     if (set_error_on_null(iterator_pointer, *iterator_pointer)) return;
     Iterator* iterator = *iterator_pointer;
     iterator->memory_free(iterator->internal_state);

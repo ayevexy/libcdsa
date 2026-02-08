@@ -385,7 +385,7 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
             count++;
         }
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
     return count;
 }
 
@@ -451,7 +451,7 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
         }
         iterator_reset(iterator);
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
 
     return count;
 }
@@ -656,7 +656,7 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
             break;
         }
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
     return contains;
 }
 
@@ -893,7 +893,7 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
             tail = tail->next;
         }
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
 
     if (failed) {
         Node* node = head;

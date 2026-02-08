@@ -201,7 +201,7 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
     }
 
     if (!ensure_capacity(array_list, array_list->size + collection_size(collection))) {
-        iterator_delete(&iterator);
+        iterator_destroy(&iterator);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
         return;
     }
@@ -217,7 +217,7 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
     array_list->size += collection_size(collection);
     array_list->modification_count++;
 
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
 }
 
 void array_list_add_all_first(ArrayList* array_list, Collection collection) {
@@ -356,7 +356,7 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
             count++;
         }
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
     return count;
 }
 
@@ -418,7 +418,7 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
         }
         iterator_reset(iterator);
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
     return count;
 }
 
@@ -616,7 +616,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
             break;
         }
     }
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
     return contains;
 }
 

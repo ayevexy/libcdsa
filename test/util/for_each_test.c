@@ -2,17 +2,23 @@
 
 #include "../list/array_list_test.h"
 #include "list/array_list.h"
+#include "../test_functions.h"
 
 #include "unity.h"
 
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
+        .construct = int_new,
+        .destruct = free,
+        .equals = int_pointer_value_equals,
+        .to_string = int_pointer_value_to_string
+    ));
 }
 
 void tearDown() {
-    array_list_delete(&array_list);
+    array_list_obliterate(&array_list);
 }
 
 void test_iterate_using_for_each_construct() {

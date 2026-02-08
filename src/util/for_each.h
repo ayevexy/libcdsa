@@ -20,7 +20,7 @@
             Collection: collection                                                              \
         )(collection));                                                                         \
         _iter_;                                                                                 \
-        iterator_delete(&_iter_)                                                                \
+        iterator_destroy(&_iter_)                                                               \
     )                                                                                           \
         for (void* _value_; iterator_has_next(_iter_) && (_value_ = iterator_next(_iter_));)    \
             for (variable = _value_, * _flag_ = (void*) 0xDEADBEEF; _flag_; _flag_ = nullptr)

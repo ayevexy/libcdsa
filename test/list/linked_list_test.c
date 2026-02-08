@@ -588,7 +588,7 @@ void test_linked_list_iterator() {
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // clean up
-    iterator_delete(&iterator);
+    iterator_destroy(&iterator);
 }
 
 void test_linked_list_iterator_detects_concurrent_modification() {

@@ -159,22 +159,27 @@ void array_list_add(ArrayList* array_list, int index, const void* element) {
 }
 
 void array_list_add_first(ArrayList* array_list, const void* element) {
+    if (set_error_on_null(array_list)) return;
     array_list_add(array_list, 0, element);
 }
 
 void array_list_add_last(ArrayList* array_list, const void* element) {
+    if (set_error_on_null(array_list)) return;
     array_list_add(array_list, array_list->size, element);
 }
 
 void array_list_add_copy(ArrayList* array_list, int index, const void* element) {
+    if (set_error_on_null(array_list)) return;
     array_list_add(array_list, index, construct_element(array_list, element));
 }
 
 void array_list_add_copy_first(ArrayList* array_list, const void* element) {
+    if (set_error_on_null(array_list)) return;
     array_list_add_first(array_list, construct_element(array_list, element));
 }
 
 void array_list_add_copy_last(ArrayList* array_list, const void* element) {
+    if (set_error_on_null(array_list)) return;
     array_list_add_last(array_list, construct_element(array_list, element));
 }
 
@@ -212,10 +217,12 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
 }
 
 void array_list_add_all_first(ArrayList* array_list, Collection collection) {
+    if (set_error_on_null(array_list)) return;
     array_list_add_all(array_list, 0, collection);
 }
 
 void array_list_add_all_last(ArrayList* array_list, Collection collection) {
+    if (set_error_on_null(array_list)) return;
     array_list_add_all(array_list, array_list->size, collection);
 }
 
@@ -258,6 +265,7 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 }
 
 void array_list_update(ArrayList* array_list, int index, const void* element) {
+    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_set(array_list, index, element));
 }
 
@@ -305,14 +313,17 @@ void* array_list_remove_last(ArrayList* array_list) {
 }
 
 void array_list_delete(ArrayList* array_list, int index) {
+    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove(array_list, index));
 }
 
 void array_list_delete_first(ArrayList* array_list) {
+    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove_first(array_list));
 }
 
 void array_list_delete_last(ArrayList* array_list) {
+    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove_last(array_list));
 }
 

@@ -28,17 +28,15 @@ struct ArrayList {
     int modification_count;
 };
 
-#define construct_element(array_list, element) \
-    array_list->construct ? array_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr)
-
-#define destruct_element(array_list, element) \
-    array_list->destruct ? array_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned")
-
 static size_t calculate_string_size(const ArrayList*);
 
 static bool ensure_capacity(ArrayList*, int);
 
 static bool resize(ArrayList*, int);
+
+static void* construct_element(ArrayList*, const void*);
+
+static void destruct_element(ArrayList*, void*);
 
 typedef struct IterationContext IterationContext;
 
@@ -162,27 +160,22 @@ void array_list_add(ArrayList* array_list, int index, const void* element) {
 }
 
 void array_list_add_first(ArrayList* array_list, const void* element) {
-    if (set_error_on_null(array_list)) return;
     array_list_add(array_list, 0, element);
 }
 
 void array_list_add_last(ArrayList* array_list, const void* element) {
-    if (set_error_on_null(array_list)) return;
-    array_list_add(array_list, array_list->size, element);
+    array_list_add(array_list, array_list ? array_list->size : -1, element);
 }
 
 void array_list_add_copy(ArrayList* array_list, int index, const void* element) {
-    if (set_error_on_null(array_list)) return;
     array_list_add(array_list, index, construct_element(array_list, element));
 }
 
 void array_list_add_copy_first(ArrayList* array_list, const void* element) {
-    if (set_error_on_null(array_list)) return;
     array_list_add_first(array_list, construct_element(array_list, element));
 }
 
 void array_list_add_copy_last(ArrayList* array_list, const void* element) {
-    if (set_error_on_null(array_list)) return;
     array_list_add_last(array_list, construct_element(array_list, element));
 }
 
@@ -221,13 +214,11 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
 }
 
 void array_list_add_all_first(ArrayList* array_list, Collection collection) {
-    if (set_error_on_null(array_list)) return;
     array_list_add_all(array_list, 0, collection);
 }
 
 void array_list_add_all_last(ArrayList* array_list, Collection collection) {
-    if (set_error_on_null(array_list)) return;
-    array_list_add_all(array_list, array_list->size, collection);
+    array_list_add_all(array_list, array_list ? array_list->size : -1, collection);
 }
 
 void* array_list_get(const ArrayList* array_list, int index) {
@@ -269,7 +260,6 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 }
 
 void array_list_update(ArrayList* array_list, int index, const void* element) {
-    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_set(array_list, index, element));
 }
 
@@ -318,17 +308,14 @@ void* array_list_remove_last(ArrayList* array_list) {
 }
 
 void array_list_delete(ArrayList* array_list, int index) {
-    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove(array_list, index));
 }
 
 void array_list_delete_first(ArrayList* array_list) {
-    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove_first(array_list));
 }
 
 void array_list_delete_last(ArrayList* array_list) {
-    if (set_error_on_null(array_list)) return;
     destruct_element(array_list, array_list_remove_last(array_list));
 }
 
@@ -803,6 +790,26 @@ static bool resize(ArrayList* array_list, int new_capacity) {
     array_list->elements = elements;
     array_list->capacity = new_capacity;
     return true;
+}
+
+static void* construct_element(ArrayList* array_list, const void* element) {
+    if (!array_list) return nullptr;
+
+    if (!array_list->construct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned");
+        return nullptr;
+    }
+    return array_list->construct(element);
+}
+
+static void destruct_element(ArrayList* array_list, void* element) {
+    if (!array_list) return;
+
+    if (!array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    array_list->destruct(element);
 }
 
 struct IterationContext {

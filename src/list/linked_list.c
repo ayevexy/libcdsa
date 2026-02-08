@@ -29,12 +29,6 @@ struct LinkedList {
     int modification_count;
 };
 
-#define construct_element(linked_list, element) \
-    linked_list->construct ? linked_list->construct(element) : (set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned"), nullptr)
-
-#define destruct_element(linked_list, element) \
-    linked_list->destruct ? linked_list->destruct(element) : set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned")
-
 static size_t calculate_string_size(const LinkedList*);
 
 static Node* create_node(const LinkedList*, void*);
@@ -46,6 +40,10 @@ static Node* find_node(const LinkedList*, const void*);
 static void* remove_node(LinkedList*, Node*);
 
 static Pair segment_from(LinkedList*, Collection);
+
+static void* construct_element(LinkedList*, const void*);
+
+static void destruct_element(LinkedList*, void*);
 
 typedef struct IterationContext IterationContext;
 
@@ -194,27 +192,22 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
 }
 
 void linked_list_add_first(LinkedList* linked_list, const void* element) {
-    if (set_error_on_null(linked_list)) return;
     linked_list_add(linked_list, 0, element);
 }
 
 void linked_list_add_last(LinkedList* linked_list, const void* element) {
-    if (set_error_on_null(linked_list)) return;
-    linked_list_add(linked_list, linked_list->size, element);
+    linked_list_add(linked_list, linked_list ? linked_list->size : -1, element);
 }
 
 void linked_list_add_copy(LinkedList* linked_list, int index, const void* element) {
-    if (set_error_on_null(linked_list)) return;
     linked_list_add(linked_list, index, construct_element(linked_list, element));
 }
 
 void linked_list_add_copy_first(LinkedList* linked_list, const void* element) {
-    if (set_error_on_null(linked_list)) return;
     linked_list_add_first(linked_list, construct_element(linked_list, element));
 }
 
 void linked_list_add_copy_last(LinkedList* linked_list, const void* element) {
-    if (set_error_on_null(linked_list)) return;
     linked_list_add_last(linked_list, construct_element(linked_list, element));
 }
 
@@ -255,13 +248,11 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
 }
 
 void linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
-    if (set_error_on_null(linked_list)) return;
     linked_list_add_all(linked_list, 0, collection);
 }
 
 void linked_list_add_all_last(LinkedList* linked_list, Collection collection) {
-    if (set_error_on_null(linked_list)) return;
-    linked_list_add_all(linked_list, linked_list->size, collection);
+    linked_list_add_all(linked_list, linked_list ? linked_list->size : -1, collection);
 }
 
 void* linked_list_get(const LinkedList* linked_list, int index) {
@@ -304,7 +295,6 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
 }
 
 void linked_list_update(LinkedList* linked_list, int index, const void* element) {
-    if (set_error_on_null(linked_list)) return;
     destruct_element(linked_list, linked_list_set(linked_list, index, element));
 }
 
@@ -346,17 +336,14 @@ void* linked_list_remove_last(LinkedList* linked_list) {
 }
 
 void linked_list_delete(LinkedList* linked_list, int index) {
-    if (set_error_on_null(linked_list)) return;
     destruct_element(linked_list, linked_list_remove(linked_list, index));
 }
 
 void linked_list_delete_first(LinkedList* linked_list) {
-    if (set_error_on_null(linked_list)) return;
     destruct_element(linked_list, linked_list_remove_first(linked_list));
 }
 
 void linked_list_delete_last(LinkedList* linked_list) {
-    if (set_error_on_null(linked_list)) return;
     destruct_element(linked_list, linked_list_remove_last(linked_list));
 }
 
@@ -907,6 +894,27 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
     }
 
     return (Pair) { .first = head, .second = tail };
+}
+
+
+static void* construct_element(LinkedList* linked_list, const void* element) {
+    if (!linked_list) return nullptr;
+    
+    if (!linked_list->construct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned");
+        return nullptr;
+    }
+    return linked_list->construct(element);
+}
+
+static void destruct_element(LinkedList* linked_list, void* element) {
+    if (!linked_list) return;
+    
+    if (!linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    linked_list->destruct(element);
 }
 
 struct IterationContext {

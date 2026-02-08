@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-constexpr int LENGTH = 256;
+constexpr int MAX_MESSAGE_LENGTH = 256;
 
 thread_local static Error global_error = NO_ERROR;
-thread_local static char global_error_message[LENGTH] = "";
+thread_local static char global_error_message[MAX_MESSAGE_LENGTH] = "";
 thread_local static int error_scope = 0;
 thread_local static bool abort_on_error = true;
 
@@ -63,16 +63,16 @@ Error capture_error(void) {
 void set_plain_error(Error error, const char* error_message_format, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
-    _Thread_local static char global_error_message_copy[LENGTH];
+    _Thread_local static char global_error_message_copy[MAX_MESSAGE_LENGTH];
     global_error = error;
 
     va_list parameters = {};
     va_start(parameters, error_message_format);
 
-    const int length = vsnprintf(global_error_message_copy,LENGTH, error_message_format, parameters);
+    const int length = vsnprintf(global_error_message_copy,MAX_MESSAGE_LENGTH, error_message_format, parameters);
     va_end(parameters);
 
-    assert(length >= 0 && length < LENGTH && "formatted string is too big");
+    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
     strcpy(global_error_message, global_error_message_copy);
 
     if (global_error && abort_on_error && error_scope == 0) {

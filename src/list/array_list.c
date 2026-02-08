@@ -25,6 +25,7 @@ struct ArrayList {
         void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
+    int modification_count;
 };
 
 #define construct_element(array_list, element) \
@@ -103,6 +104,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     array_list->memory_alloc = options->memory_alloc;
     array_list->memory_realloc = options->memory_realloc;
     array_list->memory_free = options->memory_free;
+    array_list->modification_count = 0;
     return array_list;
 }
 
@@ -156,6 +158,7 @@ void array_list_add(ArrayList* array_list, int index, const void* element) {
     }
     array_list->elements[index] = (void*) element;
     array_list->size++;
+    array_list->modification_count++;
 }
 
 void array_list_add_first(ArrayList* array_list, const void* element) {
@@ -212,6 +215,7 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
         array_list->elements[index++] = iterator_next(iterator);
     }
     array_list->size += collection_size(collection);
+    array_list->modification_count++;
 
     iterator_delete(&iterator);
 }
@@ -291,6 +295,7 @@ void* array_list_remove(ArrayList* array_list, int index) {
         array_list->elements[i] = array_list->elements[i + 1];
     }
     array_list->size--;
+    array_list->modification_count++;
     return element;
 }
 
@@ -367,6 +372,7 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
         array_list->elements[i + count] = nullptr;
     }
     array_list->size -= count;
+    array_list->modification_count++;
     return count;
 }
 
@@ -425,7 +431,9 @@ void array_list_trim_to_size(ArrayList* array_list) {
     if (set_error_on_null(array_list)) return;
     if (!resize(array_list, array_list->size)) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to shrink 'array_list' capacity");
+        return;
     }
+    array_list->modification_count++;
 }
 
 int array_list_capacity(const ArrayList* array_list) {
@@ -437,7 +445,9 @@ void array_list_ensure_capacity(ArrayList* array_list, int capacity) {
     if (set_error_on_null(array_list)) return;
     if (!ensure_capacity(array_list, capacity)) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
+        return;
     }
+    array_list->modification_count++;
 }
 
 bool array_list_is_empty(const ArrayList* array_list) {
@@ -526,6 +536,7 @@ void array_list_clear(ArrayList* array_list) {
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
+    array_list->modification_count++;
 }
 
 void array_list_purge(ArrayList* array_list) {
@@ -535,6 +546,7 @@ void array_list_purge(ArrayList* array_list) {
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
+    array_list->modification_count++;
 }
 
 Optional array_list_find(const ArrayList* array_list, Predicate condition) {
@@ -796,6 +808,7 @@ static bool resize(ArrayList* array_list, int new_capacity) {
 struct IterationContext {
     const ArrayList* array_list;
     int cursor;
+    int modification_count;
 };
 
 static Iterator* create_iterator(const ArrayList* array_list) {
@@ -805,6 +818,7 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     }
     iteration_context->array_list = array_list;
     iteration_context->cursor = 0;
+    iteration_context->modification_count = array_list->modification_count;
 
     Iterator* iterator = iterator_from(array_list, iteration_context, has_next, next, reset);
     if (!iterator) {
@@ -819,6 +833,10 @@ static bool has_next(const IterationContext* iteration_context) {
 }
 
 static void* next(IterationContext* iteration_context) {
+    if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
     if (!has_next(iteration_context)) {
         set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;

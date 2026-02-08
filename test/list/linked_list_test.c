@@ -591,6 +591,17 @@ void test_linked_list_iterator() {
     iterator_delete(&iterator);
 }
 
+void test_linked_list_iterator_detects_concurrent_modification() {
+    // given
+    int values[] = { 1, 2, 3 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    Iterator* iterator = linked_list_iterator(linked_list);
+    linked_list_remove_last(linked_list);
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+}
+
 void test_linked_list_is_equal_to_it_self() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1155,6 +1166,7 @@ int main(void) {
     RUN_TEST(test_linked_list_is_not_empty);
 
     RUN_TEST(test_linked_list_iterator);
+    RUN_TEST(test_linked_list_iterator_detects_concurrent_modification);
     RUN_TEST(test_linked_list_is_equal_to_it_self);
     RUN_TEST(test_linked_list_is_equal_to_another_linked_list);
     RUN_TEST(test_linked_list_is_not_equal_to_another_linked_list_with_different_size);

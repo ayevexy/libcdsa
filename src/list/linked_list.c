@@ -26,6 +26,7 @@ struct LinkedList {
         void* (*memory_alloc)(size_t);
         void (*memory_free)(void*);
     };
+    int modification_count;
 };
 
 #define construct_element(linked_list, element) \
@@ -106,6 +107,7 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->to_string = options->to_string;
     linked_list->memory_alloc = options->memory_alloc;
     linked_list->memory_free = options->memory_free;
+    linked_list->modification_count = 0;
     return linked_list;
 }
 
@@ -188,6 +190,7 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
         node->prev = new_node;
     }
     linked_list->size++;
+    linked_list->modification_count++;
 }
 
 void linked_list_add_first(LinkedList* linked_list, const void* element) {
@@ -248,6 +251,7 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
         node->prev = tail;
     }
     linked_list->size += collection_size(collection);
+    linked_list->modification_count++;
 }
 
 void linked_list_add_all_first(LinkedList* linked_list, Collection collection) {
@@ -567,6 +571,7 @@ void linked_list_clear(LinkedList* linked_list) {
     }
     linked_list->head = linked_list->tail = nullptr;
     linked_list->size = 0;
+    linked_list->modification_count++;
 }
 
 void linked_list_purge(LinkedList* linked_list) {
@@ -580,6 +585,7 @@ void linked_list_purge(LinkedList* linked_list) {
     }
     linked_list->head = linked_list->tail = nullptr;
     linked_list->size = 0;
+    linked_list->modification_count++;
 }
 
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
@@ -857,6 +863,7 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
 
     linked_list->memory_free(node);
     linked_list->size--;
+    linked_list->modification_count++;
 
     return element;
 }
@@ -903,8 +910,9 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
 }
 
 struct IterationContext {
-    Node* head;
+    const LinkedList* linked_list;
     Node* current;
+    int modification_count;
 };
 
 static Iterator* create_iterator(const LinkedList* linked_list) {
@@ -912,8 +920,9 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     if (!iteration_context) {
         return nullptr;
     }
-    iteration_context->head = linked_list->head;
+    iteration_context->linked_list = linked_list;
     iteration_context->current = linked_list->head;
+    iteration_context->modification_count = linked_list->modification_count;
 
     Iterator* iterator = iterator_from(linked_list, iteration_context, has_next, next, reset);
     if (!iterator) {
@@ -928,8 +937,12 @@ static bool has_next(const IterationContext* iteration_context) {
 }
 
 static void* next(IterationContext* iteration_context) {
+    if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
     if (!has_next(iteration_context)) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "");
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
     void* element = iteration_context->current->element;
@@ -938,7 +951,7 @@ static void* next(IterationContext* iteration_context) {
 }
 
 static void reset(IterationContext* iteration_context) {
-    iteration_context->current = iteration_context->head;
+    iteration_context->current = iteration_context->linked_list->head;
 }
 
 static void bubble_sort(LinkedList* linked_list, Comparator compare) {

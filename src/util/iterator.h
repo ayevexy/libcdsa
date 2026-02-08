@@ -95,6 +95,7 @@ bool iterator_has_next(const Iterator* iterator);
  *
  * @exception NULL_POINTER_ERROR if iterator is null
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  */
 void* iterator_next(Iterator* iterator);
 

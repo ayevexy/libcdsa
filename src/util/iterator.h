@@ -17,35 +17,6 @@
 typedef struct Iterator Iterator;
 
 /**
- * @brief Convenience macro to create an Iterator from an iterable structure.
- *
- * This macro forwards the iterable structure's memory management functions
- * to the underlying iterator.
- *
- * @param iterable_structure pointer to a structure providing memory_alloc and memory_free function members
- * @param internal_state pointer to the iterator's internal state
- * @param has_next function that returns whether more elements are available
- * @param next function that returns the next element
- * @param reset function that resets the iterator to its initial state
- *
- * @return pointer to a newly created Iterator
- *
- * @pre iterable_structure != nullptr
- * @pre internal_state != nullptr
- * @pre has_next != nullptr
- * @pre next != nullptr
- * @pre reset != nullptr
- */
-#define iterator_from(iterable_structure, internal_state, has_next, next, reset)    \
-    iterator_new(internal_state,                                                    \
-        (bool (*)(const void*)) has_next,                                           \
-        (void* (*)(void*)) next,                                                    \
-        (void (*)(void*)) reset,                                                    \
-        iterable_structure->memory_alloc,                                           \
-        iterable_structure->memory_free                                             \
-    )
-
-/**
  * @brief Creates a new Iterator.
  *
  * @param internal_state pointer to the iterator's internal state

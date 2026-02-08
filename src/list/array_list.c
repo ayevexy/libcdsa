@@ -44,11 +44,11 @@ typedef struct IterationContext IterationContext;
 
 static Iterator* create_iterator(const ArrayList*);
 
-static bool has_next(const IterationContext*);
+static bool has_next(const void*);
 
-static void* next(IterationContext*);
+static void* next(void*);
 
-static void reset(IterationContext*);
+static void reset(void*);
 
 static void bubble_sort(ArrayList*, Comparator);
 
@@ -820,7 +820,7 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     iteration_context->cursor = 0;
     iteration_context->modification_count = array_list->modification_count;
 
-    Iterator* iterator = iterator_from(array_list, iteration_context, has_next, next, reset);
+    Iterator* iterator = iterator_new(iteration_context, has_next, next, reset, array_list->memory_alloc, array_list->memory_free);
     if (!iterator) {
         array_list->memory_free(iteration_context);
         return nullptr;
@@ -828,11 +828,13 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     return iterator;
 }
 
-static bool has_next(const IterationContext* iteration_context) {
+static bool has_next(const void* internal_state) {
+    const IterationContext* iteration_context = internal_state;
     return iteration_context->cursor < iteration_context->array_list->size;
 }
 
-static void* next(IterationContext* iteration_context) {
+static void* next(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
@@ -844,7 +846,8 @@ static void* next(IterationContext* iteration_context) {
     return iteration_context->array_list->elements[iteration_context->cursor++];
 }
 
-static void reset(IterationContext* iteration_context) {
+static void reset(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
     iteration_context->cursor = 0;
 }
 

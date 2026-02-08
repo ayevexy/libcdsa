@@ -51,11 +51,11 @@ typedef struct IterationContext IterationContext;
 
 static Iterator* create_iterator(const LinkedList*);
 
-static bool has_next(const IterationContext*);
+static bool has_next(const void*);
 
-static void* next(IterationContext*);
+static void* next(void*);
 
-static void reset(IterationContext*);
+static void reset(void*);
 
 static void bubble_sort(LinkedList*, Comparator);
 
@@ -924,7 +924,7 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     iteration_context->current = linked_list->head;
     iteration_context->modification_count = linked_list->modification_count;
 
-    Iterator* iterator = iterator_from(linked_list, iteration_context, has_next, next, reset);
+    Iterator* iterator = iterator_new(iteration_context, has_next, next, reset, linked_list->memory_alloc, linked_list->memory_free);
     if (!iterator) {
         linked_list->memory_free(iteration_context);
         return nullptr;
@@ -932,11 +932,13 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     return iterator;
 }
 
-static bool has_next(const IterationContext* iteration_context) {
+static bool has_next(const void* internal_state) {
+    const IterationContext* iteration_context = internal_state;
     return iteration_context->current;
 }
 
-static void* next(IterationContext* iteration_context) {
+static void* next(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
     if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
@@ -950,7 +952,8 @@ static void* next(IterationContext* iteration_context) {
     return element;
 }
 
-static void reset(IterationContext* iteration_context) {
+static void reset(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
     iteration_context->current = iteration_context->linked_list->head;
 }
 

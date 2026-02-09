@@ -33,8 +33,6 @@ static bool ensure_capacity(ArrayList*, int);
 
 static bool resize(ArrayList*, int);
 
-static void destruct_element(ArrayList*, void*);
-
 typedef struct IterationContext IterationContext;
 
 static Iterator* internal_iterator_new(const ArrayList*);
@@ -128,9 +126,15 @@ void array_list_destroy(ArrayList** array_list_pointer) {
 
 void array_list_obliterate(ArrayList** array_list_pointer) {
     if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
+
     ArrayList* array_list = *array_list_pointer;
+    if (!array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+
     for (int i = 0; i < array_list->size; i++) {
-        destruct_element(array_list, array_list->elements[i]);
+        array_list->destruct(array_list->elements[i]);
     }
     array_list->memory_free(array_list->elements);
     array_list->memory_free(array_list);
@@ -244,7 +248,12 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 }
 
 void array_list_update(ArrayList* array_list, int index, const void* element) {
-    destruct_element(array_list, array_list_set(array_list, index, element));
+    if (set_error_on_null(array_list)) return;
+    if (!array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    array_list->destruct(array_list_set(array_list, index, element));
 }
 
 void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
@@ -292,15 +301,20 @@ void* array_list_remove_last(ArrayList* array_list) {
 }
 
 void array_list_delete(ArrayList* array_list, int index) {
-    destruct_element(array_list, array_list_remove(array_list, index));
+    if (set_error_on_null(array_list)) return;
+    if (!array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    array_list->destruct(array_list_remove(array_list, index));
 }
 
 void array_list_delete_first(ArrayList* array_list) {
-    destruct_element(array_list, array_list_remove_first(array_list));
+    array_list_delete(array_list, 0);
 }
 
 void array_list_delete_last(ArrayList* array_list) {
-    destruct_element(array_list, array_list_remove_last(array_list));
+    array_list_delete(array_list, array_list ? array_list->size : -1);
 }
 
 bool array_list_remove_element(ArrayList* array_list, const void* element) {
@@ -512,8 +526,12 @@ void array_list_clear(ArrayList* array_list) {
 
 void array_list_purge(ArrayList* array_list) {
     if (set_error_on_null(array_list)) return;
+    if (!array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
     for (int i = 0; i < array_list->size; i++) {
-        destruct_element(array_list, array_list->elements[i]);
+        array_list->destruct(array_list->elements[i]);
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
@@ -773,16 +791,6 @@ static bool resize(ArrayList* array_list, int new_capacity) {
     array_list->elements = elements;
     array_list->capacity = new_capacity;
     return true;
-}
-
-static void destruct_element(ArrayList* array_list, void* element) {
-    if (!array_list) return;
-
-    if (!array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
-    array_list->destruct(element);
 }
 
 struct IterationContext {

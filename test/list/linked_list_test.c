@@ -10,7 +10,6 @@
 static LinkedList* linked_list;
 
 #define INT_LINKED_LIST_OPTIONS DEFAULT_LINKED_LIST_OPTIONS(    \
-    .construct = int_new,                                       \
     .destruct = free,                                           \
     .equals = int_pointer_value_equals,                         \
     .to_string = int_pointer_value_to_string                    \
@@ -89,7 +88,7 @@ void test_add_element_at_index_to_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_copy(linked_list, 2, &(int){10});
+    linked_list_add(linked_list, 2, int_new(10));
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -100,7 +99,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    Error error = attempt(linked_list_add_copy(linked_list, index, &(int){10}));
+    Error error = attempt(linked_list_add(linked_list, index, int_new(10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -119,7 +118,7 @@ void test_add_element_at_beginning_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_copy_first(linked_list, &(int){10});
+    linked_list_add_first(linked_list, int_new(10));
     // then
     int new_values[] = { 10, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -130,7 +129,7 @@ void test_add_element_at_end_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_copy_last(linked_list, &(int){10});
+    linked_list_add_last(linked_list, int_new(10));
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -211,7 +210,7 @@ void test_get_element_from_linked_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
-    linked_list_add_copy_last(linked_list, &(int){10});
+    linked_list_add_last(linked_list, int_new(10));
     // when
     int* element; Error error = attempt(element = linked_list_get(linked_list, index));
     // then
@@ -268,7 +267,7 @@ void test_set_element_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value = linked_list_set(linked_list, 2, int_new(&(int){10}));
+    int* old_value = linked_list_set(linked_list, 2, int_new(10));
     // then
     int new_values[] = { 1, 2, 10, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -280,7 +279,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, int_new(&(int){10})));
+    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, int_new(10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_NULL(old_value);
@@ -422,7 +421,7 @@ void test_remove_element_by_memory_address_from_linked_list_nonexistent_element_
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool removed = linked_list_remove_element(linked_list, &(int){10});
+    bool removed = linked_list_remove_element(linked_list, int_new(10));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_FALSE(removed);
@@ -561,7 +560,7 @@ void test_linked_list_is_empty() {
 
 void test_linked_list_is_not_empty() {
     // given
-    linked_list_add_copy_last(linked_list, &(int){10});
+    linked_list_add_last(linked_list, int_new(10));
     // when
     bool empty = linked_list_is_empty(linked_list);
     // then
@@ -634,7 +633,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     POPULATE_LINKED_LIST(linked_list, values);
     // and
     POPULATE_LINKED_LIST(other_linked_list, values);
-    linked_list_add_last(other_linked_list, &(int){10});
+    linked_list_add_last(other_linked_list, int_new(10));
 
     // when
     bool equals = linked_list_equals(linked_list, other_linked_list);
@@ -893,7 +892,7 @@ void test_linked_list_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool contains = linked_list_contains(linked_list, &(int){10});
+    bool contains = linked_list_contains(linked_list, int_new(10));
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -972,7 +971,7 @@ void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int index = linked_list_index_of(linked_list, &(int){10});
+    int index = linked_list_index_of(linked_list, int_new(10));
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -992,7 +991,7 @@ void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negativ
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int last_index = linked_list_last_index_of(linked_list, &(int){10});
+    int last_index = linked_list_last_index_of(linked_list, int_new(10));
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }

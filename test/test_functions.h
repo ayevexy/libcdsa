@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdio.h>
 
-static inline void* int_new(const void* int_ptr) {
+static inline int* int_new(int value) {
     int* ptr = malloc(sizeof(int));
     assert(ptr);
-    *ptr = *(int*) int_ptr;
+    *ptr = value;
     return ptr;
 }
 

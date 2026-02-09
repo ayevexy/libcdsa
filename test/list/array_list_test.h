@@ -3,9 +3,9 @@
 
 #include "../test_macros.h"
 
-#define POPULATE_ARRAY_LIST(array_list, array)              \
-    for (int i = 0; i < SIZE(array); i++) {                 \
-        array_list_add_copy_last(array_list, &array[i]);    \
+#define POPULATE_ARRAY_LIST(array_list, array)          \
+    for (int i = 0; i < SIZE(array); i++) {             \
+        array_list_add_last(array_list, int_new(array[i]));     \
 }
 
 #define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)               \

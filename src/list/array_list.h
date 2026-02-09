@@ -21,7 +21,6 @@
  * It must be configured using an ArrayListOptions defining:
  * - its initial capacity
  * - its growth factor
- * - the construct function utilized to alloc memory for elements (optional)
  * - the destruct function utilized to free elements memory (optional)
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
@@ -58,7 +57,6 @@ typedef struct {
     int initial_capacity;
     double growth_factor;
     struct {
-        void* (*construct)(const void*);
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
@@ -78,7 +76,6 @@ typedef struct {
 #define DEFAULT_ARRAY_LIST_OPTIONS(...) &(ArrayListOptions) {   \
     .initial_capacity = 10,                                     \
     .growth_factor = 2.0,                                       \
-    .construct = nullptr,                                       \
     .destruct = nullptr,                                        \
     .equals = pointer_equals,                                   \
     .to_string = pointer_to_string,                             \
@@ -172,44 +169,6 @@ void array_list_add_first(ArrayList* array_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
  */
 void array_list_add_last(ArrayList* array_list, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the specified position in the provided ArrayList, using the given construct function.
- *
- * @param array_list pointer to an ArrayList.
- * @param index index at which the specified element is to be inserted
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void array_list_add_copy(ArrayList* array_list, int index, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the beginning of the provided ArrayList, using the given construct function.
- *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void array_list_add_copy_first(ArrayList* array_list, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the end of the provided ArrayList, using the given construct function.
- *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void array_list_add_copy_last(ArrayList* array_list, const void* element);
 
 /**
  * @brief Inserts all elements of the specified Collection at the specified position in the provided ArrayList.

@@ -17,7 +17,6 @@ struct LinkedList {
     Node* tail;
     int size;
     struct {
-        void* (*construct)(const void*);
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
@@ -40,8 +39,6 @@ static Node* find_node(const LinkedList*, const void*);
 static void* remove_node(LinkedList*, Node*);
 
 static Pair segment_from(LinkedList*, Collection);
-
-static void* construct_element(LinkedList*, const void*);
 
 static void destruct_element(LinkedList*, void*);
 
@@ -99,7 +96,6 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->head = nullptr;
     linked_list->tail = nullptr;
     linked_list->size = 0;
-    linked_list->construct = options->construct;
     linked_list->destruct = options->destruct;
     linked_list->equals = options->equals;
     linked_list->to_string = options->to_string;
@@ -197,18 +193,6 @@ void linked_list_add_first(LinkedList* linked_list, const void* element) {
 
 void linked_list_add_last(LinkedList* linked_list, const void* element) {
     linked_list_add(linked_list, linked_list ? linked_list->size : -1, element);
-}
-
-void linked_list_add_copy(LinkedList* linked_list, int index, const void* element) {
-    linked_list_add(linked_list, index, construct_element(linked_list, element));
-}
-
-void linked_list_add_copy_first(LinkedList* linked_list, const void* element) {
-    linked_list_add_first(linked_list, construct_element(linked_list, element));
-}
-
-void linked_list_add_copy_last(LinkedList* linked_list, const void* element) {
-    linked_list_add_last(linked_list, construct_element(linked_list, element));
 }
 
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
@@ -699,7 +683,6 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         return nullptr;
     }
     LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
-        .construct = linked_list->construct,
         .destruct = linked_list->destruct,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
@@ -894,17 +877,6 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
     }
 
     return (Pair) { .first = head, .second = tail };
-}
-
-
-static void* construct_element(LinkedList* linked_list, const void* element) {
-    if (!linked_list) return nullptr;
-    
-    if (!linked_list->construct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned");
-        return nullptr;
-    }
-    return linked_list->construct(element);
 }
 
 static void destruct_element(LinkedList* linked_list, void* element) {

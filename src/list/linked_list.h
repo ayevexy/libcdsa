@@ -18,7 +18,6 @@
  * The LinkedList type is opaque and can only be modified through the API.
  *
  * It must be configured using an LinkedListOptions structure defining:
- * - the construct function utilized to alloc memory for elements (optional)
  * - the destruct function utilized to free elements memory (optional)
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
@@ -49,7 +48,6 @@ typedef struct LinkedList LinkedList;
  */
 typedef struct {
     struct {
-        void* (*construct)(const void*);
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
@@ -66,7 +64,6 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_LINKED_LIST_OPTIONS(...) &(LinkedListOptions) {     \
-    .construct = nullptr,                                           \
     .destruct = nullptr,                                            \
     .equals = pointer_equals,                                       \
     .to_string = pointer_to_string,                                 \
@@ -159,44 +156,6 @@ void linked_list_add_first(LinkedList* linked_list, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
  */
 void linked_list_add_last(LinkedList* linked_list, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the specified position in the provided LinkedList, using the given construct function.
- *
- * @param linked_list pointer to an LinkedList.
- * @param index index at which the specified element is to be inserted
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void linked_list_add_copy(LinkedList* linked_list, int index, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the beginning of the provided LinkedList, using the given construct function.
- *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void linked_list_add_copy_first(LinkedList* linked_list, const void* element);
-
-/**
- * @brief Inserts a copy of the specified element at the end of the provided LinkedList, using the given construct function.
- *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be inserted
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
- * @exception UNSUPPORTED_OPERATION_ERROR if no construct function was provided
- */
-void linked_list_add_copy_last(LinkedList* linked_list, const void* element);
 
 /**
  * @brief Inserts all elements of the specified Collection at the specified position in the provided LinkedList.

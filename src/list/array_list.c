@@ -15,7 +15,6 @@ struct ArrayList {
     int capacity;
     double growth_factor;
     struct {
-        void* (*construct)(const void*);
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
@@ -33,8 +32,6 @@ static size_t calculate_string_size(const ArrayList*);
 static bool ensure_capacity(ArrayList*, int);
 
 static bool resize(ArrayList*, int);
-
-static void* construct_element(ArrayList*, const void*);
 
 static void destruct_element(ArrayList*, void*);
 
@@ -95,7 +92,6 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     array_list->size = 0;
     array_list->capacity = options->initial_capacity;
     array_list->growth_factor = options->growth_factor;
-    array_list->construct = options->construct;
     array_list->destruct = options->destruct;
     array_list->equals = options->equals;
     array_list->to_string = options->to_string;
@@ -165,18 +161,6 @@ void array_list_add_first(ArrayList* array_list, const void* element) {
 
 void array_list_add_last(ArrayList* array_list, const void* element) {
     array_list_add(array_list, array_list ? array_list->size : -1, element);
-}
-
-void array_list_add_copy(ArrayList* array_list, int index, const void* element) {
-    array_list_add(array_list, index, construct_element(array_list, element));
-}
-
-void array_list_add_copy_first(ArrayList* array_list, const void* element) {
-    array_list_add_first(array_list, construct_element(array_list, element));
-}
-
-void array_list_add_copy_last(ArrayList* array_list, const void* element) {
-    array_list_add_last(array_list, construct_element(array_list, element));
 }
 
 void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
@@ -681,7 +665,6 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
         .growth_factor = array_list->growth_factor,
-        .construct = array_list->construct,
         .destruct = array_list->destruct,
         .equals = array_list->equals,
         .to_string = array_list->to_string,
@@ -790,16 +773,6 @@ static bool resize(ArrayList* array_list, int new_capacity) {
     array_list->elements = elements;
     array_list->capacity = new_capacity;
     return true;
-}
-
-static void* construct_element(ArrayList* array_list, const void* element) {
-    if (!array_list) return nullptr;
-
-    if (!array_list->construct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'construct' function assigned");
-        return nullptr;
-    }
-    return array_list->construct(element);
 }
 
 static void destruct_element(ArrayList* array_list, void* element) {

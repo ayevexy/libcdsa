@@ -328,20 +328,30 @@ void* linked_list_remove_last(LinkedList* linked_list) {
 }
 
 void linked_list_delete(LinkedList* linked_list, int index) {
-    if (set_error_on_null(linked_list)) return;
-    if (!linked_list->destruct) {
+    if (linked_list && !linked_list->destruct) {
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
         return;
     }
-    linked_list->destruct(linked_list_remove(linked_list, index));
+    void* element = linked_list_remove(linked_list, index);
+    linked_list->destruct(element);
 }
 
 void linked_list_delete_first(LinkedList* linked_list) {
-    linked_list_delete(linked_list, 0);
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    void* element = linked_list_remove_first(linked_list);
+    linked_list->destruct(element);
 }
 
 void linked_list_delete_last(LinkedList* linked_list) {
-    linked_list_delete(linked_list, linked_list ? linked_list->size : -1);
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    void* element = linked_list_remove_last(linked_list);
+    linked_list->destruct(element);
 }
 
 bool linked_list_remove_element(LinkedList* linked_list, const void* element) {

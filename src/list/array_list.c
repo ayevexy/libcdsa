@@ -301,20 +301,30 @@ void* array_list_remove_last(ArrayList* array_list) {
 }
 
 void array_list_delete(ArrayList* array_list, int index) {
-    if (set_error_on_null(array_list)) return;
-    if (!array_list->destruct) {
+    if (array_list && !array_list->destruct) {
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
         return;
     }
-    array_list->destruct(array_list_remove(array_list, index));
+    void* element = array_list_remove(array_list, index);
+    array_list->destruct(element);
 }
 
 void array_list_delete_first(ArrayList* array_list) {
-    array_list_delete(array_list, 0);
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    void* element = array_list_remove_first(array_list);
+    array_list->destruct(element);
 }
 
 void array_list_delete_last(ArrayList* array_list) {
-    array_list_delete(array_list, array_list ? array_list->size : -1);
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    void* element = array_list_remove_last(array_list);
+    array_list->destruct(element);
 }
 
 bool array_list_remove_element(ArrayList* array_list, const void* element) {

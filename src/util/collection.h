@@ -21,26 +21,6 @@ typedef struct {
 } Collection;
 
 /**
- * @brief Creates a Collection view from a data structure.
- *
- * This macro assumes the data structure provides functions named:
- * - <type>_size(const <type>*)
- * - <type>_iterator(const <type>*)
- *
- * @param _data_structure pointer to the data structure
- *
- * @return a Collection view over _data_structure
- *
- * @pre _data_structure != nullptr
- */
-#define collection_from(_data_structure)                                        \
-    (Collection) {                                                              \
-        .data_structure = _data_structure,                                      \
-        .size = (int (*)(const void*)) _data_structure##_size,                  \
-        .iterator = (Iterator* (*)(const void*)) _data_structure##_iterator     \
-    }
-
-/**
  * @brief Retrieves the size of the given Collection.
  *
  * @param collection a Collection

@@ -80,6 +80,10 @@ static void array_to_linked_list(void**, LinkedList*);
 
 static void swap(void**, void**);
 
+static int linked_list_size_wrapper(const void*);
+
+static Iterator* linked_list_iterator_wrapper(const void*);
+
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
     if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_free) {
@@ -736,7 +740,11 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
 
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     if (set_error_on_null(linked_list)) return (Collection) {};
-    return collection_from(linked_list);
+    return (Collection) {
+        .data_structure = linked_list,
+        .size = linked_list_size_wrapper,
+        .iterator = linked_list_iterator_wrapper
+    };
 }
 
 void** linked_list_to_array(const LinkedList* linked_list) {
@@ -1140,4 +1148,12 @@ static void swap(void** a, void** b) {
     void* temp = *a;
     *a = *b;
     *b = temp;
+}
+
+static int linked_list_size_wrapper(const void* linked_list) {
+    return linked_list_size(linked_list);
+}
+
+static Iterator* linked_list_iterator_wrapper(const void* linked_list) {
+    return linked_list_iterator(linked_list);
 }

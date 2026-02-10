@@ -67,6 +67,10 @@ static void reverse(ArrayList*, int, int);
 
 static void swap(void** a, void** b);
 
+static int array_list_size_wrapper(const void*);
+
+static Iterator* array_list_iterator_wrapper(const void*);
+
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -712,7 +716,11 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
 
 Collection array_list_to_collection(const ArrayList* array_list) {
     if (set_error_on_null(array_list)) return (Collection) {};
-    return collection_from(array_list);
+    return (Collection) {
+        .data_structure = array_list,
+        .size = array_list_size_wrapper,
+        .iterator = array_list_iterator_wrapper
+    };
 }
 
 void** array_list_to_array(const ArrayList* array_list) {
@@ -994,4 +1002,12 @@ static void swap(void** a, void** b) {
     void* temp = *a;
     *a = *b;
     *b = temp;
+}
+
+static int array_list_size_wrapper(const void* array_list) {
+    return array_list_size(array_list);
+}
+
+static Iterator* array_list_iterator_wrapper(const void* array_list) {
+    return array_list_iterator(array_list);
 }

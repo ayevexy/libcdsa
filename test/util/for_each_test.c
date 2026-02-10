@@ -10,7 +10,6 @@ static ArrayList* array_list;
 
 void setUp() {
     array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .construct = int_new,
         .destruct = free,
         .equals = int_pointer_value_equals,
         .to_string = int_pointer_value_to_string

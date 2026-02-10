@@ -205,7 +205,7 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
         return;
     }
 
-    if (collection_size(collection) == 0) return;
+    if (collection_is_empty(collection)) return;
 
     const Pair segment = segment_from(linked_list, collection);
 

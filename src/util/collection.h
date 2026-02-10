@@ -50,6 +50,15 @@ typedef struct {
 #define collection_size(collection) collection.size(collection.data_structure)
 
 /**
+ * @brief Checks whether the given Collection is empty.
+ *
+ * @param collection a Collection
+ *
+ * @return true if empty, false otherwise
+ */
+#define collection_is_empty(collection) (collection_size(collection) == 0)
+
+/**
  * @brief Creates an iterator for the given Collection.
  *
  * @param collection a Collection

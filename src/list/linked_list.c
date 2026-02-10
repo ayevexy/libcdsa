@@ -84,6 +84,8 @@ static int linked_list_size_wrapper(const void*);
 
 static Iterator* linked_list_iterator_wrapper(const void*);
 
+static bool linked_list_contains_wrapper(const void*, const void*);
+
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
     if (!options->equals || !options->to_string || !options->memory_alloc || !options->memory_free) {
@@ -743,7 +745,8 @@ Collection linked_list_to_collection(const LinkedList* linked_list) {
     return (Collection) {
         .data_structure = linked_list,
         .size = linked_list_size_wrapper,
-        .iterator = linked_list_iterator_wrapper
+        .iterator = linked_list_iterator_wrapper,
+        .contains = linked_list_contains_wrapper
     };
 }
 
@@ -1156,4 +1159,8 @@ static int linked_list_size_wrapper(const void* linked_list) {
 
 static Iterator* linked_list_iterator_wrapper(const void* linked_list) {
     return linked_list_iterator(linked_list);
+}
+
+static bool linked_list_contains_wrapper(const void* linked_list, const void* element) {
+    return linked_list_contains(linked_list, element);
 }

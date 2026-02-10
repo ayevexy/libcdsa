@@ -71,6 +71,8 @@ static int array_list_size_wrapper(const void*);
 
 static Iterator* array_list_iterator_wrapper(const void*);
 
+static bool array_list_contains_wrapper(const void*, const void*);
+
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -719,7 +721,8 @@ Collection array_list_to_collection(const ArrayList* array_list) {
     return (Collection) {
         .data_structure = array_list,
         .size = array_list_size_wrapper,
-        .iterator = array_list_iterator_wrapper
+        .iterator = array_list_iterator_wrapper,
+        .contains = array_list_contains_wrapper
     };
 }
 
@@ -1010,4 +1013,8 @@ static int array_list_size_wrapper(const void* array_list) {
 
 static Iterator* array_list_iterator_wrapper(const void* array_list) {
     return array_list_iterator(array_list);
+}
+
+static bool array_list_contains_wrapper(const void* array_list, const void* element) {
+    return array_list_contains(array_list, element);
 }

@@ -18,6 +18,7 @@ typedef struct {
     const void* const data_structure;
     int (*const size)(const void*);
     Iterator* (*const iterator)(const void*);
+    bool (*const contains)(const void*, const void*);
 } Collection;
 
 /**
@@ -46,5 +47,14 @@ typedef struct {
  * @return pointer to a newly created Iterator
  */
 #define collection_iterator(collection) collection.iterator(collection.data_structure)
+
+/**
+ * @brief Checks whether an element is present in the given Collection.
+ *
+ * @param collection a Collection
+ *
+ * @return true if the element is present, false otherwise
+ */
+#define collection_contains(collection, element) collection.contains(collection.data_structure, element)
 
 #endif

@@ -360,17 +360,30 @@ void linked_list_delete_last(LinkedList* linked_list) {
     linked_list->destruct(element);
 }
 
-bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
+static bool _linked_list_remove_element(LinkedList* linked_list, const void* element, bool destroy_element) {
     if (set_error_on_null(linked_list)) return false;
     Node* node = find_node(linked_list, element);
     if (node) {
-        remove_node(linked_list, node);
+        void* removed = remove_node(linked_list, node);
+        if (destroy_element) linked_list->destruct(removed);
         return true;
     }
     return false;
 }
 
-int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
+bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
+    return _linked_list_remove_element(linked_list, element, false);
+}
+
+bool linked_list_delete_element(LinkedList* linked_list, const void* element) {
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return false;
+    }
+    return _linked_list_remove_element(linked_list, element, true);
+}
+
+static int _linked_list_remove_all(LinkedList* linked_list, Collection collection, bool destroy_element) {
     if (set_error_on_null(linked_list)) return 0;
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
@@ -381,15 +394,32 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
 
     int count = 0;
     while (iterator_has_next(iterator)) {
-        if (linked_list_remove_element(linked_list, iterator_next(iterator))) {
-            count++;
+        void* element = iterator_next(iterator);
+        if (!linked_list_remove_element(linked_list, element)) {
+            continue;
         }
+        if (destroy_element) {
+            linked_list->destruct(element);
+        }
+        count++;
     }
     iterator_destroy(&iterator);
     return count;
 }
 
-int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
+int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
+    return _linked_list_remove_all(linked_list, collection, false);
+}
+
+int linked_list_delete_all(LinkedList* linked_list, Collection collection) {
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _linked_list_remove_all(linked_list, collection, true);
+}
+
+static int _linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index, bool destroy_element) {
     if (set_error_on_null(linked_list)) return 0;
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size);
@@ -398,33 +428,74 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
     Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
         Node* next = node->next;
-        remove_node(linked_list, node);
+        void* element = remove_node(linked_list, node);
+
+        if (destroy_element) linked_list->destruct(element);
         node = next;
     }
     return end_index - start_index;
 }
 
-int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
+int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
+    return _linked_list_remove_range(linked_list, start_index, end_index, false);
+}
+
+int linked_list_delete_range(LinkedList* linked_list, int start_index, int end_index) {
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _linked_list_remove_range(linked_list, start_index, end_index, true);
+}
+
+static int _linked_list_remove_if(LinkedList* linked_list, Predicate condition, bool destroy_element) {
     if (set_error_on_null(linked_list, condition)) return 0;
     int count = 0;
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
         if (condition(node->element)) {
-            remove_node(linked_list, node);
+            void* element = remove_node(linked_list, node);
+            if (destroy_element) linked_list->destruct(element);
             count++;
         }
     }
     return count;
 }
 
-void linked_list_replace_all(LinkedList* linked_list, Operator operator) {
+int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
+    return _linked_list_remove_if(linked_list, condition, false);
+}
+
+int linked_list_delete_if(LinkedList* linked_list, Predicate condition) {
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _linked_list_remove_if(linked_list, condition, true);
+}
+
+static void _linked_list_replace_all(LinkedList* linked_list, Operator operator, bool destroy_element) {
     if (set_error_on_null(linked_list, operator)) return;
     for (Node* node = linked_list->head; node; node = node->next) {
-        node->element = operator(node->element);
+        void* element = node->element;
+        node->element = operator(element);
+        if (destroy_element) linked_list->destruct(element);
     }
 }
 
-int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
+void linked_list_replace_all(LinkedList* linked_list, Operator operator) {
+    _linked_list_replace_all(linked_list, operator, false);
+}
+
+void linked_list_update_all(LinkedList* linked_list, Operator operator) {
+    if (linked_list && !linked_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    _linked_list_replace_all(linked_list, operator, true);
+}
+
+static int _linked_list_retain_all(LinkedList* linked_list, Collection collection, bool destroy_element) {
     if (set_error_on_null(linked_list)) return 0;
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
@@ -446,7 +517,8 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
             }
         }
         if (!found) {
-            remove_node(linked_list, node);
+            void* element = remove_node(linked_list, node);
+            if (destroy_element) linked_list->destruct(element);
             count++;
         }
         iterator_reset(iterator);
@@ -454,6 +526,14 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
     iterator_destroy(&iterator);
 
     return count;
+}
+
+int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
+    return _linked_list_retain_all(linked_list, collection, false);
+}
+
+int linked_list_retain_all_destruct_removed(LinkedList* linked_list, Collection collection) {
+    return _linked_list_retain_all(linked_list, collection, true);
 }
 
 int linked_list_size(const LinkedList* linked_list) {

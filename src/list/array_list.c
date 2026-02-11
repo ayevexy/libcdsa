@@ -333,17 +333,30 @@ void array_list_delete_last(ArrayList* array_list) {
     array_list->destruct(element);
 }
 
-bool array_list_remove_element(ArrayList* array_list, const void* element) {
+static bool _array_list_remove_element(ArrayList* array_list, const void* element, bool destroy_element) {
     if (set_error_on_null(array_list)) return false;
     const int index = array_list_index_of(array_list, element);
     if (index >= 0) {
-        array_list_remove(array_list, index);
+        void* removed = array_list_remove(array_list, index);
+        if (destroy_element) array_list->destruct(removed);
         return true;
     }
     return false;
 }
 
-int array_list_remove_all(ArrayList* array_list, Collection collection) {
+bool array_list_remove_element(ArrayList* array_list, const void* element) {
+    return _array_list_remove_element(array_list, element, false);
+}
+
+bool array_list_delete_element(ArrayList* array_list, const void* element) {
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _array_list_remove_element(array_list, element, true);
+}
+
+static int _array_list_remove_all(ArrayList* array_list, Collection collection, bool destroy_element) {
     if (set_error_on_null(array_list)) return 0;
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
@@ -353,15 +366,32 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
     }
     int count = 0;
     while (iterator_has_next(iterator)) {
-        if (array_list_remove_element(array_list, iterator_next(iterator))) {
-            count++;
+        void* element = iterator_next(iterator);
+        if (!array_list_remove_element(array_list, element)) {
+            continue;
         }
+        if (destroy_element) {
+            array_list->destruct(element);
+        }
+        count++;
     }
     iterator_destroy(&iterator);
     return count;
 }
 
-int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
+int array_list_remove_all(ArrayList* array_list, Collection collection) {
+   return _array_list_remove_all(array_list, collection, false);
+}
+
+int array_list_delete_all(ArrayList* array_list, Collection collection) {
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _array_list_remove_all(array_list, collection, true);
+}
+
+static int _array_list_remove_range(ArrayList* array_list, int start_index, int end_index, bool destroy_element) {
     if (set_error_on_null(array_list)) return 0;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
@@ -369,7 +399,10 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
     }
     const int count = end_index - start_index;
     for (int i = start_index; i < array_list->size - count; i++) {
-        array_list->elements[i] = array_list->elements[i + count];
+        void* element = array_list->elements[i + count];
+        array_list->elements[i] = element;
+
+        if (destroy_element) array_list->destruct(element);
         array_list->elements[i + count] = nullptr;
     }
     array_list->size -= count;
@@ -377,26 +410,65 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
     return count;
 }
 
-int array_list_remove_if(ArrayList* array_list, Predicate condition) {
+int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
+    return _array_list_remove_range(array_list, start_index, end_index, false);
+}
+
+int array_list_delete_range(ArrayList* array_list, int start_index, int end_index) {
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _array_list_remove_range(array_list, start_index, end_index, true);
+}
+
+static int _array_list_remove_if(ArrayList* array_list, Predicate condition, bool destroy_element) {
     if (set_error_on_null(array_list, condition)) return 0;
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
-            array_list_remove(array_list, i);
+            void* element = array_list_remove(array_list, i);
+            if (destroy_element) array_list->destruct(element);
             count++;
         }
     }
     return count;
 }
 
-void array_list_replace_all(ArrayList* array_list, Operator operator) {
+int array_list_remove_if(ArrayList* array_list, Predicate condition) {
+    return _array_list_remove_if(array_list, condition, false);
+}
+
+int array_list_delete_if(ArrayList* array_list, Predicate condition) {
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return 0;
+    }
+    return _array_list_remove_if(array_list, condition, true);
+}
+
+static void _array_list_replace_all(ArrayList* array_list, Operator operator, bool destroy_element) {
     if (set_error_on_null(array_list, operator)) return;
     for (int i = 0; i < array_list->size; i++) {
-        array_list->elements[i] = operator(array_list->elements[i]);
+        void* element = array_list->elements[i];
+        array_list->elements[i] = operator(element);
+        if (destroy_element) array_list->destruct(element);
     }
 }
 
-int array_list_retain_all(ArrayList* array_list, Collection collection) {
+void array_list_replace_all(ArrayList* array_list, Operator operator) {
+    _array_list_replace_all(array_list, operator, false);
+}
+
+void array_list_update_all(ArrayList* array_list, Operator operator) {
+    if (array_list && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    _array_list_replace_all(array_list, operator, true);
+}
+
+static int _array_list_retain_all(ArrayList* array_list, Collection collection, bool destroy_element) {
     if (set_error_on_null(array_list)) return 0;
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
@@ -414,13 +486,22 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
             }
         }
         if (!found) {
-            array_list_remove(array_list, i);
+            void* element = array_list_remove(array_list, i);
+            if (destroy_element) array_list->destruct(element);
             count++;
         }
         iterator_reset(iterator);
     }
     iterator_destroy(&iterator);
     return count;
+}
+
+int array_list_retain_all(ArrayList* array_list, Collection collection) {
+    return _array_list_retain_all(array_list, collection, false);
+}
+
+int array_list_retain_all_destruct_removed(ArrayList* array_list, Collection collection) {
+    return _array_list_retain_all(array_list, collection, true);
 }
 
 int array_list_size(const ArrayList* array_list) {

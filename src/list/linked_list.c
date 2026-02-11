@@ -125,7 +125,7 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
     return linked_list;
 }
 
-void linked_list_destroy(LinkedList** linked_list_pointer) {
+static void _linked_list_destroy(LinkedList** linked_list_pointer, bool destroy_element) {
     if (set_error_on_null(linked_list_pointer, *linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
 
@@ -133,6 +133,7 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     while (current) {
         Node* temporary = current;
         current = current->next;
+        if (destroy_element) linked_list->destruct(temporary->element);
         linked_list->memory_free(temporary);
     }
 
@@ -140,25 +141,16 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     *linked_list_pointer = nullptr;
 }
 
-void linked_list_obliterate(LinkedList** linked_list_pointer) {
-    if (set_error_on_null(linked_list_pointer, *linked_list_pointer)) return;
+void linked_list_destroy(LinkedList** linked_list_pointer) {
+    _linked_list_destroy(linked_list_pointer, false);
+}
 
-    LinkedList* linked_list = *linked_list_pointer;
-    if (!linked_list->destruct) {
+void linked_list_obliterate(LinkedList** linked_list_pointer) {
+    if (linked_list_pointer && *linked_list_pointer && !(*linked_list_pointer)->destruct) {
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
         return;
     }
-
-    Node* current = linked_list->head;
-    while (current) {
-        Node* temporary = current;
-        current = current->next;
-        linked_list->destruct(temporary->element);
-        linked_list->memory_free(temporary);
-    }
-
-    linked_list->memory_free(linked_list);
-    *linked_list_pointer = nullptr;
+    _linked_list_destroy(linked_list_pointer, true);
 }
 
 void linked_list_add(LinkedList* linked_list, int index, const void* element) {

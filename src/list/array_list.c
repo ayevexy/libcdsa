@@ -122,29 +122,27 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
     return array_list;
 }
 
-void array_list_destroy(ArrayList** array_list_pointer) {
+static void _array_list_destroy(ArrayList** array_list_pointer, bool destroy_element) {
     if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
     ArrayList* array_list = *array_list_pointer;
-    array_list->memory_free(array_list->elements);
-    array_list->memory_free(array_list);
-    *array_list_pointer = nullptr;
-}
-
-void array_list_obliterate(ArrayList** array_list_pointer) {
-    if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
-
-    ArrayList* array_list = *array_list_pointer;
-    if (!array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
-
-    for (int i = 0; i < array_list->size; i++) {
+    for (int i = 0; destroy_element && i < array_list->size; i++) {
         array_list->destruct(array_list->elements[i]);
     }
     array_list->memory_free(array_list->elements);
     array_list->memory_free(array_list);
     *array_list_pointer = nullptr;
+}
+
+void array_list_destroy(ArrayList** array_list_pointer) {
+    _array_list_destroy(array_list_pointer, false);
+}
+
+void array_list_obliterate(ArrayList** array_list_pointer) {
+    if (array_list_pointer && *array_list_pointer && !(*array_list_pointer)->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    _array_list_destroy(array_list_pointer, true);
 }
 
 void array_list_add(ArrayList* array_list, int index, const void* element) {

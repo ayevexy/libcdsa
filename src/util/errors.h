@@ -10,6 +10,7 @@
  * NO_ERROR indicates the absence of an error.
  */
 typedef enum {
+    UNKNOWN_ERROR = -1,
     NO_ERROR = 0,
     NULL_POINTER_ERROR,
     INDEX_OUT_OF_BOUNDS_ERROR,

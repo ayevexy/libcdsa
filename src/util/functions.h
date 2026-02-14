@@ -11,22 +11,29 @@
 /** @brief Function to consume a value (e.g., for `for_each`) */
 typedef void (*Consumer)(void*);
 
+/** @brief Function to consume two values */
+typedef void (*BiConsumer)(void*, void*);
+
 /** @brief Predicate function returning true or false for a given element */
 typedef bool (*Predicate)(const void*);
 
 /** @brief Operator function that transforms an element and returns the result */
 typedef void* (*Operator)(void*);
 
+/** @brief Operator function that transforms two elements and returns the result */
+typedef void* (*BiOperator)(void*, void*);
+
 /** @brief Comparator function returning negative, zero, or positive value */
 typedef int (*Comparator)(const void*, const void*);
 
 /**
- * @brief No Operation destruct function.
+ * @brief Calculate a hash value of a pointer memory address.
  *
- * @param element The element to be ignored.
+ * @param pointer The pointer.
+ * @return The hashed value.
  */
-static inline void noop_destruct(void* element) {
-    (void) element;
+static inline uint64_t pointer_hash(const void* pointer) {
+    return (uintptr_t) pointer * 0x9e3779b97f4a7c15ULL;
 }
 
 /**

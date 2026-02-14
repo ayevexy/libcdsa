@@ -24,6 +24,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 add_library(${PROJECT_NAME}
         src/list/array_list.c
         src/list/linked_list.c
+        src/map/hash_map.c
         src/util/errors.c
 )
 

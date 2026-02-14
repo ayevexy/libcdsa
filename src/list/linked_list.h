@@ -573,6 +573,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
  * @param algorithm the algorithm used to shuffle the LinkedList
  *
  * @exception NULL_POINTER_ERROR if linked_list or random is null
+ * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory while converting linked_list to array (needed for shuffling strategy)
  */
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm);
 

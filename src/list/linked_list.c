@@ -70,11 +70,11 @@ static void quick_sort_internal(Node*, Node*, Comparator);
 
 static Node* partition(Node*, Node*, Comparator);
 
-static void durstenfeld_shuffle(LinkedList*, int (*random)(void));
+static bool durstenfeld_shuffle(LinkedList*, int (*random)(void));
 
-static void sattolo_shuffle(LinkedList*, int (*random)(void));
+static bool sattolo_shuffle(LinkedList*, int (*random)(void));
 
-static void naive_shuffle(LinkedList*, int (*random)(void));
+static bool naive_shuffle(LinkedList*, int (*random)(void));
 
 static void array_to_linked_list(void**, LinkedList*);
 
@@ -590,10 +590,14 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
 
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm) {
     if (set_error_on_null(linked_list, random)) return;
+    bool shuffled = false;
     switch (algorithm) {
-        case DURSTENFELD_SHUFFLE: { durstenfeld_shuffle(linked_list, random); return; }
-        case SATTOLO_SHUFFLE: { sattolo_shuffle(linked_list, random); return; }
-        case NAIVE_SHUFFLE: { naive_shuffle(linked_list, random); }
+        case DURSTENFELD_SHUFFLE: { shuffled = durstenfeld_shuffle(linked_list, random); break; }
+        case SATTOLO_SHUFFLE: { shuffled = sattolo_shuffle(linked_list, random); break; }
+        case NAIVE_SHUFFLE: { shuffled = naive_shuffle(linked_list, random); break; }
+    }
+    if (!shuffled) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory while converting 'linked_list' to array");
     }
 }
 
@@ -1169,11 +1173,10 @@ static Node* partition(Node* low, Node* high, Comparator compare) {
     return i;
 }
 
-static void durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
+static bool durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "");
-        return;
+        return false;
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % (i + 1);
@@ -1181,13 +1184,13 @@ static void durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     array_to_linked_list(elements, linked_list);
     linked_list->memory_free(elements);
+    return true;
 }
 
-static void sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
+static bool sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "");
-        return;
+        return false;
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % i;
@@ -1195,13 +1198,13 @@ static void sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     array_to_linked_list(elements, linked_list);
     linked_list->memory_free(elements);
+    return true;
 }
 
-static void naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
+static bool naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
     void** elements = linked_list_to_array(linked_list);
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "");
-        return;
+        return false;
     }
     for (int i = 0; i < linked_list->size; i++) {
         const int j = random() % linked_list->size;
@@ -1209,6 +1212,7 @@ static void naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     array_to_linked_list(elements, linked_list);
     linked_list->memory_free(elements);
+    return true;
 }
 
 static void array_to_linked_list(void** elements, LinkedList* linked_list) {

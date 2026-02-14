@@ -63,7 +63,7 @@ Error capture_error(void) {
 void set_plain_error(Error error, const char* error_message_format, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
-    _Thread_local static char global_error_message_copy[MAX_MESSAGE_LENGTH];
+    thread_local static char global_error_message_copy[MAX_MESSAGE_LENGTH];
     global_error = error;
 
     va_list parameters = {};

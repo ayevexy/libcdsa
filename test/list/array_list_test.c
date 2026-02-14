@@ -1140,12 +1140,18 @@ void test_create_sub_list_start_index_greater_than_end_index_fails() {
 }
 
 void test_convert_array_list_to_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
     // when
     Collection collection = array_list_to_collection(array_list);
     // then
     TEST_ASSERT_EQUAL(array_list, collection.data_structure);
-    TEST_ASSERT_EQUAL(array_list_size, collection.size);
-    TEST_ASSERT_EQUAL(array_list_iterator, collection.iterator);
+    TEST_ASSERT_EQUAL(array_list_size(array_list), collection_size(collection));
+    // and
+    Iterator* iter_a = array_list_iterator(array_list);
+    Iterator* iter_b = collection_iterator(collection);
+    TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
 }
 
 void test_convert_array_list_to_array() {

@@ -84,19 +84,12 @@ Error capture_error(void);
  *
  * This macro reports an error using the provided message.
  *
- * If message is an empty string, a default message format is used.
- *
  * @param error the error code to raise
- * @param message additional context message (maybe empty)
+ * @param message additional context message
  * @param ... optional format arguments
  */
-#define set_error(error, message, ...)                                              \
-    set_plain_error(error,                                                          \
-        message[0] == '\0' ? "Error at %s(): %s" : "Error at %s(): %s - "message,   \
-        __func__,                                                                   \
-        error_to_string(error) __VA_OPT__(, )                                       \
-        __VA_ARGS__                                                                 \
-    )
+#define set_error(error, message, ...) \
+    set_plain_error(error, "Error at %s(): %s - "message, __func__, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
 
 /**
  * @brief Sets an error with a formatted message.

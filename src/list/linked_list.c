@@ -830,7 +830,7 @@ void** linked_list_to_array(const LinkedList* linked_list) {
     if (set_error_on_null(linked_list)) return nullptr;
     void** elements = linked_list->memory_alloc(sizeof(void*) * linked_list->size);
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "");
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
         return nullptr;
     }
     const Node* node = linked_list->head;
@@ -846,7 +846,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
     char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
 
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "");
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
         return nullptr;
     }
 
@@ -861,7 +861,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
 
         if (!element_string) {
             linked_list->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "");
+            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
             return nullptr;
         }
 

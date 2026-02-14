@@ -7,13 +7,13 @@
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = (INT_MAX - 1);
-constexpr double MIN_GROWTH_FACTOR = 1.1;
+constexpr float MIN_GROWTH_FACTOR = 1.1f;
 
 struct ArrayList {
     void** elements;
     int size;
     int capacity;
-    double growth_factor;
+    float growth_factor;
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);

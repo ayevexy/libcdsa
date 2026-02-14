@@ -55,7 +55,7 @@ typedef struct ArrayList ArrayList;
  */
 typedef struct {
     int initial_capacity;
-    double growth_factor;
+    float growth_factor;
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
@@ -75,7 +75,7 @@ typedef struct {
  */
 #define DEFAULT_ARRAY_LIST_OPTIONS(...) &(ArrayListOptions) {   \
     .initial_capacity = 10,                                     \
-    .growth_factor = 2.0,                                       \
+    .growth_factor = 2.0f,                                      \
     .destruct = nullptr,                                        \
     .equals = pointer_equals,                                   \
     .to_string = pointer_to_string,                             \

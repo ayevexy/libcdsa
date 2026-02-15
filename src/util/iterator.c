@@ -6,9 +6,11 @@
 
 struct Iterator {
     void* internal_state;
-    bool (*has_next)(const void* internal_state);
-    void* (*next)(void* internal_state);
-    void (*reset)(void* internal_state);
+    struct {
+        bool (*has_next)(const void* internal_state);
+        void* (*next)(void* internal_state);
+        void (*reset)(void* internal_state);
+    };
     struct {
         void* (*memory_alloc)(size_t);
         void (*memory_free)(void*);

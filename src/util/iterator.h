@@ -9,8 +9,7 @@
  * Iterator provides a generic mechanism to traverse elements of a data structure
  * without exposing its internal representation.
  *
- * Iterators are stateful and heap-allocated. They must be explicitly deleted
- * using iterator_delete.
+ * Iterators are stateful and heap-allocated. They must be explicitly deleted using iterator_destroy.
  *
  * This API is not thread-safe.
  */

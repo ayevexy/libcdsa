@@ -28,8 +28,6 @@ typedef struct Iterator Iterator;
  *
  * @return pointer to a newly created Iterator, or nullptr on failure
  *
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- *
  * @pre internal_state != nullptr
  * @pre has_next != nullptr
  * @pre next != nullptr

@@ -8,10 +8,14 @@
 
 constexpr int MAX_MESSAGE_LENGTH = 256;
 
-thread_local static Error global_error = NO_ERROR;
-thread_local static char global_error_message[MAX_MESSAGE_LENGTH] = "";
-thread_local static int error_scope = 0;
-thread_local static bool abort_on_error = true;
+typedef struct {
+    Error error;
+    char message[MAX_MESSAGE_LENGTH];
+    int scope;
+    bool abort;
+} ErrorContext;
+
+thread_local static ErrorContext error_context = {};
 
 const char* error_to_string(Error error) {
     static const char* error_strings[] = {
@@ -29,33 +33,33 @@ const char* error_to_string(Error error) {
 }
 
 const char* error_message(void) {
-    return global_error_message;
+    return error_context.message;
 }
 
 const char* plain_error_message(void) {
-    for (int i = 0; global_error_message[i] != '\0'; i++) {
-        if (global_error_message[i] == '-') {
-            return global_error_message + i + 2;
+    for (int i = 0; error_context.message[i] != '\0'; i++) {
+        if (error_context.message[i] == '-') {
+            return error_context.message + i + 2;
         }
     }
-    return global_error_message;
+    return error_context.message;
 }
 
 void isolate_error(void) {
-    global_error = NO_ERROR;
-    global_error_message[0] = '\0';
+    error_context.error = NO_ERROR;
+    error_context.message[0] = '\0';
 
-    error_scope++;
-    abort_on_error = false;
+    error_context.scope++;
+    error_context.abort = false;
 }
 
 Error capture_error(void) {
-    const Error error = global_error;
-    global_error = NO_ERROR;
+    const Error error = error_context.error;
+    error_context.error = NO_ERROR;
 
-    assert(error_scope > 0 && "error_scope can't be negative");
-    error_scope--;
-    abort_on_error = true;
+    assert(error_context.scope > 0 && "error_context.scope can't be negative");
+    error_context.scope--;
+    error_context.abort = true;
 
     return error;
 }
@@ -63,20 +67,20 @@ Error capture_error(void) {
 void set_plain_error(Error error, const char* error_message_format, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
-    thread_local static char global_error_message_copy[MAX_MESSAGE_LENGTH];
-    global_error = error;
+    thread_local static char message_copy[MAX_MESSAGE_LENGTH];
+    error_context.error = error;
 
     va_list parameters = {};
     va_start(parameters, error_message_format);
 
-    const int length = vsnprintf(global_error_message_copy,MAX_MESSAGE_LENGTH, error_message_format, parameters);
+    const int length = vsnprintf(message_copy,MAX_MESSAGE_LENGTH, error_message_format, parameters);
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
-    strcpy(global_error_message, global_error_message_copy);
+    strcpy(error_context.message, message_copy);
 
-    if (global_error && abort_on_error && error_scope == 0) {
-        fprintf(stderr, "%s\n", global_error_message);
+    if (error_context.error && error_context.abort && error_context.scope == 0) {
+        fprintf(stderr, "%s\n", error_context.message);
         exit(EXIT_FAILURE);
     }
 }

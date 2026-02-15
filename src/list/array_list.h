@@ -295,30 +295,6 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b);
 void* array_list_remove(ArrayList* array_list, int index);
 
 /**
- * @brief Removes the first element of the provided ArrayList.
- *
- * @param array_list pointer to an ArrayList
- *
- * @return pointer to the removed element
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- */
-void* array_list_remove_first(ArrayList* array_list);
-
-/**
- * @brief Removes the last element of the provided ArrayList.
- *
- * @param array_list pointer to an ArrayList
- *
- * @return pointer to the removed element
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- */
-void* array_list_remove_last(ArrayList* array_list);
-
-/**
  * @brief Deletes the element at the specified position of the provided ArrayList, using the given destruct function.
  *
  * @param array_list pointer to an ArrayList
@@ -331,6 +307,18 @@ void* array_list_remove_last(ArrayList* array_list);
 void array_list_delete(ArrayList* array_list, int index);
 
 /**
+ * @brief Removes the first element of the provided ArrayList.
+ *
+ * @param array_list pointer to an ArrayList
+ *
+ * @return pointer to the removed element
+ *
+ * @exception NULL_POINTER_ERROR if array_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ */
+void* array_list_remove_first(ArrayList* array_list);
+
+/**
  * @brief Deletes the first element of the provided ArrayList, using the given destruct function.
  *
  * @param array_list pointer to an ArrayList
@@ -340,6 +328,18 @@ void array_list_delete(ArrayList* array_list, int index);
  * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
  */
 void array_list_delete_first(ArrayList* array_list);
+
+/**
+ * @brief Removes the last element of the provided ArrayList.
+ *
+ * @param array_list pointer to an ArrayList
+ *
+ * @return pointer to the removed element
+ *
+ * @exception NULL_POINTER_ERROR if array_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ */
+void* array_list_remove_last(ArrayList* array_list);
 
 /**
  * @brief Deletes the last element of the provided ArrayList, using the given destruct function.

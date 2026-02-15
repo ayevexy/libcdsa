@@ -282,30 +282,6 @@ void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
 void* linked_list_remove(LinkedList* linked_list, int index);
 
 /**
- * @brief Removes the first element of the provided LinkedList.
- *
- * @param linked_list pointer to an LinkedList
- *
- * @return pointer to the removed element
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- */
-void* linked_list_remove_first(LinkedList* linked_list);
-
-/**
- * @brief Removes the last element of the provided LinkedList.
- *
- * @param linked_list pointer to an LinkedList
- *
- * @return pointer to the removed element
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- */
-void* linked_list_remove_last(LinkedList* linked_list);
-
-/**
  * @brief Deletes the element at the specified position of the provided LinkedList, using the given destruct function.
  *
  * @param linked_list pointer to an LinkedList
@@ -318,6 +294,18 @@ void* linked_list_remove_last(LinkedList* linked_list);
 void linked_list_delete(LinkedList* linked_list, int index);
 
 /**
+ * @brief Removes the first element of the provided LinkedList.
+ *
+ * @param linked_list pointer to an LinkedList
+ *
+ * @return pointer to the removed element
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ */
+void* linked_list_remove_first(LinkedList* linked_list);
+
+/**
  * @brief Deletes the first element of the provided LinkedList, using the given destruct function.
  *
  * @param linked_list pointer to an LinkedList
@@ -327,6 +315,18 @@ void linked_list_delete(LinkedList* linked_list, int index);
  * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
  */
 void linked_list_delete_first(LinkedList* linked_list);
+
+/**
+ * @brief Removes the last element of the provided LinkedList.
+ *
+ * @param linked_list pointer to an LinkedList
+ *
+ * @return pointer to the removed element
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ */
+void* linked_list_remove_last(LinkedList* linked_list);
 
 /**
  * @brief Deletes the last element of the provided LinkedList, using the given destruct function.

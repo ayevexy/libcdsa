@@ -659,22 +659,9 @@ void linked_list_rotate(LinkedList* linked_list, int distance) {
     linked_list->tail = new_tail;
 }
 
-void linked_list_clear(LinkedList* linked_list) {
+static void linked_list_clear_internal(LinkedList* linked_list, bool destruct_elements) {
     if (set_error_on_null(linked_list)) return;
-    Node* current = linked_list->head;
-    while (current) {
-        Node* temporary = current;
-        current = current->next;
-        linked_list->memory_free(temporary);
-    }
-    linked_list->head = linked_list->tail = nullptr;
-    linked_list->size = 0;
-    linked_list->modification_count++;
-}
-
-void linked_list_purge(LinkedList* linked_list) {
-    if (set_error_on_null(linked_list)) return;
-    if (!linked_list->destruct) {
+    if (destruct_elements && !linked_list->destruct) {
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
         return;
     }
@@ -682,12 +669,20 @@ void linked_list_purge(LinkedList* linked_list) {
     while (current) {
         Node* temporary = current;
         current = current->next;
-        linked_list->destruct(temporary->element);
+        if (destruct_elements) linked_list->destruct(temporary->element);
         linked_list->memory_free(temporary);
     }
     linked_list->head = linked_list->tail = nullptr;
     linked_list->size = 0;
     linked_list->modification_count++;
+}
+
+void linked_list_clear(LinkedList* linked_list) {
+    linked_list_clear_internal(linked_list, false);
+}
+
+void linked_list_purge(LinkedList* linked_list) {
+    linked_list_clear_internal(linked_list, true);
 }
 
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {

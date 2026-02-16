@@ -622,27 +622,26 @@ void array_list_rotate(ArrayList* array_list, int distance) {
     reverse(array_list, distance, array_list->size - 1);
 }
 
-void array_list_clear(ArrayList* array_list) {
+static void array_list_clear_internal(ArrayList* array_list, bool destruct_elements) {
     if (set_error_on_null(array_list)) return;
+    if (destruct_elements && !array_list->destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
     for (int i = 0; i < array_list->size; i++) {
+        if (destruct_elements) array_list->destruct(array_list->elements[i]);
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
     array_list->modification_count++;
 }
 
+void array_list_clear(ArrayList* array_list) {
+    array_list_clear_internal(array_list, false);
+}
+
 void array_list_purge(ArrayList* array_list) {
-    if (set_error_on_null(array_list)) return;
-    if (!array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
-    for (int i = 0; i < array_list->size; i++) {
-        array_list->destruct(array_list->elements[i]);
-        array_list->elements[i] = nullptr;
-    }
-    array_list->size = 0;
-    array_list->modification_count++;
+    array_list_clear_internal(array_list, true);
 }
 
 Optional array_list_find(const ArrayList* array_list, Predicate condition) {

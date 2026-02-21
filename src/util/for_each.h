@@ -14,11 +14,10 @@
  * @param collection the collection to iterate through
  */
 #define for_each(variable, collection)                                                          \
-    for (Iterator* _iter_ = collection_iterator(_Generic(collection,                            \
-            ArrayList*: array_list_to_collection,                                               \
-            LinkedList*: linked_list_to_collection,                                             \
-            Collection: collection                                                              \
-        )(collection));                                                                         \
+    for (Iterator* _iter_ = _Generic(collection,                                                \
+            ArrayList*: array_list_iterator,                                                    \
+            LinkedList*: linked_list_iterator                                                   \
+        )(collection);                                                                          \
         _iter_;                                                                                 \
         iterator_destroy(&_iter_)                                                               \
     )                                                                                           \

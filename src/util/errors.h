@@ -13,6 +13,7 @@ typedef enum {
     UNKNOWN_ERROR = -1,
     NO_ERROR = 0,
     NULL_POINTER_ERROR,
+    ARITHMETIC_ERROR,
     INDEX_OUT_OF_BOUNDS_ERROR,
     NO_SUCH_ELEMENT_ERROR,
     ILLEGAL_ARGUMENT_ERROR,
@@ -23,7 +24,7 @@ typedef enum {
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 9;
+constexpr int ERROR_COUNT = 10;
 
 /**
  * @brief Converts an error enumeration to its string representation.

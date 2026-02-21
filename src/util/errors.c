@@ -15,12 +15,13 @@ typedef struct {
     bool abort;
 } ErrorContext;
 
-thread_local static ErrorContext error_context = {};
+thread_local static ErrorContext error_context = { .abort = true };
 
 const char* error_to_string(Error error) {
     static const char* error_strings[] = {
         "NO_ERROR",
         "NULL_POINTER_ERROR",
+        "ARITHMETIC_ERROR",
         "INDEX_OUT_OF_BOUNDS_ERROR",
         "NO_SUCH_ELEMENT_ERROR",
         "ILLEGAL_ARGUMENT_ERROR",

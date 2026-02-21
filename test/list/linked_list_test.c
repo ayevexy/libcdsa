@@ -29,10 +29,7 @@ void test_create_linked_list() {
 
 void test_do_not_create_linked_list_with_invalid_options() {
     // when
-    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
-        .equals = nullptr,
-        .to_string = nullptr
-    }));
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {}));
     // then
     TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -56,10 +53,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {
-        .equals = nullptr,
-        .to_string = nullptr
-    }));
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {}));
     // then
     TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);

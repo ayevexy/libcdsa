@@ -29,10 +29,7 @@ void test_create_array_list() {
 
 void test_do_not_create_array_list_with_invalid_options() {
     // when
-    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
-        .initial_capacity = 0,
-        .growth_factor = -1
-    }));
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {}));
     // then
     TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -56,12 +53,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {
-        .initial_capacity = 0,
-        .growth_factor = -1,
-        .equals = nullptr,
-        .to_string = nullptr
-    }));
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {}));
     // then
     TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);

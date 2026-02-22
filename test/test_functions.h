@@ -39,4 +39,10 @@ static inline int compare_int_pointers_value(const void* a, const void* b) {
     return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
 }
 
+typedef struct { char key; int value; } CharIntEntry;
+
+static inline uint64_t char_hash(const void *character) {
+    return *(const unsigned char *) character % 5;
+}
+
 #endif

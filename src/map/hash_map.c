@@ -3,6 +3,7 @@
 #include "util/errors.h"
 #include "util/constraints.h"
 #include <limits.h>
+#include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = (INT_MAX - 1);
@@ -11,13 +12,14 @@ constexpr float MIN_LOAD_FACTOR = 0.5;
 typedef struct Entry {
     void* key;
     void* value;
-    int hash;
+    uint64_t hash;
     struct Entry* next;
 } Entry;
 
 struct HashMap {
     Entry** buckets;
     int size;
+    int capacity;
     int threshold;
     float load_factor;
     uint64_t (*hash)(const void* key);
@@ -38,6 +40,10 @@ struct HashMap {
     };
     int modification_count;
 };
+
+static Entry* create_entry(HashMap*, const void*, const void*);
+
+static Entry* get_entry(const HashMap*, const void*);
 
 HashMap* hash_map_new(const HashMapOptions* options) {
     if (set_error_on_null(options)) return nullptr;
@@ -63,8 +69,10 @@ HashMap* hash_map_new(const HashMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_map'");
         return nullptr;
     }
+    memset(hash_map->buckets, 0, options->initial_capacity * sizeof(Entry*));
 
     hash_map->size = 0;
+    hash_map->capacity = options->initial_capacity;
     hash_map->threshold = options->initial_capacity * options->load_factor;
     hash_map->load_factor = options->load_factor;
     hash_map->hash = options->hash;
@@ -92,9 +100,16 @@ static void hash_map_destroy_internal(HashMap** hash_map_pointer, bool destruct_
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
         return;
     }
-    for (int i = 0; destruct_entries && i < hash_map->size; i++) {
-        if (hash_map->key_destruct) hash_map->key_destruct(hash_map->buckets[i]->key);
-        if (hash_map->value_destruct) hash_map->value_destruct(hash_map->buckets[i]->value);
+    for (int i = 0; i < hash_map->size; i++) {
+        Entry* current = hash_map->buckets[i];
+        while (current) {
+            if (destruct_entries && hash_map->key_destruct) hash_map->key_destruct(current->key);
+            if (destruct_entries && hash_map->value_destruct) hash_map->value_destruct(current->value);
+
+            Entry* temporary = current->next;
+            hash_map->memory_free(current);
+            current = temporary;
+        }
     }
     hash_map->memory_free(hash_map->buckets);
     hash_map->memory_free(hash_map);
@@ -110,5 +125,60 @@ void hash_map_obliterate(HashMap** hash_map_pointer) {
 }
 
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
+    Entry* current = get_entry(hash_map, key);
+    if (current) {
+        void* temporary = current->value;
+        current->value = (void*) value;
+        return temporary;
+    }
 
+    Entry* entry = create_entry(hash_map, key, value);
+    if (!entry) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new entry'");
+        return nullptr;
+    }
+
+    current = hash_map->buckets[entry->hash % hash_map->capacity];
+    if (current) entry->next = current;
+
+    hash_map->buckets[entry->hash % hash_map->capacity] = entry;
+    hash_map->size++;
+    hash_map->modification_count++;
+    return nullptr;
+}
+
+void* hash_map_get(const HashMap* hash_map, const void* key) {
+    Entry* entry = get_entry(hash_map, key);
+    if (!entry) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "no value found for given key");
+        return nullptr;
+    }
+    return entry->value;
+}
+
+int hash_map_size(const HashMap* hash_map) {
+    return hash_map->size;
+}
+
+static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {
+    Entry* entry = hash_map->memory_alloc(sizeof(Entry));
+    if (!entry) {
+        return nullptr;
+    }
+    entry->key = (void*) key;
+    entry->value = (void*) value;
+    entry->hash = hash_map->hash(key);
+    entry->next = nullptr;
+    return entry;
+}
+
+static Entry* get_entry(const HashMap* hash_map, const void* key) {
+    Entry* entry = hash_map->buckets[hash_map->hash(key) % hash_map->capacity];
+    while (entry) {
+        if (hash_map->key_equals(entry->key, key)) {
+            return entry;
+        }
+        entry = entry->next;
+    }
+    return nullptr;
 }

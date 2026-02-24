@@ -200,6 +200,11 @@ int hash_map_size(const HashMap* hash_map) {
     return hash_map->size;
 }
 
+bool hash_map_is_empty(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return false;
+    return hash_map->size == 0;
+}
+
 static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {
     Entry* entry = hash_map->memory_alloc(sizeof(Entry));
     if (!entry) {

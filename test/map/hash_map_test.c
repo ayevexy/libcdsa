@@ -134,6 +134,22 @@ void test_get_hash_map_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
+void test_hash_map_is_empty() {
+    // when
+    bool empty = hash_map_is_empty(hash_map);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
+void test_hash_map_is_not_empty() {
+    // given
+    hash_map_put(hash_map, char_new('k'), int_new(10));
+    // when
+    bool empty = hash_map_is_empty(hash_map);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
@@ -147,5 +163,7 @@ int main(void) {
     RUN_TEST(test_remove_entry_from_hash_map);
     RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);
     RUN_TEST(test_get_hash_map_size);
+    RUN_TEST(test_hash_map_is_empty);
+    RUN_TEST(test_hash_map_is_not_empty);
     return UNITY_END();
 }

@@ -124,6 +124,16 @@ void test_remove_entry_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_get_hash_map_size() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int size = hash_map_size(hash_map);
+    // then
+    TEST_ASSERT_EQUAL(5, size);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
@@ -136,5 +146,6 @@ int main(void) {
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);
     RUN_TEST(test_remove_entry_from_hash_map);
     RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);
+    RUN_TEST(test_get_hash_map_size);
     return UNITY_END();
 }

@@ -120,7 +120,7 @@ void hash_map_clear(HashMap* hash_map);
 void hash_map_purge(HashMap* hash_map);
 
 
-bool hash_map_contains(HashMap* hash_map, const void* key, const void* value);
+bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value);
 
 bool hash_map_contains_key(const HashMap* hash_map, const void* key);
 

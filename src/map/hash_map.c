@@ -205,6 +205,12 @@ bool hash_map_is_empty(const HashMap* hash_map) {
     return hash_map->size == 0;
 }
 
+bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {
+    if (set_error_on_null(hash_map)) return false;
+    const Entry* entry = get_entry(hash_map, key);
+    return hash_map->value_equals(entry->value, value);
+}
+
 bool hash_map_contains_key(const HashMap* hash_map, const void* key) {
     if (set_error_on_null(hash_map)) return false;
     return get_entry(hash_map, key) != nullptr;

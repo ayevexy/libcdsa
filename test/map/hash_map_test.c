@@ -150,6 +150,26 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_hash_map_contains_entry() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains(hash_map, &(char){'c'}, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_hash_map_does_not_contains_entry() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains(hash_map, &(char){'c'}, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
 void test_hash_map_contains_key() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -194,17 +214,25 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
     RUN_TEST(test_do_not_create_hash_map_with_invalid_options);
+
     RUN_TEST(test_destroy_hash_map_set_it_to_null);
     RUN_TEST(test_destroy_null_hash_map_fails);
+
     RUN_TEST(test_add_entry_to_hash_map);
     RUN_TEST(test_update_entry_of_hash_map);
+
     RUN_TEST(test_get_value_from_hash_map);
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);
+
     RUN_TEST(test_remove_entry_from_hash_map);
     RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);
+
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
+
+    RUN_TEST(test_hash_map_contains_entry);
+    RUN_TEST(test_hash_map_does_not_contains_entry);
     RUN_TEST(test_hash_map_contains_key);
     RUN_TEST(test_hash_map_does_not_contains_key);
     RUN_TEST(test_hash_map_contains_value);

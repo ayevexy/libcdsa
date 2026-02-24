@@ -101,6 +101,29 @@ void test_get_value_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_remove_entry_from_hash_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_remove(hash_map, &(char){'c'});
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(3, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_remove_entry_from_hash_map_no_mapping_fails() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value; Error error = attempt(value = hash_map_remove(hash_map, &(char){'k'}));
+    // then
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
@@ -111,5 +134,7 @@ int main(void) {
     RUN_TEST(test_update_entry_of_hash_map);
     RUN_TEST(test_get_value_from_hash_map);
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);
+    RUN_TEST(test_remove_entry_from_hash_map);
+    RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);
     return UNITY_END();
 }

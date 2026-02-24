@@ -125,6 +125,8 @@ void hash_map_obliterate(HashMap** hash_map_pointer) {
 }
 
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
+    if (set_error_on_null(hash_map)) return nullptr;
+
     Entry* current = get_entry(hash_map, key);
     if (current) {
         void* temporary = current->value;
@@ -148,6 +150,7 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
 }
 
 void* hash_map_get(const HashMap* hash_map, const void* key) {
+    if (set_error_on_null(hash_map)) return nullptr;
     Entry* entry = get_entry(hash_map, key);
     if (!entry) {
         set_error(NO_SUCH_ELEMENT_ERROR, "no value found for given key");
@@ -157,6 +160,8 @@ void* hash_map_get(const HashMap* hash_map, const void* key) {
 }
 
 static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool destruct_entry) {
+    if (set_error_on_null(hash_map)) return nullptr;
+
     Entry* prev_entry = nullptr, * entry = hash_map->buckets[hash_map->hash(key) % hash_map->capacity];
     while (entry && !hash_map->key_equals(entry->key, key)) {
         prev_entry = entry;
@@ -191,6 +196,7 @@ void hash_map_delete(HashMap* hash_map, const void* key) {
 }
 
 int hash_map_size(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return 0;
     return hash_map->size;
 }
 

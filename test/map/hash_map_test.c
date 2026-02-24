@@ -150,6 +150,46 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_hash_map_contains_key() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains_key(hash_map, &(char){'c'});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_hash_map_does_not_contains_key() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains_key(hash_map, &(char){'k'});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
+void test_hash_map_contains_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains_value(hash_map, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_hash_map_does_not_contains_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool contains = hash_map_contains_value(hash_map, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
@@ -165,5 +205,9 @@ int main(void) {
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
+    RUN_TEST(test_hash_map_contains_key);
+    RUN_TEST(test_hash_map_does_not_contains_key);
+    RUN_TEST(test_hash_map_contains_value);
+    RUN_TEST(test_hash_map_does_not_contains_value);
     return UNITY_END();
 }

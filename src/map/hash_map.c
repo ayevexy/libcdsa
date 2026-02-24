@@ -205,6 +205,25 @@ bool hash_map_is_empty(const HashMap* hash_map) {
     return hash_map->size == 0;
 }
 
+bool hash_map_contains_key(const HashMap* hash_map, const void* key) {
+    if (set_error_on_null(hash_map)) return false;
+    return get_entry(hash_map, key) != nullptr;
+}
+
+bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
+    if (set_error_on_null(hash_map)) return false;
+    for (int i = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            if (hash_map->value_equals(entry->value, value)) {
+                return true;
+            }
+            entry = entry->next;
+        }
+    }
+    return false;
+}
+
 static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {
     Entry* entry = hash_map->memory_alloc(sizeof(Entry));
     if (!entry) {

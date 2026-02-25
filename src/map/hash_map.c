@@ -205,6 +205,17 @@ bool hash_map_is_empty(const HashMap* hash_map) {
     return hash_map->size == 0;
 }
 
+void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
+    if (set_error_on_null(hash_map)) return;
+    for (int i = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            action(entry->key, entry->value);
+            entry = entry->next;
+        }
+    }
+}
+
 bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     const Entry* entry = get_entry(hash_map, key);

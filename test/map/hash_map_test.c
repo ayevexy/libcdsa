@@ -150,6 +150,26 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+static void action_add_one_every_two_keys(void* key, void* value) {
+    switch (*(char*) key) {
+        case 'a':
+        case 'c':
+        case 'e': { *(int*) value += 1; break; }
+        default: ;
+    }
+}
+
+void test_perform_action_for_each_entry_of_hash_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    hash_map_for_each(hash_map, action_add_one_every_two_keys);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 2 }, { 'b', 2 }, { 'c', 4 }, { 'd', 4}, { 'e', 6 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
 void test_hash_map_contains_entry() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -230,6 +250,7 @@ int main(void) {
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
+    RUN_TEST(test_perform_action_for_each_entry_of_hash_map);
 
     RUN_TEST(test_hash_map_contains_entry);
     RUN_TEST(test_hash_map_does_not_contains_entry);

@@ -216,6 +216,36 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     }
 }
 
+static void hash_map_clear_internal(HashMap* hash_map, bool destruct_entries) {
+    if (set_error_on_null(hash_map)) return;
+    if (destruct_entries && (!hash_map->key_destruct || !hash_map->value_destruct)) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
+        return;
+    }
+    for (int i = 0; i < hash_map->size; i++) {
+        Entry* current = hash_map->buckets[i];
+        while (current) {
+            if (destruct_entries) hash_map->key_destruct(current->key);
+            if (destruct_entries) hash_map->value_destruct(current->value);
+
+            Entry* temporary = current->next;
+            hash_map->memory_free(current);
+            current = temporary;
+        }
+    }
+    memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
+    hash_map->size = 0;
+    hash_map->modification_count++;
+}
+
+void hash_map_clear(HashMap* hash_map) {
+    hash_map_clear_internal(hash_map, false);
+}
+
+void hash_map_purge(HashMap* hash_map) {
+    hash_map_clear_internal(hash_map, true);
+}
+
 bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     const Entry* entry = get_entry(hash_map, key);

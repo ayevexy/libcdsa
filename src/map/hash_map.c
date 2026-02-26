@@ -159,6 +159,12 @@ void* hash_map_get(const HashMap* hash_map, const void* key) {
     return entry->value;
 }
 
+void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    const Entry* entry = get_entry(hash_map, key);
+    return entry ? entry->value : (void*) default_value;
+}
+
 static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool destruct_entry) {
     if (set_error_on_null(hash_map)) return nullptr;
 

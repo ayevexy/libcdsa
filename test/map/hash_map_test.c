@@ -136,6 +136,29 @@ void test_remove_entry_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_remove_entry_from_hash_map_matching_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool removed = hash_map_remove_if_equals(hash_map, &(char){'c'}, &(int){3});
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_TRUE(removed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_remove_entry_from_hash_map_no_matching_value_fails() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool removed = hash_map_remove_if_equals(hash_map, &(char){'c'}, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(removed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(entries, hash_map);
+}
+
 void test_get_hash_map_size() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -272,6 +295,8 @@ int main(void) {
 
     RUN_TEST(test_remove_entry_from_hash_map);
     RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);
+    RUN_TEST(test_remove_entry_from_hash_map_matching_value);
+    RUN_TEST(test_remove_entry_from_hash_map_no_matching_value_fails);
 
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);

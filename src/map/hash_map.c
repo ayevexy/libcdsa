@@ -201,6 +201,23 @@ void hash_map_delete(HashMap* hash_map, const void* key) {
     hash_map_remove_internal(hash_map, key, true);
 }
 
+static bool hash_map_remove_if_equals_internal(HashMap* hash_map, const void* key, const void* value, bool destruct_entry) {
+    if (set_error_on_null(hash_map)) return false;
+    if (hash_map_contains(hash_map, key, value)) {
+        hash_map_remove_internal(hash_map, key, destruct_entry);
+        return true;
+    }
+    return false;
+}
+
+bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value) {
+    return hash_map_remove_if_equals_internal(hash_map, key, value, false);
+}
+
+bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value) {
+    return hash_map_remove_if_equals_internal(hash_map, key, value, true);
+}
+
 int hash_map_size(const HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return 0;
     return hash_map->size;

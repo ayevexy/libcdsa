@@ -93,11 +93,11 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
 
 void* hash_map_remove(HashMap* hash_map, const void* key);
 
-void* hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value);
+bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value);
 
 void hash_map_delete(HashMap* hash_map, const void* key);
 
-void hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value);
+bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value);
 
 int hash_map_replace_all(HashMap* hash_map, BiOperator remapper);
 

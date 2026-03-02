@@ -179,7 +179,6 @@ static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool d
         entry = entry->next;
     }
     if (!entry) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "no value found for given key");
         return nullptr;
     }
     if (prev_entry) {

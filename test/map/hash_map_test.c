@@ -154,10 +154,9 @@ void test_remove_entry_from_hash_map_no_mapping_fails() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* value; Error error = attempt(value = hash_map_remove(hash_map, &(char){'k'}));
+    int* value = hash_map_remove(hash_map, &(char){'k'});
     // then
     TEST_ASSERT_NULL(value);
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
 void test_remove_entry_from_hash_map_matching_value() {

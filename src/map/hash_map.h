@@ -8,12 +8,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-typedef struct HashMap HashMap;
+typedef struct Entry Entry;
 
-typedef struct {
-    const void* const key;
-    void* const value;
-} HashMapEntry;
+typedef struct HashMap HashMap;
 
 typedef struct {
     int initial_capacity;
@@ -51,6 +48,11 @@ typedef struct {
     .memory_free = free,                                    \
     __VA_ARGS__                                             \
 }
+
+const void* entry_key(const Entry* entry);
+
+void* entry_value(const Entry* entry);
+
 
 HashMap* hash_map_new(const HashMapOptions* options);
 
@@ -136,7 +138,7 @@ HashMap* hash_map_clone(const HashMap* hash_map);
 
 Collection hash_map_to_entry_collection(const HashMap* hash_map);
 
-HashMapEntry* hash_map_to_entry_array(const HashMap* hash_map);
+Entry* hash_map_to_entry_array(const HashMap* hash_map);
 
 char* hash_map_to_string(const HashMap* hash_map);
 

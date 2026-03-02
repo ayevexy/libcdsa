@@ -208,6 +208,36 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_hash_map_iterator() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    Iterator* iterator = hash_map_iterator(hash_map);
+    // then
+    Entry* entry;
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    entry = iterator_next(iterator);
+    TEST_ASSERT_EQUAL('a', *(char*) entry_key(entry));
+    TEST_ASSERT_EQUAL(1, *(int*) entry_value(entry));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    entry = iterator_next(iterator);
+    TEST_ASSERT_EQUAL('b', *(char*) entry_key(entry));
+    TEST_ASSERT_EQUAL(2, *(int*) entry_value(entry));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    entry = iterator_next(iterator);
+    TEST_ASSERT_EQUAL('c', *(char*) entry_key(entry));
+    TEST_ASSERT_EQUAL(3, *(int*) entry_value(entry));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 static void action_add_one_every_two_keys(void* key, void* value) {
     switch (*(char*) key) {
         case 'a':
@@ -326,6 +356,7 @@ int main(void) {
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
+    RUN_TEST(test_hash_map_iterator);
     RUN_TEST(test_perform_action_for_each_entry_of_hash_map);
     RUN_TEST(test_clear_hash_map);
 

@@ -9,12 +9,20 @@ constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = (INT_MAX - 1);
 constexpr float MIN_LOAD_FACTOR = 0.5;
 
-typedef struct Entry {
+struct Entry {
     void* key;
     void* value;
     uint64_t hash;
-    struct Entry* next;
-} Entry;
+    Entry* next;
+};
+
+const void* entry_key(const Entry* entry) {
+    return entry->key;
+}
+
+void* entry_value(const Entry* entry) {
+    return entry->value;
+}
 
 struct HashMap {
     Entry** buckets;
@@ -44,6 +52,16 @@ struct HashMap {
 static Entry* create_entry(HashMap*, const void*, const void*);
 
 static Entry* get_entry(const HashMap*, const void*);
+
+typedef struct IterationContext IterationContext;
+
+static Iterator* internal_iterator_new(const HashMap*);
+
+static bool internal_iterator_has_next(const void*);
+
+static void* internal_iterator_next(void*);
+
+static void internal_iterator_reset(void*);
 
 HashMap* hash_map_new(const HashMapOptions* options) {
     if (set_error_on_null(options)) return nullptr;
@@ -232,6 +250,15 @@ bool hash_map_is_empty(const HashMap* hash_map) {
     return hash_map->size == 0;
 }
 
+Iterator* hash_map_iterator(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    Iterator* iterator = internal_iterator_new(hash_map);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
 void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     if (set_error_on_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
@@ -319,4 +346,69 @@ static Entry* get_entry(const HashMap* hash_map, const void* key) {
         entry = entry->next;
     }
     return nullptr;
+}
+
+struct IterationContext {
+    const HashMap* hash_map;
+    Entry* entry;
+    int cursor;
+    int count;
+    int modification_count;
+};
+
+static Iterator* internal_iterator_new(const HashMap* hash_map) {
+    IterationContext* iteration_context = hash_map->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->hash_map = hash_map;
+    iteration_context->entry = nullptr;
+    iteration_context->cursor = 0;
+    iteration_context->count = 0;
+    iteration_context->modification_count = hash_map->modification_count;
+
+    Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
+        internal_iterator_next, internal_iterator_reset, hash_map->memory_alloc, hash_map->memory_free);
+
+    if (!iterator) {
+        hash_map->memory_free(iteration_context);
+        return nullptr;
+    }
+    return iterator;
+}
+
+static bool internal_iterator_has_next(const void* internal_state) {
+    const IterationContext* iteration_context = internal_state;
+    return iteration_context->count < iteration_context->hash_map->size;
+}
+
+static void* internal_iterator_next(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
+    if (iteration_context->modification_count != iteration_context->hash_map->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!internal_iterator_has_next(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    while (true) {
+        if (!iteration_context->entry) {
+            iteration_context->entry = iteration_context->hash_map->buckets[iteration_context->cursor++];
+        } else {
+            iteration_context->entry = iteration_context->entry->next;
+        }
+        if (iteration_context->entry) {
+            iteration_context->count++;
+            return iteration_context->entry;
+        }
+    }
+}
+
+static void internal_iterator_reset(void* internal_state) {
+    IterationContext* iteration_context = internal_state;
+    iteration_context->entry = nullptr;
+    iteration_context->cursor = 0;
+    iteration_context->count = 0;
 }

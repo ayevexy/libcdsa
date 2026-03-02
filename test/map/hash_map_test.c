@@ -210,27 +210,25 @@ void test_hash_map_is_not_empty() {
 
 void test_hash_map_iterator() {
     // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
     Iterator* iterator = hash_map_iterator(hash_map);
     // then
-    Entry* entry;
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    entry = iterator_next(iterator);
-    TEST_ASSERT_EQUAL('a', *(char*) entry_key(entry));
-    TEST_ASSERT_EQUAL(1, *(int*) entry_value(entry));
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    entry = iterator_next(iterator);
-    TEST_ASSERT_EQUAL('b', *(char*) entry_key(entry));
-    TEST_ASSERT_EQUAL(2, *(int*) entry_value(entry));
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    entry = iterator_next(iterator);
-    TEST_ASSERT_EQUAL('c', *(char*) entry_key(entry));
-    TEST_ASSERT_EQUAL(3, *(int*) entry_value(entry));
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));

@@ -149,6 +149,15 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
     return nullptr;
 }
 
+void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* value) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    void* old_value = hash_map_get(hash_map, key);
+    if (!old_value) {
+        old_value = hash_map_put(hash_map, key, value);
+    }
+    return old_value;
+}
+
 void* hash_map_get(const HashMap* hash_map, const void* key) {
     if (set_error_on_null(hash_map)) return nullptr;
     Entry* entry = get_entry(hash_map, key);

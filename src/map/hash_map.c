@@ -160,12 +160,8 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
 
 void* hash_map_get(const HashMap* hash_map, const void* key) {
     if (set_error_on_null(hash_map)) return nullptr;
-    Entry* entry = get_entry(hash_map, key);
-    if (!entry) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "no value found for given key");
-        return nullptr;
-    }
-    return entry->value;
+    const Entry* entry = get_entry(hash_map, key);
+    return entry ? entry->value : nullptr;
 }
 
 void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value) {

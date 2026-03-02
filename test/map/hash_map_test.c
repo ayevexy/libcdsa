@@ -120,10 +120,9 @@ void test_get_value_from_hash_map_no_mapping_fails() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* value; Error error = attempt(value = hash_map_get(hash_map, &(char){'k'}));
+    int* value = hash_map_get(hash_map, &(char){'k'});
     // then
     TEST_ASSERT_NULL(value);
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
 void test_get_default_value_from_hash_map() {
@@ -238,9 +237,9 @@ void test_clear_hash_map() {
     hash_map_clear(hash_map);
     // then
     TEST_ASSERT_EQUAL(0, hash_map_size(hash_map));
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(hash_map_get(hash_map, &(char){'a'})));
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(hash_map_get(hash_map, &(char){'b'})));
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(hash_map_get(hash_map, &(char){'c'})));
+    TEST_ASSERT_NULL(hash_map_get(hash_map, &(char){'a'}));
+    TEST_ASSERT_NULL(hash_map_get(hash_map, &(char){'b'}));
+    TEST_ASSERT_NULL(hash_map_get(hash_map, &(char){'c'}));
 }
 
 void test_hash_map_contains_entry() {

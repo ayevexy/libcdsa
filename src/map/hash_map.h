@@ -133,10 +133,10 @@ Collection hash_map_keys(const HashMap* hash_map);
 
 Collection hash_map_values(const HashMap* hash_map);
 
+Collection hash_map_entries(const HashMap* hash_map);
+
 
 HashMap* hash_map_clone(const HashMap* hash_map);
-
-Collection hash_map_to_entry_collection(const HashMap* hash_map);
 
 Entry* hash_map_to_entry_array(const HashMap* hash_map);
 

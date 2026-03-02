@@ -55,13 +55,27 @@ static Entry* get_entry(const HashMap*, const void*);
 
 typedef struct IterationContext IterationContext;
 
-static Iterator* internal_iterator_new(const HashMap*);
+static Iterator* internal_iterator_new(const HashMap*, void* (*)(void*));
 
 static bool internal_iterator_has_next(const void*);
 
 static void* internal_iterator_next(void*);
 
 static void internal_iterator_reset(void*);
+
+static int hash_map_size_wrapper(const void*);
+
+static Iterator* hash_map_entry_iterator(const void*);
+
+static Iterator* hash_map_key_iterator(const void*);
+
+static Iterator* hash_map_value_iterator(const void*);
+
+static bool hash_map_contains_wrapper(const void*, const void*);
+
+static bool hash_map_contains_key_wrapper(const void*, const void*);
+
+static bool hash_map_contains_value_wrapper(const void*, const void*);
 
 HashMap* hash_map_new(const HashMapOptions* options) {
     if (set_error_on_null(options)) return nullptr;
@@ -252,7 +266,7 @@ bool hash_map_is_empty(const HashMap* hash_map) {
 
 Iterator* hash_map_iterator(const HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return nullptr;
-    Iterator* iterator = internal_iterator_new(hash_map);
+    Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
     }
@@ -325,6 +339,36 @@ bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
     return false;
 }
 
+Collection hash_map_keys(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = hash_map,
+        .size = hash_map_size_wrapper,
+        .iterator = hash_map_key_iterator,
+        .contains = hash_map_contains_key_wrapper
+    };
+}
+
+Collection hash_map_values(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = hash_map,
+        .size = hash_map_size_wrapper,
+        .iterator = hash_map_value_iterator,
+        .contains = hash_map_contains_value_wrapper
+    };
+}
+
+Collection hash_map_entries(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = hash_map,
+        .size = hash_map_size_wrapper,
+        .iterator = hash_map_entry_iterator,
+        .contains = hash_map_contains_wrapper
+    };
+}
+
 static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {
     Entry* entry = hash_map->memory_alloc(sizeof(Entry));
     if (!entry) {
@@ -356,7 +400,7 @@ struct IterationContext {
     int modification_count;
 };
 
-static Iterator* internal_iterator_new(const HashMap* hash_map) {
+static Iterator* internal_iterator_new(const HashMap* hash_map, void* next_function(void*)) {
     IterationContext* iteration_context = hash_map->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -369,7 +413,7 @@ static Iterator* internal_iterator_new(const HashMap* hash_map) {
     iteration_context->modification_count = hash_map->modification_count;
 
     Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
-        internal_iterator_next, internal_iterator_reset, hash_map->memory_alloc, hash_map->memory_free);
+        next_function, internal_iterator_reset, hash_map->memory_alloc, hash_map->memory_free);
 
     if (!iterator) {
         hash_map->memory_free(iteration_context);
@@ -406,9 +450,60 @@ static void* internal_iterator_next(void* internal_state) {
     }
 }
 
+static void* internal_iterator_next_key(void* internal_state) {
+    const Entry* entry = internal_iterator_next(internal_state);
+    return entry ? entry->key : nullptr;
+}
+
+static void* internal_iterator_next_value(void* internal_state) {
+    const Entry* entry = internal_iterator_next(internal_state);
+    return entry ? entry->value : nullptr;
+}
+
 static void internal_iterator_reset(void* internal_state) {
     IterationContext* iteration_context = internal_state;
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+}
+
+static int hash_map_size_wrapper(const void* hash_map) {
+    return hash_map_size(hash_map);
+}
+
+static Iterator* hash_map_entry_iterator(const void* hash_map) {
+    return hash_map_iterator(hash_map);
+}
+
+static Iterator* hash_map_key_iterator(const void* hash_map) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next_key);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
+static Iterator* hash_map_value_iterator(const void* hash_map) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next_value);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
+// TODO: maybe fix this?
+static bool hash_map_contains_wrapper(const void* hash_map, const void* entry) {
+    (void) hash_map, (void) entry;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "hash_map_contains is not supported for this iterator");
+    return false; // hash_map_contains(hash_map, ((Entry*) entry)->key, ((Entry*) entry)->value);
+}
+
+static bool hash_map_contains_key_wrapper(const void* hash_map, const void* key) {
+    return hash_map_contains_key(hash_map, key);
+}
+
+static bool hash_map_contains_value_wrapper(const void* hash_map, const void* value) {
+    return hash_map_contains_value(hash_map, value);
 }

@@ -236,6 +236,71 @@ void test_hash_map_iterator() {
     iterator_destroy(&iterator);
 }
 
+void test_hash_map_is_equal_to_it_self() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool equals = hash_map_equals(hash_map, hash_map);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_hash_map_is_equal_to_another_hash_map() {
+    // given
+    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    POPULATE_HASH_MAP(other_hash_map, entries);
+    // when
+    bool equals = hash_map_equals(hash_map, other_hash_map);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    hash_map_obliterate(&other_hash_map);
+}
+
+void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
+    // given
+    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    POPULATE_HASH_MAP(other_hash_map, entries);
+    // and
+    hash_map_put(other_hash_map, char_new('k'), int_new(10));
+
+    // when
+    bool equals = hash_map_equals(hash_map, other_hash_map);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+
+    // clean up
+    hash_map_obliterate(&other_hash_map);
+}
+
+void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
+    // given
+    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // and
+    CharIntEntry other_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 } };
+    POPULATE_HASH_MAP(other_hash_map, other_entries);
+
+    // when
+    bool equals = hash_map_equals(hash_map, other_hash_map);
+
+    // then
+    TEST_ASSERT_FALSE(equals);
+
+    // clean up
+    hash_map_obliterate(&other_hash_map);
+}
+
 static void action_add_one_every_two_keys(void* key, void* value) {
     switch (*(char*) key) {
         case 'a':
@@ -427,6 +492,12 @@ int main(void) {
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
     RUN_TEST(test_hash_map_iterator);
+
+    RUN_TEST(test_hash_map_is_equal_to_it_self);
+    RUN_TEST(test_hash_map_is_equal_to_another_hash_map);
+    RUN_TEST(test_hash_map_is_not_equal_to_another_hash_map_with_different_size);
+    RUN_TEST(test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings);
+
     RUN_TEST(test_perform_action_for_each_entry_of_hash_map);
     RUN_TEST(test_clear_hash_map);
 

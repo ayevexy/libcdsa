@@ -275,6 +275,26 @@ Iterator* hash_map_iterator(const HashMap* hash_map) {
     return iterator;
 }
 
+bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
+    if (set_error_on_null(hash_map, other_hash_map)) return false;
+    if (hash_map == other_hash_map) {
+        return true;
+    }
+    if (hash_map->size != other_hash_map->size) {
+        return false;
+    }
+    for (int i = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            if (!hash_map_contains(other_hash_map, entry->key, entry->value)) {
+                return false;
+            }
+            entry = entry->next;
+        }
+    }
+    return true;
+}
+
 void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     if (set_error_on_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
@@ -319,7 +339,7 @@ void hash_map_purge(HashMap* hash_map) {
 bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     const Entry* entry = get_entry(hash_map, key);
-    return hash_map->value_equals(entry->value, value);
+    return entry ? hash_map->value_equals(entry->value, value) : false;
 }
 
 bool hash_map_contains_key(const HashMap* hash_map, const void* key) {

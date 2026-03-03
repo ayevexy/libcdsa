@@ -97,9 +97,9 @@ void hash_map_delete(HashMap* hash_map, const void* key);
 
 bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value);
 
-int hash_map_replace_all(HashMap* hash_map, BiOperator remapper);
+void hash_map_replace_all(HashMap* hash_map, BiOperator remapper);
 
-int hash_map_update_all(HashMap* hash_map, BiOperator remapper);
+void hash_map_update_all(HashMap* hash_map, BiOperator remapper);
 
 
 int hash_map_size(const HashMap* hash_map);

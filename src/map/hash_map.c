@@ -307,6 +307,33 @@ bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* v
     return hash_map_remove_if_equals_internal(hash_map, key, value, true);
 }
 
+static void hash_map_replace_all_internal(HashMap* hash_map, BiOperator remapper, bool destruct_old_value) {
+    if (set_error_on_null(hash_map, remapper)) return;
+    if (destruct_old_value && !hash_map->value_destruct) {
+        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
+        return;
+    }
+    for (int i = 0; i < hash_map->capacity; i++) {
+        Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            void* temporary = entry->value;
+            entry->value = remapper(entry->key, entry->value);
+            if (destruct_old_value) {
+                hash_map->value_destruct(temporary);
+            }
+            entry = entry->next;
+        }
+    }
+}
+
+void hash_map_replace_all(HashMap* hash_map, BiOperator remapper) {
+    hash_map_replace_all_internal(hash_map, remapper, false);
+}
+
+void hash_map_update_all(HashMap* hash_map, BiOperator remapper) {
+    hash_map_replace_all_internal(hash_map, remapper, true);
+}
+
 int hash_map_size(const HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return 0;
     return hash_map->size;

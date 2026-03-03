@@ -16,7 +16,8 @@
 #define for_each(variable, collection)                                                          \
     for (Iterator* _iter_ = _Generic(collection,                                                \
             ArrayList*: array_list_iterator,                                                    \
-            LinkedList*: linked_list_iterator                                                   \
+            LinkedList*: linked_list_iterator,                                                  \
+            Collection: collection_iterator                                                     \
         )(collection);                                                                          \
         _iter_;                                                                                 \
         iterator_destroy(&_iter_)                                                               \

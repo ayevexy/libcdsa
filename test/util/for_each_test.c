@@ -20,7 +20,7 @@ void tearDown() {
     array_list_obliterate(&array_list);
 }
 
-void test_iterate_using_for_each_construct() {
+void test_iterate_through_data_structure() {
     // given
     int values[] = { 1, 2, 3, 4, 5 }, new_values[5], count = 0;
     POPULATE_ARRAY_LIST(array_list, values);
@@ -33,7 +33,7 @@ void test_iterate_using_for_each_construct() {
     TEST_ASSERT_EQUAL(5, count);
 }
 
-void test_iterate_using_for_each_construct_on_empty_collection() {
+void test_iterate_through_empty_data_structure() {
     // given
     int count = 0;
     // when
@@ -44,9 +44,23 @@ void test_iterate_using_for_each_construct_on_empty_collection() {
     TEST_ASSERT_EQUAL(0, count);
 }
 
+void test_iterate_through_collection_view() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 }, new_values[5], count = 0;
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    for_each (int* element, array_list_to_collection(array_list)) {
+        new_values[count++] = *element;
+    }
+    // then
+    TEST_ASSERT_ARRAY_EQUALS(new_values, (int**) &values);
+    TEST_ASSERT_EQUAL(5, count);
+}
+
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_iterate_using_for_each_construct);
-    RUN_TEST(test_iterate_using_for_each_construct_on_empty_collection);
+    RUN_TEST(test_iterate_through_data_structure);
+    RUN_TEST(test_iterate_through_empty_data_structure);
+    RUN_TEST(test_iterate_through_collection_view);
     return UNITY_END();
 }

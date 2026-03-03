@@ -28,7 +28,9 @@ typedef struct {
  *
  * @return number of elements in the collection
  */
-#define collection_size(collection) collection.size(collection.data_structure)
+static inline int collection_size(Collection collection) {
+    return collection.size(collection.data_structure);
+}
 
 /**
  * @brief Checks whether the given Collection is empty.
@@ -37,7 +39,9 @@ typedef struct {
  *
  * @return true if empty, false otherwise
  */
-#define collection_is_empty(collection) (collection_size(collection) == 0)
+static inline bool collection_is_empty(Collection collection) {
+    return collection_size(collection) == 0;
+}
 
 /**
  * @brief Creates an iterator for the given Collection.
@@ -46,15 +50,19 @@ typedef struct {
  *
  * @return pointer to a newly created Iterator
  */
-#define collection_iterator(collection) collection.iterator(collection.data_structure)
-
+static inline Iterator* collection_iterator(Collection collection) {
+    return collection.iterator(collection.data_structure);
+}
 /**
  * @brief Checks whether an element is present in the given Collection.
  *
  * @param collection a Collection
+ * @param element the element to check
  *
  * @return true if the element is present, false otherwise
  */
-#define collection_contains(collection, element) collection.contains(collection.data_structure, element)
+static inline bool collection_contains(Collection collection, const void* element) {
+    return collection.contains(collection.data_structure, element);
+}
 
 #endif

@@ -162,6 +162,30 @@ void test_replace_value_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
+void test_replace_entry_from_hash_map_matching_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){3}, int_new(10));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 10 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_TRUE(replaced);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_replace_entry_from_hash_map_no_matching_value_fails() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){2}, int_new(10));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_FALSE(replaced);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
 void test_remove_entry_from_hash_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -522,6 +546,8 @@ int main(void) {
 
     RUN_TEST(test_replace_value_from_hash_map);
     RUN_TEST(test_replace_value_from_hash_map_no_mapping_fails);
+    RUN_TEST(test_replace_entry_from_hash_map_matching_value);
+    RUN_TEST(test_replace_entry_from_hash_map_no_matching_value_fails);
 
     RUN_TEST(test_remove_entry_from_hash_map);
     RUN_TEST(test_remove_entry_from_hash_map_no_mapping_fails);

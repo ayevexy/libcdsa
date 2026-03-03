@@ -88,9 +88,9 @@ void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
 
 void hash_map_update(HashMap* hash_map, const void* key, const void* value);
 
-void* hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
+bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
 
-void hash_map_update_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
+bool hash_map_update_if_equals(HashMap* hash_map, const void* key, void* old_value, const void* value);
 
 
 void* hash_map_remove(HashMap* hash_map, const void* key);

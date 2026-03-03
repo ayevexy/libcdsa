@@ -5,6 +5,7 @@
 #include "../test_functions.h"
 
 #include "unity.h"
+#include "list/array_list.h"
 
 #define CHAR_INT_HASH_MAP_OPTIONS DEFAULT_HASH_MAP_OPTIONS(     \
     .hash = char_hash,                                          \
@@ -445,6 +446,18 @@ void test_get_hash_map_entries() {
     iterator_destroy(&iterator);
 }
 
+void test_clone_hash_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    HashMap* copy_hash_map = hash_map_clone(hash_map);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(entries, copy_hash_map);
+    // clean up
+    hash_map_destroy(&copy_hash_map);
+}
+
 void test_get_hash_map_string_representation() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -512,6 +525,7 @@ int main(void) {
     RUN_TEST(test_get_hash_map_values);
     RUN_TEST(test_get_hash_map_entries);
 
+    RUN_TEST(test_clone_hash_map);
     RUN_TEST(test_get_hash_map_string_representation);
     RUN_TEST(test_get_empty_hash_map_string_representation);
     return UNITY_END();

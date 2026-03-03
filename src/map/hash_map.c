@@ -391,6 +391,40 @@ Collection hash_map_entries(const HashMap* hash_map) {
     };
 }
 
+HashMap* hash_map_clone(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    HashMap* new_hash_map; Error error = attempt(new_hash_map = hash_map_new(&(HashMapOptions){
+        .initial_capacity = hash_map->capacity,
+        .load_factor = hash_map->load_factor,
+        .hash = hash_map->hash,
+        .key_destruct = hash_map->key_destruct,
+        .key_equals = hash_map->key_equals,
+        .key_to_string = hash_map->key_to_string,
+        .value_destruct = hash_map->value_destruct,
+        .value_equals = hash_map->value_equals,
+        .value_to_string = hash_map->value_to_string,
+        .memory_alloc = hash_map->memory_alloc,
+        .memory_realloc = hash_map->memory_realloc,
+        .memory_free = hash_map->memory_free
+    }));
+    if (error) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    for (int i = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            if ((error = attempt(hash_map_put(new_hash_map, entry->key, entry->value)))) {
+                hash_map_destroy(&new_hash_map);
+                set_error(error, "%s", plain_error_message());
+                return nullptr;
+            }
+            entry = entry->next;
+        }
+    }
+    return new_hash_map;
+}
+
 char* hash_map_to_string(const HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return nullptr;
     char* string = hash_map->memory_alloc(calculate_string_size(hash_map));

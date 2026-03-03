@@ -134,7 +134,7 @@ static void hash_map_destroy_internal(HashMap** hash_map_pointer, bool destruct_
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
         return;
     }
-    for (int i = 0; i < hash_map->size; i++) {
+    for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
         while (current) {
             if (destruct_entries && hash_map->key_destruct) hash_map->key_destruct(current->key);
@@ -312,7 +312,7 @@ static void hash_map_clear_internal(HashMap* hash_map, bool destruct_entries) {
         set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
         return;
     }
-    for (int i = 0; i < hash_map->size; i++) {
+    for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
         while (current) {
             if (destruct_entries) hash_map->key_destruct(current->key);

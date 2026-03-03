@@ -380,6 +380,27 @@ void test_get_hash_map_entries() {
     iterator_destroy(&iterator);
 }
 
+void test_get_hash_map_string_representation() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    char* string = hash_map_to_string(hash_map);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[ d = 4, e = 5, a = 1, b = 2, c = 3 ]", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_hash_map_string_representation() {
+    // when
+    char* string = hash_map_to_string(hash_map);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[]", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
@@ -419,5 +440,8 @@ int main(void) {
     RUN_TEST(test_get_hash_map_keys);
     RUN_TEST(test_get_hash_map_values);
     RUN_TEST(test_get_hash_map_entries);
+
+    RUN_TEST(test_get_hash_map_string_representation);
+    RUN_TEST(test_get_empty_hash_map_string_representation);
     return UNITY_END();
 }

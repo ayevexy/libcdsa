@@ -49,6 +49,8 @@ struct HashMap {
     int modification_count;
 };
 
+static size_t calculate_string_size(const HashMap*);
+
 static Entry* create_entry(HashMap*, const void*, const void*);
 
 static Entry* get_entry(const HashMap*, const void*);
@@ -367,6 +369,74 @@ Collection hash_map_entries(const HashMap* hash_map) {
         .iterator = hash_map_entry_iterator,
         .contains = hash_map_contains_wrapper
     };
+}
+
+char* hash_map_to_string(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
+
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+
+    string[0] = '\0'; // initialize string to clear trash data
+
+    strcat(string, hash_map->size == 0 ? "[" : "[ ");
+    for (int i = 0, count = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            constexpr int SEPARATOR = 3; constexpr int NULL_TERMINATOR = 1;
+
+            const int key_length = hash_map->key_to_string(entry->key, nullptr, 0);
+            const int value_length = hash_map->value_to_string(entry->value, nullptr, 0);
+
+            char* element_string = hash_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
+            if (!element_string) {
+                hash_map->memory_free(string);
+                set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+                return nullptr;
+            }
+
+            hash_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
+            strcat(element_string, " = ");
+            hash_map->value_to_string(entry->value, element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
+
+            strcat(string, element_string);
+            if (count < hash_map->size - 1) {
+                strcat(string, ", ");
+            }
+            count++;
+
+            hash_map->memory_free(element_string);
+            entry = entry->next;
+        }
+    }
+    strcat(string, hash_map->size == 0 ? "]" : " ]");
+
+    return string;
+}
+
+static size_t calculate_string_size(const HashMap* hash_map) {
+    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (int i = 0, count = 0; i < hash_map->capacity; i++) {
+        const Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            length += hash_map->key_to_string(entry->key, nullptr, 0);
+            length += hash_map->value_to_string(entry->value, nullptr, 0);
+            length += 3; // ' = ' separator
+
+            if (count == 0) length += 1; // space after opening bracket
+            if (count < hash_map->size - 1) length += SEPARATOR; // prevent separator on the last element
+            if (count == hash_map->size - 1) length += 1; // space before closing bracket
+
+            entry = entry->next;
+            count++;
+        }
+    }
+    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {

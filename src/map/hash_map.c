@@ -204,6 +204,26 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
     return entry ? entry->value : (void*) default_value;
 }
 
+static void* hash_map_replace_internal(HashMap* hash_map, const void* key, const void* value, bool destruct_old_value) {
+    if (set_error_on_null(hash_map)) return nullptr;
+    if (hash_map_contains_key(hash_map, key)) {
+        void* old_value = hash_map_put(hash_map, key, value);
+        if (destruct_old_value) {
+            hash_map->value_destruct(old_value);
+        }
+        return old_value;
+    }
+    return nullptr;
+}
+
+void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
+    return hash_map_replace_internal(hash_map, key, value, false);
+}
+
+void hash_map_update(HashMap* hash_map, const void* key, const void* value) {
+    hash_map_replace_internal(hash_map, key, value, true);
+}
+
 static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool destruct_entry) {
     if (set_error_on_null(hash_map)) return nullptr;
 

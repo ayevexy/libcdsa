@@ -79,6 +79,11 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection);
 
 
+void* hash_map_get(const HashMap* hash_map, const void* key);
+
+void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value);
+
+
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
 
 void hash_map_update(HashMap* hash_map, const void* key, const void* value);
@@ -86,11 +91,6 @@ void hash_map_update(HashMap* hash_map, const void* key, const void* value);
 void* hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
 
 void hash_map_update_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
-
-
-void* hash_map_get(const HashMap* hash_map, const void* key);
-
-void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value);
 
 
 void* hash_map_remove(HashMap* hash_map, const void* key);

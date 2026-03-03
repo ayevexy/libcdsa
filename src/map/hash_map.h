@@ -138,8 +138,6 @@ Collection hash_map_entries(const HashMap* hash_map);
 
 HashMap* hash_map_clone(const HashMap* hash_map);
 
-Entry* hash_map_to_entry_array(const HashMap* hash_map);
-
 char* hash_map_to_string(const HashMap* hash_map);
 
 #endif

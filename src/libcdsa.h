@@ -18,6 +18,9 @@
 /** @brief Doubly-linked list implementation */
 #include "list/linked_list.h"
 
+/** @brief Hash table based map implementation */
+#include "map/hash_map.h"
+
 /** @brief Algorithm-related enumerations */
 #include "util/algorithms.h"
 

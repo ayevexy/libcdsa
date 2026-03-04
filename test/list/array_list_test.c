@@ -10,7 +10,6 @@
 static ArrayList* array_list;
 
 #define INT_ARRAY_LIST_OPTIONS DEFAULT_ARRAY_LIST_OPTIONS(  \
-    .destruct = free,                                       \
     .equals = int_pointer_value_equals,                     \
     .to_string = int_pointer_value_to_string                \
 )
@@ -20,7 +19,8 @@ void setUp() {
 }
 
 void tearDown() {
-    array_list_obliterate(&array_list);
+    array_list_set_destructor(array_list, free);
+    array_list_destroy(&array_list);
 }
 
 void test_create_array_list() {
@@ -452,7 +452,8 @@ void test_remove_all_elements_from_array_list_matching_collection() {
     TEST_ASSERT_EQUAL(3, count);
 
     // clean up
-    array_list_obliterate(&new_array_list);
+    array_list_set_destructor(new_array_list, free);
+    array_list_destroy(&new_array_list);
 }
 
 void test_remove_elements_in_range_from_array_list() {
@@ -544,7 +545,8 @@ void test_retain_all_elements_from_collection_in_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    array_list_obliterate(&new_array_list);
+    array_list_set_destructor(new_array_list, free);
+    array_list_destroy(&new_array_list);
 }
 
 void test_get_array_list_size() {
@@ -677,7 +679,8 @@ void test_array_list_is_equal_to_another_array_list() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    array_list_obliterate(&other_array_list);
+    array_list_set_destructor(other_array_list, free);
+    array_list_destroy(&other_array_list);
 }
 
 void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
@@ -697,6 +700,7 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     TEST_ASSERT_FALSE(equals);
 
     // clean up
+    array_list_set_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
 }
 
@@ -717,7 +721,8 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_elements(
     TEST_ASSERT_FALSE(equals);
 
     // clean up
-    array_list_obliterate(&other_array_list);
+    array_list_set_destructor(other_array_list, free);
+    array_list_destroy(&other_array_list);
 }
 
 static void action_add_one(void* element) {
@@ -968,7 +973,8 @@ void test_array_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_obliterate(&new_array_list);
+    array_list_set_destructor(new_array_list, free);
+    array_list_destroy(&new_array_list);
 }
 
 void test_empty_array_list_contains_all_elements_of_empty_collection() {
@@ -979,7 +985,7 @@ void test_empty_array_list_contains_all_elements_of_empty_collection() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_obliterate(&new_array_list);
+    array_list_destroy(&new_array_list);
 }
 
 void test_array_list_does_not_contains_all_elements() {
@@ -998,7 +1004,8 @@ void test_array_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    array_list_obliterate(&new_array_list);
+    array_list_set_destructor(new_array_list, free);
+    array_list_destroy(&new_array_list);
 }
 
 void test_get_occurrences_of_element_in_array_list() {

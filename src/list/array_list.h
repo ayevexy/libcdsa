@@ -21,7 +21,7 @@
  * It must be configured using an ArrayListOptions defining:
  * - its initial capacity
  * - its growth factor
- * - the destruct function utilized to free elements memory (optional)
+ * - the destruct function utilized to free elements memory
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
  * - the function used internally to allocate memory
@@ -47,6 +47,7 @@ typedef struct ArrayList ArrayList;
  * @pre initial_capacity >= 10
  * @pre initial_capacity < INT_MAX
  * @pre growth_factor >= 1.1
+ * @pre destruct != nullptr
  * @pre equals != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
@@ -76,7 +77,7 @@ typedef struct {
 #define DEFAULT_ARRAY_LIST_OPTIONS(...) &(ArrayListOptions) {   \
     .initial_capacity = 10,                                     \
     .growth_factor = 2.0f,                                      \
-    .destruct = nullptr,                                        \
+    .destruct = noop_destruct,                                  \
     .equals = pointer_equals,                                   \
     .to_string = pointer_to_string,                             \
     .memory_alloc = malloc,                                     \
@@ -113,7 +114,7 @@ ArrayList* array_list_new(const ArrayListOptions* options);
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options);
 
 /**
- * @brief Destroys an existing ArrayList while keeping its elements intact.
+ * @brief Destroys an existing ArrayList and (optionally) its elements using the provided destruct function.
  *
  * @param array_list_pointer pointer to an ArrayList pointer
  *
@@ -124,16 +125,21 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_destroy(ArrayList** array_list_pointer);
 
 /**
- * @brief Obliterates an existing ArrayList and its elements using the provided destruct function.
+ * @brief Get the current destruct function.
  *
- * @param array_list_pointer pointer to an ArrayList pointer
+ * @param array_list pointer to an ArrayList
  *
- * @exception NULL_POINTER_ERROR if array_list_pointer or *array_list_pointer is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- *
- * @post *array_list_pointer == nullptr
+ * @return pointer to the destruct function
  */
-void array_list_obliterate(ArrayList** array_list_pointer);
+void (*array_list_get_destructor(const ArrayList* array_list))(void*);
+
+/**
+ * @brief Set the current destruct function.
+ *
+ * @param array_list pointer to an ArrayList
+ * @param destructor the new destruct function
+ */
+void array_list_set_destructor(ArrayList* array_list, void (*destructor)(void*));
 
 /**
  * @brief Inserts the specified element at the specified position in the provided ArrayList.
@@ -243,7 +249,7 @@ void* array_list_get_first(const ArrayList* array_list);
 void* array_list_get_last(const ArrayList* array_list);
 
 /**
- * @brief Replaces the element at the specified position of the provided ArrayList.
+ * @brief Replaces the element at the specified position of the provided ArrayList, (optionally) destructing the old element.
  *
  * @param array_list pointer to an ArrayList
  * @param index index of the element to be replaced
@@ -255,19 +261,6 @@ void* array_list_get_last(const ArrayList* array_list);
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
  */
 void* array_list_set(ArrayList* array_list, int index, const void* element);
-
-/**
- * @brief Replaces the element at the specified position of the provided ArrayList, then destructs the old element.
- *
- * @param array_list pointer to an ArrayList
- * @param index index of the element to be replaced
- * @param element the new element
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_update(ArrayList* array_list, int index, const void* element);
 
 /**
  * @brief Swaps the elements at specified positions of the provided ArrayList.
@@ -282,7 +275,7 @@ void array_list_update(ArrayList* array_list, int index, const void* element);
 void array_list_swap(ArrayList* array_list, int index_a, int index_b);
 
 /**
- * @brief Removes the element at the specified position of the provided ArrayList.
+ * @brief Removes the element at the specified position of the provided ArrayList, (optionally) destructing it.
  *
  * @param array_list pointer to an ArrayList
  * @param index index of the element to be removed
@@ -295,19 +288,7 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b);
 void* array_list_remove(ArrayList* array_list, int index);
 
 /**
- * @brief Deletes the element at the specified position of the provided ArrayList, using the given destruct function.
- *
- * @param array_list pointer to an ArrayList
- * @param index index of the element to be removed
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_delete(ArrayList* array_list, int index);
-
-/**
- * @brief Removes the first element of the provided ArrayList.
+ * @brief Removes the first element of the provided ArrayList, (optionally) destructing it.
  *
  * @param array_list pointer to an ArrayList
  *
@@ -319,18 +300,7 @@ void array_list_delete(ArrayList* array_list, int index);
 void* array_list_remove_first(ArrayList* array_list);
 
 /**
- * @brief Deletes the first element of the provided ArrayList, using the given destruct function.
- *
- * @param array_list pointer to an ArrayList
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_delete_first(ArrayList* array_list);
-
-/**
- * @brief Removes the last element of the provided ArrayList.
+ * @brief Removes the last element of the provided ArrayList, (optionally) destructing it.
  *
  * @param array_list pointer to an ArrayList
  *
@@ -342,18 +312,7 @@ void array_list_delete_first(ArrayList* array_list);
 void* array_list_remove_last(ArrayList* array_list);
 
 /**
- * @brief Deletes the last element of the provided ArrayList, using the given destruct function.
- *
- * @param array_list pointer to an ArrayList
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_delete_last(ArrayList* array_list);
-
-/**
- * @brief Removes the specified element (if present) of the provided ArrayList.
+ * @brief Removes the specified element (if present) of the provided ArrayList, (optionally) destructing it.
  *
  * @param array_list pointer to an ArrayList
  * @param element pointer to the element to be removed
@@ -365,20 +324,7 @@ void array_list_delete_last(ArrayList* array_list);
 bool array_list_remove_element(ArrayList* array_list, const void* element);
 
 /**
- * @brief Deletes the specified element (if present) of the provided ArrayList, using the given destruct function.
- *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be deleted
- *
- * @return true if deleted, false if not present
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-bool array_list_delete_element(ArrayList* array_list, const void* element);
-
-/**
- * @brief Removes all elements of the given collection present in the provided ArrayList.
+ * @brief Removes all elements of the given collection present in the provided ArrayList, (optionally) destructing them.
  *
  * @param array_list pointer to an ArrayList
  * @param collection a Collection containing the elements to be removed
@@ -391,21 +337,7 @@ bool array_list_delete_element(ArrayList* array_list, const void* element);
 int array_list_remove_all(ArrayList* array_list, Collection collection);
 
 /**
- * @brief Deletes all elements of the given collection present in the provided ArrayList, applying the given destruct function to each element.
- *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be deleted
- *
- * @return number of elements deleted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int array_list_delete_all(ArrayList* array_list, Collection collection);
-
-/**
- * @brief Removes all elements at the specified range in the provided ArrayList.
+ * @brief Removes all elements at the specified range in the provided ArrayList, (optionally) destructing them.
  *
  * @param array_list pointer to an ArrayList
  * @param start_index start index (inclusive)
@@ -419,22 +351,7 @@ int array_list_delete_all(ArrayList* array_list, Collection collection);
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index);
 
 /**
- * @brief Deletes all elements at the specified range in the provided ArrayList, applying the given destruct function to each element.
- *
- * @param array_list pointer to an ArrayList
- * @param start_index start index (inclusive)
- * @param end_index end index (exclusive)
- *
- * @return number of elements deleted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list_size() || start_index > end_index
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int array_list_delete_range(ArrayList* array_list, int start_index, int end_index);
-
-/**
- * @brief Removes all elements matching the given Predicate in the provided ArrayList.
+ * @brief Removes all elements matching the given Predicate in the provided ArrayList, (optionally) destructing them.
  *
  * @param array_list pointer to an ArrayList
  * @param condition the condition to remove elements
@@ -446,20 +363,7 @@ int array_list_delete_range(ArrayList* array_list, int start_index, int end_inde
 int array_list_remove_if(ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Deletes all elements matching the given Predicate in the provided ArrayList, applying the given destruct function to each element.
- *
- * @param array_list pointer to an ArrayList
- * @param condition the condition to delete elements
- *
- * @return number of elements deleted
- *
- * @exception NULL_POINTER_ERROR if array_list or condition is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int array_list_delete_if(ArrayList* array_list, Predicate condition);
-
-/**
- * @brief Replaces all elements using the given Operator of the provided ArrayList.
+ * @brief Replaces all elements using the given Operator of the provided ArrayList, (optionally) destructing the old elements.
  *
  * @param array_list pointer to an ArrayList
  * @param operator the operator to replace elements
@@ -469,18 +373,8 @@ int array_list_delete_if(ArrayList* array_list, Predicate condition);
 void array_list_replace_all(ArrayList* array_list, Operator operator);
 
 /**
- * @brief Updates all elements using the given Operator of the provided ArrayList, then destruct the old elements.
- *
- * @param array_list pointer to an ArrayList
- * @param operator the operator to update elements
- *
- * @exception NULL_POINTER_ERROR if array_list or operator is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_update_all(ArrayList* array_list, Operator operator);
-
-/**
- * @brief Retains all elements of the given collection present in the provided ArrayList while removing all other elements.
+ * @brief Retains all elements of the given collection present in the provided
+ * ArrayList while removing all other elements, (optionally) destructing them.
  *
  * @param array_list pointer to an ArrayList
  * @param collection a Collection containing the elements to be held
@@ -491,20 +385,6 @@ void array_list_update_all(ArrayList* array_list, Operator operator);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
  */
 int array_list_retain_all(ArrayList* array_list, Collection collection);
-
-/**
- * @brief Retains all elements of the given collection present in the provided ArrayList while deleting all other elements, using the given destruct function.
- *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be held
- *
- * @return number of elements deleted
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int array_list_retain_all_destruct_removed(ArrayList* array_list, Collection collection);
 
 /**
  * @brief Retrieves the current size of the provided ArrayList.
@@ -641,23 +521,13 @@ void array_list_reverse(ArrayList* array_list);
 void array_list_rotate(ArrayList* array_list, int distance);
 
 /**
- * @brief Removes all elements of the provided ArrayList.
+ * @brief Removes all elements of the provided ArrayList, (optionally) destructing them.
  *
  * @param array_list pointer to an ArrayList
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_clear(ArrayList* array_list);
-
-/**
- * @brief Deletes all elements of the provided ArrayList, applying the destruct function to every element.
- *
- * @param array_list pointer to an ArrayList
- *
- * @exception NULL_POINTER_ERROR if array_list is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void array_list_purge(ArrayList* array_list);
 
 /**
  * @brief Finds the first element matching the given Predicate in the provided ArrayList.

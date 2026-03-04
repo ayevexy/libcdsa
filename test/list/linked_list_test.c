@@ -10,7 +10,6 @@
 static LinkedList* linked_list;
 
 #define INT_LINKED_LIST_OPTIONS DEFAULT_LINKED_LIST_OPTIONS(    \
-    .destruct = free,                                           \
     .equals = int_pointer_value_equals,                         \
     .to_string = int_pointer_value_to_string                    \
 )
@@ -20,7 +19,8 @@ void setUp() {
 }
 
 void tearDown() {
-    linked_list_obliterate(&linked_list);
+    linked_list_set_destructor(linked_list, free);
+    linked_list_destroy(&linked_list);
 }
 
 void test_create_linked_list() {
@@ -440,7 +440,8 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     TEST_ASSERT_EQUAL(3, count);
 
     // clean up
-    linked_list_obliterate(&new_linked_list);
+    linked_list_set_destructor(new_linked_list, free);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_remove_elements_in_range_from_linked_list() {
@@ -532,7 +533,8 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    linked_list_obliterate(&new_linked_list);
+    linked_list_set_destructor(new_linked_list, free);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_get_linked_list_size() {
@@ -616,7 +618,8 @@ void test_linked_list_is_equal_to_another_linked_list() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    linked_list_obliterate(&other_linked_list);
+    linked_list_set_destructor(other_linked_list, free);
+    linked_list_destroy(&other_linked_list);
 }
 
 void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() {
@@ -636,6 +639,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     TEST_ASSERT_FALSE(equals);
 
     // clean up
+    linked_list_set_destructor(other_linked_list, free);
     linked_list_destroy(&other_linked_list);
 }
 
@@ -656,7 +660,8 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_element
     TEST_ASSERT_FALSE(equals);
 
     // clean up
-    linked_list_obliterate(&other_linked_list);
+    linked_list_set_destructor(other_linked_list, free);
+    linked_list_destroy(&other_linked_list);
 }
 
 static void action_add_one(void* element) {
@@ -907,7 +912,8 @@ void test_linked_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    linked_list_obliterate(&new_linked_list);
+    linked_list_set_destructor(new_linked_list, free);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_empty_linked_list_contains_all_elements_of_empty_collection() {
@@ -918,7 +924,7 @@ void test_empty_linked_list_contains_all_elements_of_empty_collection() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    linked_list_obliterate(&new_linked_list);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_linked_list_does_not_contains_all_elements() {
@@ -937,7 +943,8 @@ void test_linked_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    linked_list_obliterate(&new_linked_list);
+    linked_list_set_destructor(new_linked_list, free);
+    linked_list_destroy(&new_linked_list);
 }
 
 void test_get_occurrences_of_element_in_linked_list() {

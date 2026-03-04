@@ -76,7 +76,7 @@ static bool array_list_contains_wrapper(const void*, const void*);
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (set_error_on_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->growth_factor < MIN_GROWTH_FACTOR || !options->equals || !options->to_string
+        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->equals || !options->to_string
         || !options->memory_alloc || !options->memory_realloc || !options->memory_free
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
@@ -122,14 +122,10 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
     return array_list;
 }
 
-static void array_list_destroy_internal(ArrayList** array_list_pointer, bool destruct_elements) {
+void array_list_destroy(ArrayList** array_list_pointer) {
     if (set_error_on_null(array_list_pointer, *array_list_pointer)) return;
     ArrayList* array_list = *array_list_pointer;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
-    for (int i = 0; destruct_elements && i < array_list->size; i++) {
+    for (int i = 0; i < array_list->size; i++) {
         array_list->destruct(array_list->elements[i]);
     }
     array_list->memory_free(array_list->elements);
@@ -137,12 +133,14 @@ static void array_list_destroy_internal(ArrayList** array_list_pointer, bool des
     *array_list_pointer = nullptr;
 }
 
-void array_list_destroy(ArrayList** array_list_pointer) {
-    array_list_destroy_internal(array_list_pointer, false);
+void (*array_list_get_destructor(const ArrayList* array_list))(void*) {
+    if (set_error_on_null(array_list)) return nullptr;
+    return array_list->destruct;
 }
 
-void array_list_obliterate(ArrayList** array_list_pointer) {
-    array_list_destroy_internal(array_list_pointer, true);
+void array_list_set_destructor(ArrayList* array_list, void (*destructor)(void*)) {
+    if (set_error_on_null(array_list, destructor)) return;
+    array_list->destruct = destructor;
 }
 
 void array_list_add(ArrayList* array_list, int index, const void* element) {
@@ -240,29 +238,17 @@ void* array_list_get_last(const ArrayList* array_list) {
     return array_list->elements[array_list->size - 1];
 }
 
-static void* array_list_set_internal(ArrayList* array_list, int index, const void* element, bool destruct_element) {
+void* array_list_set(ArrayList* array_list, int index, const void* element) {
     if (set_error_on_null(array_list)) return nullptr;
-    if (destruct_element && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return nullptr;
-    }
     if (index < 0 || index >= array_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
         return nullptr;
     }
     void* old_element = array_list->elements[index];
-    if (destruct_element) array_list->destruct(old_element);
+    array_list->destruct(old_element);
 
     array_list->elements[index] = (void*) element;
     return old_element;
-}
-
-void* array_list_set(ArrayList* array_list, int index, const void* element) {
-    return array_list_set_internal(array_list, index, element, false);
-}
-
-void array_list_update(ArrayList* array_list, int index, const void* element) {
-    array_list_set_internal(array_list, index, element, true);
 }
 
 void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
@@ -274,19 +260,14 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
 }
 
-static void* array_list_remove_internal(ArrayList* array_list, int index, bool destruct_element) {
+void* array_list_remove(ArrayList* array_list, int index) {
     if (set_error_on_null(array_list)) return nullptr;
-    if (destruct_element && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return nullptr;
-    }
     if (index < 0 || index >= array_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
         return nullptr;
     }
     void* element = array_list->elements[index];
-    if (destruct_element) array_list->destruct(element);
-
+    array_list->destruct(element);
     array_list->elements[index] = nullptr;
 
     for (int i = index; i < array_list->size - 1; i++) {
@@ -297,78 +278,36 @@ static void* array_list_remove_internal(ArrayList* array_list, int index, bool d
     return element;
 }
 
-void* array_list_remove(ArrayList* array_list, int index) {
-    return array_list_remove_internal(array_list, index, false);
-}
-
-void array_list_delete(ArrayList* array_list, int index) {
-    array_list_remove_internal(array_list, index, true);
-}
-
-static void* array_list_remove_first_internal(ArrayList* array_list, bool destruct_element) {
-    if (set_error_on_null(array_list)) return nullptr;
-    if (array_list->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
-        return nullptr;
-    }
-    return array_list_remove_internal(array_list, 0, destruct_element);
-}
-
 void* array_list_remove_first(ArrayList* array_list) {
-    return array_list_remove_first_internal(array_list, false);
-}
-
-void array_list_delete_first(ArrayList* array_list) {
-    array_list_remove_first_internal(array_list, true);
-}
-
-static void* array_list_remove_last_internal(ArrayList* array_list, bool destruct_element) {
     if (set_error_on_null(array_list)) return nullptr;
     if (array_list->size == 0) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
         return nullptr;
     }
-    return array_list_remove_internal(array_list, array_list->size - 1, destruct_element);
+    return array_list_remove(array_list, 0);
 }
 
 void* array_list_remove_last(ArrayList* array_list) {
-    return array_list_remove_last_internal(array_list, false);
-}
-
-void array_list_delete_last(ArrayList* array_list) {
-    array_list_remove_last_internal(array_list, true);
-}
-
-static bool array_list_remove_element_internal(ArrayList* array_list, const void* element, bool destruct_element) {
-    if (set_error_on_null(array_list)) return false;
-    if (destruct_element && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return 0;
+    if (set_error_on_null(array_list)) return nullptr;
+    if (array_list->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'array_list' is empty");
+        return nullptr;
     }
+    return array_list_remove(array_list, array_list->size - 1);
+}
+
+bool array_list_remove_element(ArrayList* array_list, const void* element) {
+    if (set_error_on_null(array_list)) return false;
     const int index = array_list_index_of(array_list, element);
     if (index >= 0) {
-        void* removed = array_list_remove(array_list, index);
-        if (destruct_element) array_list->destruct(removed);
+        array_list->destruct(array_list_remove(array_list, index));
         return true;
     }
     return false;
 }
 
-bool array_list_remove_element(ArrayList* array_list, const void* element) {
-    return array_list_remove_element_internal(array_list, element, false);
-}
-
-bool array_list_delete_element(ArrayList* array_list, const void* element) {
-    return array_list_remove_element_internal(array_list, element, true);
-}
-
-static int array_list_remove_all_internal(ArrayList* array_list, Collection collection, bool destruct_elements) {
+int array_list_remove_all(ArrayList* array_list, Collection collection) {
     if (set_error_on_null(array_list)) return 0;
-
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return 0;
-    }
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
@@ -381,29 +320,15 @@ static int array_list_remove_all_internal(ArrayList* array_list, Collection coll
         if (!array_list_remove_element(array_list, element)) {
             continue;
         }
-        if (destruct_elements) {
-            array_list->destruct(element);
-        }
+        array_list->destruct(element);
         count++;
     }
     iterator_destroy(&iterator);
     return count;
 }
 
-int array_list_remove_all(ArrayList* array_list, Collection collection) {
-   return array_list_remove_all_internal(array_list, collection, false);
-}
-
-int array_list_delete_all(ArrayList* array_list, Collection collection) {
-    return array_list_remove_all_internal(array_list, collection, true);
-}
-
-static int array_list_remove_range_internal(ArrayList* array_list, int start_index, int end_index, bool destruct_elements) {
+int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (set_error_on_null(array_list)) return 0;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return 0;
-    }
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
         return 0;
@@ -413,7 +338,7 @@ static int array_list_remove_range_internal(ArrayList* array_list, int start_ind
         void* element = array_list->elements[i + count];
         array_list->elements[i] = element;
 
-        if (destruct_elements) array_list->destruct(element);
+        array_list->destruct(element);
         array_list->elements[i + count] = nullptr;
     }
     array_list->size -= count;
@@ -421,66 +346,30 @@ static int array_list_remove_range_internal(ArrayList* array_list, int start_ind
     return count;
 }
 
-int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
-    return array_list_remove_range_internal(array_list, start_index, end_index, false);
-}
-
-int array_list_delete_range(ArrayList* array_list, int start_index, int end_index) {
-    return array_list_remove_range_internal(array_list, start_index, end_index, true);
-}
-
-static int array_list_remove_if_internal(ArrayList* array_list, Predicate condition, bool destruct_elements) {
+int array_list_remove_if(ArrayList* array_list, Predicate condition) {
     if (set_error_on_null(array_list, condition)) return 0;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return 0;
-    }
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
-            void* element = array_list_remove(array_list, i);
-            if (destruct_elements) array_list->destruct(element);
+            array_list->destruct(array_list_remove(array_list, i));
             count++;
         }
     }
     return count;
 }
 
-int array_list_remove_if(ArrayList* array_list, Predicate condition) {
-    return array_list_remove_if_internal(array_list, condition, false);
-}
-
-int array_list_delete_if(ArrayList* array_list, Predicate condition) {
-    return array_list_remove_if_internal(array_list, condition, true);
-}
-
-static void array_list_replace_all_internal(ArrayList* array_list, Operator operator, bool destruct_elements) {
+void array_list_replace_all(ArrayList* array_list, Operator operator) {
     if (set_error_on_null(array_list, operator)) return;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
     for (int i = 0; i < array_list->size; i++) {
         void* element = array_list->elements[i];
         array_list->elements[i] = operator(element);
-        if (destruct_elements) array_list->destruct(element);
+        array_list->destruct(element);
     }
 }
 
-void array_list_replace_all(ArrayList* array_list, Operator operator) {
-    array_list_replace_all_internal(array_list, operator, false);
-}
-
-void array_list_update_all(ArrayList* array_list, Operator operator) {
-    array_list_replace_all_internal(array_list, operator, true);
-}
-
-static int array_list_retain_all_internal(ArrayList* array_list, Collection collection, bool destruct_elements) {
+int array_list_retain_all(ArrayList* array_list, Collection collection) {
     if (set_error_on_null(array_list)) return 0;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return 0;
-    }
+
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'collection'", plain_error_message());
@@ -496,22 +385,13 @@ static int array_list_retain_all_internal(ArrayList* array_list, Collection coll
             }
         }
         if (!found) {
-            void* element = array_list_remove(array_list, i);
-            if (destruct_elements) array_list->destruct(element);
+            array_list->destruct(array_list_remove(array_list, i));
             count++;
         }
         iterator_reset(iterator);
     }
     iterator_destroy(&iterator);
     return count;
-}
-
-int array_list_retain_all(ArrayList* array_list, Collection collection) {
-    return array_list_retain_all_internal(array_list, collection, false);
-}
-
-int array_list_retain_all_destruct_removed(ArrayList* array_list, Collection collection) {
-    return array_list_retain_all_internal(array_list, collection, true);
 }
 
 int array_list_size(const ArrayList* array_list) {
@@ -622,26 +502,14 @@ void array_list_rotate(ArrayList* array_list, int distance) {
     reverse(array_list, distance, array_list->size - 1);
 }
 
-static void array_list_clear_internal(ArrayList* array_list, bool destruct_elements) {
+void array_list_clear(ArrayList* array_list) {
     if (set_error_on_null(array_list)) return;
-    if (destruct_elements && !array_list->destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
     for (int i = 0; i < array_list->size; i++) {
-        if (destruct_elements) array_list->destruct(array_list->elements[i]);
+        array_list->destruct(array_list->elements[i]);
         array_list->elements[i] = nullptr;
     }
     array_list->size = 0;
     array_list->modification_count++;
-}
-
-void array_list_clear(ArrayList* array_list) {
-    array_list_clear_internal(array_list, false);
-}
-
-void array_list_purge(ArrayList* array_list) {
-    array_list_clear_internal(array_list, true);
 }
 
 Optional array_list_find(const ArrayList* array_list, Predicate condition) {

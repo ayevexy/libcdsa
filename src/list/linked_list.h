@@ -18,7 +18,7 @@
  * The LinkedList type is opaque and can only be modified through the API.
  *
  * It must be configured using an LinkedListOptions structure defining:
- * - the destruct function utilized to free elements memory (optional)
+ * - the destruct function utilized to free elements memory
  * - the equals function utilized to compare elements
  * - the to string function utilized to convert its elements to a string representation
  * - the function used internally to allocate memory
@@ -41,6 +41,7 @@ typedef struct LinkedList LinkedList;
 /**
  * LinkedList configuration structure. Used to define the default behavior and attributes of an LinkedList.
  *
+ * @pre destruct != nullptr
  * @pre equals != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
@@ -64,7 +65,7 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_LINKED_LIST_OPTIONS(...) &(LinkedListOptions) {     \
-    .destruct = nullptr,                                            \
+    .destruct = noop_destruct,                                      \
     .equals = pointer_equals,                                       \
     .to_string = pointer_to_string,                                 \
     .memory_alloc = malloc,                                         \
@@ -100,7 +101,7 @@ LinkedList* linked_list_new(const LinkedListOptions* options);
 LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options);
 
 /**
- * @brief Destroys an existing LinkedList while keeping its elements intact.
+ * @brief Destroys an existing LinkedList and (optionally) its elements using the provided destruct function.
  *
  * @param linked_list_pointer pointer to an LinkedList pointer
  *
@@ -111,16 +112,21 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer);
 
 /**
- * @brief Obliterates an existing LinkedList and its elements using the provided destruct function.
+ * @brief Get the current destruct function.
  *
- * @param linked_list_pointer pointer to an LinkedList pointer
+ * @param linked_list pointer to a LinkedList
  *
- * @exception NULL_POINTER_ERROR if linked_list_pointer or *linked_list_pointer is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- *
- * @post *linked_list_pointer == nullptr
+ * @return pointer to the destruct function
  */
-void linked_list_obliterate(LinkedList** linked_list_pointer);
+void (*linked_list_get_destructor(const LinkedList* linked_list))(void*);
+
+/**
+ * @brief Set the current destruct function.
+ *
+ * @param linked_list pointer to a LinkedList
+ * @param destructor the new destruct function
+ */
+void linked_list_set_destructor(LinkedList* linked_list, void (*destructor)(void*));
 
 /**
  * @brief Inserts the specified element at the specified position in the provided LinkedList.
@@ -230,7 +236,7 @@ void* linked_list_get_first(const LinkedList* linked_list);
 void* linked_list_get_last(const LinkedList* linked_list);
 
 /**
- * @brief Replaces the element at the specified position of the provided LinkedList.
+ * @brief Replaces the element at the specified position of the provided LinkedList, (optionally) destructing the old element.
  *
  * @param linked_list pointer to an LinkedList
  * @param index index of the element to be replaced
@@ -242,19 +248,6 @@ void* linked_list_get_last(const LinkedList* linked_list);
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
  */
 void* linked_list_set(LinkedList* linked_list, int index, const void* element);
-
-/**
- * @brief Replaces the element at the specified position of the provided LinkedList, then destructs the old element.
- *
- * @param linked_list pointer to an LinkedList
- * @param index index of the element to be replaced
- * @param element the new element
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_update(LinkedList* linked_list, int index, const void* element);
 
 /**
  * @brief Swaps the elements at specified positions of the provided LinkedList.
@@ -269,7 +262,7 @@ void linked_list_update(LinkedList* linked_list, int index, const void* element)
 void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
 
 /**
- * @brief Removes the element at the specified position of the provided LinkedList.
+ * @brief Removes the element at the specified position of the provided LinkedList, (optionally) destructing it.
  *
  * @param linked_list pointer to an LinkedList
  * @param index index of the element to be removed
@@ -282,19 +275,7 @@ void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
 void* linked_list_remove(LinkedList* linked_list, int index);
 
 /**
- * @brief Deletes the element at the specified position of the provided LinkedList, using the given destruct function.
- *
- * @param linked_list pointer to an LinkedList
- * @param index index of the element to be removed
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_delete(LinkedList* linked_list, int index);
-
-/**
- * @brief Removes the first element of the provided LinkedList.
+ * @brief Removes the first element of the provided LinkedList, (optionally) destructing it.
  *
  * @param linked_list pointer to an LinkedList
  *
@@ -306,18 +287,7 @@ void linked_list_delete(LinkedList* linked_list, int index);
 void* linked_list_remove_first(LinkedList* linked_list);
 
 /**
- * @brief Deletes the first element of the provided LinkedList, using the given destruct function.
- *
- * @param linked_list pointer to an LinkedList
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_delete_first(LinkedList* linked_list);
-
-/**
- * @brief Removes the last element of the provided LinkedList.
+ * @brief Removes the last element of the provided LinkedList, (optionally) destructing it.
  *
  * @param linked_list pointer to an LinkedList
  *
@@ -329,18 +299,7 @@ void linked_list_delete_first(LinkedList* linked_list);
 void* linked_list_remove_last(LinkedList* linked_list);
 
 /**
- * @brief Deletes the last element of the provided LinkedList, using the given destruct function.
- *
- * @param linked_list pointer to an LinkedList
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_delete_last(LinkedList* linked_list);
-
-/**
- * @brief Removes the specified element (if present) of the provided LinkedList.
+ * @brief Removes the specified element (if present) of the provided LinkedList, (optionally) destructing it.
  *
  * @param linked_list pointer to an LinkedList
  * @param element pointer to the element to be removed
@@ -352,20 +311,7 @@ void linked_list_delete_last(LinkedList* linked_list);
 bool linked_list_remove_element(LinkedList* linked_list, const void* element);
 
 /**
- * @brief Deletes the specified element (if present) of the provided LinkedList, using the given destruct function.
- *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be removed
- *
- * @return true if removed, false if not present
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-bool linked_list_delete_element(LinkedList* linked_list, const void* element);
-
-/**
- * @brief Removes all elements of the given collection present in the provided LinkedList.
+ * @brief Removes all elements of the given collection present in the provided LinkedList, (optionally) destructing them.
  *
  * @param linked_list pointer to an LinkedList
  * @param collection a Collection containing the elements to be removed
@@ -378,21 +324,7 @@ bool linked_list_delete_element(LinkedList* linked_list, const void* element);
 int linked_list_remove_all(LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Deletes all elements of the given collection present in the provided LinkedList, applying the given destruct function to each element.
- *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be removed
- *
- * @return number of elements removed
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int linked_list_delete_all(LinkedList* linked_list, Collection collection);
-
-/**
- * @brief Removes all elements at the specified range in the provided LinkedList.
+ * @brief Removes all elements at the specified range in the provided LinkedList, (optionally) destructing them.
  *
  * @param linked_list pointer to an LinkedList
  * @param start_index start index (inclusive)
@@ -406,22 +338,7 @@ int linked_list_delete_all(LinkedList* linked_list, Collection collection);
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index);
 
 /**
- * @brief Deletes all elements at the specified range in the provided LinkedList, applying the given destruct function to each element.
- *
- * @param linked_list pointer to an LinkedList
- * @param start_index start index (inclusive)
- * @param end_index end index (exclusive)
- *
- * @return number of elements removed
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list_size() || start_index > end_index
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int linked_list_delete_range(LinkedList* linked_list, int start_index, int end_index);
-
-/**
- * @brief Removes all elements matching the given Predicate in the provided LinkedList.
+ * @brief Removes all elements matching the given Predicate in the provided LinkedList, (optionally) destructing them.
  *
  * @param linked_list pointer to an LinkedList
  * @param condition the condition to remove elements
@@ -433,20 +350,7 @@ int linked_list_delete_range(LinkedList* linked_list, int start_index, int end_i
 int linked_list_remove_if(LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Deletes all elements matching the given Predicate in the provided LinkedList, applying the given destruct function to each element.
- *
- * @param linked_list pointer to an LinkedList
- * @param condition the condition to remove elements
- *
- * @return number of elements removed
- *
- * @exception NULL_POINTER_ERROR if linked_list or condition is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int linked_list_delete_if(LinkedList* linked_list, Predicate condition);
-
-/**
- * @brief Replaces all elements using the given Operator of the provided LinkedList.
+ * @brief Replaces all elements using the given Operator of the provided LinkedList, (optionally) destructing the old elements.
  *
  * @param linked_list pointer to an LinkedList
  * @param operator the operator to replace elements
@@ -456,18 +360,8 @@ int linked_list_delete_if(LinkedList* linked_list, Predicate condition);
 void linked_list_replace_all(LinkedList* linked_list, Operator operator);
 
 /**
- * @brief Updates all elements using the given Operator of the provided LinkedList, then destruct the old elements.
- *
- * @param linked_list pointer to an LinkedList
- * @param operator the operator to replace elements
- *
- * @exception NULL_POINTER_ERROR if linked_list or operator is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_update_all(LinkedList* linked_list, Operator operator);
-
-/**
- * @brief Retains all elements of the given collection present in the provided LinkedList while removing all other elements.
+ * @brief Retains all elements of the given collection present in the provided
+ * LinkedList while removing all other elements, (optionally) destructing them.
  *
  * @param linked_list pointer to an LinkedList
  * @param collection a Collection containing the elements to be held
@@ -478,20 +372,6 @@ void linked_list_update_all(LinkedList* linked_list, Operator operator);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
  */
 int linked_list_retain_all(LinkedList* linked_list, Collection collection);
-
-/**
- * @brief Retains all elements of the given collection present in the provided LinkedList while deleting all other elements, using the given destruct function.
- *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be held
- *
- * @return number of elements removed
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-int linked_list_retain_all_destruct_removed(LinkedList* linked_list, Collection collection);
 
 /**
  * @brief Retrieves the current size of the provided LinkedList.
@@ -597,23 +477,13 @@ void linked_list_reverse(LinkedList* linked_list);
 void linked_list_rotate(LinkedList* linked_list, int distance);
 
 /**
- * @brief Removes all elements of the provided LinkedList.
+ * @brief Removes all elements of the provided LinkedList, (optionally) destructing them.
  *
  * @param linked_list pointer to an LinkedList
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_clear(LinkedList* linked_list);
-
-/**
- * @brief Deletes all elements of the provided LinkedList, applying the destruct function to every element.
- *
- * @param linked_list pointer to a LinkedList
- *
- * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception UNSUPPORTED_OPERATION_ERROR if no destruct function was provided
- */
-void linked_list_purge(LinkedList* linked_list);
 
 /**
  * @brief Finds the first element matching the given Predicate in the provided LinkedList.

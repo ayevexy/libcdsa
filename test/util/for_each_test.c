@@ -17,7 +17,7 @@ void setUp() {
 }
 
 void tearDown() {
-    array_list_obliterate(&array_list);
+    array_list_destroy(&array_list);
 }
 
 void test_iterate_through_data_structure() {

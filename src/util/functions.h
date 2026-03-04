@@ -21,6 +21,15 @@ typedef void* (*Operator)(void*);
 typedef int (*Comparator)(const void*, const void*);
 
 /**
+ * @brief No Operation destruct function.
+ *
+ * @param element The element to be ignored.
+ */
+static inline void noop_destruct(void* element) {
+    (void) element;
+}
+
+/**
  * @brief Check if two pointers are equal.
  *
  * @param a First pointer.

@@ -37,10 +37,10 @@ typedef struct {
     .initial_capacity = 11,                                 \
     .load_factor = 0.75f,                                   \
     .hash = pointer_hash,                                   \
-    .key_destruct = nullptr,                                \
+    .key_destruct = noop_destruct,                          \
     .key_equals = pointer_equals,                           \
     .key_to_string = pointer_to_string,                     \
-    .value_destruct = nullptr,                              \
+    .value_destruct = noop_destruct,                        \
     .value_equals = pointer_equals,                         \
     .value_to_string = pointer_to_string,                   \
     .memory_alloc = malloc,                                 \
@@ -58,7 +58,7 @@ HashMap* hash_map_new(const HashMapOptions* options);
 
 void hash_map_destroy(HashMap** hash_map_pointer);
 
-void hash_map_obliterate(HashMap** hash_map_pointer);
+void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), void (*value_destructor)(void*));
 
 
 void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper);
@@ -82,24 +82,14 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
 
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
 
-void hash_map_update(HashMap* hash_map, const void* key, const void* value);
-
 bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
-
-bool hash_map_update_if_equals(HashMap* hash_map, const void* key, void* old_value, const void* value);
 
 
 void* hash_map_remove(HashMap* hash_map, const void* key);
 
 bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value);
 
-void hash_map_delete(HashMap* hash_map, const void* key);
-
-bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value);
-
 void hash_map_replace_all(HashMap* hash_map, BiOperator remapper);
-
-void hash_map_update_all(HashMap* hash_map, BiOperator remapper);
 
 
 int hash_map_size(const HashMap* hash_map);
@@ -114,8 +104,6 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map);
 void hash_map_for_each(HashMap* hash_map, BiConsumer action);
 
 void hash_map_clear(HashMap* hash_map);
-
-void hash_map_purge(HashMap* hash_map);
 
 
 bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value);

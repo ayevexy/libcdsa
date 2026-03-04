@@ -127,18 +127,14 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     return hash_map;
 }
 
-static void hash_map_destroy_internal(HashMap** hash_map_pointer, bool destruct_entries) {
+void hash_map_destroy(HashMap** hash_map_pointer) {
     if (set_error_on_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
-    if (destruct_entries && (!hash_map->key_destruct || !hash_map->value_destruct)) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
-        return;
-    }
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
         while (current) {
-            if (destruct_entries && hash_map->key_destruct) hash_map->key_destruct(current->key);
-            if (destruct_entries && hash_map->value_destruct) hash_map->value_destruct(current->value);
+            hash_map->key_destruct(current->key);
+            hash_map->value_destruct(current->value);
 
             Entry* temporary = current->next;
             hash_map->memory_free(current);
@@ -150,12 +146,10 @@ static void hash_map_destroy_internal(HashMap** hash_map_pointer, bool destruct_
     *hash_map_pointer = nullptr;
 }
 
-void hash_map_destroy(HashMap** hash_map_pointer) {
-    hash_map_destroy_internal(hash_map_pointer, false);
-}
-
-void hash_map_obliterate(HashMap** hash_map_pointer) {
-    hash_map_destroy_internal(hash_map_pointer, true);
+void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), void (*value_destructor)(void*)) {
+    if (set_error_on_null(hash_map, key_destructor, value_destructor)) return;
+    hash_map->key_destruct = key_destructor;
+    hash_map->value_destruct = value_destructor;
 }
 
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
@@ -204,60 +198,28 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
     return entry ? entry->value : (void*) default_value;
 }
 
-static void* hash_map_replace_internal(HashMap* hash_map, const void* key, const void* value, bool destruct_old_value) {
+void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return nullptr;
-    if (destruct_old_value && !hash_map->value_destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return nullptr;
-    }
     if (hash_map_contains_key(hash_map, key)) {
         void* old_value = hash_map_put(hash_map, key, value);
-        if (destruct_old_value) {
-            hash_map->value_destruct(old_value);
-        }
+        hash_map->value_destruct(old_value);
         return old_value;
     }
     return nullptr;
 }
 
-void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
-    return hash_map_replace_internal(hash_map, key, value, false);
-}
-
-void hash_map_update(HashMap* hash_map, const void* key, const void* value) {
-    hash_map_replace_internal(hash_map, key, value, true);
-}
-
-static bool hash_map_replace_if_equals_internal(HashMap* hash_map, const void* key, const void* old_value, const void* value, bool destruct_old_value) {
+bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value) {
     if (set_error_on_null(hash_map)) return false;
-    if (destruct_old_value && !hash_map->value_destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return false;
-    }
     if (hash_map_contains(hash_map, key, old_value)) {
-        void* replaced_value = hash_map_put(hash_map, key, value);
-        if (destruct_old_value) {
-            hash_map->value_destruct(replaced_value);
-        }
+        hash_map->value_destruct(hash_map_put(hash_map, key, value));
         return true;
     }
     return false;
 }
 
-bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value) {
-    return hash_map_replace_if_equals_internal(hash_map, key, old_value, value, false);
-}
-
-bool hash_map_update_if_equals(HashMap* hash_map, const void* key, void* old_value, const void* value) {
-    return hash_map_replace_if_equals_internal(hash_map, key, old_value, value, true);
-}
-
-static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool destruct_entry) {
+void* hash_map_remove(HashMap* hash_map, const void* key) {
     if (set_error_on_null(hash_map)) return nullptr;
-    if (destruct_entry && (!hash_map->key_destruct || !hash_map->value_destruct)) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
-        return nullptr;
-    }
+
     Entry* prev_entry = nullptr, * entry = hash_map->buckets[hash_map->hash(key) % hash_map->capacity];
     while (entry && !hash_map->key_equals(entry->key, key)) {
         prev_entry = entry;
@@ -271,10 +233,9 @@ static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool d
     } else {
         hash_map->buckets[hash_map->hash(key) % hash_map->capacity] = nullptr;
     }
-    if (destruct_entry) {
-        hash_map->key_destruct(entry->key);
-        hash_map->value_destruct(entry->value);
-    }
+    hash_map->key_destruct(entry->key);
+    hash_map->value_destruct(entry->value);
+    
     void* value = entry->value;
     hash_map->size--;
     hash_map->modification_count++;
@@ -282,56 +243,26 @@ static void* hash_map_remove_internal(HashMap* hash_map, const void* key, bool d
     return value;
 }
 
-void* hash_map_remove(HashMap* hash_map, const void* key) {
-    return hash_map_remove_internal(hash_map, key, false);
-}
-
-void hash_map_delete(HashMap* hash_map, const void* key) {
-    hash_map_remove_internal(hash_map, key, true);
-}
-
-static bool hash_map_remove_if_equals_internal(HashMap* hash_map, const void* key, const void* value, bool destruct_entry) {
+bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     if (hash_map_contains(hash_map, key, value)) {
-        hash_map_remove_internal(hash_map, key, destruct_entry);
+        hash_map_remove(hash_map, key);
         return true;
     }
     return false;
 }
 
-bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value) {
-    return hash_map_remove_if_equals_internal(hash_map, key, value, false);
-}
-
-bool hash_map_delete_if_equals(HashMap* hash_map, const void* key, const void* value) {
-    return hash_map_remove_if_equals_internal(hash_map, key, value, true);
-}
-
-static void hash_map_replace_all_internal(HashMap* hash_map, BiOperator remapper, bool destruct_old_value) {
+void hash_map_replace_all(HashMap* hash_map, BiOperator remapper) {
     if (set_error_on_null(hash_map, remapper)) return;
-    if (destruct_old_value && !hash_map->value_destruct) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' function assigned");
-        return;
-    }
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* entry = hash_map->buckets[i];
         while (entry) {
             void* temporary = entry->value;
             entry->value = remapper(entry->key, entry->value);
-            if (destruct_old_value) {
-                hash_map->value_destruct(temporary);
-            }
+            hash_map->value_destruct(temporary);
             entry = entry->next;
         }
     }
-}
-
-void hash_map_replace_all(HashMap* hash_map, BiOperator remapper) {
-    hash_map_replace_all_internal(hash_map, remapper, false);
-}
-
-void hash_map_update_all(HashMap* hash_map, BiOperator remapper) {
-    hash_map_replace_all_internal(hash_map, remapper, true);
 }
 
 int hash_map_size(const HashMap* hash_map) {
@@ -384,17 +315,13 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     }
 }
 
-static void hash_map_clear_internal(HashMap* hash_map, bool destruct_entries) {
+void hash_map_clear(HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return;
-    if (destruct_entries && (!hash_map->key_destruct || !hash_map->value_destruct)) {
-        set_error(UNSUPPORTED_OPERATION_ERROR, "No 'destruct' functions assigned");
-        return;
-    }
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
         while (current) {
-            if (destruct_entries) hash_map->key_destruct(current->key);
-            if (destruct_entries) hash_map->value_destruct(current->value);
+            hash_map->key_destruct(current->key);
+            hash_map->value_destruct(current->value);
 
             Entry* temporary = current->next;
             hash_map->memory_free(current);
@@ -404,14 +331,6 @@ static void hash_map_clear_internal(HashMap* hash_map, bool destruct_entries) {
     memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
     hash_map->modification_count++;
-}
-
-void hash_map_clear(HashMap* hash_map) {
-    hash_map_clear_internal(hash_map, false);
-}
-
-void hash_map_purge(HashMap* hash_map) {
-    hash_map_clear_internal(hash_map, true);
 }
 
 bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {

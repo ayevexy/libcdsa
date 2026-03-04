@@ -9,10 +9,8 @@
 
 #define CHAR_INT_HASH_MAP_OPTIONS DEFAULT_HASH_MAP_OPTIONS(     \
     .hash = char_hash,                                          \
-    .key_destruct = free,                                       \
     .key_equals = char_pointer_value_equals,                    \
     .key_to_string = char_pointer_value_to_string,              \
-    .value_destruct = free,                                     \
     .value_equals = int_pointer_value_equals,                   \
     .value_to_string = int_pointer_value_to_string              \
 )
@@ -24,7 +22,8 @@ void setUp() {
 }
 
 void tearDown() {
-    hash_map_obliterate(&hash_map);
+    hash_map_set_destructors(hash_map, free, free);
+    hash_map_destroy(&hash_map);
 }
 
 void test_create_hash_map() {
@@ -323,7 +322,8 @@ void test_hash_map_is_equal_to_another_hash_map() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    hash_map_obliterate(&other_hash_map);
+    hash_map_set_destructors(other_hash_map, free, free);
+    hash_map_destroy(&other_hash_map);
 }
 
 void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
@@ -343,7 +343,8 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
     TEST_ASSERT_FALSE(equals);
 
     // clean up
-    hash_map_obliterate(&other_hash_map);
+    hash_map_set_destructors(other_hash_map, free, free);
+    hash_map_destroy(&other_hash_map);
 }
 
 void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
@@ -363,7 +364,8 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
     TEST_ASSERT_FALSE(equals);
 
     // clean up
-    hash_map_obliterate(&other_hash_map);
+    hash_map_set_destructors(other_hash_map, free, free);
+    hash_map_destroy(&other_hash_map);
 }
 
 static void action_add_one_every_two_keys(void* key, void* value) {

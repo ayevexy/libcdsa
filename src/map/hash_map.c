@@ -144,6 +144,18 @@ void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), 
     hash_map->value_destruct = value_destructor;
 }
 
+void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) {
+    if (set_error_on_null(hash_map, remapper)) return nullptr;
+    void* old_value = hash_map_get(hash_map, key);
+    void* new_value = remapper((void*) key, old_value);
+    if (new_value) {
+        hash_map_put(hash_map, key, new_value);
+    } else if (old_value || hash_map_contains_key(hash_map, key)) {
+        hash_map_remove(hash_map, key);
+    }
+    return new_value;
+}
+
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return nullptr;
     Entry* current = get_entry(hash_map, key);

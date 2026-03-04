@@ -56,6 +56,51 @@ void test_destroy_null_hash_map_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
+static void* remapper_return_null(void* key, void* value) {
+    return nullptr;
+}
+
+static void* remapper_return_new_value(void* key, void* value) {
+    return int_new(10);
+}
+
+void test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_mapping() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute(hash_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_mapping() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    hash_map_put(hash_map, char_new('a'), nullptr);
+    // when
+    int* value = hash_map_compute(hash_map, &(char){'a'}, remapper_return_new_value);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_do_nothing() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute(hash_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
 void test_add_entry_to_hash_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -552,6 +597,10 @@ int main(void) {
 
     RUN_TEST(test_destroy_hash_map_set_it_to_null);
     RUN_TEST(test_destroy_null_hash_map_fails);
+
+    RUN_TEST(test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_mapping);
+    RUN_TEST(test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_mapping);
+    RUN_TEST(test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_do_nothing);
 
     RUN_TEST(test_add_entry_to_hash_map);
     RUN_TEST(test_update_entry_of_hash_map);

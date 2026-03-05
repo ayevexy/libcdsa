@@ -577,6 +577,7 @@ static bool ensure_capacity(HashMap* hash_map) {
     }
     hash_map->buckets = buckets;
     hash_map->capacity *= GROWN_FACTOR;
+    hash_map->threshold = hash_map->capacity * hash_map->load_factor;
     return true;
 }
 

@@ -156,6 +156,18 @@ void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) 
     return new_value;
 }
 
+void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOperator remapper) {
+    if (set_error_on_null(hash_map, remapper)) return nullptr;
+    void* old_value = hash_map_get(hash_map, key);
+    void* new_value = !old_value ? (void*) value : remapper(old_value, (void*) value);
+    if (!new_value) {
+        hash_map_remove(hash_map, key);
+    } else {
+        hash_map_put(hash_map, key, new_value);
+    }
+    return new_value;
+}
+
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return nullptr;
     Entry* current = get_entry(hash_map, key);

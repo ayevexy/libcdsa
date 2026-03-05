@@ -8,6 +8,7 @@
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = (INT_MAX - 1);
 constexpr float MIN_LOAD_FACTOR = 0.5;
+constexpr float GROWN_FACTOR = 2.0;
 
 struct Entry {
     void* key;
@@ -50,6 +51,8 @@ struct HashMap {
 };
 
 static size_t calculate_string_size(const HashMap*);
+
+static bool ensure_capacity(HashMap*);
 
 static Entry* create_entry(HashMap*, const void*, const void*);
 
@@ -217,6 +220,10 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new entry'");
         return nullptr;
     }
+    if (!ensure_capacity(hash_map)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_map' capacity");
+        return nullptr;
+    }
     current = hash_map->buckets[entry->hash % hash_map->capacity];
     if (current) {
         entry->next = current;
@@ -332,6 +339,11 @@ void hash_map_replace_all(HashMap* hash_map, BiOperator remapper) {
 int hash_map_size(const HashMap* hash_map) {
     if (set_error_on_null(hash_map)) return 0;
     return hash_map->size;
+}
+
+int hash_map_capacity(const HashMap* hash_map) {
+    if (set_error_on_null(hash_map)) return 0;
+    return hash_map->capacity;
 }
 
 bool hash_map_is_empty(const HashMap* hash_map) {
@@ -552,6 +564,20 @@ static size_t calculate_string_size(const HashMap* hash_map) {
         }
     }
     return length + BRACKETS + NULL_TERMINATOR;
+}
+
+// TODO: rehash entries
+static bool ensure_capacity(HashMap* hash_map) {
+    if (hash_map->size < hash_map->threshold) {
+        return true;
+    }
+    Entry** buckets = hash_map->memory_realloc(hash_map->buckets, hash_map->capacity * GROWN_FACTOR * sizeof(Entry*));
+    if (!buckets) {
+        return false;
+    }
+    hash_map->buckets = buckets;
+    hash_map->capacity *= GROWN_FACTOR;
+    return true;
 }
 
 static Entry* create_entry(HashMap* hash_map, const void* key, const void* value) {

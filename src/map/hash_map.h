@@ -34,7 +34,7 @@ typedef struct {
 } HashMapOptions;
 
 #define DEFAULT_HASH_MAP_OPTIONS(...) &(HashMapOptions) {   \
-    .initial_capacity = 11,                                 \
+    .initial_capacity = 16,                                 \
     .load_factor = 0.75f,                                   \
     .hash = pointer_hash,                                   \
     .key_destruct = noop_destruct,                          \
@@ -97,6 +97,8 @@ void hash_map_replace_all(HashMap* hash_map, BiOperator remapper);
 
 
 int hash_map_size(const HashMap* hash_map);
+
+int hash_map_capacity(const HashMap* hash_map);
 
 bool hash_map_is_empty(const HashMap* hash_map);
 

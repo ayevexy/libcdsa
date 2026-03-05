@@ -272,6 +272,25 @@ void test_put_all_entries_to_hash_map() {
     hash_map_destroy(&new_hash_map);
 }
 
+void test_put_entries_to_hash_map_exceeding_threshold_resizes_it() {
+    // given
+    CharIntEntry entries[] = {
+        { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
+        { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 }
+    };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    hash_map_put(hash_map, char_new('m'), int_new(13));
+    // then
+    CharIntEntry new_entries[] = {
+        { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
+        { 'g', 7 }, { 'h', 8 }, { 'i', 9 }, { 'j', 10 }, { 'k', 11 }, { 'l', 12 },
+        { 'm', 13 }
+    };
+    TEST_ASSERT_EQUAL(32, hash_map_capacity(hash_map));
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
 void test_get_value_from_hash_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -739,6 +758,7 @@ int main(void) {
     RUN_TEST(test_put_entry_to_hash_map_if_key_is_absent);
     RUN_TEST(test_do_not_put_entry_to_hash_map_if_key_is_not_absent);
     RUN_TEST(test_put_all_entries_to_hash_map);
+    RUN_TEST(test_put_entries_to_hash_map_exceeding_threshold_resizes_it);
 
     RUN_TEST(test_get_value_from_hash_map);
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);

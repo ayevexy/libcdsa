@@ -566,17 +566,34 @@ static size_t calculate_string_size(const HashMap* hash_map) {
     return length + BRACKETS + NULL_TERMINATOR;
 }
 
-// TODO: rehash entries
 static bool ensure_capacity(HashMap* hash_map) {
+    const int new_capacity = hash_map->capacity * GROWN_FACTOR;
     if (hash_map->size < hash_map->threshold) {
         return true;
     }
-    Entry** buckets = hash_map->memory_realloc(hash_map->buckets, hash_map->capacity * GROWN_FACTOR * sizeof(Entry*));
+    Entry** buckets = hash_map->memory_alloc(new_capacity * sizeof(Entry*));
     if (!buckets) {
         return false;
     }
+    memset(buckets, 0, new_capacity * sizeof(Entry*));
+    for (int i = 0; i < hash_map->capacity; i++) {
+        Entry* entry = hash_map->buckets[i];
+        while (entry) {
+            Entry* next_entry = entry->next;
+            entry->next = nullptr;
+
+            Entry* current = buckets[entry->hash % new_capacity];
+            if (current) {
+                entry->next = current;
+            }
+            buckets[entry->hash % new_capacity] = entry;
+
+            entry = next_entry;
+        }
+    }
+    hash_map->memory_free(hash_map->buckets);
     hash_map->buckets = buckets;
-    hash_map->capacity *= GROWN_FACTOR;
+    hash_map->capacity = new_capacity;
     hash_map->threshold = hash_map->capacity * hash_map->load_factor;
     return true;
 }

@@ -215,13 +215,13 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
         current->value = (void*) value;
         return temporary;
     }
+    if (!ensure_capacity(hash_map)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_map' capacity");
+        return nullptr;
+    }
     Entry* entry = create_entry(hash_map, key, value);
     if (!entry) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new entry'");
-        return nullptr;
-    }
-    if (!ensure_capacity(hash_map)) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_map' capacity");
         return nullptr;
     }
     current = hash_map->buckets[entry->hash % hash_map->capacity];

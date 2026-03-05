@@ -112,7 +112,7 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action);
 void hash_map_clear(HashMap* hash_map);
 
 
-bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value);
+bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const void* value);
 
 bool hash_map_contains_key(const HashMap* hash_map, const void* key);
 

@@ -283,7 +283,7 @@ void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
 
 bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value) {
     if (set_error_on_null(hash_map)) return false;
-    if (hash_map_contains(hash_map, key, old_value)) {
+    if (hash_map_contains_entry(hash_map, key, old_value)) {
         hash_map->value_destruct(hash_map_put(hash_map, key, value));
         return true;
     }
@@ -316,7 +316,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
 
 bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
-    if (hash_map_contains(hash_map, key, value)) {
+    if (hash_map_contains_entry(hash_map, key, value)) {
         hash_map_remove(hash_map, key);
         return true;
     }
@@ -371,7 +371,7 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
     for (int i = 0; i < hash_map->capacity; i++) {
         const Entry* entry = hash_map->buckets[i];
         while (entry) {
-            if (!hash_map_contains(other_hash_map, entry->key, entry->value)) {
+            if (!hash_map_contains_entry(other_hash_map, entry->key, entry->value)) {
                 return false;
             }
             entry = entry->next;
@@ -409,7 +409,7 @@ void hash_map_clear(HashMap* hash_map) {
     hash_map->modification_count++;
 }
 
-bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value) {
+bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     const Entry* entry = get_entry(hash_map, key);
     return entry ? hash_map->value_equals(entry->value, value) : false;

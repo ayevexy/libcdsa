@@ -44,7 +44,6 @@ struct HashMap {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
     int modification_count;
@@ -87,7 +86,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->key_equals
         || !options->key_to_string || !options->value_equals || !options->value_to_string
-        || !options->memory_alloc || !options->memory_realloc || !options->memory_free
+        || !options->memory_alloc || !options->memory_free
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -116,7 +115,6 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     hash_map->value_equals = options->value_equals;
     hash_map->value_to_string = options->value_to_string;
     hash_map->memory_alloc = options->memory_alloc;
-    hash_map->memory_realloc = options->memory_realloc;
     hash_map->memory_free = options->memory_free;
     hash_map->modification_count = 0;
     return hash_map;
@@ -477,7 +475,6 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         .value_equals = hash_map->value_equals,
         .value_to_string = hash_map->value_to_string,
         .memory_alloc = hash_map->memory_alloc,
-        .memory_realloc = hash_map->memory_realloc,
         .memory_free = hash_map->memory_free
     }));
     if (error) {

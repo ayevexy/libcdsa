@@ -28,7 +28,6 @@ typedef struct {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 } HashMapOptions;
@@ -44,7 +43,6 @@ typedef struct {
     .value_equals = pointer_equals,                         \
     .value_to_string = pointer_to_string,                   \
     .memory_alloc = malloc,                                 \
-    .memory_realloc = realloc,                              \
     .memory_free = free,                                    \
     __VA_ARGS__                                             \
 }

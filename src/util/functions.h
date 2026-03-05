@@ -37,6 +37,20 @@ static inline uint64_t pointer_hash(const void* pointer) {
 }
 
 /**
+ * @brief Calculate a hash value of a string.
+ *
+ * @param string The string.
+ * @return The hashed value.
+ */
+static inline uint64_t string_hash(const char* string) {
+    uint64_t hash = 5381;
+    for (int c = *string; c != '\0'; c = *++string) {
+        hash = hash * 33 + c;
+    }
+    return hash;
+}
+
+/**
  * @brief No Operation destruct function.
  *
  * @param element The element to be ignored.

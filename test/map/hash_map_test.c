@@ -195,7 +195,7 @@ void test_merge_mapping_of_hash_map_if_merged_value_is_null_remove_mapping() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
-void test_add_entry_to_hash_map() {
+void test_put_entry_to_hash_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
@@ -207,7 +207,7 @@ void test_add_entry_to_hash_map() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
-void test_update_entry_of_hash_map() {
+void test_put_entry_to_hash_map_if_key_already_exists_update_value() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
@@ -219,7 +219,7 @@ void test_update_entry_of_hash_map() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
-void test_add_entry_to_hash_map_if_absent() {
+void test_put_entry_to_hash_map_if_key_is_absent() {
     // given
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
@@ -232,7 +232,7 @@ void test_add_entry_to_hash_map_if_absent() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
-void test_do_not_add_entry_to_hash_map_if_not_absent() {
+void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
@@ -705,10 +705,10 @@ int main(void) {
     RUN_TEST(test_merge_mapping_of_hash_map_if_old_value_is_not_null_merge_with_new_value);
     RUN_TEST(test_merge_mapping_of_hash_map_if_merged_value_is_null_remove_mapping);
 
-    RUN_TEST(test_add_entry_to_hash_map);
-    RUN_TEST(test_update_entry_of_hash_map);
-    RUN_TEST(test_add_entry_to_hash_map_if_absent);
-    RUN_TEST(test_do_not_add_entry_to_hash_map_if_not_absent);
+    RUN_TEST(test_put_entry_to_hash_map);
+    RUN_TEST(test_put_entry_to_hash_map_if_key_already_exists_update_value);
+    RUN_TEST(test_put_entry_to_hash_map_if_key_is_absent);
+    RUN_TEST(test_do_not_put_entry_to_hash_map_if_key_is_not_absent);
 
     RUN_TEST(test_get_value_from_hash_map);
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);

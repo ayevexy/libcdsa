@@ -2,11 +2,10 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
-#include <limits.h>
 #include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
-constexpr int MAX_CAPACITY = (INT_MAX - 1);
+constexpr int MAX_CAPACITY = 1'000'000'000;
 constexpr float MIN_LOAD_FACTOR = 0.5;
 constexpr float GROWN_FACTOR = 2.0;
 
@@ -564,7 +563,9 @@ static size_t calculate_string_size(const HashMap* hash_map) {
 }
 
 static bool ensure_capacity(HashMap* hash_map) {
-    const int new_capacity = hash_map->capacity * GROWN_FACTOR;
+    const int new_capacity = hash_map->capacity > (MAX_CAPACITY / GROWN_FACTOR)
+        ? MAX_CAPACITY
+        : hash_map->capacity * GROWN_FACTOR;
     if (hash_map->size < hash_map->threshold) {
         return true;
     }

@@ -177,7 +177,7 @@ void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) 
 
 void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator mapper) {
     if (set_error_on_null(hash_map, mapper)) return nullptr;
-    if (!hash_map_get(hash_map, key)) {
+    if (!hash_map_contains_key(hash_map, key)) {
         void* new_value = mapper((void*) key);
         if (new_value) {
             hash_map_put(hash_map, key, new_value);
@@ -189,7 +189,7 @@ void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator ma
 
 void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator remapper) {
     if (set_error_on_null(hash_map, remapper)) return nullptr;
-    if (hash_map_get(hash_map, key)) {
+    if (hash_map_contains_key(hash_map, key)) {
         return hash_map_compute(hash_map, key, remapper);
     }
     return nullptr;

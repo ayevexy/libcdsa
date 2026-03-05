@@ -76,7 +76,7 @@ static Iterator* hash_map_key_iterator(const void*);
 
 static Iterator* hash_map_value_iterator(const void*);
 
-static bool hash_map_contains_wrapper(const void*, const void*);
+static bool hash_map_contains_entry_wrapper(const void*, const void*);
 
 static bool hash_map_contains_key_wrapper(const void*, const void*);
 
@@ -460,7 +460,7 @@ Collection hash_map_entries(const HashMap* hash_map) {
         .data_structure = hash_map,
         .size = hash_map_size_wrapper,
         .iterator = hash_map_entry_iterator,
-        .contains = hash_map_contains_wrapper
+        .contains = hash_map_contains_entry_wrapper
     };
 }
 
@@ -722,11 +722,8 @@ static Iterator* hash_map_value_iterator(const void* hash_map) {
     return iterator;
 }
 
-// TODO: maybe fix this?
-static bool hash_map_contains_wrapper(const void* hash_map, const void* entry) {
-    (void) hash_map, (void) entry;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "hash_map_contains is not supported for this iterator");
-    return false; // hash_map_contains(hash_map, ((Entry*) entry)->key, ((Entry*) entry)->value);
+static bool hash_map_contains_entry_wrapper(const void* hash_map, const void* entry) {
+    return hash_map_contains_entry(hash_map, ((Entry*) entry)->key, ((Entry*) entry)->value);
 }
 
 static bool hash_map_contains_key_wrapper(const void* hash_map, const void* key) {

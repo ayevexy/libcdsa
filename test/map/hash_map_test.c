@@ -106,6 +106,58 @@ void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
 }
 
+static void* mapper(void* key) {
+    return int_new(10);
+}
+
+void test_compute_mapping_of_hash_map_if_absent() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute_if_absent(hash_map, char_new('a'), mapper);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_do_not_compute_mapping_of_hash_map_if_not_absent() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute_if_absent(hash_map, &(char){'a'}, mapper);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_compute_mapping_of_hash_map_if_present() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute_if_present(hash_map, char_new('a'), remapper_return_new_value);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_do_not_compute_mapping_of_hash_map_if_not_present() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    int* value = hash_map_compute_if_present(hash_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
 void test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value() {
     // given
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -643,6 +695,11 @@ int main(void) {
     RUN_TEST(test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_mapping);
     RUN_TEST(test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_mapping);
     RUN_TEST(test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_do_nothing);
+
+    RUN_TEST(test_compute_mapping_of_hash_map_if_absent);
+    RUN_TEST(test_do_not_compute_mapping_of_hash_map_if_not_absent);
+    RUN_TEST(test_compute_mapping_of_hash_map_if_present);
+    RUN_TEST(test_do_not_compute_mapping_of_hash_map_if_not_present);
 
     RUN_TEST(test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value);
     RUN_TEST(test_merge_mapping_of_hash_map_if_old_value_is_not_null_merge_with_new_value);

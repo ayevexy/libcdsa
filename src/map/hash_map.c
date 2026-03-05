@@ -119,6 +119,22 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     return hash_map;
 }
 
+HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* options) {
+    if (set_error_on_null(options)) return nullptr;
+    HashMap* hash_map; Error error;
+
+    if ((error = attempt(hash_map = hash_map_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(hash_map_put_all(hash_map, entry_collection)))) {
+        hash_map_destroy(&hash_map);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    return hash_map;
+}
+
 void hash_map_destroy(HashMap** hash_map_pointer) {
     if (set_error_on_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
@@ -218,6 +234,22 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
         old_value = hash_map_put(hash_map, key, value);
     }
     return old_value;
+}
+
+// TODO: fix partial update failure
+void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
+    if (set_error_on_null(hash_map)) return;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(entry_collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        const Entry* entry = iterator_next(iterator);
+        hash_map_put(hash_map, entry->key, entry->value); // can fail
+    }
+    iterator_destroy(&iterator);
 }
 
 void* hash_map_get(const HashMap* hash_map, const void* key) {

@@ -38,6 +38,19 @@ void test_do_not_create_hash_map_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_hash_map_from_entry_collection() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    HashMap* new_hash_map = hash_map_from(hash_map_entries(hash_map), CHAR_INT_HASH_MAP_OPTIONS);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, new_hash_map);
+    // clean up
+    hash_map_destroy(&new_hash_map);
+}
+
 void test_destroy_hash_map_set_it_to_null() {
     // given
     HashMap* new_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
@@ -242,6 +255,21 @@ void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *(int*) old_value);
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+}
+
+void test_put_all_entries_to_hash_map() {
+    // given
+    HashMap* new_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(new_hash_map, entries);
+    // when
+    hash_map_put_all(hash_map, hash_map_entries(new_hash_map));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+    // clean up
+    hash_map_destroy(&new_hash_map);
 }
 
 void test_get_value_from_hash_map() {
@@ -688,6 +716,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_map);
     RUN_TEST(test_do_not_create_hash_map_with_invalid_options);
+    RUN_TEST(test_create_hash_map_from_entry_collection);
 
     RUN_TEST(test_destroy_hash_map_set_it_to_null);
     RUN_TEST(test_destroy_null_hash_map_fails);
@@ -709,6 +738,7 @@ int main(void) {
     RUN_TEST(test_put_entry_to_hash_map_if_key_already_exists_update_value);
     RUN_TEST(test_put_entry_to_hash_map_if_key_is_absent);
     RUN_TEST(test_do_not_put_entry_to_hash_map_if_key_is_not_absent);
+    RUN_TEST(test_put_all_entries_to_hash_map);
 
     RUN_TEST(test_get_value_from_hash_map);
     RUN_TEST(test_get_value_from_hash_map_no_mapping_fails);

@@ -320,13 +320,13 @@ bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* v
     return false;
 }
 
-void hash_map_replace_all(HashMap* hash_map, BiOperator remapper) {
-    if (set_error_on_null(hash_map, remapper)) return;
+void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
+    if (set_error_on_null(hash_map, bi_operator)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* entry = hash_map->buckets[i];
         while (entry) {
             void* temporary = entry->value;
-            entry->value = remapper(entry->key, entry->value);
+            entry->value = bi_operator(entry->key, entry->value);
             hash_map->value_destruct(temporary);
             entry = entry->next;
         }

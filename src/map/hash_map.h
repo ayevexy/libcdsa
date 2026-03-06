@@ -258,7 +258,7 @@ void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOp
 /**
  * @brief Associates the specified value with the specified key.
  *
- * If the key already exists, the existing value is replaced and returned.
+ * If the key already exists, the existing value is replaced (optionally destructed) and returned.
  * Otherwise, a new entry is created.
  *
  * @param hash_map pointer to a HashMap
@@ -330,7 +330,7 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
 /**
  * @brief Replaces the value associated with the specified key.
  *
- * If the key is present, the value is replaced and the previous value is returned.
+ * If the key is present, the value is replaced and the previous value is (optionally) destructed and returned.
  *
  * @param hash_map pointer to a HashMap
  * @param key pointer to the key
@@ -343,7 +343,7 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Replaces the value associated with the specified key only if it matches the expected value.
+ * @brief Replaces the value associated with the specified key only if it matches the expected value, (optionally) destructing the old value.
  *
  * @param hash_map pointer to a HashMap
  * @param key pointer to the key

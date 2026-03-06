@@ -208,9 +208,10 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return nullptr;
     Entry* current = get_entry(hash_map, key);
     if (current) {
-        void* temporary = current->value;
+        void* old_value = current->value;
         current->value = (void*) value;
-        return temporary;
+        hash_map->value_destruct(old_value);
+        return old_value;
     }
     if (!ensure_capacity(hash_map)) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_map' capacity");

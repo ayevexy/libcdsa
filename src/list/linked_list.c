@@ -666,7 +666,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         return nullptr;
     }
     LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
-        .destruct = linked_list->destruct,
+        .destruct = noop_destruct,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,

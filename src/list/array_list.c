@@ -657,7 +657,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
     ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
         .growth_factor = array_list->growth_factor,
-        .destruct = array_list->destruct,
+        .destruct = noop_destruct,
         .equals = array_list->equals,
         .to_string = array_list->to_string,
         .memory_alloc = array_list->memory_alloc,

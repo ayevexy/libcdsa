@@ -603,9 +603,9 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
  *
  * The new LinkedList will contain the same element pointers but will have independent internal storage.
  *
- * @param linked_list pointer to an LinkedList, or nullptr on failure
+ * @param linked_list pointer to an LinkedList
  *
- * @return a newly created LinkedList clone
+ * @return a newly created LinkedList clone, or nullptr on failure
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails

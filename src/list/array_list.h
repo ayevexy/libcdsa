@@ -662,9 +662,9 @@ int array_list_binary_search(const ArrayList* array_list, const void* element, C
  *
  * The new ArrayList will contain the same element pointers but will have independent internal storage.
  *
- * @param array_list pointer to an ArrayList, or nullptr on failure
+ * @param array_list pointer to an ArrayList
  *
- * @return a newly created ArrayList clone
+ * @return a newly created ArrayList clone, or nullptr on failure
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails

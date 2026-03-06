@@ -14,11 +14,11 @@
     }                                                                                                   \
     TEST_ASSERT_EQUAL(SIZE(entry_array), hash_map_size(hash_map));
 
-#define TEST_ASSERT_EQUAL_ENTRY(key, value, entry)              \
-    do {                                                        \
-        Entry* _entry = (entry);                                \
-        TEST_ASSERT_EQUAL(key, *(char*) entry_key(_entry));     \
-        TEST_ASSERT_EQUAL(value, *(int*) entry_value(_entry));  \
+#define TEST_ASSERT_EQUAL_ENTRY(_key, _value, entry)        \
+    do {                                                    \
+        MapEntry* _entry = (entry);                         \
+        TEST_ASSERT_EQUAL(_key, *(char*) _entry->key);      \
+        TEST_ASSERT_EQUAL(_value, *(int*) _entry->value);   \
     } while (false)
 
 #endif

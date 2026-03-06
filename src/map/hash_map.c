@@ -9,20 +9,14 @@ constexpr int MAX_CAPACITY = 1'000'000'000;
 constexpr float MIN_LOAD_FACTOR = 0.5;
 constexpr float GROWN_FACTOR = 2.0;
 
-struct Entry {
-    void* key;
-    void* value;
+typedef struct Entry {
+    union {
+        MapEntry view;
+        struct { void* key; void* value; };
+    };
     uint64_t hash;
-    Entry* next;
-};
-
-const void* entry_key(const Entry* entry) {
-    return entry->key;
-}
-
-void* entry_value(const Entry* entry) {
-    return entry->value;
-}
+    struct Entry* next;
+} Entry;
 
 struct HashMap {
     Entry** buckets;
@@ -251,7 +245,7 @@ void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
         return;
     }
     while (iterator_has_next(iterator)) {
-        const Entry* entry = iterator_next(iterator);
+        const MapEntry* entry = iterator_next(iterator);
         hash_map_put(hash_map, entry->key, entry->value); // can fail
     }
     iterator_destroy(&iterator);
@@ -673,7 +667,7 @@ static void* internal_iterator_next(void* internal_state) {
         }
         if (iteration_context->entry) {
             iteration_context->count++;
-            return iteration_context->entry;
+            return &iteration_context->entry->view;
         }
     }
 }
@@ -722,7 +716,7 @@ static Iterator* hash_map_value_iterator(const void* hash_map) {
 }
 
 static bool hash_map_contains_entry_wrapper(const void* hash_map, const void* entry) {
-    return hash_map_contains_entry(hash_map, ((Entry*) entry)->key, ((Entry*) entry)->value);
+    return hash_map_contains_entry(hash_map, ((MapEntry*) entry)->key, ((MapEntry*) entry)->value);
 }
 
 static bool hash_map_contains_key_wrapper(const void* hash_map, const void* key) {

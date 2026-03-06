@@ -1,26 +1,13 @@
 #ifndef HASH_MAP_H
 #define HASH_MAP_H
 
+#include "map_entry.h"
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
 
 #include <stdlib.h>
 #include <stddef.h>
-
-/**
- * An entry of the hash map, containing the key-value pair.
- * Entry objects are typically obtained when iterating over the HashMap and represent key–value pairs stored internally.
- *
- * Underlying implementation (simplified):
- * @code
- * struct Entry {
- *      void* key;
- *      void* value;
- * };
- * @endcode
- */
-typedef struct Entry Entry;
 
 /**
  * A hash map is a generic dynamic associative data structure that maps keys to values using a hashing function.
@@ -114,28 +101,6 @@ typedef struct {
 }
 
 /**
- * @brief Retrieves the key stored in the provided Entry.
- *
- * @param entry pointer to an Entry
- *
- * @return pointer to the key contained in the entry
- *
- * @exception NULL_POINTER_ERROR if entry is null
- */
-const void* entry_key(const Entry* entry);
-
-/**
- * @brief Retrieves the value stored in the provided Entry.
- *
- * @param entry pointer to an Entry
- *
- * @return pointer to the value contained in the entry
- *
- * @exception NULL_POINTER_ERROR if entry is null
- */
-void* entry_value(const Entry* entry);
-
-/**
  * @brief Creates a new empty HashMap using the specified options.
  *
  * @param options pointer to an HashMapOptions defining the hash map configuration
@@ -151,7 +116,7 @@ HashMap* hash_map_new(const HashMapOptions* options);
 /**
  * @brief Creates a new HashMap populated with entries from the provided Collection using the specified options.
  *
- * Each element of the collection must be a pointer to an Entry structure.
+ * Each element of the collection must be a pointer to a MapEntry structure.
  * The entries are inserted into the new HashMap using their respective keys and values.
  *
  * @param entry_collection a Collection containing the entries to be added
@@ -291,7 +256,7 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
 /**
  * @brief Inserts all entries from the provided entry collection into the HashMap.
  *
- * Each element of the collection must be a pointer to an Entry structure.
+ * Each element of the collection must be a pointer to a MapEntry structure.
  * Existing mappings are replaced if keys collide.
  *
  * @param hash_map pointer to a HashMap

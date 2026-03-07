@@ -50,8 +50,6 @@ static Entry* create_entry(HashMap*, const void*, const void*);
 
 static Entry* get_entry(const HashMap*, const void*);
 
-typedef struct IterationContext IterationContext;
-
 static Iterator* internal_iterator_new(const HashMap*, void* (*)(void*));
 
 static bool internal_iterator_has_next(const void*);
@@ -614,13 +612,14 @@ static Entry* get_entry(const HashMap* hash_map, const void* key) {
     return nullptr;
 }
 
-struct IterationContext {
+typedef struct {
+    Iterator iterator;
     const HashMap* hash_map;
     Entry* entry;
     int cursor;
     int count;
     int modification_count;
-};
+} IterationContext;
 
 static Iterator* internal_iterator_new(const HashMap* hash_map, void* next_function(void*)) {
     IterationContext* iteration_context = hash_map->memory_alloc(sizeof(IterationContext));
@@ -628,29 +627,28 @@ static Iterator* internal_iterator_new(const HashMap* hash_map, void* next_funct
     if (!iteration_context) {
         return nullptr;
     }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = internal_iterator_has_next;
+    iteration_context->iterator.next = next_function;
+    iteration_context->iterator.reset = internal_iterator_reset;
+    iteration_context->iterator.memory_free = hash_map->memory_free;
+
     iteration_context->hash_map = hash_map;
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
     iteration_context->modification_count = hash_map->modification_count;
 
-    Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
-        next_function, internal_iterator_reset, hash_map->memory_alloc, hash_map->memory_free);
-
-    if (!iterator) {
-        hash_map->memory_free(iteration_context);
-        return nullptr;
-    }
-    return iterator;
+    return &iteration_context->iterator;
 }
 
-static bool internal_iterator_has_next(const void* internal_state) {
-    const IterationContext* iteration_context = internal_state;
+static bool internal_iterator_has_next(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
     return iteration_context->count < iteration_context->hash_map->size;
 }
 
-static void* internal_iterator_next(void* internal_state) {
-    IterationContext* iteration_context = internal_state;
+static void* internal_iterator_next(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->hash_map->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
@@ -672,18 +670,18 @@ static void* internal_iterator_next(void* internal_state) {
     }
 }
 
-static void* internal_iterator_next_key(void* internal_state) {
-    const Entry* entry = internal_iterator_next(internal_state);
+static void* internal_iterator_next_key(void* raw_iteration_context) {
+    const Entry* entry = internal_iterator_next(raw_iteration_context);
     return entry ? entry->key : nullptr;
 }
 
-static void* internal_iterator_next_value(void* internal_state) {
-    const Entry* entry = internal_iterator_next(internal_state);
+static void* internal_iterator_next_value(void* raw_iteration_context) {
+    const Entry* entry = internal_iterator_next(raw_iteration_context);
     return entry ? entry->value : nullptr;
 }
 
-static void internal_iterator_reset(void* internal_state) {
-    IterationContext* iteration_context = internal_state;
+static void internal_iterator_reset(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;

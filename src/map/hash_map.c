@@ -671,12 +671,12 @@ static void* internal_iterator_next(void* raw_iteration_context) {
 }
 
 static void* internal_iterator_next_key(void* raw_iteration_context) {
-    const Entry* entry = internal_iterator_next(raw_iteration_context);
+    const MapEntry* entry = internal_iterator_next(raw_iteration_context);
     return entry ? entry->key : nullptr;
 }
 
 static void* internal_iterator_next_value(void* raw_iteration_context) {
-    const Entry* entry = internal_iterator_next(raw_iteration_context);
+    const MapEntry* entry = internal_iterator_next(raw_iteration_context);
     return entry ? entry->value : nullptr;
 }
 

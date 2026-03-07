@@ -316,9 +316,12 @@ void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* entry = hash_map->buckets[i];
         while (entry) {
-            void* temporary = entry->value;
-            entry->value = bi_operator(entry->key, entry->value);
-            hash_map->value_destruct(temporary);
+            void* old_value = entry->value;
+            void* new_value = bi_operator(entry->key, entry->value);
+            if (old_value != new_value) {
+                hash_map->value_destruct(old_value);
+            }
+            entry->value = new_value;
             entry = entry->next;
         }
     }

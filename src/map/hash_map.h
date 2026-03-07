@@ -18,7 +18,7 @@
  * The HashMap type is opaque and can only be modified through the API.
  *
  * It must be configured using a HashMapOptions defining:
- * - its initial capacity
+ * - its initial capacity (must be a power of two, otherwise it will be automatically rounded to the next power of two)
  * - its load factor
  * - its hash function
  * - the destruct function utilized to free key memory
@@ -47,8 +47,8 @@ typedef struct HashMap HashMap;
 /**
  * HashMap configuration structure. Used to define the default behavior and attributes of a HashMap.
  *
- * @pre initial_capacity >= 10
- * @pre initial_capacity < 1'000'000'000
+ * @pre initial_capacity >= 8
+ * @pre initial_capacity <= 1'073'741'824
  * @pre load_factor >= 0.5
  * @pre hash != nullptr
  * @pre key_destruct != nullptr

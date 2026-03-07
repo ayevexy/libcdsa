@@ -4,8 +4,8 @@
 #include "util/constraints.h"
 #include <string.h>
 
-constexpr int MIN_CAPACITY = 10;
-constexpr int MAX_CAPACITY = 1'000'000'000;
+constexpr int MIN_CAPACITY = 8;
+constexpr int MAX_CAPACITY = 1'073'741'824;
 constexpr float MIN_LOAD_FACTOR = 0.5;
 constexpr float GROWN_FACTOR = 2.0;
 
@@ -43,6 +43,8 @@ struct HashMap {
 };
 
 static size_t calculate_string_size(const HashMap*);
+
+static int next_power_of_two(int);
 
 static bool ensure_capacity(HashMap*);
 
@@ -87,16 +89,16 @@ HashMap* hash_map_new(const HashMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_map'");
         return nullptr;
     }
-    hash_map->buckets = options->memory_alloc(options->initial_capacity * sizeof(Entry*));
+    hash_map->capacity = next_power_of_two(options->initial_capacity);
+    hash_map->buckets = options->memory_alloc(hash_map->capacity * sizeof(Entry*));
     if (!hash_map->buckets) {
         options->memory_free(hash_map);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_map'");
         return nullptr;
     }
-    memset(hash_map->buckets, 0, options->initial_capacity * sizeof(Entry*));
+    memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
-    hash_map->capacity = options->initial_capacity;
-    hash_map->threshold = options->initial_capacity * options->load_factor;
+    hash_map->threshold = hash_map->capacity * options->load_factor;
     hash_map->load_factor = options->load_factor;
     hash_map->hash = options->hash;
     hash_map->key_destruct = options->key_destruct;
@@ -214,11 +216,12 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new entry'");
         return nullptr;
     }
-    current = hash_map->buckets[entry->hash % hash_map->capacity];
+    const int index = entry->hash & (hash_map->capacity - 1);
+    current = hash_map->buckets[index];
     if (current) {
         entry->next = current;
     }
-    hash_map->buckets[entry->hash % hash_map->capacity] = entry;
+    hash_map->buckets[index] = entry;
     hash_map->size++;
     hash_map->modification_count++;
     return nullptr;
@@ -280,7 +283,8 @@ bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* 
 
 void* hash_map_remove(HashMap* hash_map, const void* key) {
     if (set_error_on_null(hash_map)) return nullptr;
-    Entry* prev_entry = nullptr, * entry = hash_map->buckets[hash_map->hash(key) % hash_map->capacity];
+    const int index = hash_map->hash(key) & (hash_map->capacity - 1);
+    Entry* prev_entry = nullptr, * entry = hash_map->buckets[index];
     while (entry && !hash_map->key_equals(entry->key, key)) {
         prev_entry = entry;
         entry = entry->next;
@@ -291,7 +295,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
     if (prev_entry) {
         prev_entry->next = entry->next;
     } else {
-        hash_map->buckets[entry->hash % hash_map->capacity] = entry->next;
+        hash_map->buckets[index] = entry->next;
     }
     hash_map->key_destruct(entry->key);
     hash_map->value_destruct(entry->value);
@@ -556,6 +560,14 @@ static size_t calculate_string_size(const HashMap* hash_map) {
     return length + BRACKETS + NULL_TERMINATOR;
 }
 
+static int next_power_of_two(int x) {
+    int power = 1;
+    while (power < x) {
+        power <<= 1;
+    }
+    return power;
+}
+
 static bool ensure_capacity(HashMap* hash_map) {
     const int new_capacity = hash_map->capacity > (MAX_CAPACITY / GROWN_FACTOR)
         ? MAX_CAPACITY
@@ -571,14 +583,15 @@ static bool ensure_capacity(HashMap* hash_map) {
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* entry = hash_map->buckets[i];
         while (entry) {
+            const int index = entry->hash & (new_capacity - 1);
             Entry* next_entry = entry->next;
             entry->next = nullptr;
 
-            Entry* current = buckets[entry->hash % new_capacity];
+            Entry* current = buckets[index];
             if (current) {
                 entry->next = current;
             }
-            buckets[entry->hash % new_capacity] = entry;
+            buckets[index] = entry;
 
             entry = next_entry;
         }
@@ -603,7 +616,7 @@ static Entry* create_entry(HashMap* hash_map, const void* key, const void* value
 }
 
 static Entry* get_entry(const HashMap* hash_map, const void* key) {
-    Entry* entry = hash_map->buckets[hash_map->hash(key) % hash_map->capacity];
+    Entry* entry = hash_map->buckets[hash_map->hash(key) & (hash_map->capacity - 1)];
     while (entry) {
         if (hash_map->key_equals(entry->key, key)) {
             return entry;

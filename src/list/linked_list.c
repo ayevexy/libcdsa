@@ -270,8 +270,9 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
     }
     Node* node = get_node(linked_list, index);
     void* old_element = node->element;
-    linked_list->destruct(old_element);
-
+    if (old_element != element) {
+        linked_list->destruct(old_element);
+    }
     node->element = (void*) element;
     return old_element;
 }
@@ -382,9 +383,12 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
 void linked_list_replace_all(LinkedList* linked_list, Operator operator) {
     if (set_error_on_null(linked_list, operator)) return;
     for (Node* node = linked_list->head; node; node = node->next) {
-        void* element = node->element;
-        node->element = operator(element);
-        linked_list->destruct(element);
+        void* old_element = node->element;
+        void* new_element = operator(old_element);
+        if (old_element != new_element) {
+            linked_list->destruct(old_element);
+        }
+        node->element = new_element;
     }
 }
 

@@ -243,8 +243,9 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
         return nullptr;
     }
     void* old_element = array_list->elements[index];
-    array_list->destruct(old_element);
-
+    if (old_element != element) {
+        array_list->destruct(old_element);
+    }
     array_list->elements[index] = (void*) element;
     return old_element;
 }
@@ -359,9 +360,12 @@ int array_list_remove_if(ArrayList* array_list, Predicate condition) {
 void array_list_replace_all(ArrayList* array_list, Operator operator) {
     if (set_error_on_null(array_list, operator)) return;
     for (int i = 0; i < array_list->size; i++) {
-        void* element = array_list->elements[i];
-        array_list->elements[i] = operator(element);
-        array_list->destruct(element);
+        void* old_element = array_list->elements[i];
+        void* new_element = operator(old_element);
+        if (old_element != new_element) {
+            array_list->destruct(old_element);
+        }
+        array_list->elements[i] = new_element;
     }
 }
 

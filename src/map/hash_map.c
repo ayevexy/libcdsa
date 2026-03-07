@@ -655,7 +655,7 @@ static void* internal_iterator_next(void* raw_iteration_context) {
         set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
-    while (true) {
+    while (iteration_context->cursor < iteration_context->hash_map->capacity) {
         if (!iteration_context->entry) {
             iteration_context->entry = iteration_context->hash_map->buckets[iteration_context->cursor++];
         } else {
@@ -666,6 +666,8 @@ static void* internal_iterator_next(void* raw_iteration_context) {
             return &iteration_context->entry->view;
         }
     }
+    set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+    return nullptr;
 }
 
 static void* internal_iterator_next_key(void* raw_iteration_context) {

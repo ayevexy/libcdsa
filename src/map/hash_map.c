@@ -264,9 +264,7 @@ void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const vo
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
     if (set_error_on_null(hash_map)) return nullptr;
     if (hash_map_contains_key(hash_map, key)) {
-        void* old_value = hash_map_put(hash_map, key, value);
-        hash_map->value_destruct(old_value);
-        return old_value;
+        return hash_map_put(hash_map, key, value);
     }
     return nullptr;
 }
@@ -274,7 +272,7 @@ void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
 bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value) {
     if (set_error_on_null(hash_map)) return false;
     if (hash_map_contains_entry(hash_map, key, old_value)) {
-        hash_map->value_destruct(hash_map_put(hash_map, key, value));
+        hash_map_put(hash_map, key, value);
         return true;
     }
     return false;

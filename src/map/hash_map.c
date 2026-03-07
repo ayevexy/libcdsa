@@ -356,10 +356,10 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
     if (hash_map->size != other_hash_map->size) {
         return false;
     }
-    for (int i = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
+    for (int i = 0; i < other_hash_map->capacity; i++) {
+        const Entry* entry = other_hash_map->buckets[i];
         while (entry) {
-            if (!hash_map_contains_entry(other_hash_map, entry->key, entry->value)) {
+            if (!hash_map_contains_entry(hash_map, entry->key, entry->value)) {
                 return false;
             }
             entry = entry->next;

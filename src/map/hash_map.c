@@ -291,7 +291,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
     if (prev_entry) {
         prev_entry->next = entry->next;
     } else {
-        hash_map->buckets[hash_map->hash(key) % hash_map->capacity] = entry->next;
+        hash_map->buckets[entry->hash % hash_map->capacity] = entry->next;
     }
     hash_map->key_destruct(entry->key);
     hash_map->value_destruct(entry->value);

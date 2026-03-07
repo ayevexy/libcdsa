@@ -40,8 +40,6 @@ static void* remove_node(LinkedList*, Node*);
 
 static Pair segment_from(LinkedList*, Collection);
 
-typedef struct IterationContext IterationContext;
-
 static Iterator* internal_iterator_new(const LinkedList*);
 
 static bool internal_iterator_has_next(const void*);
@@ -867,11 +865,12 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
     return (Pair) { .first = head, .second = tail };
 }
 
-struct IterationContext {
+typedef struct {
+    Iterator iterator;
     const LinkedList* linked_list;
     Node* current;
     int modification_count;
-};
+} IterationContext;
 
 static Iterator* internal_iterator_new(const LinkedList* linked_list) {
     IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
@@ -879,27 +878,26 @@ static Iterator* internal_iterator_new(const LinkedList* linked_list) {
     if (!iteration_context) {
         return nullptr;
     }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = internal_iterator_has_next;
+    iteration_context->iterator.next = internal_iterator_next;
+    iteration_context->iterator.reset = internal_iterator_reset;
+    iteration_context->iterator.memory_free = linked_list->memory_free;
+
     iteration_context->linked_list = linked_list;
     iteration_context->current = linked_list->head;
     iteration_context->modification_count = linked_list->modification_count;
 
-    Iterator* iterator = iterator_new(iteration_context, internal_iterator_has_next,
-        internal_iterator_next, internal_iterator_reset, linked_list->memory_alloc, linked_list->memory_free);
-
-    if (!iterator) {
-        linked_list->memory_free(iteration_context);
-        return nullptr;
-    }
-    return iterator;
+    return &iteration_context->iterator;
 }
 
-static bool internal_iterator_has_next(const void* internal_state) {
-    const IterationContext* iteration_context = internal_state;
+static bool internal_iterator_has_next(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
     return iteration_context->current;
 }
 
-static void* internal_iterator_next(void* internal_state) {
-    IterationContext* iteration_context = internal_state;
+static void* internal_iterator_next(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return nullptr;
@@ -913,8 +911,8 @@ static void* internal_iterator_next(void* internal_state) {
     return element;
 }
 
-static void internal_iterator_reset(void* internal_state) {
-    IterationContext* iteration_context = internal_state;
+static void internal_iterator_reset(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
     iteration_context->current = iteration_context->linked_list->head;
 }
 

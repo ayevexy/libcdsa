@@ -204,7 +204,9 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
     if (current) {
         void* old_value = current->value;
         current->value = (void*) value;
-        hash_map->value_destruct(old_value);
+        if (old_value != value) {
+            hash_map->value_destruct(old_value);
+        }
         return old_value;
     }
     if (!ensure_capacity(hash_map)) {

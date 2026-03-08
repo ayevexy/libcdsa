@@ -2,8 +2,8 @@
 
 #include "../list/array_list_test.h"
 #include "list/array_list.h"
-#include "../test_functions.h"
 
+#include "../test_utilities.h"
 #include "unity.h"
 
 static ArrayList* array_list;

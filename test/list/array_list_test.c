@@ -2,17 +2,10 @@
 
 #include "list/array_list.h"
 #include "util/errors.h"
-#include "../test_functions.h"
 
 #include "unity.h"
-#include <stdlib.h>
 
 static ArrayList* array_list;
-
-#define INT_ARRAY_LIST_OPTIONS DEFAULT_ARRAY_LIST_OPTIONS(  \
-    .equals = int_pointer_value_equals,                     \
-    .to_string = int_pointer_value_to_string                \
-)
 
 void setUp() {
     array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);

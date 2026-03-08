@@ -2,18 +2,8 @@
 
 #include "map/hash_map.h"
 #include "util/errors.h"
-#include "../test_functions.h"
 
 #include "unity.h"
-#include "list/array_list.h"
-
-#define CHAR_INT_HASH_MAP_OPTIONS DEFAULT_HASH_MAP_OPTIONS(     \
-    .hash = char_hash,                                          \
-    .key_equals = char_pointer_value_equals,                    \
-    .key_to_string = char_pointer_value_to_string,              \
-    .value_equals = int_pointer_value_equals,                   \
-    .value_to_string = int_pointer_value_to_string              \
-)
 
 static HashMap* hash_map;
 

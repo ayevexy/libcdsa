@@ -1,7 +1,15 @@
 #ifndef HASH_MAP_TEST_H
 #define HASH_MAP_TEST_H
 
-#include "../test_macros.h"
+#include "../test_utilities.h"
+
+#define CHAR_INT_HASH_MAP_OPTIONS DEFAULT_HASH_MAP_OPTIONS(     \
+    .hash = char_hash,                                          \
+    .key_equals = char_pointer_value_equals,                    \
+    .key_to_string = char_pointer_value_to_string,              \
+    .value_equals = int_pointer_value_equals,                   \
+    .value_to_string = int_pointer_value_to_string              \
+)
 
 #define POPULATE_HASH_MAP(hash_map, entry_array)                                                \
     for (int i = 0; i < SIZE(entry_array); i++) {                                               \

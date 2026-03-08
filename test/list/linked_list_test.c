@@ -2,17 +2,10 @@
 
 #include "list/linked_list.h"
 #include "util/errors.h"
-#include "../test_functions.h"
 
 #include "unity.h"
-#include <stdlib.h>
 
 static LinkedList* linked_list;
-
-#define INT_LINKED_LIST_OPTIONS DEFAULT_LINKED_LIST_OPTIONS(    \
-    .equals = int_pointer_value_equals,                         \
-    .to_string = int_pointer_value_to_string                    \
-)
 
 void setUp() {
     linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);

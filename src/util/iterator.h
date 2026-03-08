@@ -1,8 +1,10 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
+#include "functions.h"
+
 /**
- * @brief Forward iterator abstraction.
+ * @brief iterator abstraction.
  *
  * Iterator provides a generic mechanism to traverse elements of a data structure
  * without exposing its internal representation.
@@ -15,12 +17,19 @@ typedef struct {
     void* iteration_context;
     bool (*has_next)(const void* iteration_context);
     void* (*next)(void* iteration_context);
+    bool (*has_previous)(const void* iteration_context);
+    void* (*previous)(void* iteration_context);
+    void (*add)(void* iteration_context, const void* element);
+    void* (*get)(void* iteration_context, int position);
+    void* (*set)(void* iteration_context, const void* element);
+    void* (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
+    void (*for_each_remaining)(void* iteration_context, Consumer action);
     void (*memory_free)(void*);
 } Iterator;
 
 /**
- * @brief Checks whether more elements are available.
+ * @brief Checks whether more next elements are available.
  *
  * @param iterator pointer to an Iterator
  *
@@ -29,6 +38,7 @@ typedef struct {
 static inline bool iterator_has_next(const Iterator* iterator) {
     return iterator->has_next(iterator->iteration_context);
 }
+
 /**
  * @brief Retrieves the next element from the iterator.
  *
@@ -42,6 +52,83 @@ static inline bool iterator_has_next(const Iterator* iterator) {
 static inline void* iterator_next(Iterator* iterator) {
     return iterator->next(iterator->iteration_context);
 }
+
+/**
+ * @brief Checks whether more previous elements are available.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return true if more elements are available, false otherwise
+ */
+static inline bool iterator_has_previous(const Iterator* iterator) {
+    return iterator->has_previous(iterator->iteration_context);
+}
+
+/**
+ * @brief Retrieves the previous element from the iterator.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return pointer to the previous element
+ *
+ * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ */
+static inline void* iterator_previous(Iterator* iterator) {
+    return iterator->previous(iterator->iteration_context);
+}
+
+/**
+ * @brief Add the specified element to the underlying data structure (at the specified position if possible) represented by the iterator.
+ *
+ * @param iterator pointer to an Iterator
+ * @param element the element to be added
+ */
+static inline void iterator_add(Iterator* iterator, const void* element) {
+    iterator->add(iterator->iteration_context, element);
+}
+
+/**
+ * @brief Retrieves the nth-element from the iterator.
+ *
+ * @param iterator pointer to an Iterator
+ * @param position the position of the element
+ *
+ * @return pointer to the element
+ *
+ * @exception NO_SUCH_ELEMENT_ERROR if no element is found
+ */
+static inline void* iterator_get(Iterator* iterator, int position) {
+    return iterator->get(iterator->iteration_context, position);
+}
+
+/**
+ * @brief Replaces the last element returned from the iterator.
+ *
+ * @param iterator pointer to an Iterator
+ * @param element the new element
+ *
+ * @return pointer to the old element
+ *
+ * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
+ */
+static inline void* iterator_set(Iterator* iterator, const void* element) {
+    return iterator->set(iterator->iteration_context, element);
+}
+
+/**
+ * @brief Removes the last element returned by the iterator.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return pointer to the removed element
+ *
+ * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
+ */
+static inline void* iterator_remove(Iterator* iterator) {
+    return iterator->remove(iterator->iteration_context);
+}
+
 /**
  * @brief Resets the iterator to its initial position.
  *
@@ -50,6 +137,17 @@ static inline void* iterator_next(Iterator* iterator) {
 static inline void iterator_reset(Iterator* iterator) {
     iterator->reset(iterator->iteration_context);
 }
+
+/**
+ * @brief Iterate through the remaining elements of the iterator applying the action function to each element.
+ *
+ * @param iterator pointer to an Iterator
+ * @param action the action to perform
+ */
+static inline void iterator_for_each_remaining(Iterator* iterator, Consumer action) {
+    iterator->for_each_remaining(iterator->iteration_context, action);
+}
+
 /**
  * @brief Destroys the iterator and releases its resources.
  *

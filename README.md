@@ -100,14 +100,14 @@ Now just include the desired header files and start coding, for example: `array_
 #include <stdio.h>
 
 int main() {
-    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS);
-    int values[] = { 1, 2, 3, 4 };
+    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    int values[] = { 1, 2, 3, 4, 5 };
     
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         array_list_add_last(array_list, &values[i]);
     }
     
-    printf("%s\n", array_list_to_string(array_list)); // [ 1, 2, 3, 4 ]
+    printf("%s\n", array_list_to_string(array_list)); // [ 1, 2, 3, 4, 5 ]
     return 0;
 }
 ```

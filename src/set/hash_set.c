@@ -149,6 +149,11 @@ int hash_set_size(const HashSet* hash_set) {
     return hash_set->size;
 }
 
+bool hash_set_is_empty(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return false;
+    return hash_set->size == 0;
+}
+
 bool hash_set_contains(const HashSet* hash_set, const void* element) {
     if (require_non_null(hash_set)) return false;
     const Node* node = hash_set->buckets[hash_set->hash(element) & (hash_set->capacity - 1)];

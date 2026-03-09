@@ -105,6 +105,22 @@ void test_get_hash_set_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
+void test_hash_set_is_empty() {
+    // when
+    bool empty = hash_set_is_empty(hash_set);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
+void test_hash_set_is_not_empty() {
+    // given
+    hash_set_add(hash_set, int_new(10));
+    // when
+    bool empty = hash_set_is_empty(hash_set);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 void test_hash_set_contains_element() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -140,6 +156,8 @@ int main(void) {
     RUN_TEST(test_do_not_remove_element_from_hash_set_if_not_present);
 
     RUN_TEST(test_get_hash_set_size);
+    RUN_TEST(test_hash_set_is_empty);
+    RUN_TEST(test_hash_set_is_not_empty);
 
     RUN_TEST(test_hash_set_contains_element);
     RUN_TEST(test_hash_set_does_not_contains_element);

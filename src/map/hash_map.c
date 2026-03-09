@@ -91,9 +91,9 @@ static bool hash_map_contains_value_wrapper(const void*, const void*);
 HashMap* hash_map_new(const HashMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->key_equals
-        || !options->key_to_string || !options->value_equals || !options->value_to_string
-        || !options->memory_alloc || !options->memory_free
+        || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->key_destruct
+        || !options->key_equals || !options->key_to_string || !options->value_destruct || !options->value_equals
+        || !options->value_to_string || !options->memory_alloc || !options->memory_free
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;

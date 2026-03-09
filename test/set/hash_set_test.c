@@ -70,6 +70,31 @@ void test_do_not_add_element_to_hash_set_if_already_present() {
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
 }
 
+void test_remove_element_from_hash_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    bool removed = hash_set_remove(hash_set, &(int){3});
+    // then
+    int new_elements[] = { 1, 2, 4, 5 };
+    TEST_ASSERT_TRUE(removed);
+    TEST_ASSERT_FALSE(hash_set_contains(hash_set, &(int){3}));
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
+}
+
+void test_do_not_remove_element_from_hash_set_if_not_present() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    bool removed = hash_set_remove(hash_set, &(int){10});
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_FALSE(removed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
+}
+
 void test_get_hash_set_size() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -110,6 +135,9 @@ int main(void) {
 
     RUN_TEST(test_add_element_to_hash_set);
     RUN_TEST(test_do_not_add_element_to_hash_set_if_already_present);
+
+    RUN_TEST(test_remove_element_from_hash_set);
+    RUN_TEST(test_do_not_remove_element_from_hash_set_if_not_present);
 
     RUN_TEST(test_get_hash_set_size);
 

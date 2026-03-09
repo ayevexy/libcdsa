@@ -131,14 +131,11 @@ void test_add_all_elements_from_collection_at_index_in_linked_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_LINKED_LIST(existing_linked_list, other_values);
-
     // when
     linked_list_add_all(linked_list, 2, linked_list_to_collection(existing_linked_list));
-
     // then
     int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
-
     // clean up
     linked_list_destroy(&existing_linked_list);
 }
@@ -152,14 +149,11 @@ void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_LINKED_LIST(existing_linked_list, other_values);
-
     // when
     linked_list_add_all_first(linked_list, linked_list_to_collection(existing_linked_list));
-
     // then
     int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
-
     // clean up
     linked_list_destroy(&existing_linked_list);
 }
@@ -173,14 +167,11 @@ void test_add_all_elements_from_collection_at_end_of_linked_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_LINKED_LIST(existing_linked_list, other_values);
-
     // when
     linked_list_add_all_last(linked_list, linked_list_to_collection(existing_linked_list));
-
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
-
     // clean up
     linked_list_destroy(&existing_linked_list);
 }
@@ -391,24 +382,24 @@ void test_remove_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_element_by_memory_address_from_linked_list() {
+void test_remove_element_from_linked_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool removed = linked_list_remove_element(linked_list, &values[2]);
+    bool removed = linked_list_remove_element(linked_list, &(int){3});
     // then
     int new_values[] = { 1, 2, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_TRUE(removed);
 }
 
-void test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails() {
+void test_remove_element_from_linked_list_nonexistent_element_fails() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool removed = linked_list_remove_element(linked_list, int_new(10));
+    bool removed = linked_list_remove_element(linked_list, &(int){10});
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_FALSE(removed);
@@ -423,15 +414,12 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     // and
     int sub_values[] = { 2, 3, 4 };
     POPULATE_LINKED_LIST(new_linked_list, sub_values);
-
     // when
     int count = linked_list_remove_all(linked_list, linked_list_to_collection(new_linked_list));
-
     // then
     int new_values[] = { 1, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
-
     // clean up
     linked_list_set_destructor(new_linked_list, free);
     linked_list_destroy(&new_linked_list);
@@ -474,7 +462,7 @@ void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end
 }
 
 static bool is_odd(const void* element) {
-    return *(int *) element % 2 != 0;
+    return *(int*) element % 2 != 0;
 }
 
 void test_remove_elements_from_linked_list_matching_predicate() {
@@ -492,9 +480,6 @@ void test_remove_elements_from_linked_list_matching_predicate() {
 static void* replace_by_2_times_original(void* element) {
     int* value = malloc(sizeof(int));
     *value = *(int*) element * 2;
-    // free(element); free original element, since that pointer will be lost now.
-    // since element is in the stack, it's not necessary
-    // if the element was in the heap, a free call MUST be made here
     return value;
 }
 
@@ -518,10 +503,8 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     // and
     int new_values[] = { 2, 4 }; // empty value between `2` and `4` to ensure `3` will not be skipped
     POPULATE_LINKED_LIST(new_linked_list, new_values);
-
     // when
     int count = linked_list_retain_all(linked_list, linked_list_to_collection(new_linked_list));
-
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
@@ -624,13 +607,10 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     // and
     POPULATE_LINKED_LIST(other_linked_list, values);
     linked_list_add_last(other_linked_list, int_new(10));
-
     // when
     bool equals = linked_list_equals(linked_list, other_linked_list);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     linked_list_set_destructor(other_linked_list, free);
     linked_list_destroy(&other_linked_list);
@@ -645,13 +625,10 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_element
     // and
     int other_values[] = { 2, 3, 4, 5, 6 };
     POPULATE_LINKED_LIST(other_linked_list, other_values);
-
     // when
     bool equals = linked_list_equals(linked_list, other_linked_list);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     linked_list_set_destructor(other_linked_list, free);
     linked_list_destroy(&other_linked_list);
@@ -884,7 +861,7 @@ void test_linked_list_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool contains = linked_list_contains(linked_list, int_new(10));
+    bool contains = linked_list_contains(linked_list, &(int){10});
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -898,10 +875,8 @@ void test_linked_list_contains_all_elements() {
     // and
     int other_values[] = { 2, 3, 4};
     POPULATE_LINKED_LIST(new_linked_list, other_values);
-
     // when
     bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
-
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
@@ -929,10 +904,8 @@ void test_linked_list_does_not_contains_all_elements() {
     // and
     int other_values[] = { 2, 10, 4};
     POPULATE_LINKED_LIST(new_linked_list, other_values);
-
     // when
     bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
-
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
@@ -965,7 +938,7 @@ void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int index = linked_list_index_of(linked_list, int_new(10));
+    int index = linked_list_index_of(linked_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -985,7 +958,7 @@ void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negativ
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int last_index = linked_list_last_index_of(linked_list, int_new(10));
+    int last_index = linked_list_last_index_of(linked_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }
@@ -1006,14 +979,11 @@ void test_create_sub_list_of_linked_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
-
     // when
     LinkedList* new_linked_list = linked_list_sub_list(linked_list, 1, 4);
-
     // then
     int sub_list_values[] = { 2, 3, 4 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(sub_list_values, new_linked_list);
-
     // clean up
     linked_list_destroy(&new_linked_list);
 }
@@ -1146,8 +1116,8 @@ int main(void) {
     RUN_TEST(test_remove_last_element_from_linked_list);
     RUN_TEST(test_remove_last_element_from_empty_linked_list_fails);
 
-    RUN_TEST(test_remove_element_by_memory_address_from_linked_list);
-    RUN_TEST(test_remove_element_by_memory_address_from_linked_list_nonexistent_element_fails);
+    RUN_TEST(test_remove_element_from_linked_list);
+    RUN_TEST(test_remove_element_from_linked_list_nonexistent_element_fails);
     RUN_TEST(test_remove_all_elements_from_linked_list_matching_collection);
 
     RUN_TEST(test_remove_elements_in_range_from_linked_list);

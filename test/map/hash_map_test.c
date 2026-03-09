@@ -511,13 +511,10 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
     POPULATE_HASH_MAP(other_hash_map, entries);
     // and
     hash_map_put(other_hash_map, char_new('k'), int_new(10));
-
     // when
     bool equals = hash_map_equals(hash_map, other_hash_map);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     hash_map_set_destructors(other_hash_map, free, free);
     hash_map_destroy(&other_hash_map);
@@ -532,13 +529,10 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
     // and
     CharIntEntry other_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 } };
     POPULATE_HASH_MAP(other_hash_map, other_entries);
-
     // when
     bool equals = hash_map_equals(hash_map, other_hash_map);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     hash_map_set_destructors(other_hash_map, free, free);
     hash_map_destroy(&other_hash_map);

@@ -143,14 +143,11 @@ void test_add_all_elements_from_collection_at_index_in_array_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
-
     // when
     array_list_add_all(array_list, 2, array_list_to_collection(existing_array_list));
-
     // then
     int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-
     // clean up
     array_list_destroy(&existing_array_list);
 }
@@ -164,14 +161,11 @@ void test_add_all_elements_from_collection_at_beginning_of_array_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
-
     // when
     array_list_add_all_first(array_list, array_list_to_collection(existing_array_list));
-
     // then
     int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-
     // clean up
     array_list_destroy(&existing_array_list);
 }
@@ -185,14 +179,11 @@ void test_add_all_elements_from_collection_at_end_of_array_list() {
     // and
     int other_values[] = { 10, 20, 30 };
     POPULATE_ARRAY_LIST(existing_array_list, other_values);
-
     // when
     array_list_add_all_last(array_list, array_list_to_collection(existing_array_list));
-
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
-
     // clean up
     array_list_destroy(&existing_array_list);
 }
@@ -403,24 +394,24 @@ void test_remove_last_element_from_empty_array_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_element_by_memory_address_from_array_list() {
+void test_remove_element_from_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool removed = array_list_remove_element(array_list, &values[2]);
+    bool removed = array_list_remove_element(array_list, &(int){3});
     // then
     int new_values[] = { 1, 2, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_TRUE(removed);
 }
 
-void test_remove_element_by_memory_address_from_array_list_nonexistent_element_fails() {
+void test_remove_element_from_array_list_nonexistent_element_fails() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool removed = array_list_remove_element(array_list, int_new(10));
+    bool removed = array_list_remove_element(array_list, &(int){10});
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
     TEST_ASSERT_FALSE(removed);
@@ -435,15 +426,12 @@ void test_remove_all_elements_from_array_list_matching_collection() {
     // and
     int sub_values[] = { 2, 3, 4 };
     POPULATE_ARRAY_LIST(new_array_list, sub_values);
-
     // when
     int count = array_list_remove_all(array_list, array_list_to_collection(new_array_list));
-
     // then
     int new_values[] = { 1, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
-
     // clean up
     array_list_set_destructor(new_array_list, free);
     array_list_destroy(&new_array_list);
@@ -486,7 +474,7 @@ void test_remove_elements_in_range_from_array_list_start_index_greater_than_end_
 }
 
 static bool is_odd(const void* element) {
-    return *(int *) element % 2 != 0;
+    return *(int*) element % 2 != 0;
 }
 
 void test_remove_elements_from_array_list_matching_predicate() {
@@ -504,9 +492,6 @@ void test_remove_elements_from_array_list_matching_predicate() {
 static void* replace_by_2_times_original(void* element) {
     int* value = malloc(sizeof(int));
     *value = *(int*) element * 2;
-    // free(element); free original element, since that pointer will be lost now.
-    // since element is in the stack, it's not necessary
-    // if the element was in the heap, a free call MUST be made here
     return value;
 }
 
@@ -530,10 +515,8 @@ void test_retain_all_elements_from_collection_in_array_list() {
     // and
     int new_values[] = { 2, 4 }; // empty value between `2` and `4` to ensure `3` will not be skipped
     POPULATE_ARRAY_LIST(new_array_list, new_values);
-
     // when
     int count = array_list_retain_all(array_list, array_list_to_collection(new_array_list));
-
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
@@ -558,10 +541,8 @@ void test_trim_array_list_capacity_to_match_size() {
     POPULATE_ARRAY_LIST(array_list, values);
     // and
     array_list_remove_range(array_list, 0, 5);
-
     // when
     array_list_trim_to_size(array_list);
-
     // then
     TEST_ASSERT_EQUAL(10, array_list_capacity(array_list));
     // and
@@ -685,13 +666,10 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     // and
     POPULATE_ARRAY_LIST(other_array_list, values);
     array_list_add_last(other_array_list, int_new(10));
-
     // when
     bool equals = array_list_equals(array_list, other_array_list);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     array_list_set_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
@@ -706,13 +684,10 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_elements(
     // and
     int other_values[] = { 2, 3, 4, 5, 6 };
     POPULATE_ARRAY_LIST(other_array_list, other_values);
-
     // when
     bool equals = array_list_equals(array_list, other_array_list);
-
     // then
     TEST_ASSERT_FALSE(equals);
-
     // clean up
     array_list_set_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
@@ -945,7 +920,7 @@ void test_array_list_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool contains = array_list_contains(array_list, int_new(10));
+    bool contains = array_list_contains(array_list, &(int){10});
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -959,10 +934,8 @@ void test_array_list_contains_all_elements() {
     // and
     int other_values[] = { 2, 3, 4};
     POPULATE_ARRAY_LIST(new_array_list, other_values);
-
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
-
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
@@ -990,10 +963,8 @@ void test_array_list_does_not_contains_all_elements() {
     // and
     int other_values[] = { 2, 10, 4};
     POPULATE_ARRAY_LIST(new_array_list, other_values);
-
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
-
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
@@ -1026,7 +997,7 @@ void test_get_index_of_nonexistent_element_from_array_list_returns_negative_one(
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_of(array_list, int_new(10));
+    int index = array_list_index_of(array_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -1046,7 +1017,7 @@ void test_get_last_index_of_nonexistent_element_from_array_list_returns_negative
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int last_index = array_list_last_index_of(array_list, int_new(10));
+    int last_index = array_list_last_index_of(array_list, &(int){10});
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }
@@ -1087,14 +1058,11 @@ void test_create_sub_list_of_array_list() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
-
     // when
     ArrayList* new_array_list = array_list_sub_list(array_list, 1, 4);
-
     // then
     int sub_list_values[] = { 2, 3, 4 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sub_list_values, new_array_list);
-
     // clean up
     array_list_destroy(&new_array_list);
 }
@@ -1227,8 +1195,8 @@ int main(void) {
     RUN_TEST(test_remove_last_element_from_array_list);
     RUN_TEST(test_remove_last_element_from_empty_array_list_fails);
 
-    RUN_TEST(test_remove_element_by_memory_address_from_array_list);
-    RUN_TEST(test_remove_element_by_memory_address_from_array_list_nonexistent_element_fails);
+    RUN_TEST(test_remove_element_from_array_list);
+    RUN_TEST(test_remove_element_from_array_list_nonexistent_element_fails);
     RUN_TEST(test_remove_all_elements_from_array_list_matching_collection);
 
     RUN_TEST(test_remove_elements_in_range_from_array_list);

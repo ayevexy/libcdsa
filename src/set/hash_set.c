@@ -36,6 +36,28 @@ static int next_power_of_two(int x);
 
 static Node* create_node(const HashSet*, const void*);
 
+static Iterator* internal_iterator_new(const HashSet*);
+
+static bool internal_iterator_has_next(const void*);
+
+static void* internal_iterator_next(void*);
+
+static bool internal_iterator_has_previous(const void*);
+
+static void* internal_iterator_previous(void*);
+
+static void internal_iterator_add(void*, const void*);
+
+static void* internal_iterator_get(void*, int);
+
+static void* internal_iterator_set(void*, const void*);
+
+static void* internal_iterator_remove(void*);
+
+static void internal_iterator_reset(void*);
+
+static void internal_iterator_for_each_remaining(void*, Consumer);
+
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -154,6 +176,15 @@ bool hash_set_is_empty(const HashSet* hash_set) {
     return hash_set->size == 0;
 }
 
+Iterator* hash_set_iterator(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return nullptr;
+    Iterator* iterator = internal_iterator_new(hash_set);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
 bool hash_set_contains(const HashSet* hash_set, const void* element) {
     if (require_non_null(hash_set)) return false;
     const Node* node = hash_set->buckets[hash_set->hash(element) & (hash_set->capacity - 1)];
@@ -182,4 +213,120 @@ static Node* create_node(const HashSet* hash_set, const void* element) {
     node->element = (void*) element;
     node->next = nullptr;
     return node;
+}
+
+typedef struct {
+    Iterator iterator;
+    const HashSet* hash_set;
+    Node* node;
+    int cursor;
+    int count;
+    int modification_count;
+} IterationContext;
+
+static Iterator* internal_iterator_new(const HashSet* hash_set) {
+    IterationContext* iteration_context = hash_set->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = internal_iterator_has_next;
+    iteration_context->iterator.next = internal_iterator_next;
+    iteration_context->iterator.has_previous = internal_iterator_has_previous;
+    iteration_context->iterator.previous = internal_iterator_previous;
+
+    iteration_context->iterator.add = internal_iterator_add;
+    iteration_context->iterator.get = internal_iterator_get;
+    iteration_context->iterator.set = internal_iterator_set;
+    iteration_context->iterator.remove = internal_iterator_remove;
+
+    iteration_context->iterator.reset = internal_iterator_reset;
+    iteration_context->iterator.for_each_remaining = internal_iterator_for_each_remaining;
+    iteration_context->iterator.memory_free = hash_set->memory_free;
+
+    iteration_context->hash_set = hash_set;
+    iteration_context->node = nullptr;
+    iteration_context->cursor = 0;
+    iteration_context->count = 0;
+    iteration_context->modification_count = hash_set->modification_count;
+
+    return &iteration_context->iterator;
+}
+
+static bool internal_iterator_has_next(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count < iteration_context->hash_set->size;
+}
+
+static void* internal_iterator_next(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->hash_set->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!internal_iterator_has_next(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    while (iteration_context->cursor < iteration_context->hash_set->capacity) {
+        if (!iteration_context->node) {
+            iteration_context->node = iteration_context->hash_set->buckets[iteration_context->cursor++];
+        } else {
+            iteration_context->node = iteration_context->node->next;
+        }
+        if (iteration_context->node) {
+            iteration_context->count++;
+            return iteration_context->node->element;
+        }
+    }
+    set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+    return nullptr;
+}
+
+static bool internal_iterator_has_previous(const void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    return false;
+}
+
+static void* internal_iterator_previous(void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    return nullptr;
+}
+
+static void internal_iterator_add(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+}
+
+static void* internal_iterator_get(void* raw_iteration_context, int position) {
+    (void) raw_iteration_context, (void) position;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    return nullptr;
+}
+
+static void* internal_iterator_set(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    return nullptr;
+}
+
+static void* internal_iterator_remove(void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    return nullptr;
+}
+
+static void internal_iterator_reset(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->node = nullptr;
+    iteration_context->cursor = 0;
+    iteration_context->count = 0;
+}
+
+static void internal_iterator_for_each_remaining(void* raw_iteration_context, Consumer action) {
+    (void) raw_iteration_context, (void) action;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
 }

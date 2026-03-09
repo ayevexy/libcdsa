@@ -121,6 +121,28 @@ void test_hash_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_hash_set_iterator() {
+    // given
+    int elements[] = { 1, 2, 3 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    Iterator* iterator = hash_set_iterator(hash_set);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(elements[0], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(elements[1], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(elements[2], *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_hash_set_contains_element() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -158,6 +180,8 @@ int main(void) {
     RUN_TEST(test_get_hash_set_size);
     RUN_TEST(test_hash_set_is_empty);
     RUN_TEST(test_hash_set_is_not_empty);
+
+    RUN_TEST(test_hash_set_iterator);
 
     RUN_TEST(test_hash_set_contains_element);
     RUN_TEST(test_hash_set_does_not_contains_element);

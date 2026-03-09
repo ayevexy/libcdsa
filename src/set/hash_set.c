@@ -99,6 +99,22 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     return hash_set;
 }
 
+HashSet* hash_set_from(Collection collection, const HashSetOptions* options) {
+    if (require_non_null(options)) return nullptr;
+    HashSet* hash_set; Error error;
+
+    if ((error = attempt(hash_set = hash_set_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(hash_set_add_all(hash_set, collection)))) {
+        hash_set_destroy(&hash_set);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    return hash_set;
+}
+
 void hash_set_destroy(HashSet** hash_set_pointer) {
     if (require_non_null(hash_set_pointer, *hash_set_pointer)) return;
     HashSet* hash_set = *hash_set_pointer;
@@ -146,6 +162,24 @@ bool hash_set_add(HashSet* hash_set, const void* element) {
     hash_set->size++;
     hash_set->modification_count++;
     return true;
+}
+
+bool hash_set_add_all(HashSet* hash_set, Collection collection) {
+    if (require_non_null(hash_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return false;
+    }
+    bool changed = false;
+    while (iterator_has_next(iterator)) {
+        if (hash_set_add(hash_set, iterator_next(iterator))) {
+            changed = true;
+        }
+    }
+    iterator_destroy(&iterator);
+    return changed;
 }
 
 bool hash_set_remove(HashSet* hash_set, const void* element) {

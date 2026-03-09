@@ -28,6 +28,30 @@ void test_do_not_create_hash_set_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_hash_set_from_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    HashSet* new_hash_set = hash_set_from(hash_set_to_collection(hash_set), INT_HASH_SET_OPTIONS);
+    // then
+    TEST_ASSERT_NOT_NULL(new_hash_set);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(elements, new_hash_set);
+    // clean up
+    hash_set_destroy(&new_hash_set);
+}
+
+void test_do_not_create_hash_set_with_invalid_options_from_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_from(hash_set_to_collection(hash_set), &(HashSetOptions) {}));
+    // then
+    TEST_ASSERT_NULL(new_hash_set);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
 void test_destroy_hash_set_set_it_to_null() {
     // given
     HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
@@ -69,6 +93,39 @@ void test_do_not_add_element_to_hash_set_if_already_present() {
     TEST_ASSERT_FALSE(added);
     TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
 }
+
+void test_add_all_elements_to_hash_set() {
+    // given
+    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // and
+    int other_elements[] = { 10, 20, 30 };
+    POPULATE_HASH_SET(existing_hash_set, other_elements);
+    // when
+    bool changed = hash_set_add_all(hash_set, hash_set_to_collection(existing_hash_set));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
+    TEST_ASSERT_TRUE(changed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
+}
+
+void test_do_not_add_all_elements_to_hash_set_if_already_present() {
+    // given
+    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    POPULATE_HASH_SET(existing_hash_set, elements);
+    // when
+    bool changed = hash_set_add_all(hash_set, hash_set_to_collection(existing_hash_set));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_FALSE(changed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(new_elements, hash_set);
+}
+
 
 void test_remove_element_from_hash_set() {
     // given
@@ -184,12 +241,16 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_set);
     RUN_TEST(test_do_not_create_hash_set_with_invalid_options);
+    RUN_TEST(test_create_hash_set_from_collection);
+    RUN_TEST(test_do_not_create_hash_set_with_invalid_options_from_collection);
 
     RUN_TEST(test_destroy_hash_set_set_it_to_null);
     RUN_TEST(test_destroy_null_hash_set_fails);
 
     RUN_TEST(test_add_element_to_hash_set);
     RUN_TEST(test_do_not_add_element_to_hash_set_if_already_present);
+    RUN_TEST(test_add_all_elements_to_hash_set);
+    RUN_TEST(test_do_not_add_all_elements_to_hash_set_if_already_present);
 
     RUN_TEST(test_remove_element_from_hash_set);
     RUN_TEST(test_do_not_remove_element_from_hash_set_if_not_present);

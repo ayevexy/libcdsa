@@ -89,7 +89,7 @@ static bool hash_map_contains_key_wrapper(const void*, const void*);
 static bool hash_map_contains_value_wrapper(const void*, const void*);
 
 HashMap* hash_map_new(const HashMapOptions* options) {
-    if (set_error_on_null(options)) return nullptr;
+    if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->key_equals
         || !options->key_to_string || !options->value_equals || !options->value_to_string
@@ -128,7 +128,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
 }
 
 HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* options) {
-    if (set_error_on_null(options)) return nullptr;
+    if (require_non_null(options)) return nullptr;
     HashMap* hash_map; Error error;
 
     if ((error = attempt(hash_map = hash_map_new(options)))) {
@@ -144,7 +144,7 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 }
 
 void hash_map_destroy(HashMap** hash_map_pointer) {
-    if (set_error_on_null(hash_map_pointer, *hash_map_pointer)) return;
+    if (require_non_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
@@ -163,13 +163,13 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
 }
 
 void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), void (*value_destructor)(void*)) {
-    if (set_error_on_null(hash_map, key_destructor, value_destructor)) return;
+    if (require_non_null(hash_map, key_destructor, value_destructor)) return;
     hash_map->key_destruct = key_destructor;
     hash_map->value_destruct = value_destructor;
 }
 
 void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) {
-    if (set_error_on_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map, remapper)) return nullptr;
     void* old_value = hash_map_get(hash_map, key);
     void* new_value = remapper((void*) key, old_value);
     if (new_value) {
@@ -181,7 +181,7 @@ void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) 
 }
 
 void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator mapper) {
-    if (set_error_on_null(hash_map, mapper)) return nullptr;
+    if (require_non_null(hash_map, mapper)) return nullptr;
     if (!hash_map_contains_key(hash_map, key)) {
         void* new_value = mapper((void*) key);
         if (new_value) {
@@ -193,7 +193,7 @@ void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator ma
 }
 
 void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator remapper) {
-    if (set_error_on_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map, remapper)) return nullptr;
     if (hash_map_contains_key(hash_map, key)) {
         return hash_map_compute(hash_map, key, remapper);
     }
@@ -201,7 +201,7 @@ void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator
 }
 
 void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOperator remapper) {
-    if (set_error_on_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map, remapper)) return nullptr;
     void* old_value = hash_map_get(hash_map, key);
     void* new_value = !old_value ? (void*) value : remapper(old_value, (void*) value);
     if (!new_value) {
@@ -213,7 +213,7 @@ void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOp
 }
 
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     Entry* current = get_entry(hash_map, key);
     if (current) {
         void* old_value = current->value;
@@ -244,7 +244,7 @@ void* hash_map_put(HashMap* hash_map, const void* key, const void* value) {
 }
 
 void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* value) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     void* old_value = hash_map_get(hash_map, key);
     if (!old_value) {
         old_value = hash_map_put(hash_map, key, value);
@@ -254,7 +254,7 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
 
 // TODO: fix partial update failure
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
-    if (set_error_on_null(hash_map)) return;
+    if (require_non_null(hash_map)) return;
 
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(entry_collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
@@ -269,19 +269,19 @@ void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
 }
 
 void* hash_map_get(const HashMap* hash_map, const void* key) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     const Entry* entry = get_entry(hash_map, key);
     return entry ? entry->value : nullptr;
 }
 
 void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     const Entry* entry = get_entry(hash_map, key);
     return entry ? entry->value : (void*) default_value;
 }
 
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     if (hash_map_contains_key(hash_map, key)) {
         return hash_map_put(hash_map, key, value);
     }
@@ -289,7 +289,7 @@ void* hash_map_replace(HashMap* hash_map, const void* key, const void* value) {
 }
 
 bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     if (hash_map_contains_entry(hash_map, key, old_value)) {
         hash_map_put(hash_map, key, value);
         return true;
@@ -298,7 +298,7 @@ bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* 
 }
 
 void* hash_map_remove(HashMap* hash_map, const void* key) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     const int index = hash_map->hash(key) & (hash_map->capacity - 1);
     Entry* prev_entry = nullptr, * entry = hash_map->buckets[index];
     while (entry && !hash_map->key_equals(entry->key, key)) {
@@ -323,7 +323,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
 }
 
 bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     if (hash_map_contains_entry(hash_map, key, value)) {
         hash_map_remove(hash_map, key);
         return true;
@@ -332,7 +332,7 @@ bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* v
 }
 
 void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
-    if (set_error_on_null(hash_map, bi_operator)) return;
+    if (require_non_null(hash_map, bi_operator)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* entry = hash_map->buckets[i];
         while (entry) {
@@ -348,22 +348,22 @@ void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
 }
 
 int hash_map_size(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return 0;
+    if (require_non_null(hash_map)) return 0;
     return hash_map->size;
 }
 
 int hash_map_capacity(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return 0;
+    if (require_non_null(hash_map)) return 0;
     return hash_map->capacity;
 }
 
 bool hash_map_is_empty(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     return hash_map->size == 0;
 }
 
 Iterator* hash_map_iterator(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -372,7 +372,7 @@ Iterator* hash_map_iterator(const HashMap* hash_map) {
 }
 
 bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
-    if (set_error_on_null(hash_map, other_hash_map)) return false;
+    if (require_non_null(hash_map, other_hash_map)) return false;
     if (hash_map == other_hash_map) {
         return true;
     }
@@ -392,7 +392,7 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
 }
 
 void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
-    if (set_error_on_null(hash_map)) return;
+    if (require_non_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         const Entry* entry = hash_map->buckets[i];
         while (entry) {
@@ -403,7 +403,7 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
 }
 
 void hash_map_clear(HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return;
+    if (require_non_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         Entry* current = hash_map->buckets[i];
         while (current) {
@@ -421,18 +421,18 @@ void hash_map_clear(HashMap* hash_map) {
 }
 
 bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const void* value) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     const Entry* entry = get_entry(hash_map, key);
     return entry ? hash_map->value_equals(entry->value, value) : false;
 }
 
 bool hash_map_contains_key(const HashMap* hash_map, const void* key) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     return get_entry(hash_map, key) != nullptr;
 }
 
 bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
-    if (set_error_on_null(hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
     for (int i = 0; i < hash_map->capacity; i++) {
         const Entry* entry = hash_map->buckets[i];
         while (entry) {
@@ -446,7 +446,7 @@ bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
 }
 
 Collection hash_map_keys(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return (Collection) {};
+    if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
         .size = hash_map_size_wrapper,
@@ -456,7 +456,7 @@ Collection hash_map_keys(const HashMap* hash_map) {
 }
 
 Collection hash_map_values(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return (Collection) {};
+    if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
         .size = hash_map_size_wrapper,
@@ -466,7 +466,7 @@ Collection hash_map_values(const HashMap* hash_map) {
 }
 
 Collection hash_map_entries(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return (Collection) {};
+    if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
         .size = hash_map_size_wrapper,
@@ -476,7 +476,7 @@ Collection hash_map_entries(const HashMap* hash_map) {
 }
 
 HashMap* hash_map_clone(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     HashMap* new_hash_map; Error error = attempt(new_hash_map = hash_map_new(&(HashMapOptions){
         .initial_capacity = hash_map->capacity,
         .load_factor = hash_map->load_factor,
@@ -509,7 +509,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
 }
 
 char* hash_map_to_string(const HashMap* hash_map) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
 
     if (!string) {
@@ -777,7 +777,7 @@ static Iterator* hash_map_entry_iterator(const void* hash_map) {
 }
 
 static Iterator* hash_map_key_iterator(const void* hash_map) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next_key);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -786,7 +786,7 @@ static Iterator* hash_map_key_iterator(const void* hash_map) {
 }
 
 static Iterator* hash_map_value_iterator(const void* hash_map) {
-    if (set_error_on_null(hash_map)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
     Iterator* iterator = internal_iterator_new(hash_map, internal_iterator_next_value);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");

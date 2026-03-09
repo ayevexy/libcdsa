@@ -163,6 +163,23 @@ void test_hash_set_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_hash_set_to_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    Collection collection = hash_set_to_collection(hash_set);
+    // then
+    Iterator* iterator = collection_iterator(collection); // iteration order is not guaranteed
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_set);
@@ -185,5 +202,7 @@ int main(void) {
 
     RUN_TEST(test_hash_set_contains_element);
     RUN_TEST(test_hash_set_does_not_contains_element);
+
+    RUN_TEST(test_hash_set_to_collection);
     return UNITY_END();
 }

@@ -58,6 +58,12 @@ static void internal_iterator_reset(void*);
 
 static void internal_iterator_for_each_remaining(void*, Consumer);
 
+static int hash_set_size_wrapper(const void*);
+
+static Iterator* hash_set_iterator_wrapper(const void*);
+
+static bool hash_set_contains_wrapper(const void*, const void*);
+
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -197,6 +203,16 @@ bool hash_set_contains(const HashSet* hash_set, const void* element) {
     return false;
 }
 
+Collection hash_set_to_collection(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return (Collection) {};
+    return (Collection) {
+        .data_structure = hash_set,
+        .size = hash_set_size_wrapper,
+        .iterator = hash_set_iterator_wrapper,
+        .contains = hash_set_contains_wrapper
+    };
+}
+
 static int next_power_of_two(int x) {
     int power = 1;
     while (power < x) {
@@ -329,4 +345,16 @@ static void internal_iterator_reset(void* raw_iteration_context) {
 static void internal_iterator_for_each_remaining(void* raw_iteration_context, Consumer action) {
     (void) raw_iteration_context, (void) action;
     set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+}
+
+static int hash_set_size_wrapper(const void* hash_set) {
+    return hash_set_size(hash_set);
+}
+
+static Iterator* hash_set_iterator_wrapper(const void* hash_set) {
+    return hash_set_iterator(hash_set);
+}
+
+static bool hash_set_contains_wrapper(const void* hash_set, const void* element) {
+    return hash_set_contains(hash_set, element);
 }

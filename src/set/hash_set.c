@@ -292,6 +292,26 @@ Iterator* hash_set_iterator(const HashSet* hash_set) {
     return iterator;
 }
 
+bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
+    if (require_non_null(hash_set, other_hash_set)) return false;
+    if (hash_set == other_hash_set) {
+        return true;
+    }
+    if (hash_set->size != other_hash_set->size) {
+        return false;
+    }
+    for (int i = 0; i < other_hash_set->capacity; i++) {
+        const Node* node = other_hash_set->buckets[i];
+        while (node) {
+            if (!hash_set_contains(hash_set, node->element)) {
+                return false;
+            }
+            node = node->next;
+        }
+    }
+    return true;
+}
+
 void hash_set_for_each(HashSet* hash_set, Consumer action) {
     if (require_non_null(hash_set, action)) return;
     for (int i = 0; i < hash_set->capacity; i++) {
@@ -359,6 +379,33 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
         .iterator = hash_set_iterator_wrapper,
         .contains = hash_set_contains_wrapper
     };
+}
+
+HashSet* hash_set_clone(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return nullptr;
+
+    HashSet* new_hash_set; const Error error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {
+        .initial_capacity = hash_set->capacity,
+        .load_factor = hash_set->load_factor,
+        .hash = hash_set->hash,
+        .destruct = noop_destruct,
+        .equals = hash_set->equals,
+        .to_string = hash_set->to_string,
+        .memory_alloc = hash_set->memory_alloc,
+        .memory_free = hash_set->memory_free
+    }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    for (int i = 0; i < hash_set->capacity; i++) {
+        const Node* node = hash_set->buckets[i];
+        while (node) {
+            hash_set_add(new_hash_set, node->element);
+            node = node->next;
+        }
+    }
+    return new_hash_set;
 }
 
 void** hash_set_to_array(const HashSet* hash_set) {

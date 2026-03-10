@@ -259,6 +259,68 @@ void test_hash_set_iterator() {
     iterator_destroy(&iterator);
 }
 
+void test_hash_set_is_equal_to_it_self() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    bool equals = hash_set_equals(hash_set, hash_set);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_hash_set_is_equal_to_another_hash_set() {
+    // given
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    POPULATE_HASH_SET(other_hash_set, elements);
+    // when
+    bool equals = hash_set_equals(hash_set, other_hash_set);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    hash_set_set_destructor(other_hash_set, free);
+    hash_set_destroy(&other_hash_set);
+}
+
+void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
+    // given
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // and
+    POPULATE_HASH_SET(other_hash_set, elements);
+    hash_set_add(other_hash_set, int_new(10));
+    // when
+    bool equals = hash_set_equals(hash_set, other_hash_set);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    hash_set_set_destructor(other_hash_set, free);
+    hash_set_destroy(&other_hash_set);
+}
+
+void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements() {
+    // given
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // and
+    int other_elements[] = { 2, 3, 4, 5, 6 };
+    POPULATE_HASH_SET(other_hash_set, other_elements);
+    // when
+    bool equals = hash_set_equals(hash_set, other_hash_set);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    hash_set_set_destructor(other_hash_set, free);
+    hash_set_destroy(&other_hash_set);
+}
+
 static int action_count = 0;
 
 static void action(void* element) {
@@ -353,6 +415,18 @@ void test_hash_set_does_not_contains_all_elements() {
     hash_set_destroy(&new_hash_set);
 }
 
+void test_clone_hash_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    HashSet* copy_hash_set = hash_set_clone(hash_set);
+    // then
+    TEST_ASSERT_HASH_SET_CONTAINS(copy_hash_set, elements);
+    // clean up
+    hash_set_destroy(&copy_hash_set);
+}
+
 void test_hash_set_to_collection() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -430,6 +504,10 @@ int main(void) {
     RUN_TEST(test_hash_set_is_not_empty);
 
     RUN_TEST(test_hash_set_iterator);
+    RUN_TEST(test_hash_set_is_equal_to_it_self);
+    RUN_TEST(test_hash_set_is_equal_to_another_hash_set);
+    RUN_TEST(test_hash_set_is_not_equal_to_another_hash_set_with_different_size);
+    RUN_TEST(test_hash_set_is_not_equal_to_another_hash_set_with_different_elements);
     RUN_TEST(test_perform_action_for_each_element_of_hash_set);
     RUN_TEST(test_clear_hash_set);
 
@@ -439,6 +517,7 @@ int main(void) {
     RUN_TEST(test_empty_hash_set_contains_all_elements_of_empty_collection);
     RUN_TEST(test_hash_set_does_not_contains_all_elements);
 
+    RUN_TEST(test_clone_hash_set);
     RUN_TEST(test_hash_set_to_collection);
     RUN_TEST(test_convert_hash_set_to_array);
     RUN_TEST(test_get_hash_set_string_representation);

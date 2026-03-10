@@ -361,6 +361,23 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
     };
 }
 
+void** hash_set_to_array(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return nullptr;
+    void** elements = hash_set->memory_alloc(sizeof(void*) * hash_set->size);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    for (int i = 0, j = 0; i < hash_set->capacity; i++) {
+        const Node* node = hash_set->buckets[i];
+        while (node) {
+            elements[j++] = node->element;
+            node = node->next;
+        }
+    }
+    return elements;
+}
+
 char* hash_set_to_string(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
 

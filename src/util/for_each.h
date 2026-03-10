@@ -4,6 +4,7 @@
 #include "list/array_list.h"
 #include "list/linked_list.h"
 #include "map/hash_map.h"
+#include "set/hash_set.h"
 
 #include "util/collection.h"
 #include "util/iterator.h"
@@ -19,6 +20,7 @@
             ArrayList*: array_list_iterator,                                                    \
             LinkedList*: linked_list_iterator,                                                  \
             HashMap*: hash_map_iterator,                                                        \
+            HashSet*: hash_set_iterator,                                                        \
             Collection: collection_iterator                                                     \
         )(collection);                                                                          \
         _iter_;                                                                                 \

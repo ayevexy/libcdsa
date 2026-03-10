@@ -279,6 +279,53 @@ void test_hash_set_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_hash_set_contains_all_elements() {
+    // given
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // and
+    int other_elements[] = { 2, 3, 4};
+    POPULATE_HASH_SET(new_hash_set, other_elements);
+    // when
+    bool contains_all = hash_set_contains_all(hash_set, hash_set_to_collection(new_hash_set));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    hash_set_set_destructor(new_hash_set, free);
+    hash_set_destroy(&new_hash_set);
+}
+
+void test_empty_hash_set_contains_all_elements_of_empty_collection() {
+    // given
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // when
+    bool contains_all = hash_set_contains_all(hash_set, hash_set_to_collection(new_hash_set));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    hash_set_destroy(&new_hash_set);
+}
+
+void test_hash_set_does_not_contains_all_elements() {
+    // given
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // and
+    int other_elements[] = { 2, 10, 4};
+    POPULATE_HASH_SET(new_hash_set, other_elements);
+    // when
+    bool contains_all = hash_set_contains_all(hash_set, hash_set_to_collection(new_hash_set));
+    // then
+    TEST_ASSERT_FALSE(contains_all);
+    // clean up
+    hash_set_set_destructor(new_hash_set, free);
+    hash_set_destroy(&new_hash_set);
+}
+
 void test_hash_set_to_collection() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -325,6 +372,9 @@ int main(void) {
 
     RUN_TEST(test_hash_set_contains_element);
     RUN_TEST(test_hash_set_does_not_contains_element);
+    RUN_TEST(test_hash_set_contains_all_elements);
+    RUN_TEST(test_empty_hash_set_contains_all_elements_of_empty_collection);
+    RUN_TEST(test_hash_set_does_not_contains_all_elements);
 
     RUN_TEST(test_hash_set_to_collection);
     return UNITY_END();

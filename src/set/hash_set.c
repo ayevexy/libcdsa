@@ -302,6 +302,26 @@ bool hash_set_contains(const HashSet* hash_set, const void* element) {
     return false;
 }
 
+bool hash_set_contains_all(const HashSet* hash_set, Collection collection) {
+    if (require_non_null(hash_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!hash_set_contains(hash_set, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
+    return contains;
+}
+
 Collection hash_set_to_collection(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return (Collection) {};
     return (Collection) {

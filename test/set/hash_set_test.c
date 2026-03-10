@@ -370,6 +370,27 @@ void test_hash_set_to_collection() {
     iterator_destroy(&iterator);
 }
 
+void test_get_hash_set_string_representation() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, values);
+    // when
+    char* string = hash_set_to_string(hash_set);
+    // then
+    TEST_ASSERT_EQUAL_STRING("( 5, 1, 2, 3, 4 )", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_hash_set_string_representation() {
+    // when
+    char* string = hash_set_to_string(hash_set);
+    // then
+    TEST_ASSERT_EQUAL_STRING("()", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_hash_set);
@@ -406,5 +427,7 @@ int main(void) {
     RUN_TEST(test_hash_set_does_not_contains_all_elements);
 
     RUN_TEST(test_hash_set_to_collection);
+    RUN_TEST(test_get_hash_set_string_representation);
+    RUN_TEST(test_get_empty_hash_set_string_representation);
     return UNITY_END();
 }

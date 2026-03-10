@@ -32,6 +32,8 @@ struct HashSet {
     int modification_count;
 };
 
+static size_t calculate_string_size(const HashSet*);
+
 static int next_power_of_two(int x);
 
 static Node* create_node(const HashSet*, const void*);
@@ -357,6 +359,63 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
         .iterator = hash_set_iterator_wrapper,
         .contains = hash_set_contains_wrapper
     };
+}
+
+char* hash_set_to_string(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return nullptr;
+
+    char* string = hash_set->memory_alloc(calculate_string_size(hash_set));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to clear trash data
+    strcat(string, hash_set->size == 0 ? "(" : "( ");
+
+    for (int i = 0; i < hash_set->capacity; i++) {
+        const Node* node = hash_set->buckets[i];
+        while (node) {
+            constexpr int NULL_TERMINATOR = 1;
+            const int length = hash_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
+
+            char* element_string = hash_set->memory_alloc(length);
+            if (!element_string) {
+                hash_set->memory_free(string);
+                set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+                return nullptr;
+            }
+            hash_set->to_string(node->element, element_string, length);
+            strcat(string, element_string);
+
+            if (i < hash_set->size - 1) {
+                strcat(string, ", ");
+            }
+            hash_set->memory_free(element_string);
+            node = node->next;
+        }
+    }
+
+    strcat(string, hash_set->size == 0 ? ")" : " )");
+    return string;
+}
+
+static size_t calculate_string_size(const HashSet* hash_set) {
+    constexpr int PARENTHESES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (int i = 0; i < hash_set->capacity; i++) {
+        const Node* node = hash_set->buckets[i];
+        while (node) {
+            length += hash_set->to_string(node->element, nullptr, 0);
+
+            if (i == 0) length += 1; // space after opening bracket
+            if (i < hash_set->size - 1) length += SEPARATOR; // prevent separator on the last element
+            if (i == hash_set->size - 1) length += 1; // space before closing bracket
+
+            node = node->next;
+        }
+    }
+    return length + PARENTHESES + NULL_TERMINATOR;
 }
 
 static int next_power_of_two(int x) {

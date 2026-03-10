@@ -259,6 +259,33 @@ void test_hash_set_iterator() {
     iterator_destroy(&iterator);
 }
 
+static int action_count = 0;
+
+static void action(void* element) {
+    action_count++;
+}
+
+void test_perform_action_for_each_element_of_hash_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    hash_set_for_each(hash_set, action);
+    // then
+    TEST_ASSERT_EQUAL(5, action_count);
+}
+
+void test_clear_hash_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    hash_set_clear(hash_set);
+    // then
+    TEST_ASSERT_EQUAL(0, hash_set_size(hash_set));
+    TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS(hash_set, elements);
+}
+
 void test_hash_set_contains_element() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -369,6 +396,8 @@ int main(void) {
     RUN_TEST(test_hash_set_is_not_empty);
 
     RUN_TEST(test_hash_set_iterator);
+    RUN_TEST(test_perform_action_for_each_element_of_hash_set);
+    RUN_TEST(test_clear_hash_set);
 
     RUN_TEST(test_hash_set_contains_element);
     RUN_TEST(test_hash_set_does_not_contains_element);

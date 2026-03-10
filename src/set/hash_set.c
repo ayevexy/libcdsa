@@ -290,6 +290,33 @@ Iterator* hash_set_iterator(const HashSet* hash_set) {
     return iterator;
 }
 
+void hash_set_for_each(HashSet* hash_set, Consumer action) {
+    if (require_non_null(hash_set, action)) return;
+    for (int i = 0; i < hash_set->capacity; i++) {
+        const Node* node = hash_set->buckets[i];
+        while (node) {
+            action(node->element);
+            node = node->next;
+        }
+    }
+}
+
+void hash_set_clear(HashSet* hash_set) {
+    if (require_non_null(hash_set)) return;
+    for (int i = 0; i < hash_set->capacity; i++) {
+        Node* current = hash_set->buckets[i];
+        while (current) {
+            hash_set->destruct(current->element);
+            Node* temporary = current->next;
+            hash_set->memory_free(current);
+            current = temporary;
+        }
+    }
+    memset(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
+    hash_set->size = 0;
+    hash_set->modification_count++;
+}
+
 bool hash_set_contains(const HashSet* hash_set, const void* element) {
     if (require_non_null(hash_set)) return false;
     const Node* node = hash_set->buckets[hash_set->hash(element) & (hash_set->capacity - 1)];

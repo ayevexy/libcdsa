@@ -36,6 +36,8 @@ static int next_power_of_two(int x);
 
 static Node* create_node(const HashSet*, const void*);
 
+static void* remove_node(HashSet*, int, Node*, Node*);
+
 static Iterator* internal_iterator_new(const HashSet*);
 
 static bool internal_iterator_has_next(const void*);
@@ -193,17 +195,80 @@ bool hash_set_remove(HashSet* hash_set, const void* element) {
     if (!node) {
         return false;
     }
-    if (prev_node) {
-        prev_node->next = node->next;
-    } else {
-        hash_set->buckets[index] = node->next;
+    return remove_node(hash_set, index, prev_node, node);
+}
+
+int hash_set_remove_all(HashSet* hash_set, Collection collection) {
+    if (require_non_null(hash_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return false;
     }
-    hash_set->destruct(node->element);
-    const void* value = node->element;
-    hash_set->size--;
-    hash_set->modification_count++;
-    hash_set->memory_free(node);
-    return value;
+    int count = 0;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (hash_set_remove(hash_set, element)) {
+            count++;
+        }
+    }
+    iterator_destroy(&iterator);
+    return count;
+}
+
+int hash_set_remove_if(HashSet* hash_set, Predicate condition) {
+    if (require_non_null(hash_set, condition)) return false;
+
+    int count = 0;
+    for (int i = 0; i < hash_set->capacity; i++) {
+        Node* prev_node = nullptr, * node = hash_set->buckets[i];
+        while (node) {
+            Node* next = node->next;
+            if (condition(node->element)) {
+                remove_node(hash_set, i, prev_node, node);
+                count++;
+            } else {
+                prev_node = node;
+            }
+            node = next;
+        }
+    }
+    return count;
+}
+
+int hash_set_retain_all(HashSet* hash_set, Collection collection) {
+    if (require_non_null(hash_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return false;
+    }
+    int count = 0;
+    for (int i = 0; i < hash_set->capacity; i++) {
+        bool found = false;
+        Node* prev_node = nullptr, * node = hash_set->buckets[i];
+        while (node) {
+            Node* next = node->next;
+            while (iterator_has_next(iterator)) {
+                if (hash_set->equals(node->element, iterator_next(iterator))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                remove_node(hash_set, i, prev_node, node);
+                count++;
+            } else {
+                prev_node = node;
+            }
+            node = next;
+            iterator_reset(iterator);
+        }
+    }
+    iterator_destroy(&iterator);
+    return count;
 }
 
 int hash_set_size(const HashSet* hash_set) {
@@ -263,6 +328,20 @@ static Node* create_node(const HashSet* hash_set, const void* element) {
     node->element = (void*) element;
     node->next = nullptr;
     return node;
+}
+
+static void* remove_node(HashSet* hash_set, int bucket, Node* prev_node, Node* node) {
+    if (prev_node) {
+        prev_node->next = node->next;
+    } else {
+        hash_set->buckets[bucket] = node->next;
+    }
+    void* element = node->element;
+    hash_set->destruct(node->element);
+    hash_set->memory_free(node);
+    hash_set->size--;
+    hash_set->modification_count++;
+    return element;
 }
 
 typedef struct {

@@ -14,10 +14,15 @@
         hash_set_add(hash_set, int_new(array[i]));  \
     }
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_HASH_SET(array, hash_set)       \
+#define TEST_ASSERT_HASH_SET_CONTAINS(hash_set, array)              \
     for (int i = 0; i < SIZE(array); i++) {                         \
         TEST_ASSERT_TRUE(hash_set_contains(hash_set, &array[i]));   \
     }                                                               \
     TEST_ASSERT_EQUAL(SIZE(array), hash_set_size(hash_set));
+
+#define TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS(hash_set, array)       \
+    for (int i = 0; i < SIZE(array); i++) {                         \
+        TEST_ASSERT_FALSE(hash_set_contains(hash_set, &array[i]));  \
+    }                                                               \
 
 #endif

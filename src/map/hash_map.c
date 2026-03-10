@@ -510,16 +510,15 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
 
 char* hash_map_to_string(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
-    char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
 
+    char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
         return nullptr;
     }
-
     string[0] = '\0'; // initialize string to clear trash data
-
     strcat(string, hash_map->size == 0 ? "[" : "[ ");
+
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
         const Entry* entry = hash_map->buckets[i];
         while (entry) {
@@ -534,7 +533,6 @@ char* hash_map_to_string(const HashMap* hash_map) {
                 set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
                 return nullptr;
             }
-
             hash_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
             strcat(element_string, " = ");
             hash_map->value_to_string(entry->value, element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
@@ -544,13 +542,12 @@ char* hash_map_to_string(const HashMap* hash_map) {
                 strcat(string, ", ");
             }
             count++;
-
             hash_map->memory_free(element_string);
             entry = entry->next;
         }
     }
-    strcat(string, hash_map->size == 0 ? "]" : " ]");
 
+    strcat(string, hash_map->size == 0 ? "]" : " ]");
     return string;
 }
 

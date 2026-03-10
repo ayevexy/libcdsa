@@ -735,28 +735,25 @@ void** linked_list_to_array(const LinkedList* linked_list) {
 
 char* linked_list_to_string(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
 
+    char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
         return nullptr;
     }
-
     string[0] = '\0'; // initialize string to clear trash data
-
     strcat(string, linked_list->size == 0 ? "{" : "{ ");
+
     for (const Node* node = linked_list->head; node; node = node->next) {
         constexpr int NULL_TERMINATOR = 1;
-
         const int length = linked_list->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
-        char* element_string = linked_list->memory_alloc(length);
 
+        char* element_string = linked_list->memory_alloc(length);
         if (!element_string) {
             linked_list->memory_free(string);
             set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
             return nullptr;
         }
-
         linked_list->to_string(node->element, element_string, length);
         strcat(string, element_string);
 
@@ -765,8 +762,8 @@ char* linked_list_to_string(const LinkedList* linked_list) {
         }
         linked_list->memory_free(element_string);
     }
-    strcat(string, linked_list->size == 0 ? "}" : " }");
 
+    strcat(string, linked_list->size == 0 ? "}" : " }");
     return string;
 }
 

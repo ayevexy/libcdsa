@@ -715,28 +715,25 @@ void** array_list_to_array(const ArrayList* array_list) {
 
 char* array_list_to_string(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    char* string = array_list->memory_alloc(calculate_string_size(array_list));
 
+    char* string = array_list->memory_alloc(calculate_string_size(array_list));
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
         return nullptr;
     }
-
     string[0] = '\0'; // initialize string to clear trash data
-
     strcat(string, array_list->size == 0 ? "[" : "[ ");
+
     for (int i = 0; i < array_list->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
-
         const int length = array_list->to_string(array_list->elements[i], nullptr, 0) + NULL_TERMINATOR;
-        char* element_string = array_list->memory_alloc(length);
 
+        char* element_string = array_list->memory_alloc(length);
         if (!element_string) {
             array_list->memory_free(string);
             set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
             return nullptr;
         }
-
         array_list->to_string(array_list->elements[i], element_string, length);
         strcat(string, element_string);
 
@@ -745,8 +742,8 @@ char* array_list_to_string(const ArrayList* array_list) {
         }
         array_list->memory_free(element_string);
     }
-    strcat(string, array_list->size == 0 ? "]" : " ]");
 
+    strcat(string, array_list->size == 0 ? "]" : " ]");
     return string;
 }
 

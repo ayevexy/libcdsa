@@ -7,6 +7,7 @@
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
 constexpr float MIN_LOAD_FACTOR = 0.5;
+constexpr float GROWN_FACTOR = 2;
 
 typedef struct Node {
     void* element;
@@ -35,6 +36,8 @@ struct HashSet {
 static size_t calculate_string_size(const HashSet*);
 
 static int next_power_of_two(int x);
+
+static bool ensure_capacity(HashSet*);
 
 static Node* create_node(const HashSet*, const void*);
 
@@ -150,6 +153,10 @@ void hash_set_set_destructor(HashSet* hash_set, void (*destructor)(void*)) {
 bool hash_set_add(HashSet* hash_set, const void* element) {
     if (require_non_null(hash_set)) return false;
     if (hash_set_contains(hash_set, element)) {
+        return false;
+    }
+    if (!ensure_capacity(hash_set)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_set' capacity");
         return false;
     }
     Node* node = create_node(hash_set, element);
@@ -276,6 +283,11 @@ int hash_set_retain_all(HashSet* hash_set, Collection collection) {
 int hash_set_size(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return 0;
     return hash_set->size;
+}
+
+int hash_set_capacity(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return 0;
+    return hash_set->capacity;
 }
 
 bool hash_set_is_empty(const HashSet* hash_set) {
@@ -488,6 +500,40 @@ static int next_power_of_two(int x) {
         power <<= 1;
     }
     return power;
+}
+
+static bool ensure_capacity(HashSet* hash_set) {
+    const int new_capacity = hash_set->capacity > (MAX_CAPACITY / GROWN_FACTOR)
+        ? MAX_CAPACITY
+        : hash_set->capacity * GROWN_FACTOR;
+    if (hash_set->size < hash_set->threshold) {
+        return true;
+    }
+    Node** buckets = hash_set->memory_alloc(new_capacity * sizeof(Node*));
+    if (!buckets) {
+        return false;
+    }
+    memset(buckets, 0, new_capacity * sizeof(Node*));
+    for (int i = 0; i < hash_set->capacity; i++) {
+        Node* node = hash_set->buckets[i];
+        while (node) {
+            const int index = hash_set->hash(node->element) & (new_capacity - 1);
+            Node* next_node = node->next;
+            node->next = nullptr;
+
+            Node* current = buckets[index];
+            if (current) {
+                node->next = current;
+            }
+            buckets[index] = node;
+            node = next_node;
+        }
+    }
+    hash_set->memory_free(hash_set->buckets);
+    hash_set->buckets = buckets;
+    hash_set->capacity = new_capacity;
+    hash_set->threshold = hash_set->capacity * hash_set->load_factor;
+    return true;
 }
 
 static Node* create_node(const HashSet* hash_set, const void* element) {

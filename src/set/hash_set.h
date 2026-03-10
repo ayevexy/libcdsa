@@ -61,6 +61,8 @@ int hash_set_retain_all(HashSet* hash_set, Collection collection);
 
 int hash_set_size(const HashSet* hash_set);
 
+int hash_set_capacity(const HashSet* hash_set);
+
 bool hash_set_is_empty(const HashSet* hash_set);
 
 Iterator* hash_set_iterator(const HashSet* hash_set);

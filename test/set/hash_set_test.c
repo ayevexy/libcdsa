@@ -126,6 +126,18 @@ void test_do_not_add_all_elements_to_hash_set_if_already_present() {
     TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
 }
 
+void test_add_elements_to_hash_set_exceeding_threshold_resizes_it() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    hash_set_add(hash_set, int_new(13));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+    TEST_ASSERT_EQUAL(32, hash_set_capacity(hash_set));
+    TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
+}
+
 void test_remove_element_from_hash_set() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -219,6 +231,16 @@ void test_get_hash_set_size() {
     int size = hash_set_size(hash_set);
     // then
     TEST_ASSERT_EQUAL(5, size);
+}
+
+void test_get_hash_set_capacity() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    int capacity = hash_set_capacity(hash_set);
+    // then
+    TEST_ASSERT_EQUAL(16, capacity);
 }
 
 void test_hash_set_is_empty() {
@@ -492,6 +514,7 @@ int main(void) {
     RUN_TEST(test_do_not_add_element_to_hash_set_if_already_present);
     RUN_TEST(test_add_all_elements_to_hash_set);
     RUN_TEST(test_do_not_add_all_elements_to_hash_set_if_already_present);
+    RUN_TEST(test_add_elements_to_hash_set_exceeding_threshold_resizes_it);
 
     RUN_TEST(test_remove_element_from_hash_set);
     RUN_TEST(test_do_not_remove_element_from_hash_set_if_not_present);
@@ -500,6 +523,7 @@ int main(void) {
     RUN_TEST(test_retain_all_elements_from_collection_in_hash_set);
 
     RUN_TEST(test_get_hash_set_size);
+    RUN_TEST(test_get_hash_set_capacity);
     RUN_TEST(test_hash_set_is_empty);
     RUN_TEST(test_hash_set_is_not_empty);
 

@@ -24,6 +24,9 @@
 /** @brief Hash based set implementation */
 #include "set/hash_set.h"
 
+/** @brief Mathematical sets operations */
+#include "set/sets.h"
+
 /** @brief Algorithm-related enumerations */
 #include "util/algorithms.h"
 

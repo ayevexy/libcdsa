@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}
         src/list/linked_list.c
         src/map/hash_map.c
         src/set/hash_set.c
+        src/set/sets.c
         src/util/errors.c
 )
 

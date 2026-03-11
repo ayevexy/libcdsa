@@ -1,5 +1,6 @@
 #include "hash_set.h"
 
+#include "sets.h"
 #include "util/errors.h"
 #include "util/constraints.h"
 #include <string.h>
@@ -31,6 +32,7 @@ struct HashSet {
         void (*memory_free)(void*);
     };
     int modification_count;
+    SetView view;
 };
 
 static size_t calculate_string_size(const HashSet*);
@@ -71,6 +73,12 @@ static Iterator* hash_set_iterator_wrapper(const void*);
 
 static bool hash_set_contains_wrapper(const void*, const void*);
 
+static int hash_set_view_size_wrapper(const void*);
+
+static Iterator* hash_set_view_iterator_wrapper(const void*);
+
+static bool hash_set_view_contains_wrapper(const void*, const void*);
+
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -103,6 +111,11 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->memory_alloc = options->memory_alloc;
     hash_set->memory_free = options->memory_free;
     hash_set->modification_count = 0;
+    hash_set->view.sets.first = hash_set;
+    hash_set->view.sets.second = nullptr;
+    hash_set->view.size = hash_set_view_size_wrapper;
+    hash_set->view.iterator = hash_set_view_iterator_wrapper;
+    hash_set->view.contains = hash_set_view_contains_wrapper;
     return hash_set;
 }
 
@@ -686,4 +699,20 @@ static Iterator* hash_set_iterator_wrapper(const void* hash_set) {
 
 static bool hash_set_contains_wrapper(const void* hash_set, const void* element) {
     return hash_set_contains(hash_set, element);
+}
+
+SetView* _internal_hash_set_view(const HashSet* hash_set) {
+    return hash_set ? (SetView*) &hash_set->view : nullptr;
+}
+
+static int hash_set_view_size_wrapper(const void* hash_set) {
+    return hash_set_size(((Pair*) hash_set)->first);
+}
+
+static Iterator* hash_set_view_iterator_wrapper(const void* hash_set) {
+    return hash_set_iterator(((Pair*) hash_set)->first);
+}
+
+static bool hash_set_view_contains_wrapper(const void* hash_set, const void* element) {
+    return hash_set_contains(((Pair*) hash_set)->first, element);
 }

@@ -51,30 +51,44 @@
 
 ## Overview
 
-A Feature-Rich Data Structures and Algorithms Library Implemented in C.
+A Feature-Rich High-Level Data Structures and Algorithms Library Implemented in C.
 
-This library is meant to implement the majority of the algorithms and data structures using high-level abstractions
-in pure C code. It aims to implement most structures like array lists, linked lists, hashtable, etc. as well as sorting algorithms like merge sort, quick sort. The library provides a high level API to operate on these structures,
-instead of just the basic operations. The library comes with opinionated defaults but provides some customization, the intent is to 
-act like a high-level language collections library while keeping some low-level control of the implementation. The API is heavily based
-on the Java Collections Framework and shares many similarities with it.
+This library is meant to implement the most common algorithms and data structures using high-level abstractions in pure C code.
+It aims to implement common data structures like array lists, linked lists, hashtable, etc. as well as sorting algorithms like merge sort, quick sort.
+The library provides a high level feature-rich API to operate on these structures, instead of just basic operations.
+The library comes with reasonable defaults but provides some configuration. 
+The API is heavily based on the Java Collections Framework and shares many similarities with it.
 
-This library is designed for ease of use and currently implements the following data structures:
+The library currently implements the following data structures:
 
 - [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
 - [Linked List](src/list/linked_list.h): A linear generic and dynamic data structure that stores data in non-consecutive memory locations linked by references.
 - [Hash Map](src/map/hash_map.h): A generic dynamic associative data structure that maps keys to values using a hashing function.
-- [Hash Set](src/set/hash_set.h): A generic dynamic unordered data structure that store elements using a hashing function to ensure uniqueness.
+- [Hash Set](src/set/hash_set.h): A generic dynamic unordered data structure that stores elements using a hashing function to ensure uniqueness.
+
+Also, there is some other utilities which may be useful:
+
+- [Sets](src/set/sets.h): Common mathematical set operations and set view abstraction.
+- [Algorithms](src/util/algorithms.h): Algorithms related enumerations.
+- [Collection](src/util/collection.h): Collection view abstraction.
+- [Constraints](src/util/constraints.h): Pre-condition checks.
+- [Errors](src/util/errors.h): Built-in custom error handling system used by the library.
+- [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
+- [Functions](src/util/functions.h): Functions typedefs and default implementations.
+- [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
+- [Optional](src/util/optional.h): Container type which may or may not contain a value.
+- [Pair](src/util/pair.h): Container type which contains two values.
 
 ## Features
 
 This project aims to accomplish the following features:
 
-- Most Data Structures Implemented
+- Most Common Data Structures Implemented
+- High-Level Abstractions
 - Ease of Use
-- Rich API
-- Customizable
-- Good Defaults
+- Feature Rich API
+- Configurable
+- Reasonable Defaults
 - Great Test Coverage
 - Simple Documentation
 
@@ -143,7 +157,7 @@ int main() {
 
 ### Documentation
 
-Each data structure is documented in its corresponding header file within the `src` folder.
+Each data structure and utility is documented in its corresponding header file within the `src` folder.
 For usage examples, see the corresponding test file in the `test` folder.
 
 ---
@@ -199,7 +213,7 @@ To install the library system-wide in `/usr/local`, execute the following comman
 
 ## Contributing
 
-Open an issue to request a feature or report a bug.
+Open an issue to request a feature, report a bug, suggest some improvement or ask something.
 
 ---
 
@@ -213,4 +227,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 This is a personal project I created for fun, learning, and practice.
 It is not designed to be thread-safe, highly performant, or completely bug-free.
-Do not use it in real-world projects unless these requirements are not important.
+I do not recommend using it in real-world projects unless you trust a random guy's side-project.

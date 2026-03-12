@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
+void* (*sets_memory_alloc)(size_t) = malloc;
+
+void (*sets_memory_free)(void*) = free;
+
 typedef enum {
     READY,
     NOT_READY,
@@ -57,14 +61,8 @@ static void* internal_iterator_next(void* raw_iteration_context) {
 
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
-
-    iterator_destroy((Iterator**) &iteration_context->set_iterators.first);
-    iterator_destroy((Iterator**) &iteration_context->set_iterators.second);
-
-    iteration_context->set_iterators = (Pair) {
-        set_view_iterator(*(SetView*) iteration_context->sets.first),
-        set_view_iterator(*(SetView*) iteration_context->sets.second)
-    };
+    iterator_reset(iteration_context->set_iterators.first);
+    iterator_reset(iteration_context->set_iterators.second);
     iteration_context->state = NOT_READY;
     iteration_context->next_element = nullptr;
 }
@@ -73,17 +71,27 @@ static void iteration_context_destroy(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iterator_destroy((Iterator**) &iteration_context->set_iterators.first);
     iterator_destroy((Iterator**) &iteration_context->set_iterators.second);
-    free(iteration_context);
+    sets_memory_free(iteration_context);
 }
 
 static Iterator* internal_iterator_new(const void* raw_sets, void* (*internal_next)(void*)) {
     const Pair* sets = raw_sets;
     SetView* set_a = sets->first, * set_b = sets->second;
 
-    IterationContext* iteration_context = malloc(sizeof(IterationContext));
+    IterationContext* iteration_context = nullptr;
+    Iterator* set_a_iterator = nullptr, * set_b_iterator = nullptr;
 
+    Error error;
+    if ((error = attempt(set_a_iterator = set_view_iterator(*set_a)))) {
+        goto cleanup;
+    }
+    if ((error = attempt(set_b_iterator = set_view_iterator(*set_b)))) {
+        goto cleanup;
+    }
+
+    iteration_context = sets_memory_alloc(sizeof(IterationContext));
     if (!iteration_context) {
-        return nullptr;
+        goto cleanup;
     }
     iteration_context->iterator.iteration_context = iteration_context;
     iteration_context->iterator.has_next = internal_iterator_has_next;
@@ -92,12 +100,20 @@ static Iterator* internal_iterator_new(const void* raw_sets, void* (*internal_ne
     iteration_context->iterator.memory_free = iteration_context_destroy;
     
     iteration_context->sets = (Pair) { set_a, set_b };
-    iteration_context->set_iterators = (Pair) { set_view_iterator(*set_a), set_view_iterator(*set_b) };
+    iteration_context->set_iterators = (Pair) { set_a_iterator, set_b_iterator };
     iteration_context->state = NOT_READY;
     iteration_context->internal_next = internal_next;
     iteration_context->next_element = nullptr;
 
     return &iteration_context->iterator;
+
+    cleanup: {
+        if (iteration_context) sets_memory_free(iteration_context);
+        if (set_a_iterator) iterator_destroy(&set_a_iterator);
+        if (set_b_iterator) iterator_destroy(&set_b_iterator);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
 }
 
 static int union_set_size(const void* raw_sets) {

@@ -30,7 +30,7 @@ void test_iterator_forward_iteration() {
 }
 
 void test_iterator_backward_iteration() {
-    TEST_IGNORE();
+    #if DATA_STRUCTURE == ARRAY_LIST || DATA_STRUCTURE == LINKED_LIST
     // given
     iterator_next(iterator);
     iterator_next(iterator);
@@ -44,6 +44,9 @@ void test_iterator_backward_iteration() {
     }
     TEST_ASSERT_FALSE(iterator_has_previous(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_previous(iterator)));
+    #else
+    TEST_IGNORE_MESSAGE("Unsupported operation for this iterator");
+    #endif
 }
 
 void test_iterator_forward_iteration_fail_on_concurrent_modification() {
@@ -54,11 +57,14 @@ void test_iterator_forward_iteration_fail_on_concurrent_modification() {
 }
 
 void test_iterator_backward_iteration_fail_on_concurrent_modification() {
-    TEST_IGNORE();
+    #if DATA_STRUCTURE == ARRAY_LIST || DATA_STRUCTURE == LINKED_LIST
     // when
     DATA_STRUCTURE_CLEAR(data_structure);
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    #else
+    TEST_IGNORE_MESSAGE("Unsupported operation for this iterator");
+    #endif
 }
 
 void test_iterator_forward_iteration_after_reset() {
@@ -71,13 +77,16 @@ void test_iterator_forward_iteration_after_reset() {
 }
 
 void test_iterator_backward_iteration_after_reset() {
-    TEST_IGNORE();
+    #if DATA_STRUCTURE == ARRAY_LIST || DATA_STRUCTURE == LINKED_LIST
     // given
     test_iterator_backward_iteration();
     // when
     iterator_reset(iterator);
     // then
     test_iterator_backward_iteration();
+    #else
+    TEST_IGNORE_MESSAGE("Unsupported operation for this iterator");
+    #endif
 }
 
 int main(void) {

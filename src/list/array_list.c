@@ -830,15 +830,21 @@ static void* internal_iterator_next(void* raw_iteration_context) {
 }
 
 static bool internal_iterator_has_previous(const void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return false;
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->cursor - 1 > 0;
 }
 
 static void* internal_iterator_previous(void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return nullptr;
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!internal_iterator_has_previous(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    return iteration_context->array_list->elements[--iteration_context->cursor];
 }
 
 static void internal_iterator_add(void* raw_iteration_context, const void* element) {

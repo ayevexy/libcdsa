@@ -874,6 +874,7 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
 typedef struct {
     Iterator iterator;
     const LinkedList* linked_list;
+    int cursor;
     Node* current;
     int modification_count;
 } IterationContext;
@@ -899,6 +900,7 @@ static Iterator* internal_iterator_new(const LinkedList* linked_list) {
     iteration_context->iterator.memory_free = linked_list->memory_free;
 
     iteration_context->linked_list = linked_list;
+    iteration_context->cursor = 0;
     iteration_context->current = linked_list->head;
     iteration_context->modification_count = linked_list->modification_count;
 
@@ -907,7 +909,7 @@ static Iterator* internal_iterator_new(const LinkedList* linked_list) {
 
 static bool internal_iterator_has_next(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
-    return iteration_context->current;
+    return iteration_context->cursor < iteration_context->linked_list->size;
 }
 
 static void* internal_iterator_next(void* raw_iteration_context) {
@@ -922,19 +924,32 @@ static void* internal_iterator_next(void* raw_iteration_context) {
     }
     void* element = iteration_context->current->element;
     iteration_context->current = iteration_context->current->next;
+    iteration_context->cursor++;
     return element;
 }
 
 static bool internal_iterator_has_previous(const void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return false;
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->cursor - 1 > 0;
 }
 
 static void* internal_iterator_previous(void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return nullptr;
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!internal_iterator_has_previous(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    if (!iteration_context->current) {
+       iteration_context->current = iteration_context->linked_list->tail;
+    }
+    void* element = iteration_context->current->element;
+    iteration_context->current = iteration_context->current->prev;
+    iteration_context->cursor--;
+    return element;
 }
 
 static void internal_iterator_add(void* raw_iteration_context, const void* element) {
@@ -962,6 +977,7 @@ static void* internal_iterator_remove(void* raw_iteration_context) {
 
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->cursor = 0;
     iteration_context->current = iteration_context->linked_list->head;
 }
 

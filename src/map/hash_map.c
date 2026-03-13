@@ -252,18 +252,20 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
     return old_value;
 }
 
-// TODO: fix partial update failure
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     if (require_non_null(hash_map)) return;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(entry_collection));
+    Iterator* iterator; Error error = attempt(iterator = collection_iterator(entry_collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return;
     }
     while (iterator_has_next(iterator)) {
         const MapEntry* entry = iterator_next(iterator);
-        hash_map_put(hash_map, entry->key, entry->value); // can fail
+        if ((error = attempt(hash_map_put(hash_map, entry->key, entry->value)))) {
+            set_error(error, "%s", plain_error_message());
+            break;
+        }
     }
     iterator_destroy(&iterator);
 }
@@ -490,7 +492,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         .memory_alloc = hash_map->memory_alloc,
         .memory_free = hash_map->memory_free
     }));
-    if (error) {
+    if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }

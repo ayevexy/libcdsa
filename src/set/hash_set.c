@@ -191,14 +191,19 @@ bool hash_set_add(HashSet* hash_set, const void* element) {
 bool hash_set_add_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    Iterator* iterator; Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return false;
     }
     bool changed = false;
     while (iterator_has_next(iterator)) {
-        if (hash_set_add(hash_set, iterator_next(iterator))) {
+        bool added = false;
+        if ((error = attempt(added = hash_set_add(hash_set, iterator_next(iterator))))) {
+            set_error(error, "%s", plain_error_message());
+            break;
+        }
+        if (added) {
             changed = true;
         }
     }
@@ -409,7 +414,7 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
 HashSet* hash_set_clone(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
 
-    HashSet* new_hash_set; const Error error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {
+    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {
         .initial_capacity = hash_set->capacity,
         .load_factor = hash_set->load_factor,
         .hash = hash_set->hash,
@@ -426,7 +431,11 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
     for (int i = 0; i < hash_set->capacity; i++) {
         const Node* node = hash_set->buckets[i];
         while (node) {
-            hash_set_add(new_hash_set, node->element);
+            if ((error = attempt(hash_set_add(new_hash_set, node->element)))) {
+                hash_set_destroy(&new_hash_set);
+                set_error(error, "%s", plain_error_message());
+                return nullptr;
+            }
             node = node->next;
         }
     }

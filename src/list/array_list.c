@@ -183,35 +183,29 @@ void array_list_add_last(ArrayList* array_list, const void* element) {
 
 void array_list_add_all(ArrayList* array_list, int index, Collection collection) {
     if (require_non_null(array_list)) return;
-
     if (index < 0 || index > array_list->size) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
         return;
     }
-
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return;
     }
-
     if (!ensure_capacity(array_list, array_list->size + collection_size(collection))) {
         iterator_destroy(&iterator);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'array_list' capacity");
         return;
     }
-
     const int offset = collection_size(collection);
     for (int i = array_list->size - 1; i >= index; i--) {
         array_list->elements[i + offset] = array_list->elements[i];
     }
-
     while (iterator_has_next(iterator)) {
         array_list->elements[index++] = iterator_next(iterator);
     }
     array_list->size += collection_size(collection);
     array_list->modification_count++;
-
     iterator_destroy(&iterator);
 }
 

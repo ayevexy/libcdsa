@@ -170,13 +170,11 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size);
         return;
     }
-
     Node* new_node = create_node(linked_list, (void*) element);
     if (!new_node) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
         return;
     }
-
     if (linked_list->size == 0) {
         linked_list->head = new_node;
         linked_list->tail = new_node;
@@ -213,12 +211,11 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size);
         return;
     }
-
     if (collection_is_empty(collection)) return;
 
     const Pair segment = segment_from(linked_list, collection);
-
     Node* head = segment.first, * tail = segment.second;
+
     if (!(head && tail)) return;
 
     if (linked_list->size == 0) {
@@ -833,23 +830,19 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
     if (node->next) {
         node->next->prev = node->prev;
     }
-
     linked_list->memory_free(node);
     linked_list->size--;
     linked_list->modification_count++;
-
     return element;
 }
 
 static Pair segment_from(LinkedList* linked_list, Collection collection) {
     assert(collection_size(collection) != 0);
-
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return (Pair) {};
     }
-
     Node* head = nullptr, * tail = nullptr;
     bool failed = false;
     while (iterator_has_next(iterator)) {
@@ -867,7 +860,6 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
         }
     }
     iterator_destroy(&iterator);
-
     if (failed) {
         Node* node = head;
         while (node) {
@@ -878,7 +870,6 @@ static Pair segment_from(LinkedList* linked_list, Collection collection) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for new nodes");
         return (Pair) {};
     }
-
     return (Pair) { .first = head, .second = tail };
 }
 

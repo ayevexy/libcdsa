@@ -91,7 +91,7 @@ Error capture_error(void);
  * @param ... optional format arguments
  */
 #define set_error(error, message, ...) \
-    set_plain_error(error, "Error at %s(): %s - "message, __func__, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
+    set_plain_error(error, "%s: "message, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
 
 /**
  * @brief Sets an error with a formatted message.

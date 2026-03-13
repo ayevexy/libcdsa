@@ -53,8 +53,6 @@ static void* internal_iterator_remove(void*);
 
 static void internal_iterator_reset(void*);
 
-static void internal_iterator_for_each_remaining(void*, Consumer);
-
 static void bubble_sort(ArrayList*, Comparator);
 
 static void selection_sort(ArrayList*, Comparator);
@@ -804,7 +802,6 @@ static Iterator* internal_iterator_new(const ArrayList* array_list) {
     iteration_context->iterator.remove = internal_iterator_remove;
 
     iteration_context->iterator.reset = internal_iterator_reset;
-    iteration_context->iterator.for_each_remaining = internal_iterator_for_each_remaining;
     iteration_context->iterator.memory_free = array_list->memory_free;
 
     iteration_context->array_list = array_list;
@@ -870,11 +867,6 @@ static void* internal_iterator_remove(void* raw_iteration_context) {
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->cursor = 0;
-}
-
-static void internal_iterator_for_each_remaining(void* raw_iteration_context, Consumer action) {
-    (void) raw_iteration_context, (void) action;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
 }
 
 static void bubble_sort(ArrayList* array_list, Comparator compare) {

@@ -60,8 +60,6 @@ static void* internal_iterator_remove(void*);
 
 static void internal_iterator_reset(void*);
 
-static void internal_iterator_for_each_remaining(void*, Consumer);
-
 static void internal_iterator_reset(void*);
 
 static void bubble_sort(LinkedList*, Comparator);
@@ -898,7 +896,6 @@ static Iterator* internal_iterator_new(const LinkedList* linked_list) {
     iteration_context->iterator.remove = internal_iterator_remove;
 
     iteration_context->iterator.reset = internal_iterator_reset;
-    iteration_context->iterator.for_each_remaining = internal_iterator_for_each_remaining;
     iteration_context->iterator.memory_free = linked_list->memory_free;
 
     iteration_context->linked_list = linked_list;
@@ -966,11 +963,6 @@ static void* internal_iterator_remove(void* raw_iteration_context) {
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->current = iteration_context->linked_list->head;
-}
-
-static void internal_iterator_for_each_remaining(void* raw_iteration_context, Consumer action) {
-    (void) raw_iteration_context, (void) action;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
 }
 
 static void bubble_sort(LinkedList* linked_list, Comparator compare) {

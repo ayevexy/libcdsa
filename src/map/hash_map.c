@@ -72,8 +72,6 @@ static void* internal_iterator_remove(void*);
 
 static void internal_iterator_reset(void*);
 
-static void internal_iterator_for_each_remaining(void*, Consumer);
-
 static int hash_map_size_wrapper(const void*);
 
 static Iterator* hash_map_entry_iterator(const void*);
@@ -668,7 +666,6 @@ static Iterator* internal_iterator_new(const HashMap* hash_map, void* next_funct
     iteration_context->iterator.remove = internal_iterator_remove;
 
     iteration_context->iterator.reset = internal_iterator_reset;
-    iteration_context->iterator.for_each_remaining = internal_iterator_for_each_remaining;
     iteration_context->iterator.memory_free = hash_map->memory_free;
 
     iteration_context->hash_map = hash_map;
@@ -760,11 +757,6 @@ static void internal_iterator_reset(void* raw_iteration_context) {
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
-}
-
-static void internal_iterator_for_each_remaining(void* raw_iteration_context, Consumer action) {
-    (void) raw_iteration_context, (void) action;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
 }
 
 static int hash_map_size_wrapper(const void* hash_map) {

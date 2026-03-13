@@ -24,7 +24,6 @@ typedef struct {
     void* (*set)(void* iteration_context, const void* element);
     void* (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
-    void (*for_each_remaining)(void* iteration_context, Consumer action);
     void (*memory_free)(void*);
 } Iterator;
 
@@ -145,7 +144,9 @@ static inline void iterator_reset(Iterator* iterator) {
  * @param action the action to perform
  */
 static inline void iterator_for_each_remaining(Iterator* iterator, Consumer action) {
-    iterator->for_each_remaining(iterator->iteration_context, action);
+    while (iterator_has_next(iterator)) {
+        action(iterator_next(iterator));
+    }
 }
 
 /**

@@ -599,21 +599,27 @@ void test_array_list_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_array_list_iterator() {
+void test_array_list_iterator_forward_iteration() {
     // given
-    int values[] = { 1, 2, 3 };
+    int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     // then
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(values[0], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(values[1], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(values[2], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
@@ -621,15 +627,120 @@ void test_array_list_iterator() {
     iterator_destroy(&iterator);
 }
 
+void test_array_list_iterator_backward_iteration() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    Iterator* iterator = array_list_iterator(array_list);
+    // and
+    iterator_next(iterator);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_array_list_iterator_detects_concurrent_modification() {
     // given
-    int values[] = { 1, 2, 3 };
+    int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     array_list_remove_last(array_list);
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_remove_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    iterator_next(iterator);
+    // when
+    int* value = iterator_remove(iterator);
+    // then
+    int new_values[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(1, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_called() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    // when
+    int* value; Error error = attempt(value = iterator_remove(iterator));
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    iterator_next(iterator);
+    iterator_remove(iterator);
+    // when
+    int* value; Error error = attempt(value = iterator_remove(iterator));
+    // then
+    int new_values[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_reset() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    iterator_next(iterator); // 1
+    iterator_next(iterator); // 2
+    iterator_next(iterator); // 3
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
 }
 
 void test_array_list_is_equal_to_it_self() {
@@ -1218,8 +1329,14 @@ int main(void) {
     RUN_TEST(test_array_list_is_empty);
     RUN_TEST(test_array_list_is_not_empty);
 
-    RUN_TEST(test_array_list_iterator);
+    RUN_TEST(test_array_list_iterator_forward_iteration);
+    RUN_TEST(test_array_list_iterator_backward_iteration);
     RUN_TEST(test_array_list_iterator_detects_concurrent_modification);
+    RUN_TEST(test_array_list_iterator_remove_element);
+    RUN_TEST(test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_called);
+    RUN_TEST(test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row);
+    RUN_TEST(test_array_list_iterator_reset);
+
     RUN_TEST(test_array_list_is_equal_to_it_self);
     RUN_TEST(test_array_list_is_equal_to_another_array_list);
     RUN_TEST(test_array_list_is_not_equal_to_another_array_list_with_different_size);

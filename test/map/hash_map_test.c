@@ -449,7 +449,7 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_hash_map_iterator() {
+void test_hash_map_iterator_forward_iteration() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
@@ -473,6 +473,49 @@ void test_hash_map_iterator() {
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_backward_iteration_unsupported() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    Iterator* iterator = hash_map_iterator(hash_map);
+    // then
+    TEST_ASSERT_EQUAL(UNSUPPORTED_OPERATION_ERROR, attempt(iterator_has_previous(iterator)));
+    TEST_ASSERT_EQUAL(UNSUPPORTED_OPERATION_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_detects_concurrent_modification() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    Iterator* iterator = hash_map_iterator(hash_map);
+    hash_map_clear(hash_map);
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_reset() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    Iterator* iterator = hash_map_iterator(hash_map);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -763,7 +806,11 @@ int main(void) {
     RUN_TEST(test_get_hash_map_size);
     RUN_TEST(test_hash_map_is_empty);
     RUN_TEST(test_hash_map_is_not_empty);
-    RUN_TEST(test_hash_map_iterator);
+
+    RUN_TEST(test_hash_map_iterator_forward_iteration);
+    RUN_TEST(test_hash_map_iterator_backward_iteration_unsupported);
+    RUN_TEST(test_hash_map_iterator_detects_concurrent_modification);
+    RUN_TEST(test_hash_map_iterator_reset);
 
     RUN_TEST(test_hash_map_is_equal_to_it_self);
     RUN_TEST(test_hash_map_is_equal_to_another_hash_map);

@@ -260,24 +260,73 @@ void test_hash_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_hash_set_iterator() {
+void test_hash_set_iterator_forward_iteration() {
     // given
-    int elements[] = { 1, 2, 3 };
+    int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
     Iterator* iterator = hash_set_iterator(hash_set);
     // then
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(elements[0], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(elements[1], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(elements[2], *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_set_iterator_backward_iteration_unsupported() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    Iterator* iterator = hash_set_iterator(hash_set);
+    // then
+    TEST_ASSERT_EQUAL(UNSUPPORTED_OPERATION_ERROR, attempt(iterator_has_previous(iterator)));
+    TEST_ASSERT_EQUAL(UNSUPPORTED_OPERATION_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_set_iterator_detects_concurrent_modification() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    Iterator* iterator = hash_set_iterator(hash_set);
+    hash_set_clear(hash_set);
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_set_iterator_reset() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_HASH_SET(hash_set, elements);
+    // when
+    Iterator* iterator = hash_set_iterator(hash_set);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    iterator_next(iterator);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -528,7 +577,11 @@ int main(void) {
     RUN_TEST(test_hash_set_is_empty);
     RUN_TEST(test_hash_set_is_not_empty);
 
-    RUN_TEST(test_hash_set_iterator);
+    RUN_TEST(test_hash_set_iterator_forward_iteration);
+    RUN_TEST(test_hash_set_iterator_backward_iteration_unsupported);
+    RUN_TEST(test_hash_set_iterator_detects_concurrent_modification);
+    RUN_TEST(test_hash_set_iterator_reset);
+
     RUN_TEST(test_hash_set_is_equal_to_it_self);
     RUN_TEST(test_hash_set_is_equal_to_another_hash_set);
     RUN_TEST(test_hash_set_is_not_equal_to_another_hash_set_with_different_size);

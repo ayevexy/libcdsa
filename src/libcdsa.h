@@ -48,6 +48,9 @@
 /** @brief Iterator abstraction */
 #include "util/iterator.h"
 
+/** @brief Memory management abstractions */
+#include "util/memory.h"
+
 /** @brief Optional value container */
 #include "util/optional.h"
 

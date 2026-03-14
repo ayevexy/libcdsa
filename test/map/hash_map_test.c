@@ -1,6 +1,7 @@
 #include "hash_map_test.h"
 
 #include "map/hash_map.h"
+#include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
@@ -64,7 +65,7 @@ static void* remapper_return_null(void* key, void* value) {
 }
 
 static void* remapper_return_new_value(void* key, void* value) {
-    return int_new(10);
+    return new(int, 10);
 }
 
 static void* remapper_sum_values(void* old_value, void* new_value) {
@@ -88,7 +89,7 @@ void test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_m
     // given
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
-    hash_map_put(hash_map, char_new('a'), nullptr);
+    hash_map_put(hash_map, new(char, 'a'), nullptr);
     // when
     int* value = hash_map_compute(hash_map, &(char){'a'}, remapper_return_new_value);
     // then
@@ -110,7 +111,7 @@ void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_
 }
 
 static void* mapper(void* key) {
-    return int_new(10);
+    return new(int, 10);
 }
 
 void test_compute_mapping_of_hash_map_if_absent() {
@@ -118,7 +119,7 @@ void test_compute_mapping_of_hash_map_if_absent() {
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* value = hash_map_compute_if_absent(hash_map, char_new('a'), mapper);
+    int* value = hash_map_compute_if_absent(hash_map, new(char, 'a'), mapper);
     // then
     CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(10, *value);
@@ -142,7 +143,7 @@ void test_compute_mapping_of_hash_map_if_present() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* value = hash_map_compute_if_present(hash_map, char_new('a'), remapper_return_new_value);
+    int* value = hash_map_compute_if_present(hash_map, new(char, 'a'), remapper_return_new_value);
     // then
     CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(10, *value);
@@ -165,9 +166,9 @@ void test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value() {
     // given
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
-    hash_map_put(hash_map, char_new('a'), nullptr);
+    hash_map_put(hash_map, new(char, 'a'), nullptr);
     // when
-    int* value = hash_map_merge(hash_map, &(char){'a'}, int_new(1), remapper_return_null);
+    int* value = hash_map_merge(hash_map, &(char){'a'}, new(int, 1), remapper_return_null);
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *value);
@@ -203,7 +204,7 @@ void test_put_entry_to_hash_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    void* old_value = hash_map_put(hash_map, char_new('k'), int_new(10));
+    void* old_value = hash_map_put(hash_map, new(char, 'k'), new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'k', 10 } };
     TEST_ASSERT_NULL(old_value);
@@ -215,7 +216,7 @@ void test_put_entry_to_hash_map_if_key_already_exists_update_value() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    void* old_value = hash_map_put(hash_map, char_new('a'), int_new(10));
+    void* old_value = hash_map_put(hash_map, new(char, 'a'), new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *(int*) old_value);
@@ -226,9 +227,9 @@ void test_put_entry_to_hash_map_if_key_is_absent() {
     // given
     CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
-    hash_map_put(hash_map, char_new('a'), nullptr);
+    hash_map_put(hash_map, new(char, 'a'), nullptr);
     // when
-    void* old_value = hash_map_put_if_absent(hash_map, char_new('a'), int_new(1));
+    void* old_value = hash_map_put_if_absent(hash_map, new(char, 'a'), new(int, 1));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_NULL(old_value);
@@ -240,7 +241,7 @@ void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    void* old_value = hash_map_put_if_absent(hash_map, char_new('a'), int_new(10));
+    void* old_value = hash_map_put_if_absent(hash_map, new(char, 'a'), new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *(int*) old_value);
@@ -270,7 +271,7 @@ void test_put_entries_to_hash_map_exceeding_threshold_resizes_it() {
     };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    hash_map_put(hash_map, char_new('m'), int_new(13));
+    hash_map_put(hash_map, new(char, 'm'), new(int, 13));
     // then
     CharIntEntry new_entries[] = {
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
@@ -318,7 +319,7 @@ void test_replace_value_from_hash_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* old_value = hash_map_replace(hash_map, &(char){'a'}, int_new(10));
+    int* old_value = hash_map_replace(hash_map, &(char){'a'}, new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *old_value);
@@ -330,7 +331,7 @@ void test_replace_value_from_hash_map_no_mapping_fails() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    int* old_value = hash_map_replace(hash_map, &(char){'k'}, int_new(10));
+    int* old_value = hash_map_replace(hash_map, &(char){'k'}, new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_NULL(old_value);
@@ -342,7 +343,7 @@ void test_replace_entry_from_hash_map_matching_value() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){3}, int_new(10));
+    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){3}, new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 10 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_TRUE(replaced);
@@ -354,7 +355,7 @@ void test_replace_entry_from_hash_map_no_matching_value_fails() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){2}, int_new(10));
+    bool replaced = hash_map_replace_if_equals(hash_map, &(char){'c'}, &(int){2}, new(int, 10));
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_FALSE(replaced);
@@ -441,7 +442,7 @@ void test_hash_map_is_empty() {
 
 void test_hash_map_is_not_empty() {
     // given
-    hash_map_put(hash_map, char_new('k'), int_new(10));
+    hash_map_put(hash_map, new(char, 'k'), new(int, 10));
     // when
     bool empty = hash_map_is_empty(hash_map);
     // then
@@ -510,7 +511,7 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
     POPULATE_HASH_MAP(hash_map, entries);
     POPULATE_HASH_MAP(other_hash_map, entries);
     // and
-    hash_map_put(other_hash_map, char_new('k'), int_new(10));
+    hash_map_put(other_hash_map, new(char, 'k'), new(int, 10));
     // when
     bool equals = hash_map_equals(hash_map, other_hash_map);
     // then

@@ -2,6 +2,7 @@
 
 #include "set/sets.h"
 #include "set/hash_set.h"
+#include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"

@@ -10,8 +10,8 @@
 
 #define POPULATE_ARRAY_LIST(array_list, array)                  \
     for (int i = 0; i < SIZE(array); i++) {                     \
-        array_list_add_last(array_list, int_new(array[i]));     \
-}
+        array_list_add_last(array_list, new(int, array[i]));    \
+    }
 
 #define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)               \
     for (int i = 0; i < SIZE(array); i++) {                                     \

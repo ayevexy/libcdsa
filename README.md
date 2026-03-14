@@ -76,6 +76,7 @@ Also, there is some other utilities which may be useful:
 - [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
 - [Functions](src/util/functions.h): Functions typedefs and default implementations.
 - [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
+- [Memory](src/util/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
 

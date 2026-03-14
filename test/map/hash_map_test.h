@@ -13,7 +13,7 @@
 
 #define POPULATE_HASH_MAP(hash_map, entry_array)                                                \
     for (int i = 0; i < SIZE(entry_array); i++) {                                               \
-        hash_map_put(hash_map, char_new(entry_array[i].key), int_new(entry_array[i].value));    \
+        hash_map_put(hash_map, new(char, entry_array[i].key), new(int, entry_array[i].value));  \
     }
 
 #define TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(entry_array, hash_map)                                     \

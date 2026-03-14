@@ -1,6 +1,7 @@
 #include "linked_list_test.h"
 
 #include "list/linked_list.h"
+#include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
@@ -75,7 +76,7 @@ void test_add_element_at_index_to_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add(linked_list, 2, int_new(10));
+    linked_list_add(linked_list, 2, new(int, 10));
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -86,7 +87,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    Error error = attempt(linked_list_add(linked_list, index, int_new(10)));
+    Error error = attempt(linked_list_add(linked_list, index, new(int, 10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -105,7 +106,7 @@ void test_add_element_at_beginning_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_first(linked_list, int_new(10));
+    linked_list_add_first(linked_list, new(int, 10));
     // then
     int new_values[] = { 10, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -116,7 +117,7 @@ void test_add_element_at_end_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_add_last(linked_list, int_new(10));
+    linked_list_add_last(linked_list, new(int, 10));
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -188,7 +189,7 @@ void test_get_element_from_linked_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
-    linked_list_add_last(linked_list, int_new(10));
+    linked_list_add_last(linked_list, new(int, 10));
     // when
     int* element; Error error = attempt(element = linked_list_get(linked_list, index));
     // then
@@ -245,7 +246,7 @@ void test_set_element_of_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value = linked_list_set(linked_list, 2, int_new(10));
+    int* old_value = linked_list_set(linked_list, 2, new(int, 10));
     // then
     int new_values[] = { 1, 2, 10, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -257,7 +258,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, int_new(10)));
+    int* old_value; Error error = attempt(old_value = linked_list_set(linked_list, index, new(int, 10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_NULL(old_value);
@@ -532,7 +533,7 @@ void test_linked_list_is_empty() {
 
 void test_linked_list_is_not_empty() {
     // given
-    linked_list_add_last(linked_list, int_new(10));
+    linked_list_add_last(linked_list, new(int, 10));
     // when
     bool empty = linked_list_is_empty(linked_list);
     // then
@@ -606,7 +607,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     POPULATE_LINKED_LIST(linked_list, values);
     // and
     POPULATE_LINKED_LIST(other_linked_list, values);
-    linked_list_add_last(other_linked_list, int_new(10));
+    linked_list_add_last(other_linked_list, new(int, 10));
     // when
     bool equals = linked_list_equals(linked_list, other_linked_list);
     // then

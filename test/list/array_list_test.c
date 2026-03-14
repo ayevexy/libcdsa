@@ -1,6 +1,7 @@
 #include "array_list_test.h"
 
 #include "list/array_list.h"
+#include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
@@ -75,7 +76,7 @@ void test_add_element_at_index_to_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add(array_list, 2, int_new(10));
+    array_list_add(array_list, 2, new(int, 10));
     // then
     int new_values[] = { 1, 2, 10, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -86,7 +87,7 @@ void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add(array_list, 5, int_new(100));
+    array_list_add(array_list, 5, new(int, 100));
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 100, 6, 7, 8, 9, 10 };
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
@@ -98,7 +99,7 @@ static void add_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    Error error = attempt(array_list_add(array_list, index, int_new(10)));
+    Error error = attempt(array_list_add(array_list, index, new(int, 10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
@@ -117,7 +118,7 @@ void test_add_element_at_beginning_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add_first(array_list, int_new(10));
+    array_list_add_first(array_list, new(int, 10));
     // then
     int new_values[] = { 10, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -128,7 +129,7 @@ void test_add_element_at_end_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_add_last(array_list, int_new(10));
+    array_list_add_last(array_list, new(int, 10));
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -200,7 +201,7 @@ void test_get_element_from_array_list() {
 
 static void get_index_out_of_bounds_test_helper(int index) {
     // given
-    array_list_add_last(array_list, int_new(10));
+    array_list_add_last(array_list, new(int, 10));
     // when
     int* element; Error error = attempt(element = array_list_get(array_list, index));
     // then
@@ -257,7 +258,7 @@ void test_set_element_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* old_value = array_list_set(array_list, 2, int_new(10));
+    int* old_value = array_list_set(array_list, 2, new(int, 10));
     // then
     int new_values[] = { 1, 2, 10, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -269,7 +270,7 @@ static void set_index_out_of_bounds_test_helper(int index) {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* old_value; Error error = attempt(old_value = array_list_set(array_list, index, int_new(10)));
+    int* old_value; Error error = attempt(old_value = array_list_set(array_list, index, new(int, 10)));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
     TEST_ASSERT_NULL(old_value);
@@ -591,7 +592,7 @@ void test_array_list_is_empty() {
 
 void test_array_list_is_not_empty() {
     // given
-    array_list_add_last(array_list, int_new(10));
+    array_list_add_last(array_list, new(int, 10));
     // when
     bool empty = array_list_is_empty(array_list);
     // then
@@ -665,7 +666,7 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     POPULATE_ARRAY_LIST(array_list, values);
     // and
     POPULATE_ARRAY_LIST(other_array_list, values);
-    array_list_add_last(other_array_list, int_new(10));
+    array_list_add_last(other_array_list, new(int, 10));
     // when
     bool equals = array_list_equals(array_list, other_array_list);
     // then

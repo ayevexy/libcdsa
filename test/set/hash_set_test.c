@@ -1,6 +1,7 @@
 #include "hash_set_test.h"
 
 #include "set/hash_set.h"
+#include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
@@ -75,7 +76,7 @@ void test_add_element_to_hash_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool added = hash_set_add(hash_set, int_new(10));
+    bool added = hash_set_add(hash_set, new(int, 10));
     // then
     int new_elements[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_TRUE(added);
@@ -87,7 +88,7 @@ void test_do_not_add_element_to_hash_set_if_already_present() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool added = hash_set_add(hash_set, int_new(3));
+    bool added = hash_set_add(hash_set, new(int, 3));
     // then
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_FALSE(added);
@@ -131,7 +132,7 @@ void test_add_elements_to_hash_set_exceeding_threshold_resizes_it() {
     int elements[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    hash_set_add(hash_set, int_new(13));
+    hash_set_add(hash_set, new(int, 13));
     // then
     int new_elements[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
     TEST_ASSERT_EQUAL(32, hash_set_capacity(hash_set));
@@ -252,7 +253,7 @@ void test_hash_set_is_empty() {
 
 void test_hash_set_is_not_empty() {
     // given
-    hash_set_add(hash_set, int_new(10));
+    hash_set_add(hash_set, new(int, 10));
     // when
     bool empty = hash_set_is_empty(hash_set);
     // then
@@ -315,7 +316,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
     POPULATE_HASH_SET(hash_set, elements);
     // and
     POPULATE_HASH_SET(other_hash_set, elements);
-    hash_set_add(other_hash_set, int_new(10));
+    hash_set_add(other_hash_set, new(int, 10));
     // when
     bool equals = hash_set_equals(hash_set, other_hash_set);
     // then

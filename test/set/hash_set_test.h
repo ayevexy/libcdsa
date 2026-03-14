@@ -11,7 +11,7 @@
 
 #define POPULATE_HASH_SET(hash_set, array)          \
     for (int i = 0; i < SIZE(array); i++) {         \
-        hash_set_add(hash_set, int_new(array[i]));  \
+        hash_set_add(hash_set, new(int, array[i])); \
     }
 
 #define TEST_ASSERT_HASH_SET_CONTAINS(hash_set, array)              \

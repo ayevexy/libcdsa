@@ -56,6 +56,7 @@ static inline void* iterator_next(Iterator* iterator) {
  * @brief Advances the iterator n-times and retrieves the current element.
  *
  * @param iterator pointer to an Iterator
+ * @param count how many times the iterator will advance
  *
  * @return pointer to the retrieved element
  *
@@ -98,6 +99,7 @@ static inline void* iterator_previous(Iterator* iterator) {
  * @brief Retreats the iterator n-times and retrieves the current element.
  *
  * @param iterator pointer to an Iterator
+ * @param count how many times the iterator will retreat
  *
  * @return pointer to the retrieved element
  *

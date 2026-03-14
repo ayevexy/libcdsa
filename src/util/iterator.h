@@ -53,6 +53,23 @@ static inline void* iterator_next(Iterator* iterator) {
 }
 
 /**
+ * @brief Advances the iterator n-times and retrieves the current element.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return pointer to the retrieved element
+ *
+ * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ */
+static inline void* iterator_advance(Iterator* iterator, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        iterator_next(iterator);
+    }
+    return count > 0 ? iterator_next(iterator) : nullptr;
+}
+
+/**
  * @brief Checks whether more previous elements are available.
  *
  * @param iterator pointer to an Iterator
@@ -75,6 +92,23 @@ static inline bool iterator_has_previous(const Iterator* iterator) {
  */
 static inline void* iterator_previous(Iterator* iterator) {
     return iterator->previous(iterator->iteration_context);
+}
+
+/**
+ * @brief Retreats the iterator n-times and retrieves the current element.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return pointer to the retrieved element
+ *
+ * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ */
+static inline void* iterator_retreat(Iterator* iterator, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        iterator_previous(iterator);
+    }
+    return count > 0 ? iterator_previous(iterator) : nullptr;
 }
 
 /**

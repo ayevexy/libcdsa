@@ -59,12 +59,18 @@ The library provides a high level feature-rich API to operate on these structure
 The library comes with reasonable defaults but provides some configuration. 
 The API is heavily based on the Java Collections Framework and shares many similarities with it.
 
-The library currently implements the following data structures:
+The library implements the following data structures:
 
 - [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
 - [Linked List](src/list/linked_list.h): A linear generic and dynamic data structure that stores data in non-consecutive memory locations linked by references.
 - [Hash Map](src/map/hash_map.h): A generic dynamic associative data structure that maps keys to values using a hashing function.
+- [Tree Map](src/map/tree_map.h): ...
 - [Hash Set](src/set/hash_set.h): A generic dynamic unordered data structure that stores elements using a hashing function to ensure uniqueness.
+- [Tree Set](src/set/tree_set.h): ...
+- [Deque](src/deque/deque.h): ...
+- [Stack](src/stack/stack.h): ...
+- [Queue](src/queue/queue.h): ...
+- [Priority Queue](src/priority_queue/priority_queue.h): ...
 
 Also, there is some other utilities which may be useful:
 

@@ -110,40 +110,20 @@ file(GLOB_RECURSE TEST_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/test/*.c"
 )
 
-set(DS_STRING array_list linked_list hash_map hash_set)
-
 foreach(TEST_FILE ${TEST_FILES})
 
     get_filename_component(TEST_DIR ${TEST_FILE} DIRECTORY)
     get_filename_component(TEST_DIR ${TEST_DIR} NAME)
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
-    if(TEST_NAME STREQUAL "iterator_test")
-        foreach(DS_INDEX RANGE 0 3)
-            list(GET DS_STRING ${DS_INDEX} TEST_SUFFIX)
+    set(EXECUTABLE "${TEST_DIR}.${TEST_NAME}")
+    add_executable(${EXECUTABLE} ${TEST_FILE})
 
-            set(EXECUTABLE "${TEST_DIR}.${TEST_NAME}.${TEST_SUFFIX}")
-            add_executable(${EXECUTABLE} ${TEST_FILE})
+    target_link_libraries(${EXECUTABLE} PRIVATE
+            ${PROJECT_NAME}
+            unity_test_framework
+    )
 
-            target_compile_definitions(${EXECUTABLE} PRIVATE DATA_STRUCTURE=${DS_INDEX})
-
-            target_link_libraries(${EXECUTABLE} PRIVATE
-                    ${PROJECT_NAME}
-                    unity_test_framework
-            )
-
-            add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
-        endforeach()
-    else()
-        set(EXECUTABLE "${TEST_DIR}.${TEST_NAME}")
-        add_executable(${EXECUTABLE} ${TEST_FILE})
-
-        target_link_libraries(${EXECUTABLE} PRIVATE
-                ${PROJECT_NAME}
-                unity_test_framework
-        )
-
-        add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
-    endif()
+    add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
 
 endforeach()

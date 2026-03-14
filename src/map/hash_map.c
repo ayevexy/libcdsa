@@ -757,6 +757,7 @@ static void internal_iterator_reset(void* raw_iteration_context) {
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->modification_count = iteration_context->hash_map->modification_count;
 }
 
 static int hash_map_size_wrapper(const void* hash_map) {

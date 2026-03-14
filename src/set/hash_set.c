@@ -688,6 +688,7 @@ static void internal_iterator_reset(void* raw_iteration_context) {
     iteration_context->node = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->modification_count = iteration_context->hash_set->modification_count;
 }
 
 static int hash_set_size_wrapper(const void* hash_set) {

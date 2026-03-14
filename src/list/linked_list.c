@@ -991,7 +991,9 @@ static void* internal_iterator_remove(void* raw_iteration_context) {
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->cursor = 0;
+    iteration_context->last_returned = -1;
     iteration_context->current = iteration_context->linked_list->head;
+    iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 
 static void bubble_sort(LinkedList* linked_list, Comparator compare) {

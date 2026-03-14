@@ -634,11 +634,7 @@ void test_array_list_iterator_backward_iteration() {
     // when
     Iterator* iterator = array_list_iterator(array_list);
     // and
-    iterator_next(iterator);
-    iterator_next(iterator);
-    iterator_next(iterator);
-    iterator_next(iterator);
-    iterator_next(iterator);
+    iterator_advance(iterator, 5);
     // then
     TEST_ASSERT_TRUE(iterator_has_previous(iterator));
     TEST_ASSERT_EQUAL(4, *(int*) iterator_previous(iterator));
@@ -732,9 +728,7 @@ void test_array_list_iterator_reset() {
     POPULATE_ARRAY_LIST(array_list, values);
     // and
     Iterator* iterator = array_list_iterator(array_list);
-    iterator_next(iterator); // 1
-    iterator_next(iterator); // 2
-    iterator_next(iterator); // 3
+    iterator_advance(iterator, 3);
     // when
     iterator_reset(iterator);
     // then

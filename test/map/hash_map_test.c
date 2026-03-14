@@ -509,9 +509,7 @@ void test_hash_map_iterator_reset() {
     POPULATE_HASH_MAP(hash_map, entries);
     // when
     Iterator* iterator = hash_map_iterator(hash_map);
-    iterator_next(iterator);
-    iterator_next(iterator);
-    iterator_next(iterator);
+    iterator_advance(iterator, 3);
     // when
     iterator_reset(iterator);
     // then

@@ -320,9 +320,7 @@ void test_hash_set_iterator_reset() {
     POPULATE_HASH_SET(hash_set, elements);
     // when
     Iterator* iterator = hash_set_iterator(hash_set);
-    iterator_next(iterator);
-    iterator_next(iterator);
-    iterator_next(iterator);
+    iterator_advance(iterator, 3);
     // when
     iterator_reset(iterator);
     // then

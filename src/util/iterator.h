@@ -75,6 +75,8 @@ static inline void* iterator_advance(Iterator* iterator, int count) {
  * @param iterator pointer to an Iterator
  *
  * @return true if more elements are available, false otherwise
+ *
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
 static inline bool iterator_has_previous(const Iterator* iterator) {
     return iterator->has_previous(iterator->iteration_context);
@@ -89,6 +91,7 @@ static inline bool iterator_has_previous(const Iterator* iterator) {
  *
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
 static inline void* iterator_previous(Iterator* iterator) {
     return iterator->previous(iterator->iteration_context);
@@ -104,6 +107,7 @@ static inline void* iterator_previous(Iterator* iterator) {
  *
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
 static inline void* iterator_retreat(Iterator* iterator, int count) {
     for (int i = 0; i < count - 1; i++) {
@@ -117,6 +121,9 @@ static inline void* iterator_retreat(Iterator* iterator, int count) {
  *
  * @param iterator pointer to an Iterator
  * @param element the element to be added
+ *
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
 static inline void iterator_add(Iterator* iterator, const void* element) {
     iterator->add(iterator->iteration_context, element);
@@ -129,6 +136,8 @@ static inline void iterator_add(Iterator* iterator, const void* element) {
  * @param element the new element
  *
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
 static inline void iterator_set(Iterator* iterator, const void* element) {
     iterator->set(iterator->iteration_context, element);
@@ -140,6 +149,8 @@ static inline void iterator_set(Iterator* iterator, const void* element) {
  * @param iterator pointer to an Iterator
  *
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
 static inline void iterator_remove(Iterator* iterator) {
     iterator->remove(iterator->iteration_context);

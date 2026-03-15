@@ -582,10 +582,12 @@ static void* remove_node(HashSet* hash_set, int bucket, Node* prev_node, Node* n
 
 typedef struct {
     Iterator iterator;
-    const HashSet* hash_set;
+    HashSet* hash_set;
     Node* node;
     int cursor;
     int count;
+    bool last_returned;
+    bool last_removed;
     int modification_count;
 } IterationContext;
 
@@ -609,10 +611,12 @@ static Iterator* internal_iterator_new(const HashSet* hash_set) {
     iteration_context->iterator.reset = internal_iterator_reset;
     iteration_context->iterator.memory_free = hash_set->memory_free;
 
-    iteration_context->hash_set = hash_set;
+    iteration_context->hash_set = (HashSet*) hash_set;
     iteration_context->node = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
     iteration_context->modification_count = hash_set->modification_count;
 
     return &iteration_context->iterator;
@@ -636,11 +640,13 @@ static void* internal_iterator_next(void* raw_iteration_context) {
     while (iteration_context->cursor < iteration_context->hash_set->capacity) {
         if (!iteration_context->node) {
             iteration_context->node = iteration_context->hash_set->buckets[iteration_context->cursor++];
-        } else {
+        } else if (!iteration_context->last_removed) {
             iteration_context->node = iteration_context->node->next;
         }
+        iteration_context->last_removed = false;
         if (iteration_context->node) {
             iteration_context->count++;
+            iteration_context->last_returned = true;
             return iteration_context->node->element;
         }
     }
@@ -677,8 +683,21 @@ static void internal_iterator_set(void* raw_iteration_context, const void* eleme
 }
 
 static void internal_iterator_remove(void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->hash_set->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (!iteration_context->last_returned) {
+        set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
+        return;
+    }
+    Node* next = iteration_context->node->next;
+    hash_set_remove(iteration_context->hash_set, iteration_context->node->element);
+    iteration_context->node = next;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = true;
+    iteration_context->modification_count = iteration_context->hash_set->modification_count;
 }
 
 static void internal_iterator_reset(void* raw_iteration_context) {
@@ -686,6 +705,8 @@ static void internal_iterator_reset(void* raw_iteration_context) {
     iteration_context->node = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
     iteration_context->modification_count = iteration_context->hash_set->modification_count;
 }
 

@@ -641,10 +641,12 @@ static Entry* get_entry(const HashMap* hash_map, const void* key) {
 
 typedef struct {
     Iterator iterator;
-    const HashMap* hash_map;
+    HashMap* hash_map;
     Entry* entry;
     int cursor;
     int count;
+    bool last_returned;
+    bool last_removed;
     int modification_count;
 } IterationContext;
 
@@ -668,10 +670,12 @@ static Iterator* internal_iterator_new(const HashMap* hash_map, void* next_funct
     iteration_context->iterator.reset = internal_iterator_reset;
     iteration_context->iterator.memory_free = hash_map->memory_free;
 
-    iteration_context->hash_map = hash_map;
+    iteration_context->hash_map = (HashMap*) hash_map;
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
     iteration_context->modification_count = hash_map->modification_count;
 
     return &iteration_context->iterator;
@@ -695,11 +699,13 @@ static void* internal_iterator_next(void* raw_iteration_context) {
     while (iteration_context->cursor < iteration_context->hash_map->capacity) {
         if (!iteration_context->entry) {
             iteration_context->entry = iteration_context->hash_map->buckets[iteration_context->cursor++];
-        } else {
+        } else if (!iteration_context->last_removed) {
             iteration_context->entry = iteration_context->entry->next;
         }
+        iteration_context->last_removed = false;
         if (iteration_context->entry) {
             iteration_context->count++;
+            iteration_context->last_returned = true;
             return &iteration_context->entry->view;
         }
     }
@@ -746,8 +752,21 @@ static void internal_iterator_set(void* raw_iteration_context, const void* eleme
 }
 
 static void internal_iterator_remove(void* raw_iteration_context) {
-    (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->hash_map->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (!iteration_context->last_returned) {
+        set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
+        return;
+    }
+    Entry* next = iteration_context->entry->next;
+    hash_map_remove(iteration_context->hash_map, iteration_context->entry->key);
+    iteration_context->entry = next;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = true;
+    iteration_context->modification_count = iteration_context->hash_map->modification_count;
 }
 
 static void internal_iterator_reset(void* raw_iteration_context) {
@@ -755,6 +774,8 @@ static void internal_iterator_reset(void* raw_iteration_context) {
     iteration_context->entry = nullptr;
     iteration_context->cursor = 0;
     iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
     iteration_context->modification_count = iteration_context->hash_map->modification_count;
 }
 

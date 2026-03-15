@@ -499,6 +499,57 @@ void test_hash_map_iterator_detects_concurrent_modification() {
     hash_map_clear(hash_map);
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_remove_element() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // and
+    Iterator* iterator = hash_map_iterator(hash_map);
+    iterator_next(iterator);
+    // when
+    iterator_remove(iterator); // { 'd', 4 }
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_remove_element_fails_if_no_next_was_called() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // and
+    Iterator* iterator = hash_map_iterator(hash_map);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // and
+    Iterator* iterator = hash_map_iterator(hash_map);
+    iterator_next(iterator);
+    iterator_remove(iterator);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(new_entries, hash_map);
     // clean up
     iterator_destroy(&iterator);
 }
@@ -507,7 +558,7 @@ void test_hash_map_iterator_reset() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
-    // when
+    // and
     Iterator* iterator = hash_map_iterator(hash_map);
     iterator_advance(iterator, 3);
     // when
@@ -808,6 +859,9 @@ int main(void) {
     RUN_TEST(test_hash_map_iterator_forward_iteration);
     RUN_TEST(test_hash_map_iterator_backward_iteration_unsupported);
     RUN_TEST(test_hash_map_iterator_detects_concurrent_modification);
+    RUN_TEST(test_hash_map_iterator_remove_element);
+    RUN_TEST(test_hash_map_iterator_remove_element_fails_if_no_next_was_called);
+    RUN_TEST(test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row);
     RUN_TEST(test_hash_map_iterator_reset);
 
     RUN_TEST(test_hash_map_is_equal_to_it_self);

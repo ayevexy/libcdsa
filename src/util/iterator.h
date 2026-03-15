@@ -20,7 +20,6 @@ typedef struct {
     bool (*has_previous)(const void* iteration_context);
     void* (*previous)(void* iteration_context);
     void (*add)(void* iteration_context, const void* element);
-    void* (*get)(void* iteration_context, int position);
     void (*set)(void* iteration_context, const void* element);
     void (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
@@ -121,20 +120,6 @@ static inline void* iterator_retreat(Iterator* iterator, int count) {
  */
 static inline void iterator_add(Iterator* iterator, const void* element) {
     iterator->add(iterator->iteration_context, element);
-}
-
-/**
- * @brief Retrieves the nth-element from the iterator.
- *
- * @param iterator pointer to an Iterator
- * @param position the position of the element
- *
- * @return pointer to the element
- *
- * @exception NO_SUCH_ELEMENT_ERROR if no element is found
- */
-static inline void* iterator_get(Iterator* iterator, int position) {
-    return iterator->get(iterator->iteration_context, position);
 }
 
 /**

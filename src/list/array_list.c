@@ -45,8 +45,6 @@ static void* internal_iterator_previous(void*);
 
 static void internal_iterator_add(void*, const void*);
 
-static void* internal_iterator_get(void*, int);
-
 static void internal_iterator_set(void*, const void*);
 
 static void internal_iterator_remove(void*);
@@ -798,10 +796,8 @@ static Iterator* internal_iterator_new(const ArrayList* array_list) {
     iteration_context->iterator.previous = internal_iterator_previous;
 
     iteration_context->iterator.add = internal_iterator_add;
-    iteration_context->iterator.get = internal_iterator_get;
     iteration_context->iterator.set = internal_iterator_set;
     iteration_context->iterator.remove = internal_iterator_remove;
-
     iteration_context->iterator.reset = internal_iterator_reset;
     iteration_context->iterator.memory_free = array_list->memory_free;
 
@@ -859,12 +855,6 @@ static void internal_iterator_add(void* raw_iteration_context, const void* eleme
     }
     array_list_add(iteration_context->array_list, iteration_context->cursor++, element);
     iteration_context->modification_count = iteration_context->array_list->modification_count;
-}
-
-static void* internal_iterator_get(void* raw_iteration_context, int position) {
-    (void) raw_iteration_context, (void) position;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return nullptr;
 }
 
 static void internal_iterator_set(void* raw_iteration_context, const void* element) {

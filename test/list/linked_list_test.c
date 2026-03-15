@@ -605,8 +605,25 @@ void test_linked_list_iterator_detects_concurrent_modification() {
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_add(iterator, nullptr)));
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_set(iterator, nullptr)));
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_linked_list_iterator_insert_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // and
+    Iterator* iterator = linked_list_iterator(linked_list);
+    iterator_next(iterator);
+    // when
+    iterator_add(iterator, new(int, 10));
+    // then
+    int new_values[] = { 1, 10, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     // clean up
     iterator_destroy(&iterator);
 }
@@ -1272,6 +1289,7 @@ int main(void) {
     RUN_TEST(test_linked_list_iterator_forward_iteration);
     RUN_TEST(test_linked_list_iterator_backward_iteration);
     RUN_TEST(test_linked_list_iterator_detects_concurrent_modification);
+    RUN_TEST(test_linked_list_iterator_insert_element);
     RUN_TEST(test_linked_list_iterator_replace_element);
     RUN_TEST(test_linked_list_iterator_replace_element_fails_if_no_previous_or_next_was_called);
     RUN_TEST(test_linked_list_iterator_remove_element);

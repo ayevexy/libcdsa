@@ -956,9 +956,15 @@ static void* internal_iterator_previous(void* raw_iteration_context) {
     return element;
 }
 
+// TODO: improve performance
 static void internal_iterator_add(void* raw_iteration_context, const void* element) {
-    (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    linked_list_add(iteration_context->linked_list, iteration_context->cursor++, element);
+    iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 
 static void* internal_iterator_get(void* raw_iteration_context, int position) {

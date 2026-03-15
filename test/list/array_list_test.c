@@ -677,10 +677,9 @@ void test_array_list_iterator_remove_element() {
     Iterator* iterator = array_list_iterator(array_list);
     iterator_next(iterator);
     // when
-    int* value = iterator_remove(iterator);
+    iterator_remove(iterator);
     // then
     int new_values[] = { 2, 3, 4, 5 };
-    TEST_ASSERT_EQUAL(1, *value);
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     // clean up
     iterator_destroy(&iterator);
@@ -693,10 +692,9 @@ void test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_ca
     // and
     Iterator* iterator = array_list_iterator(array_list);
     // when
-    int* value; Error error = attempt(value = iterator_remove(iterator));
+    Error error = attempt(iterator_remove(iterator));
     // then
     int new_values[] = { 1, 2, 3, 4, 5 };
-    TEST_ASSERT_NULL(value);
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     // clean up
@@ -712,10 +710,9 @@ void test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_next(iterator);
     iterator_remove(iterator);
     // when
-    int* value; Error error = attempt(value = iterator_remove(iterator));
+    Error error = attempt(iterator_remove(iterator));
     // then
     int new_values[] = { 2, 3, 4, 5 };
-    TEST_ASSERT_NULL(value);
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     // clean up

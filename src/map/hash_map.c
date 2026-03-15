@@ -66,9 +66,9 @@ static void internal_iterator_add(void*, const void*);
 
 static void* internal_iterator_get(void*, int);
 
-static void* internal_iterator_set(void*, const void*);
+static void internal_iterator_set(void*, const void*);
 
-static void* internal_iterator_remove(void*);
+static void internal_iterator_remove(void*);
 
 static void internal_iterator_reset(void*);
 
@@ -740,16 +740,14 @@ static void* internal_iterator_get(void* raw_iteration_context, int position) {
     return nullptr;
 }
 
-static void* internal_iterator_set(void* raw_iteration_context, const void* element) {
+static void internal_iterator_set(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
     set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return nullptr;
 }
 
-static void* internal_iterator_remove(void* raw_iteration_context) {
+static void internal_iterator_remove(void* raw_iteration_context) {
     (void) raw_iteration_context;
     set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
-    return nullptr;
 }
 
 static void internal_iterator_reset(void* raw_iteration_context) {

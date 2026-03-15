@@ -21,8 +21,8 @@ typedef struct {
     void* (*previous)(void* iteration_context);
     void (*add)(void* iteration_context, const void* element);
     void* (*get)(void* iteration_context, int position);
-    void* (*set)(void* iteration_context, const void* element);
-    void* (*remove)(void* iteration_context);
+    void (*set)(void* iteration_context, const void* element);
+    void (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
     void (*memory_free)(void*);
 } Iterator;
@@ -143,12 +143,10 @@ static inline void* iterator_get(Iterator* iterator, int position) {
  * @param iterator pointer to an Iterator
  * @param element the new element
  *
- * @return pointer to the old element
- *
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
  */
-static inline void* iterator_set(Iterator* iterator, const void* element) {
-    return iterator->set(iterator->iteration_context, element);
+static inline void iterator_set(Iterator* iterator, const void* element) {
+    iterator->set(iterator->iteration_context, element);
 }
 
 /**
@@ -156,12 +154,10 @@ static inline void* iterator_set(Iterator* iterator, const void* element) {
  *
  * @param iterator pointer to an Iterator
  *
- * @return pointer to the removed element
- *
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
  */
-static inline void* iterator_remove(Iterator* iterator) {
-    return iterator->remove(iterator->iteration_context);
+static inline void iterator_remove(Iterator* iterator) {
+    iterator->remove(iterator->iteration_context);
 }
 
 /**

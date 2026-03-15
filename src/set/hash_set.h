@@ -259,6 +259,8 @@ bool hash_set_is_empty(const HashSet* hash_set);
  *
  * @exception NULL_POINTER_ERROR if hash_set is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
+ *
+ * @note this iterator doesn't support backward traversal nor adding or setting elements
  */
 Iterator* hash_set_iterator(const HashSet* hash_set);
 

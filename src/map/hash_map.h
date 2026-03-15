@@ -400,6 +400,8 @@ bool hash_map_is_empty(const HashMap* hash_map);
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
+ *
+ * @note this iterator doesn't support backward traversal nor adding or setting elements
  */
 Iterator* hash_map_iterator(const HashMap* hash_map);
 

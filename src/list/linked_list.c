@@ -875,7 +875,7 @@ typedef struct {
     Iterator iterator;
     LinkedList* linked_list;
     int cursor;
-    int last_returned;
+    Node* last_returned;
     Node* current;
     int modification_count;
 } IterationContext;
@@ -902,7 +902,7 @@ static Iterator* internal_iterator_new(const LinkedList* linked_list) {
 
     iteration_context->linked_list = (LinkedList*) linked_list;
     iteration_context->cursor = 0;
-    iteration_context->last_returned = -1;
+    iteration_context->last_returned = nullptr;
     iteration_context->current = linked_list->head;
     iteration_context->modification_count = linked_list->modification_count;
 
@@ -925,8 +925,9 @@ static void* internal_iterator_next(void* raw_iteration_context) {
         return nullptr;
     }
     void* element = iteration_context->current->element;
+    iteration_context->last_returned = iteration_context->current;
     iteration_context->current = iteration_context->current->next;
-    iteration_context->last_returned = iteration_context->cursor++;
+    iteration_context->cursor++;
     return element;
 }
 
@@ -950,7 +951,8 @@ static void* internal_iterator_previous(void* raw_iteration_context) {
     }
     void* element = iteration_context->current->prev->element;
     iteration_context->current = iteration_context->current->prev;
-    iteration_context->last_returned = --iteration_context->cursor - 1;
+    iteration_context->last_returned = iteration_context->current;
+    iteration_context->cursor--;
     return element;
 }
 
@@ -966,8 +968,20 @@ static void* internal_iterator_get(void* raw_iteration_context, int position) {
 }
 
 static void internal_iterator_set(void* raw_iteration_context, const void* element) {
-    (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (!iteration_context->last_returned) {
+        set_error(ILLEGAL_STATE_ERROR, "set() called before any next() or previous() call");
+        return;
+    }
+    void* old_element = iteration_context->last_returned->element;
+    if (old_element != element) {
+        iteration_context->linked_list->destruct(old_element);
+    }
+    iteration_context->last_returned->element = (void*) element;
 }
 
 static void internal_iterator_remove(void* raw_iteration_context) {
@@ -976,20 +990,19 @@ static void internal_iterator_remove(void* raw_iteration_context) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return;
     }
-    if (iteration_context->last_returned < 0) {
+    if (!iteration_context->last_returned) {
         set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
         return;
     }
     remove_node(iteration_context->linked_list, iteration_context->current->prev);
-    iteration_context->cursor = iteration_context->last_returned;
-    iteration_context->last_returned = -1;
+    iteration_context->last_returned = nullptr;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 
 static void internal_iterator_reset(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->cursor = 0;
-    iteration_context->last_returned = -1;
+    iteration_context->last_returned = nullptr;
     iteration_context->current = iteration_context->linked_list->head;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }

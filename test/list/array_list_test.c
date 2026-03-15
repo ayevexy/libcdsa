@@ -664,7 +664,40 @@ void test_array_list_iterator_detects_concurrent_modification() {
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_set(iterator, nullptr)));
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_replace_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    iterator_next(iterator);
+    // when
+    iterator_set(iterator, new(int, 10));
+    // then
+    int new_values[] = { 10, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_array_list_iterator_replace_element_fails_if_no_previous_or_next_was_called() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // and
+    Iterator* iterator = array_list_iterator(array_list);
+    // when
+    Error error = attempt(iterator_set(iterator, &(int){10}));
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     // clean up
     iterator_destroy(&iterator);
 }
@@ -1323,6 +1356,8 @@ int main(void) {
     RUN_TEST(test_array_list_iterator_forward_iteration);
     RUN_TEST(test_array_list_iterator_backward_iteration);
     RUN_TEST(test_array_list_iterator_detects_concurrent_modification);
+    RUN_TEST(test_array_list_iterator_replace_element);
+    RUN_TEST(test_array_list_iterator_replace_element_fails_if_no_previous_or_next_was_called);
     RUN_TEST(test_array_list_iterator_remove_element);
     RUN_TEST(test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_called);
     RUN_TEST(test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row);

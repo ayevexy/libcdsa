@@ -863,8 +863,16 @@ static void* internal_iterator_get(void* raw_iteration_context, int position) {
 }
 
 static void internal_iterator_set(void* raw_iteration_context, const void* element) {
-    (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (iteration_context->last_returned < 0) {
+        set_error(ILLEGAL_STATE_ERROR, "set() called before any next() or previous() call");
+        return;
+    }
+    array_list_set(iteration_context->array_list, iteration_context->last_returned, element);
 }
 
 static void internal_iterator_remove(void* raw_iteration_context) {

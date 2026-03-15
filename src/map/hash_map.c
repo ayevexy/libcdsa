@@ -721,24 +721,24 @@ static void* internal_iterator_next_value(void* raw_iteration_context) {
 
 static bool internal_iterator_has_previous(const void* raw_iteration_context) {
     (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "HashMap iterators doesn't support backward traversal");
     return false;
 }
 
 static void* internal_iterator_previous(void* raw_iteration_context) {
     (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "HashMap iterators doesn't support backward traversal");
     return nullptr;
 }
 
 static void internal_iterator_add(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "HashMap iterators doesn't support adding elements");
 }
 
 static void internal_iterator_set(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Not implemented");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "HashMap iterators doesn't support setting elements");
 }
 
 static void internal_iterator_remove(void* raw_iteration_context) {

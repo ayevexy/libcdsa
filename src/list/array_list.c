@@ -75,11 +75,11 @@ static void reverse(ArrayList*, int, int);
 
 static void swap(void** a, void** b);
 
-static int array_list_size_wrapper(const void*);
+static int collection_size_internal(const void*);
 
-static Iterator* array_list_iterator_wrapper(const void*);
+static Iterator* collection_iterator_internal(const void*);
 
-static bool array_list_contains_wrapper(const void*, const void*);
+static bool collection_contains_internal(const void*, const void*);
 
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (require_non_null(options)) return nullptr;
@@ -684,9 +684,9 @@ Collection array_list_to_collection(const ArrayList* array_list) {
     if (require_non_null(array_list)) return (Collection) {};
     return (Collection) {
         .data_structure = array_list,
-        .size = array_list_size_wrapper,
-        .iterator = array_list_iterator_wrapper,
-        .contains = array_list_contains_wrapper
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
     };
 }
 
@@ -1037,14 +1037,14 @@ static void swap(void** a, void** b) {
     *b = temp;
 }
 
-static int array_list_size_wrapper(const void* array_list) {
+static int collection_size_internal(const void* array_list) {
     return array_list_size(array_list);
 }
 
-static Iterator* array_list_iterator_wrapper(const void* array_list) {
+static Iterator* collection_iterator_internal(const void* array_list) {
     return array_list_iterator(array_list);
 }
 
-static bool array_list_contains_wrapper(const void* array_list, const void* element) {
+static bool collection_contains_internal(const void* array_list, const void* element) {
     return array_list_contains(array_list, element);
 }

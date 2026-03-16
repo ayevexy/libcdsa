@@ -70,19 +70,19 @@ static void iterator_remove_internal(void*);
 
 static void iterator_reset_internal(void*);
 
-static int hash_map_size_wrapper(const void*);
+static int collection_size_internal(const void*);
 
-static Iterator* hash_map_entry_iterator(const void*);
+static Iterator* entry_collection_iterator_internal(const void*);
 
-static Iterator* hash_map_key_iterator(const void*);
+static Iterator* key_collection_iterator_internal(const void*);
 
-static Iterator* hash_map_value_iterator(const void*);
+static Iterator* value_collection_iterator_internal(const void*);
 
-static bool hash_map_contains_entry_wrapper(const void*, const void*);
+static bool entry_collection_contains_internal(const void*, const void*);
 
-static bool hash_map_contains_key_wrapper(const void*, const void*);
+static bool key_collection_contains_internal(const void*, const void*);
 
-static bool hash_map_contains_value_wrapper(const void*, const void*);
+static bool value_collection_contains_internal(const void*, const void*);
 
 HashMap* hash_map_new(const HashMapOptions* options) {
     if (require_non_null(options)) return nullptr;
@@ -447,9 +447,9 @@ Collection hash_map_keys(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
-        .size = hash_map_size_wrapper,
-        .iterator = hash_map_key_iterator,
-        .contains = hash_map_contains_key_wrapper
+        .size = collection_size_internal,
+        .iterator = key_collection_iterator_internal,
+        .contains = key_collection_contains_internal
     };
 }
 
@@ -457,9 +457,9 @@ Collection hash_map_values(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
-        .size = hash_map_size_wrapper,
-        .iterator = hash_map_value_iterator,
-        .contains = hash_map_contains_value_wrapper
+        .size = collection_size_internal,
+        .iterator = value_collection_iterator_internal,
+        .contains = value_collection_contains_internal
     };
 }
 
@@ -467,9 +467,9 @@ Collection hash_map_entries(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_map,
-        .size = hash_map_size_wrapper,
-        .iterator = hash_map_entry_iterator,
-        .contains = hash_map_contains_entry_wrapper
+        .size = collection_size_internal,
+        .iterator = entry_collection_iterator_internal,
+        .contains = entry_collection_contains_internal
     };
 }
 
@@ -769,15 +769,15 @@ static void iterator_reset_internal(void* raw_iteration_context) {
     iteration_context->modification_count = iteration_context->hash_map->modification_count;
 }
 
-static int hash_map_size_wrapper(const void* hash_map) {
+static int collection_size_internal(const void* hash_map) {
     return hash_map_size(hash_map);
 }
 
-static Iterator* hash_map_entry_iterator(const void* hash_map) {
+static Iterator* entry_collection_iterator_internal(const void* hash_map) {
     return hash_map_iterator(hash_map);
 }
 
-static Iterator* hash_map_key_iterator(const void* hash_map) {
+static Iterator* key_collection_iterator_internal(const void* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
     Iterator* iterator = create_iterator(hash_map, iterator_next_key_internal);
     if (!iterator) {
@@ -786,7 +786,7 @@ static Iterator* hash_map_key_iterator(const void* hash_map) {
     return iterator;
 }
 
-static Iterator* hash_map_value_iterator(const void* hash_map) {
+static Iterator* value_collection_iterator_internal(const void* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
     Iterator* iterator = create_iterator(hash_map, iterator_next_value_internal);
     if (!iterator) {
@@ -795,14 +795,14 @@ static Iterator* hash_map_value_iterator(const void* hash_map) {
     return iterator;
 }
 
-static bool hash_map_contains_entry_wrapper(const void* hash_map, const void* entry) {
+static bool entry_collection_contains_internal(const void* hash_map, const void* entry) {
     return hash_map_contains_entry(hash_map, ((MapEntry*) entry)->key, ((MapEntry*) entry)->value);
 }
 
-static bool hash_map_contains_key_wrapper(const void* hash_map, const void* key) {
+static bool key_collection_contains_internal(const void* hash_map, const void* key) {
     return hash_map_contains_key(hash_map, key);
 }
 
-static bool hash_map_contains_value_wrapper(const void* hash_map, const void* value) {
+static bool value_collection_contains_internal(const void* hash_map, const void* value) {
     return hash_map_contains_value(hash_map, value);
 }

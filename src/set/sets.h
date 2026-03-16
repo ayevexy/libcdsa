@@ -186,11 +186,11 @@ bool _set_view_is_superset(SetView*, SetView*);
  *
  * @exception NULL_POINTER_ERROR if set is null
  */
-#define _set_view_of(set) _Generic((set),               \
-    HashSet*: _internal_hash_set_view((HashSet*) set),  \
-    SetView*: set                                       \
+#define _set_view_of(set) _Generic((set),       \
+    HashSet*: _hash_set_view((HashSet*) set),   \
+    SetView*: set                               \
 )
 
-extern SetView* _internal_hash_set_view(const HashSet*);
+extern SetView* _hash_set_view(const HashSet*);
 
 #endif

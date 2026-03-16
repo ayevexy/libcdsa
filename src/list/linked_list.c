@@ -90,11 +90,11 @@ static void array_to_linked_list(void**, LinkedList*);
 
 static void swap(void**, void**);
 
-static int linked_list_size_wrapper(const void*);
+static int collection_size_internal(const void*);
 
-static Iterator* linked_list_iterator_wrapper(const void*);
+static Iterator* collection_iterator_internal(const void*);
 
-static bool linked_list_contains_wrapper(const void*, const void*);
+static bool collection_contains_internal(const void*, const void*);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (require_non_null(options)) return nullptr;
@@ -705,9 +705,9 @@ Collection linked_list_to_collection(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return (Collection) {};
     return (Collection) {
         .data_structure = linked_list,
-        .size = linked_list_size_wrapper,
-        .iterator = linked_list_iterator_wrapper,
-        .contains = linked_list_contains_wrapper
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
     };
 }
 
@@ -1188,14 +1188,14 @@ static void swap(void** a, void** b) {
     *b = temp;
 }
 
-static int linked_list_size_wrapper(const void* linked_list) {
+static int collection_size_internal(const void* linked_list) {
     return linked_list_size(linked_list);
 }
 
-static Iterator* linked_list_iterator_wrapper(const void* linked_list) {
+static Iterator* collection_iterator_internal(const void* linked_list) {
     return linked_list_iterator(linked_list);
 }
 
-static bool linked_list_contains_wrapper(const void* linked_list, const void* element) {
+static bool collection_contains_internal(const void* linked_list, const void* element) {
     return linked_list_contains(linked_list, element);
 }

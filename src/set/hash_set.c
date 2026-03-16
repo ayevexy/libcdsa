@@ -63,17 +63,17 @@ static void iterator_remove_internal(void*);
 
 static void iterator_reset_internal(void*);
 
-static int hash_set_size_wrapper(const void*);
+static int collection_size_internal(const void*);
 
-static Iterator* hash_set_iterator_wrapper(const void*);
+static Iterator* collection_iterator_internal(const void*);
 
-static bool hash_set_contains_wrapper(const void*, const void*);
+static bool collection_contains_internal(const void*, const void*);
 
-static int hash_set_view_size_wrapper(const void*);
+static int set_view_size_internal(const void*);
 
-static Iterator* hash_set_view_iterator_wrapper(const void*);
+static Iterator* set_view_iterator_internal(const void*);
 
-static bool hash_set_view_contains_wrapper(const void*, const void*);
+static bool set_view_contains_internal(const void*, const void*);
 
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
@@ -109,9 +109,9 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->modification_count = 0;
     hash_set->view.sets.first = hash_set;
     hash_set->view.sets.second = nullptr;
-    hash_set->view.size = hash_set_view_size_wrapper;
-    hash_set->view.iterator = hash_set_view_iterator_wrapper;
-    hash_set->view.contains = hash_set_view_contains_wrapper;
+    hash_set->view.size = set_view_size_internal;
+    hash_set->view.iterator = set_view_iterator_internal;
+    hash_set->view.contains = set_view_contains_internal;
     return hash_set;
 }
 
@@ -401,9 +401,9 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return (Collection) {};
     return (Collection) {
         .data_structure = hash_set,
-        .size = hash_set_size_wrapper,
-        .iterator = hash_set_iterator_wrapper,
-        .contains = hash_set_contains_wrapper
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
     };
 }
 
@@ -700,30 +700,30 @@ static void iterator_reset_internal(void* raw_iteration_context) {
     iteration_context->modification_count = iteration_context->hash_set->modification_count;
 }
 
-static int hash_set_size_wrapper(const void* hash_set) {
+static int collection_size_internal(const void* hash_set) {
     return hash_set_size(hash_set);
 }
 
-static Iterator* hash_set_iterator_wrapper(const void* hash_set) {
+static Iterator* collection_iterator_internal(const void* hash_set) {
     return hash_set_iterator(hash_set);
 }
 
-static bool hash_set_contains_wrapper(const void* hash_set, const void* element) {
+static bool collection_contains_internal(const void* hash_set, const void* element) {
     return hash_set_contains(hash_set, element);
 }
 
-SetView* _internal_hash_set_view(const HashSet* hash_set) {
+SetView* _hash_set_view(const HashSet* hash_set) {
     return hash_set ? (SetView*) &hash_set->view : nullptr;
 }
 
-static int hash_set_view_size_wrapper(const void* hash_set) {
+static int set_view_size_internal(const void* hash_set) {
     return hash_set_size(((Pair*) hash_set)->first);
 }
 
-static Iterator* hash_set_view_iterator_wrapper(const void* hash_set) {
+static Iterator* set_view_iterator_internal(const void* hash_set) {
     return hash_set_iterator(((Pair*) hash_set)->first);
 }
 
-static bool hash_set_view_contains_wrapper(const void* hash_set, const void* element) {
+static bool set_view_contains_internal(const void* hash_set, const void* element) {
     return hash_set_contains(((Pair*) hash_set)->first, element);
 }

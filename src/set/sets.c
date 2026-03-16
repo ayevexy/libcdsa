@@ -38,7 +38,7 @@ static bool internal_iterator_compute_next(void* raw_iteration_context) {
     return false;
 }
 
-static bool internal_iterator_has_next(const void* raw_iteration_context) {
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
     assert(iteration_context->state != FAILED);
     switch (iteration_context->state) {
@@ -49,9 +49,9 @@ static bool internal_iterator_has_next(const void* raw_iteration_context) {
     return internal_iterator_compute_next((void*) iteration_context);
 }
 
-static void* internal_iterator_next(void* raw_iteration_context) {
+static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
-    if (!internal_iterator_has_next(iteration_context)) {
+    if (!iterator_has_next_internal(iteration_context)) {
         set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
         return nullptr;
     }
@@ -59,7 +59,7 @@ static void* internal_iterator_next(void* raw_iteration_context) {
     return iteration_context->next_element;
 }
 
-static void internal_iterator_reset(void* raw_iteration_context) {
+static void iterator_reset_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iterator_reset(iteration_context->set_iterators.first);
     iterator_reset(iteration_context->set_iterators.second);
@@ -74,7 +74,7 @@ static void iteration_context_destroy(void* raw_iteration_context) {
     sets_memory_free(iteration_context);
 }
 
-static Iterator* internal_iterator_new(const void* raw_sets, void* (*internal_next)(void*)) {
+static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(void*)) {
     const Pair* sets = raw_sets;
     SetView* set_a = sets->first, * set_b = sets->second;
 
@@ -94,9 +94,9 @@ static Iterator* internal_iterator_new(const void* raw_sets, void* (*internal_ne
         goto cleanup;
     }
     iteration_context->iterator.iteration_context = iteration_context;
-    iteration_context->iterator.has_next = internal_iterator_has_next;
-    iteration_context->iterator.next = internal_iterator_next;
-    iteration_context->iterator.reset = internal_iterator_reset;
+    iteration_context->iterator.has_next = iterator_has_next_internal;
+    iteration_context->iterator.next = iterator_next_internal;
+    iteration_context->iterator.reset = iterator_reset_internal;
     iteration_context->iterator.memory_free = iteration_context_destroy;
     
     iteration_context->sets = (Pair) { set_a, set_b };
@@ -146,7 +146,7 @@ static void* union_set_iterator_next(void* raw_iteration_context) {
 }
 
 static Iterator* union_set_iterator(const void* sets) {
-    return internal_iterator_new(sets, union_set_iterator_next);
+    return create_iterator(sets, union_set_iterator_next);
 }
 
 static bool union_set_contains(const void* raw_sets, const void* element) {
@@ -181,7 +181,7 @@ static void* intersection_set_iterator_next(void* raw_iteration_context) {
 }
 
 static Iterator* intersection_set_iterator(const void* sets) {
-    return internal_iterator_new(sets, intersection_set_iterator_next);
+    return create_iterator(sets, intersection_set_iterator_next);
 }
 
 static bool intersection_set_contains(const void* raw_sets, const void* element) {
@@ -216,7 +216,7 @@ static void* difference_set_iterator_next(void* raw_iteration_context) {
 }
 
 static Iterator* difference_set_iterator(const void* sets) {
-    return internal_iterator_new(sets, difference_set_iterator_next);
+    return create_iterator(sets, difference_set_iterator_next);
 }
 
 static bool difference_set_contains(const void* raw_sets, const void* element) {
@@ -265,7 +265,7 @@ static void* symmetric_difference_set_iterator_next(void* raw_iteration_context)
 }
 
 static Iterator* symmetric_difference_set_iterator(const void* sets) {
-    return internal_iterator_new(sets, symmetric_difference_set_iterator_next);
+    return create_iterator(sets, symmetric_difference_set_iterator_next);
 }
 
 static bool symmetric_difference_set_contains(const void* raw_sets, const void* element) {

@@ -150,11 +150,6 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     *linked_list_pointer = nullptr;
 }
 
-void (*linked_list_get_destructor(const LinkedList* linked_list))(void*) {
-    if (require_non_null(linked_list)) return nullptr;
-    return linked_list->destruct;
-}
-
 void linked_list_set_destructor(LinkedList* linked_list, void (*destructor)(void*)) {
     if (require_non_null(linked_list, destructor)) return;
     linked_list->destruct = destructor;

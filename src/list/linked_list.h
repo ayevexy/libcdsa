@@ -112,15 +112,6 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer);
 
 /**
- * @brief Get the current destruct function.
- *
- * @param linked_list pointer to a LinkedList
- *
- * @return pointer to the destruct function
- */
-void (*linked_list_get_destructor(const LinkedList* linked_list))(void*);
-
-/**
  * @brief Set the current destruct function.
  *
  * @param linked_list pointer to a LinkedList

@@ -125,15 +125,6 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_destroy(ArrayList** array_list_pointer);
 
 /**
- * @brief Get the current destruct function.
- *
- * @param array_list pointer to an ArrayList
- *
- * @return pointer to the destruct function
- */
-void (*array_list_get_destructor(const ArrayList* array_list))(void*);
-
-/**
  * @brief Set the current destruct function.
  *
  * @param array_list pointer to an ArrayList

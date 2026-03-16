@@ -124,15 +124,6 @@ HashSet* hash_set_from(Collection collection, const HashSetOptions* options);
 void hash_set_destroy(HashSet** hash_set_pointer);
 
 /**
- * @brief Get the current destruct function.
- *
- * @param hash_set pointer to a HashSet
- *
- * @return pointer to the destruct function
- */
-void (*hash_set_get_destructor(const HashSet* hash_set))(void*);
-
-/**
  * @brief Set the current destruct function.
  *
  * @param hash_set pointer to a HashSet

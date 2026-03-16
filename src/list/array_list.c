@@ -141,11 +141,6 @@ void array_list_destroy(ArrayList** array_list_pointer) {
     *array_list_pointer = nullptr;
 }
 
-void (*array_list_get_destructor(const ArrayList* array_list))(void*) {
-    if (require_non_null(array_list)) return nullptr;
-    return array_list->destruct;
-}
-
 void array_list_set_destructor(ArrayList* array_list, void (*destructor)(void*)) {
     if (require_non_null(array_list, destructor)) return;
     array_list->destruct = destructor;

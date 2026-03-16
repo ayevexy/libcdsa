@@ -12,7 +12,6 @@ typedef struct Deque Deque;
 
 typedef struct {
     int initial_capacity;
-    float growth_factor;
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
@@ -26,8 +25,7 @@ typedef struct {
 } DequeOptions;
 
 #define DEFAULT_DEQUE_OPTIONS(...) &(DequeOptions) {    \
-    .initial_capacity = 10,                             \
-    .growth_factor = 2.0f,                              \
+    .initial_capacity = 8,                              \
     .destruct = noop_destruct,                          \
     .equals = pointer_equals,                           \
     .to_string = pointer_to_string,                     \

@@ -88,7 +88,7 @@ Also, there is some other utilities which may be useful:
 
 ---
 
-## Features
+### Features
 
 This project aims to accomplish the following features:
 
@@ -104,7 +104,7 @@ This project aims to accomplish the following features:
 
 ---
 
-## Limitations
+### Limitations
 
 Like any other project, there are some limitations (most by design):
 
@@ -117,7 +117,7 @@ Like any other project, there are some limitations (most by design):
 
 ---
 
-## Technologies
+### Technologies
 
 This project is being built using the following technologies:
 

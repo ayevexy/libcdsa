@@ -26,7 +26,7 @@
 
 ---
 
-# Data Structures and Algorithms Library in C
+# Data Structures and Algorithms Library in C (Experimental)
 
 ---
 
@@ -34,6 +34,7 @@
 
 - [Overview](#overview)
 - [Features](#features)
+- [Limitations](#limitations)
 - [Technologies](#technologies)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -45,7 +46,6 @@
     - [Installing System-Wide](#installing-system-wide)
 - [Contributing](#contributing)
 - [License](#license)
-- [Disclaimer](#disclaimer)
 
 ---
 
@@ -86,6 +86,8 @@ Also, there is some other utilities which may be useful:
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
 
+---
+
 ## Features
 
 This project aims to accomplish the following features:
@@ -99,6 +101,21 @@ This project aims to accomplish the following features:
 - Great Test Coverage
 - Simple Documentation
 - ISO C23 Compliance
+
+---
+
+## Limitations
+
+Like any other project, there are some limitations (most by design):
+
+- Lack of Type Safety.
+- Reference Storage Only.
+- Not Optimized for Peak Performance.
+- Can cause Namespace Collision.
+- Not Thread-Safe.
+- It Mighty have some Bugs... (help find them!)
+
+---
 
 ## Technologies
 
@@ -230,11 +247,3 @@ Open an issue to request a feature, report a bug, suggest some improvement or as
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## Disclaimer
-
-This is a personal project I created for fun, learning, and practice.
-It is not designed to be namespaced, thread-safe, highly performant, or completely bug-free.
-I do not recommend using it in real-world projects unless you trust a random guy's side-project.

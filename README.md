@@ -98,6 +98,7 @@ This project aims to accomplish the following features:
 - Reasonable Defaults
 - Great Test Coverage
 - Simple Documentation
+- ISO C23 Compliance
 
 ## Technologies
 
@@ -161,6 +162,8 @@ int main() {
     return 0;
 }
 ```
+
+The library also provides the `libcdsa.h` header file to include all functionality at once.
 
 ### Documentation
 
@@ -233,5 +236,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Disclaimer
 
 This is a personal project I created for fun, learning, and practice.
-It is not designed to be thread-safe, highly performant, or completely bug-free.
+It is not designed to be namespaced, thread-safe, highly performant, or completely bug-free.
 I do not recommend using it in real-world projects unless you trust a random guy's side-project.

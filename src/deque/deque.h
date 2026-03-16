@@ -43,8 +43,6 @@ Deque* deque_from(Collection collection, const DequeOptions* options);
 
 void deque_destroy(Deque** deque_pointer);
 
-void (*deque_get_destructor(const Deque* deque))(void*);
-
 void deque_set_destructor(Deque* deque, void (*destructor)(void*));
 
 void deque_add_first(Deque* deque, const void* element);

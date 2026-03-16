@@ -142,15 +142,24 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 void hash_map_destroy(HashMap** hash_map_pointer);
 
 /**
- * @brief Sets the key and value destructors used by the provided HashMap.
+ * @brief Sets the key destructor used by the provided HashMap.
  *
  * @param hash_map pointer to a HashMap
- * @param key_destructor function used to destroy keys
- * @param value_destructor function used to destroy values
+ * @param destructor function used to destroy keys
  *
- * @exception NULL_POINTER_ERROR if hash_map or key_destructor or value_destructor are null
+ * @exception NULL_POINTER_ERROR if hash_map or destructor are null
  */
-void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), void (*value_destructor)(void*));
+void hash_map_set_key_destructor(HashMap* hash_map, void(*destructor)(void*));
+
+/**
+ * @brief Sets the value destructor used by the provided HashMap.
+ *
+ * @param hash_map pointer to a HashMap
+ * @param destructor function used to destroy values
+ *
+ * @exception NULL_POINTER_ERROR if hash_map or destructor are null
+ */
+void hash_map_set_value_destructor(HashMap* hash_map, void(*destructor)(void*));
 
 /**
  * @brief Computes a new value for the specified key using the provided remapping function.

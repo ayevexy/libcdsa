@@ -158,10 +158,14 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
     *hash_map_pointer = nullptr;
 }
 
-void hash_map_set_destructors(HashMap* hash_map, void (*key_destructor)(void*), void (*value_destructor)(void*)) {
-    if (require_non_null(hash_map, key_destructor, value_destructor)) return;
-    hash_map->key_destruct = key_destructor;
-    hash_map->value_destruct = value_destructor;
+void hash_map_set_key_destructor(HashMap* hash_map, void(*destructor)(void*)) {
+    if (require_non_null(hash_map, destructor)) return;
+    hash_map->key_destruct = destructor;
+}
+
+void hash_map_set_value_destructor(HashMap* hash_map, void(*destructor)(void*)) {
+    if (require_non_null(hash_map, destructor)) return;
+    hash_map->value_destruct = destructor;
 }
 
 void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) {

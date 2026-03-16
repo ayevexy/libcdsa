@@ -24,6 +24,15 @@
 /** @brief Hash based set implementation */
 #include "set/hash_set.h"
 
+/** @brief Double-ended queue implemented with a resizable array. */
+#include "deque/deque.h"
+
+/** @brief FIFO queue implemented with a resizable array. */
+#include "queue/queue.h"
+
+/** @brief LIFO stack implemented with a resizable array. */
+#include "stack/stack.h"
+
 /** @brief Mathematical sets operations */
 #include "set/sets.h"
 

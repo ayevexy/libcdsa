@@ -256,6 +256,26 @@ bool deque_contains(const Deque* deque, const void* element) {
     return false;
 }
 
+bool deque_contains_all(const Deque* deque, Collection collection) {
+    if (require_non_null(deque)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!deque_contains(deque, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
+    return contains;
+}
+
 Collection deque_to_collection(const Deque* deque) {
     if (require_non_null(deque)) return (Collection) {};
     return (Collection) {

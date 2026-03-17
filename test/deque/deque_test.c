@@ -334,6 +334,53 @@ void test_deque_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_deque_contains_all_elements() {
+    // given
+    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    int other_values[] = { 2, 3, 4};
+    POPULATE_DEQUE(new_deque, other_values);
+    // when
+    bool contains_all = deque_contains_all(deque, deque_to_collection(new_deque));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    deque_set_destructor(new_deque, free);
+    deque_destroy(&new_deque);
+}
+
+void test_empty_deque_contains_all_elements_of_empty_collection() {
+    // given
+    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    // when
+    bool contains_all = deque_contains_all(deque, deque_to_collection(new_deque));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    deque_destroy(&new_deque);
+}
+
+void test_deque_does_not_contains_all_elements() {
+    // given
+    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    int other_values[] = { 2, 10, 4};
+    POPULATE_DEQUE(new_deque, other_values);
+    // when
+    bool contains_all = deque_contains_all(deque, deque_to_collection(new_deque));
+    // then
+    TEST_ASSERT_FALSE(contains_all);
+    // clean up
+    deque_set_destructor(new_deque, free);
+    deque_destroy(&new_deque);
+}
+
 void test_convert_deque_to_collection() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -387,6 +434,9 @@ int main(void) {
 
     RUN_TEST(test_deque_contains_element);
     RUN_TEST(test_deque_does_not_contains_element);
+    RUN_TEST(test_deque_contains_all_elements);
+    RUN_TEST(test_empty_deque_contains_all_elements_of_empty_collection);
+    RUN_TEST(test_deque_does_not_contains_all_elements);
 
     RUN_TEST(test_convert_deque_to_collection);
     return UNITY_END();

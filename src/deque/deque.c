@@ -225,6 +225,26 @@ Iterator* deque_iterator(const Deque* deque) {
     return iterator;
 }
 
+void deque_for_each(Deque* deque, Consumer action) {
+    if (require_non_null(deque, action)) return;
+    for (int i = 0; i < deque->size; i++) {
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        action(deque->elements[index]);
+    }
+}
+
+void deque_clear(Deque* deque) {
+    if (require_non_null(deque)) return;
+    for (int i = 0; i < deque->size; i++) {
+        deque->destruct(deque->elements[i]);
+        deque->elements[i] = nullptr;
+    }
+    deque->first = 0;
+    deque->last = 0;
+    deque->size = 0;
+    deque->modification_count++;
+}
+
 bool deque_contains(const Deque* deque, const void* element) {
     if (require_non_null(deque)) return false;
     for (int i = 0; i < deque->size; i++) {

@@ -287,6 +287,33 @@ void test_deque_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+static void action_add_one(void* element) {
+    *(int*) element += 1;
+}
+
+void test_perform_action_for_each_element_of_deque() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    deque_for_each(deque, action_add_one);
+    // then
+    int new_values[] = { 2, 3, 4, 5, 6 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
+}
+
+void test_clear_deque() {
+    // given
+    int values[] = { 1, 2, 3 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    deque_clear(deque);
+    // then
+    TEST_ASSERT_EQUAL(0, deque_size(deque));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(deque_get_first(deque)));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(deque_get_last(deque)));
+}
+
 void test_deque_contains_element() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -354,6 +381,9 @@ int main(void) {
     RUN_TEST(test_deque_iterator_forward_iteration);
     RUN_TEST(test_deque_iterator_detects_concurrent_modification);
     RUN_TEST(test_deque_iterator_reset);
+
+    RUN_TEST(test_perform_action_for_each_element_of_deque);
+    RUN_TEST(test_clear_deque);
 
     RUN_TEST(test_deque_contains_element);
     RUN_TEST(test_deque_does_not_contains_element);

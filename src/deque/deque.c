@@ -27,6 +27,8 @@ struct Deque {
     int modification_count;
 };
 
+static size_t calculate_string_size(const Deque*);
+
 static int next_power_of_two(int);
 
 static bool ensure_capacity(Deque*, int);
@@ -358,6 +360,55 @@ void** deque_to_array(const Deque* deque) {
         elements[i] = deque->elements[(deque->first + i) & (deque->capacity - 1)];
     }
     return elements;
+}
+
+char* deque_to_string(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+
+    char* string = deque->memory_alloc(calculate_string_size(deque));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to clear trash data
+    strcat(string, deque->size == 0 ? "[" : "[ ");
+
+    for (int i = 0; i < deque->size; i++) {
+        constexpr int NULL_TERMINATOR = 1;
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        const int length = deque->to_string(deque->elements[index], nullptr, 0) + NULL_TERMINATOR;
+
+        char* element_string = deque->memory_alloc(length);
+        if (!element_string) {
+            deque->memory_free(string);
+            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            return nullptr;
+        }
+        deque->to_string(deque->elements[index], element_string, length);
+        strcat(string, element_string);
+
+        if (i < deque->size - 1) {
+            strcat(string, ", ");
+        }
+        deque->memory_free(element_string);
+    }
+
+    strcat(string, deque->size == 0 ? "]" : " ]");
+    return string;
+}
+
+static size_t calculate_string_size(const Deque* deque) {
+    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (int i = 0; i < deque->size; i++) {
+        length += deque->to_string(deque->elements[i], nullptr, 0);
+
+        if (i == 0) length += 1; // space after opening bracket
+        if (i < deque->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (i == deque->size - 1) length += 1; // space before closing bracket
+    }
+    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static int next_power_of_two(int x) {

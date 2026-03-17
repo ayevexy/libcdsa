@@ -504,6 +504,27 @@ void test_convert_deque_to_array() {
     free(elements);
 }
 
+void test_get_deque_string_representation() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    char* string = deque_to_string(deque);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_deque_string_representation() {
+    // when
+    char* string = deque_to_string(deque);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[]", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_deque);
@@ -555,5 +576,7 @@ int main(void) {
     RUN_TEST(test_clone_deque);
     RUN_TEST(test_convert_deque_to_collection);
     RUN_TEST(test_convert_deque_to_array);
+    RUN_TEST(test_get_deque_string_representation);
+    RUN_TEST(test_get_empty_deque_string_representation);
     return UNITY_END();
 }

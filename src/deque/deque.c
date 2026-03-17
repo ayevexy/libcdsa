@@ -43,6 +43,12 @@ static bool iterator_has_previous_internal(const void*);
 
 static void* iterator_previous_internal(void*);
 
+static void iterator_add_internal(void*, const void*);
+
+static void iterator_set_internal(void*, const void*);
+
+static void iterator_remove_internal(void*);
+
 static void iterator_reset_internal(void*);
 
 static int collection_size_internal(const void*);
@@ -469,6 +475,10 @@ static Iterator* create_iterator(const Deque* deque) {
     iteration_context->iterator.next = iterator_next_internal;
     iteration_context->iterator.has_previous = iterator_has_previous_internal;
     iteration_context->iterator.previous = iterator_previous_internal;
+
+    iteration_context->iterator.add = iterator_add_internal;
+    iteration_context->iterator.set = iterator_set_internal;
+    iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
     iteration_context->iterator.memory_free = deque->memory_free;
 
@@ -517,6 +527,21 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     const int capacity = (iteration_context->deque->capacity - 1);
     const int index = (iteration_context->deque->first + --iteration_context->count) & capacity;
     return iteration_context->deque->elements[index];
+}
+
+static void iterator_add_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support adding elements");
+}
+
+static void iterator_set_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support setting elements");
+}
+
+static void iterator_remove_internal(void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support setting elements");
 }
 
 static void iterator_reset_internal(void* raw_iteration_context) {

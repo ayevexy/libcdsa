@@ -53,10 +53,6 @@ void* deque_get_first(const Deque* deque);
 
 void* deque_get_last(const Deque* deque);
 
-void* deque_set_first(const Deque* deque, const void* element);
-
-void* deque_set_last(const Deque* deque, const void* element);
-
 void* deque_remove_first(Deque* deque);
 
 void* deque_remove_last(Deque* deque);

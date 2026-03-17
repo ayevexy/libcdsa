@@ -578,6 +578,9 @@ void test_linked_list_iterator_backward_iteration() {
     iterator_advance(iterator, 5);
     // then
     TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_previous(iterator));
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
     TEST_ASSERT_EQUAL(4, *(int*) iterator_previous(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_previous(iterator));

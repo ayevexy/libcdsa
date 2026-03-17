@@ -501,7 +501,7 @@ static void* iterator_next_internal(void* raw_iteration_context) {
 
 static bool iterator_has_previous_internal(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
-    return iteration_context->count - 1 > 0;
+    return iteration_context->count > 0;
 }
 
 static void* iterator_previous_internal(void* raw_iteration_context) {
@@ -516,7 +516,7 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     }
     const int capacity = (iteration_context->deque->capacity - 1);
     const int index = (iteration_context->deque->first + --iteration_context->count) & capacity;
-    return iteration_context->deque->elements[index - 1];
+    return iteration_context->deque->elements[index];
 }
 
 static void iterator_reset_internal(void* raw_iteration_context) {

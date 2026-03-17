@@ -924,7 +924,7 @@ static void* iterator_next_internal(void* raw_iteration_context) {
 
 static bool iterator_has_previous_internal(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
-    return iteration_context->cursor - 1 > 0;
+    return iteration_context->cursor > 0;
 }
 
 static void* iterator_previous_internal(void* raw_iteration_context) {
@@ -939,12 +939,12 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     }
     if (!iteration_context->current) {
        iteration_context->current = iteration_context->linked_list->tail;
+    } else {
+        iteration_context->current = iteration_context->current->prev;
     }
-    void* element = iteration_context->current->prev->element;
-    iteration_context->current = iteration_context->current->prev;
     iteration_context->last_returned = iteration_context->current;
     iteration_context->cursor--;
-    return element;
+    return iteration_context->last_returned->element;
 }
 
 // TODO: improve performance
@@ -985,7 +985,13 @@ static void iterator_remove_internal(void* raw_iteration_context) {
         set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
         return;
     }
-    remove_node(iteration_context->linked_list, iteration_context->current->prev);
+    Node* node_to_remove = iteration_context->last_returned;
+    if (iteration_context->current == node_to_remove) {
+        iteration_context->current = node_to_remove->next;
+    } else {
+        iteration_context->cursor--;
+    }
+    remove_node(iteration_context->linked_list, node_to_remove);
     iteration_context->last_returned = nullptr;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }

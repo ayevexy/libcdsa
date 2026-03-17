@@ -825,7 +825,7 @@ static void* iterator_next_internal(void* raw_iteration_context) {
 
 static bool iterator_has_previous_internal(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
-    return iteration_context->cursor - 1 > 0;
+    return iteration_context->cursor > 0;
 }
 
 static void* iterator_previous_internal(void* raw_iteration_context) {
@@ -839,7 +839,7 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
         return nullptr;
     }
     iteration_context->last_returned = --iteration_context->cursor;
-    return iteration_context->array_list->elements[iteration_context->cursor - 1];
+    return iteration_context->array_list->elements[iteration_context->cursor];
 }
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
@@ -876,7 +876,9 @@ static void iterator_remove_internal(void* raw_iteration_context) {
         return;
     }
     array_list_remove(iteration_context->array_list, iteration_context->last_returned);
-    iteration_context->cursor = iteration_context->last_returned;
+    if (iteration_context->cursor > iteration_context->last_returned) {
+        iteration_context->cursor--;
+    }
     iteration_context->last_returned = -1;
     iteration_context->modification_count = iteration_context->array_list->modification_count;
 }

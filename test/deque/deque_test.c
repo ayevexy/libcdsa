@@ -309,6 +309,68 @@ void test_deque_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_deque_is_equal_to_it_self() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    bool equals = deque_equals(deque, deque);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_deque_is_equal_to_another_deque() {
+    // given
+    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    POPULATE_DEQUE(other_deque, values);
+    // when
+    bool equals = deque_equals(deque, other_deque);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    deque_set_destructor(other_deque, free);
+    deque_destroy(&other_deque);
+}
+
+void test_deque_is_not_equal_to_another_deque_with_different_size() {
+    // given
+    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    POPULATE_DEQUE(other_deque, values);
+    deque_add_last(other_deque, new(int, 10));
+    // when
+    bool equals = deque_equals(deque, other_deque);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    deque_set_destructor(other_deque, free);
+    deque_destroy(&other_deque);
+}
+
+void test_deque_is_not_equal_to_another_deque_with_different_elements() {
+    // given
+    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    int other_values[] = { 2, 3, 4, 5, 6 };
+    POPULATE_DEQUE(other_deque, other_values);
+    // when
+    bool equals = deque_equals(deque, other_deque);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    deque_set_destructor(other_deque, free);
+    deque_destroy(&other_deque);
+}
+
 static void action_add_one(void* element) {
     *(int*) element += 1;
 }
@@ -403,6 +465,18 @@ void test_deque_does_not_contains_all_elements() {
     deque_destroy(&new_deque);
 }
 
+void test_clone_deque() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Deque* copy_deque = deque_clone(deque);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(values, copy_deque);
+    // clean up
+    deque_destroy(&copy_deque);
+}
+
 void test_convert_deque_to_collection() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -416,6 +490,18 @@ void test_convert_deque_to_collection() {
     Iterator* iter_a = deque_iterator(deque);
     Iterator* iter_b = collection_iterator(collection);
     TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
+}
+
+void test_convert_deque_to_array() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    void** elements = deque_to_array(deque);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    // clean up
+    free(elements);
 }
 
 int main(void) {
@@ -453,6 +539,10 @@ int main(void) {
     RUN_TEST(test_deque_iterator_detects_concurrent_modification);
     RUN_TEST(test_deque_iterator_reset);
 
+    RUN_TEST(test_deque_is_equal_to_it_self);
+    RUN_TEST(test_deque_is_equal_to_another_deque);
+    RUN_TEST(test_deque_is_not_equal_to_another_deque_with_different_size);
+    RUN_TEST(test_deque_is_not_equal_to_another_deque_with_different_elements);
     RUN_TEST(test_perform_action_for_each_element_of_deque);
     RUN_TEST(test_clear_deque);
 
@@ -462,6 +552,8 @@ int main(void) {
     RUN_TEST(test_empty_deque_contains_all_elements_of_empty_collection);
     RUN_TEST(test_deque_does_not_contains_all_elements);
 
+    RUN_TEST(test_clone_deque);
     RUN_TEST(test_convert_deque_to_collection);
+    RUN_TEST(test_convert_deque_to_array);
     return UNITY_END();
 }

@@ -247,6 +247,24 @@ Iterator* deque_iterator(const Deque* deque) {
     return iterator;
 }
 
+bool deque_equals(const Deque* deque, const Deque* other_deque) {
+    if (require_non_null(deque, other_deque)) return false;
+    if (deque == other_deque) {
+        return true;
+    }
+    if (deque->size != other_deque->size) {
+        return false;
+    }
+    for (int i = 0; i < deque->size; i++) {
+        const int index_a = (deque->first + i) & (deque->capacity - 1);
+        const int index_b = (other_deque->first + i) & (other_deque->capacity - 1);
+        if (!deque->equals(deque->elements[index_a], other_deque->elements[index_b])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void deque_for_each(Deque* deque, Consumer action) {
     if (require_non_null(deque, action)) return;
     for (int i = 0; i < deque->size; i++) {
@@ -298,6 +316,27 @@ bool deque_contains_all(const Deque* deque, Collection collection) {
     return contains;
 }
 
+Deque* deque_clone(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    Deque* new_deque; const Error error = attempt(new_deque = deque_new(&(DequeOptions) {
+         .initial_capacity = deque->capacity,
+         .destruct = noop_destruct,
+         .equals = deque->equals,
+         .to_string = deque->to_string,
+         .memory_alloc = deque->memory_alloc,
+         .memory_free = deque->memory_free
+    }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    for (int i = 0; i < deque->size; i++) {
+        const void* element = deque->elements[(deque->first + i) & (deque->capacity - 1)];
+        deque_add_last(new_deque, element);
+    }
+    return new_deque;
+}
+
 Collection deque_to_collection(const Deque* deque) {
     if (require_non_null(deque)) return (Collection) {};
     return (Collection) {
@@ -306,6 +345,19 @@ Collection deque_to_collection(const Deque* deque) {
         .iterator = collection_iterator_internal,
         .contains = collection_contains_internal
     };
+}
+
+void** deque_to_array(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    void** elements = deque->memory_alloc(sizeof(void*) * deque->size);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    for (int i = 0; i < deque->size; i++) {
+        elements[i] = deque->elements[(deque->first + i) & (deque->capacity - 1)];
+    }
+    return elements;
 }
 
 static int next_power_of_two(int x) {

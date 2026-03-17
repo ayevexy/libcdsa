@@ -103,7 +103,8 @@ void deque_destroy(Deque** deque_pointer) {
     if (require_non_null(deque_pointer, *deque_pointer)) return;
     Deque* deque = *deque_pointer;
     for (int i = 0; i < deque->size; i++) {
-        deque->destruct(deque->elements[i]);
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        deque->destruct(deque->elements[index]);
     }
     deque->memory_free(deque->elements);
     deque->memory_free(deque);
@@ -221,7 +222,7 @@ void* deque_remove_last(Deque* deque) {
 
     void *element = deque->elements[last];
     deque->destruct(element);
-    deque->elements[deque->last] = nullptr;
+    deque->elements[last] = nullptr;
 
     deque->last = last;
     deque->size--;
@@ -282,8 +283,9 @@ void deque_for_each(Deque* deque, Consumer action) {
 void deque_clear(Deque* deque) {
     if (require_non_null(deque)) return;
     for (int i = 0; i < deque->size; i++) {
-        deque->destruct(deque->elements[i]);
-        deque->elements[i] = nullptr;
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        deque->destruct(deque->elements[index]);
+        deque->elements[index] = nullptr;
     }
     deque->first = 0;
     deque->last = 0;
@@ -406,7 +408,8 @@ static size_t calculate_string_size(const Deque* deque) {
     size_t length = 0;
 
     for (int i = 0; i < deque->size; i++) {
-        length += deque->to_string(deque->elements[i], nullptr, 0);
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        length += deque->to_string(deque->elements[index], nullptr, 0);
 
         if (i == 0) length += 1; // space after opening bracket
         if (i < deque->size - 1) length += SEPARATOR; // prevent separator on the last element

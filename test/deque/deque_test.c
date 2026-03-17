@@ -129,6 +129,42 @@ void test_add_all_elements_from_collection_at_end_of_deque() {
     deque_destroy(&existing_deque);
 }
 
+void test_get_first_element_from_deque() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    int* element = deque_get_first(deque);
+    // then
+    TEST_ASSERT_EQUAL(1, *element);
+}
+
+void test_get_first_element_from_empty_deque_fails() {
+    // when
+    int* element; Error error = attempt(element = deque_get_first(deque));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_get_last_element_from_deque() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    int* element = deque_get_last(deque);
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_get_last_element_from_empty_deque_fails() {
+    // when
+    int* element; Error error = attempt(element = deque_get_last(deque));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_get_deque_size() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -260,6 +296,11 @@ int main(void) {
     RUN_TEST(test_add_element_at_end_of_deque);
     RUN_TEST(test_add_all_elements_from_collection_at_beginning_of_deque);
     RUN_TEST(test_add_all_elements_from_collection_at_end_of_deque);
+
+    RUN_TEST(test_get_first_element_from_deque);
+    RUN_TEST(test_get_first_element_from_empty_deque_fails);
+    RUN_TEST(test_get_last_element_from_deque);
+    RUN_TEST(test_get_last_element_from_empty_deque_fails);
 
     RUN_TEST(test_get_deque_size);
     RUN_TEST(test_deque_is_empty);

@@ -154,6 +154,24 @@ void deque_add_all_last(Deque* deque, Collection collection) {
     iterator_destroy(&iterator);
 }
 
+void* deque_get_first(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    if (deque->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'deque' is empty");
+        return nullptr;
+    }
+    return deque->elements[deque->first];
+}
+
+void* deque_get_last(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    if (deque->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'deque' is empty");
+        return nullptr;
+    }
+    return deque->elements[(deque->last - 1) & (deque->capacity - 1)];
+}
+
 int deque_size(const Deque* deque) {
     if (require_non_null(deque)) return 0;
     return deque->size;

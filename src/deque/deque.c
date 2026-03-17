@@ -172,6 +172,40 @@ void* deque_get_last(const Deque* deque) {
     return deque->elements[(deque->last - 1) & (deque->capacity - 1)];
 }
 
+void* deque_remove_first(Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    if (deque->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'deque' is empty");
+        return nullptr;
+    }
+    void *element = deque->elements[deque->first];
+    deque->destruct(element);
+    deque->elements[deque->first] = nullptr;
+
+    deque->first = (deque->first + 1) & (deque->capacity - 1);
+    deque->size--;
+    deque->modification_count++;
+    return element;
+}
+
+void* deque_remove_last(Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    if (deque->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'deque' is empty");
+        return nullptr;
+    }
+    const int last = (deque->last - 1) & (deque->capacity - 1);
+
+    void *element = deque->elements[last];
+    deque->destruct(element);
+    deque->elements[deque->last] = nullptr;
+
+    deque->last = last;
+    deque->size--;
+    deque->modification_count++;
+    return element;
+}
+
 int deque_size(const Deque* deque) {
     if (require_non_null(deque)) return 0;
     return deque->size;

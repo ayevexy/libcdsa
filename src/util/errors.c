@@ -39,7 +39,7 @@ const char* error_message(void) {
 
 const char* plain_error_message(void) {
     for (int i = 0; error_context.message[i] != '\0'; i++) {
-        if (error_context.message[i] == '-') {
+        if (error_context.message[i] == ':') {
             return error_context.message + i + 2;
         }
     }

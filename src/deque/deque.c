@@ -30,6 +30,14 @@ struct Deque {
 
 static int next_power_of_two(int);
 
+static Iterator* create_iterator(const Deque*);
+
+static bool iterator_has_next_internal(const void*);
+
+static void* iterator_next_internal(void*);
+
+static void iterator_reset_internal(void*);
+
 Deque* deque_new(const DequeOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -106,6 +114,15 @@ bool deque_is_empty(const Deque* deque) {
     return deque->size == 0;
 }
 
+Iterator* deque_iterator(const Deque* deque) {
+    if (require_non_null(deque)) return nullptr;
+    Iterator* iterator = create_iterator(deque);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
 bool deque_contains(const Deque* deque, const void* element) {
     if (require_non_null(deque)) return false;
     for (int i = 0; i < deque->size; i++) {
@@ -123,4 +140,57 @@ static int next_power_of_two(int x) {
         power <<= 1;
     }
     return power;
+}
+
+typedef struct {
+    Iterator iterator;
+    Deque* deque;
+    int count;
+    int modification_count;
+}  IterationContext;
+
+static Iterator* create_iterator(const Deque* deque) {
+    IterationContext* iteration_context = deque->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = iterator_has_next_internal;
+    iteration_context->iterator.next = iterator_next_internal;
+    iteration_context->iterator.reset = iterator_reset_internal;
+    iteration_context->iterator.memory_free = deque->memory_free;
+
+    iteration_context->deque = (Deque*) deque;
+    iteration_context->count = 0;
+    iteration_context->modification_count = deque->modification_count;
+
+    return &iteration_context->iterator;
+}
+
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count < iteration_context->deque->size;
+}
+
+static void* iterator_next_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->deque->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_next_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    const int capacity = (iteration_context->deque->capacity - 1);
+    const int index = (iteration_context->deque->first + iteration_context->count) & capacity;
+    iteration_context->count++;
+    return iteration_context->deque->elements[index];
+}
+
+static void iterator_reset_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->count = 0;
+    iteration_context->modification_count = iteration_context->deque->modification_count;
 }

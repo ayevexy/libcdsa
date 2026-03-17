@@ -95,6 +95,62 @@ void test_deque_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_deque_iterator_forward_iteration() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Iterator* iterator = deque_iterator(deque);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_deque_iterator_detects_concurrent_modification() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Iterator* iterator = deque_iterator(deque);
+    deque_add_last(deque, new(int, 10));
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_deque_iterator_reset() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    Iterator* iterator = deque_iterator(deque);
+    iterator_advance(iterator, 3);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_deque_contains_element() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -128,6 +184,10 @@ int main(void) {
     RUN_TEST(test_get_deque_size);
     RUN_TEST(test_deque_is_empty);
     RUN_TEST(test_deque_is_not_empty);
+
+    RUN_TEST(test_deque_iterator_forward_iteration);
+    RUN_TEST(test_deque_iterator_detects_concurrent_modification);
+    RUN_TEST(test_deque_iterator_reset);
 
     RUN_TEST(test_deque_contains_element);
     RUN_TEST(test_deque_does_not_contains_element);

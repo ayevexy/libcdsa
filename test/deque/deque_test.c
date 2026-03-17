@@ -29,6 +29,30 @@ void test_do_not_create_deque_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_deque_from_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Deque* new_deque = deque_from(deque_to_collection(deque), INT_DEQUE_OPTIONS);
+    // then
+    TEST_ASSERT_NOT_NULL(new_deque);
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(values, new_deque);
+    // clean up
+    deque_destroy(&new_deque);
+}
+
+void test_do_not_create_deque_with_invalid_options_from_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Deque* new_deque; Error error = attempt(new_deque = deque_from(deque_to_collection(deque), &(DequeOptions) {}));
+    // then
+    TEST_ASSERT_NULL(new_deque);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
 void test_destroy_deque_set_it_to_null() {
     // given
     Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
@@ -67,6 +91,42 @@ void test_add_element_at_end_of_deque() {
     // then
     int new_values[] = { 1, 2, 3, 4, 5, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
+}
+
+void test_add_all_elements_from_collection_at_beginning_of_deque() {
+    // given
+    Deque* existing_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_DEQUE(existing_deque, other_values);
+    // when
+    deque_add_all_first(deque, deque_to_collection(existing_deque));
+    // then
+    int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
+    // clean up
+    deque_destroy(&existing_deque);
+}
+
+void test_add_all_elements_from_collection_at_end_of_deque() {
+    // given
+    Deque* existing_deque = deque_new(INT_DEQUE_OPTIONS);
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_DEQUE(existing_deque, other_values);
+    // when
+    deque_add_all_last(deque, deque_to_collection(existing_deque));
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
+    // clean up
+    deque_destroy(&existing_deque);
 }
 
 void test_get_deque_size() {
@@ -171,15 +231,35 @@ void test_deque_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_convert_deque_to_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Collection collection = deque_to_collection(deque);
+    // then
+    TEST_ASSERT_EQUAL(deque, collection.data_structure);
+    TEST_ASSERT_EQUAL(deque_size(deque), collection_size(collection));
+    // and
+    Iterator* iter_a = deque_iterator(deque);
+    Iterator* iter_b = collection_iterator(collection);
+    TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_deque);
     RUN_TEST(test_do_not_create_deque_with_invalid_options);
+    RUN_TEST(test_create_deque_from_collection);
+    RUN_TEST(test_do_not_create_deque_with_invalid_options_from_collection);
+
     RUN_TEST(test_destroy_deque_set_it_to_null);
     RUN_TEST(test_destroy_null_deque_fails);
 
     RUN_TEST(test_add_element_at_beginning_of_deque);
     RUN_TEST(test_add_element_at_end_of_deque);
+    RUN_TEST(test_add_all_elements_from_collection_at_beginning_of_deque);
+    RUN_TEST(test_add_all_elements_from_collection_at_end_of_deque);
 
     RUN_TEST(test_get_deque_size);
     RUN_TEST(test_deque_is_empty);
@@ -191,5 +271,7 @@ int main(void) {
 
     RUN_TEST(test_deque_contains_element);
     RUN_TEST(test_deque_does_not_contains_element);
+
+    RUN_TEST(test_convert_deque_to_collection);
     return UNITY_END();
 }

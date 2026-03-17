@@ -38,6 +38,12 @@ static void* iterator_next_internal(void*);
 
 static void iterator_reset_internal(void*);
 
+static int collection_size_internal(const void*);
+
+static Iterator* collection_iterator_internal(const void*);
+
+static bool collection_contains_internal(const void*, const void*);
+
 Deque* deque_new(const DequeOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -69,6 +75,22 @@ Deque* deque_new(const DequeOptions* options) {
     deque->memory_realloc = options->memory_realloc;
     deque->memory_free = options->memory_free;
     deque->modification_count = 0;
+    return deque;
+}
+
+Deque* deque_from(Collection collection, const DequeOptions* options) {
+    if (require_non_null(options)) return nullptr;
+    Deque* deque; Error error;
+
+    if ((error = attempt(deque = deque_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(deque_add_all_last(deque, collection)))) {
+        deque_destroy(&deque);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
     return deque;
 }
 
@@ -104,6 +126,34 @@ void deque_add_last(Deque* deque, const void* element) {
     deque->modification_count++;
 }
 
+void deque_add_all_first(Deque* deque, Collection collection) {
+    if (require_non_null(deque)) return;
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        deque_add_first(deque, element);
+    }
+    iterator_destroy(&iterator);
+}
+
+void deque_add_all_last(Deque* deque, Collection collection) {
+    if (require_non_null(deque)) return;
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        deque_add_last(deque, element);
+    }
+    iterator_destroy(&iterator);
+}
+
 int deque_size(const Deque* deque) {
     if (require_non_null(deque)) return 0;
     return deque->size;
@@ -132,6 +182,16 @@ bool deque_contains(const Deque* deque, const void* element) {
         }
     }
     return false;
+}
+
+Collection deque_to_collection(const Deque* deque) {
+    if (require_non_null(deque)) return (Collection) {};
+    return (Collection) {
+        .data_structure = deque,
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
+    };
 }
 
 static int next_power_of_two(int x) {
@@ -193,4 +253,16 @@ static void iterator_reset_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->count = 0;
     iteration_context->modification_count = iteration_context->deque->modification_count;
+}
+
+static int collection_size_internal(const void* deque) {
+    return deque_size(deque);
+}
+
+static Iterator* collection_iterator_internal(const void* deque) {
+    return deque_iterator(deque);
+}
+
+static bool collection_contains_internal(const void* deque, const void* element) {
+    return deque_contains(deque, element);
 }

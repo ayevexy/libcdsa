@@ -101,6 +101,11 @@ int deque_size(const Deque* deque) {
     return deque->size;
 }
 
+bool deque_is_empty(const Deque* deque) {
+    if (require_non_null(deque)) return false;
+    return deque->size == 0;
+}
+
 bool deque_contains(const Deque* deque, const void* element) {
     if (require_non_null(deque)) return false;
     for (int i = 0; i < deque->size; i++) {

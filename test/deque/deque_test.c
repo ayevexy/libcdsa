@@ -79,6 +79,22 @@ void test_get_deque_size() {
     TEST_ASSERT_EQUAL(size, SIZE(values));
 }
 
+void test_deque_is_empty() {
+    // when
+    bool empty = deque_is_empty(deque);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
+void test_deque_is_not_empty() {
+    // given
+    deque_add_last(deque, new(int, 10));
+    // when
+    bool empty = deque_is_empty(deque);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 void test_deque_contains_element() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -105,9 +121,14 @@ int main(void) {
     RUN_TEST(test_do_not_create_deque_with_invalid_options);
     RUN_TEST(test_destroy_deque_set_it_to_null);
     RUN_TEST(test_destroy_null_deque_fails);
+
     RUN_TEST(test_add_element_at_beginning_of_deque);
     RUN_TEST(test_add_element_at_end_of_deque);
+
     RUN_TEST(test_get_deque_size);
+    RUN_TEST(test_deque_is_empty);
+    RUN_TEST(test_deque_is_not_empty);
+
     RUN_TEST(test_deque_contains_element);
     RUN_TEST(test_deque_does_not_contains_element);
     return UNITY_END();

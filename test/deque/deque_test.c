@@ -93,6 +93,18 @@ void test_add_element_at_end_of_deque() {
     TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
 }
 
+void test_add_element_to_deque_exceeding_capacity_resize_it() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    deque_add_last(deque, new(int, 9));
+    // then
+    int new_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    TEST_ASSERT_EQUAL(16, deque_capacity(deque));
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
+}
+
 void test_add_all_elements_from_collection_at_beginning_of_deque() {
     // given
     Deque* existing_deque = deque_new(INT_DEQUE_OPTIONS);
@@ -213,6 +225,16 @@ void test_get_deque_size() {
     int size = deque_size(deque);
     // then
     TEST_ASSERT_EQUAL(size, SIZE(values));
+}
+
+void test_get_deque_capacity() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    int capacity = deque_capacity(deque);
+    // then
+    TEST_ASSERT_EQUAL(16, capacity);
 }
 
 void test_deque_is_empty() {
@@ -408,6 +430,7 @@ int main(void) {
 
     RUN_TEST(test_add_element_at_beginning_of_deque);
     RUN_TEST(test_add_element_at_end_of_deque);
+    RUN_TEST(test_add_element_to_deque_exceeding_capacity_resize_it);
     RUN_TEST(test_add_all_elements_from_collection_at_beginning_of_deque);
     RUN_TEST(test_add_all_elements_from_collection_at_end_of_deque);
 
@@ -422,6 +445,7 @@ int main(void) {
     RUN_TEST(test_remove_last_element_from_empty_deque_fails);
 
     RUN_TEST(test_get_deque_size);
+    RUN_TEST(test_get_deque_capacity);
     RUN_TEST(test_deque_is_empty);
     RUN_TEST(test_deque_is_not_empty);
 

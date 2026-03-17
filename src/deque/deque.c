@@ -7,7 +7,7 @@
 
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = (INT_MAX - 1);
-//constexpr float GROWTH_FACTOR = 2;
+constexpr float GROWTH_FACTOR = 2;
 
 struct Deque {
     void** elements;
@@ -22,13 +22,14 @@ struct Deque {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
     int modification_count;
 };
 
 static int next_power_of_two(int);
+
+static bool ensure_capacity(Deque*, int);
 
 static Iterator* create_iterator(const Deque*);
 
@@ -46,9 +47,8 @@ static bool collection_contains_internal(const void*, const void*);
 
 Deque* deque_new(const DequeOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || !options->destruct || !options->equals || !options->to_string
-        || !options->memory_alloc || !options->memory_realloc || !options->memory_free
+    if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY || !options->destruct
+        || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_free
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -72,7 +72,6 @@ Deque* deque_new(const DequeOptions* options) {
     deque->equals = options->equals;
     deque->to_string = options->to_string;
     deque->memory_alloc = options->memory_alloc;
-    deque->memory_realloc = options->memory_realloc;
     deque->memory_free = options->memory_free;
     deque->modification_count = 0;
     return deque;
@@ -112,6 +111,10 @@ void deque_set_destructor(Deque* deque, void (*destructor)(void*)) {
 
 void deque_add_first(Deque* deque, const void* element) {
     if (require_non_null(deque)) return;
+    if (!ensure_capacity(deque, deque->size + 1)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'deque' capacity");
+        return;
+    }
     deque->first = (deque->first - 1) & (deque->capacity - 1);
     deque->elements[deque->first] = (void*) element;
     deque->size++;
@@ -120,6 +123,10 @@ void deque_add_first(Deque* deque, const void* element) {
 
 void deque_add_last(Deque* deque, const void* element) {
     if (require_non_null(deque)) return;
+    if (!ensure_capacity(deque, deque->size + 1)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'deque' capacity");
+        return;
+    }
     deque->elements[deque->last] = (void*) element;
     deque->last = (deque->last + 1) & (deque->capacity - 1);
     deque->size++;
@@ -131,6 +138,11 @@ void deque_add_all_first(Deque* deque, Collection collection) {
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    if (!ensure_capacity(deque, deque->size + collection_size(collection))) {
+        iterator_destroy(&iterator);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'deque' capacity");
         return;
     }
     while (iterator_has_next(iterator)) {
@@ -145,6 +157,11 @@ void deque_add_all_last(Deque* deque, Collection collection) {
     Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
         set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    if (!ensure_capacity(deque, deque->size + collection_size(collection))) {
+        iterator_destroy(&iterator);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'deque' capacity");
         return;
     }
     while (iterator_has_next(iterator)) {
@@ -209,6 +226,11 @@ void* deque_remove_last(Deque* deque) {
 int deque_size(const Deque* deque) {
     if (require_non_null(deque)) return 0;
     return deque->size;
+}
+
+int deque_capacity(const Deque* deque) {
+    if (require_non_null(deque)) return 0;
+    return deque->capacity;
 }
 
 bool deque_is_empty(const Deque* deque) {
@@ -292,6 +314,31 @@ static int next_power_of_two(int x) {
         power <<= 1;
     }
     return power;
+}
+
+static bool ensure_capacity(Deque* deque, int capacity) {
+    if (deque->capacity >= capacity) {
+        return true;
+    }
+    int new_capacity = deque->capacity;
+    while (new_capacity < capacity) {
+        new_capacity = (int) (new_capacity * GROWTH_FACTOR);
+    }
+    new_capacity = new_capacity > MAX_CAPACITY ? MAX_CAPACITY : new_capacity;
+
+    void** elements = deque->memory_alloc(new_capacity * sizeof(void*));
+    if (!elements) {
+        return false;
+    }
+    for (int i = 0; i < deque->size; i++) {
+        elements[i] = deque->elements[(deque->first + i) & (deque->capacity - 1)];
+    }
+    deque->memory_free(deque->elements);
+    deque->elements = elements;
+    deque->first = 0;
+    deque->last = deque->size;
+    deque->capacity = new_capacity;
+    return true;
 }
 
 typedef struct {

@@ -19,7 +19,6 @@ typedef struct {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
         void (*memory_free)(void*);
     };
 } DequeOptions;
@@ -30,7 +29,6 @@ typedef struct {
     .equals = pointer_equals,                           \
     .to_string = pointer_to_string,                     \
     .memory_alloc = malloc,                             \
-    .memory_realloc = realloc,                          \
     .memory_free = free,                                \
     __VA_ARGS__                                         \
 }
@@ -64,6 +62,8 @@ void* deque_remove_first(Deque* deque);
 void* deque_remove_last(Deque* deque);
 
 int deque_size(const Deque* deque);
+
+int deque_capacity(const Deque* deque);
 
 bool deque_is_empty(const Deque* deque);
 

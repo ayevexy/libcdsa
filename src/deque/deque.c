@@ -39,6 +39,10 @@ static bool iterator_has_next_internal(const void*);
 
 static void* iterator_next_internal(void*);
 
+static bool iterator_has_previous_internal(const void*);
+
+static void* iterator_previous_internal(void*);
+
 static void iterator_reset_internal(void*);
 
 static int collection_size_internal(const void*);
@@ -460,6 +464,8 @@ static Iterator* create_iterator(const Deque* deque) {
     iteration_context->iterator.iteration_context = iteration_context;
     iteration_context->iterator.has_next = iterator_has_next_internal;
     iteration_context->iterator.next = iterator_next_internal;
+    iteration_context->iterator.has_previous = iterator_has_previous_internal;
+    iteration_context->iterator.previous = iterator_previous_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
     iteration_context->iterator.memory_free = deque->memory_free;
 
@@ -486,9 +492,28 @@ static void* iterator_next_internal(void* raw_iteration_context) {
         return nullptr;
     }
     const int capacity = (iteration_context->deque->capacity - 1);
-    const int index = (iteration_context->deque->first + iteration_context->count) & capacity;
-    iteration_context->count++;
+    const int index = (iteration_context->deque->first + iteration_context->count++) & capacity;
     return iteration_context->deque->elements[index];
+}
+
+static bool iterator_has_previous_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count - 1 > 0;
+}
+
+static void* iterator_previous_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->deque->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_previous_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    const int capacity = (iteration_context->deque->capacity - 1);
+    const int index = (iteration_context->deque->first + --iteration_context->count) & capacity;
+    return iteration_context->deque->elements[index - 1];
 }
 
 static void iterator_reset_internal(void* raw_iteration_context) {

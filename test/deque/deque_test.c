@@ -281,6 +281,33 @@ void test_deque_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
+void test_deque_iterator_backward_iteration() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    Iterator* iterator = deque_iterator(deque);
+    // and
+    iterator_advance(iterator, 5);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_deque_iterator_detects_concurrent_modification() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -290,6 +317,7 @@ void test_deque_iterator_detects_concurrent_modification() {
     deque_add_last(deque, new(int, 10));
     // then
     TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -557,6 +585,7 @@ int main(void) {
     RUN_TEST(test_deque_is_not_empty);
 
     RUN_TEST(test_deque_iterator_forward_iteration);
+    RUN_TEST(test_deque_iterator_backward_iteration);
     RUN_TEST(test_deque_iterator_detects_concurrent_modification);
     RUN_TEST(test_deque_iterator_reset);
 

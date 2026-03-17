@@ -45,6 +45,10 @@ static inline int stack_size(const Stack* stack) {
     return deque_size(stack);
 }
 
+static inline int stack_capacity(const Stack* stack) {
+    return deque_capacity(stack);
+}
+
 static inline bool stack_is_empty(const Stack* stack) {
     return deque_is_empty(stack);
 }

@@ -45,6 +45,10 @@ static inline int queue_size(const Queue* queue) {
     return deque_size(queue);
 }
 
+static inline int queue_capacity(const Queue* queue) {
+    return deque_capacity(queue);
+}
+
 static inline bool queue_is_empty(const Queue* queue) {
     return deque_is_empty(queue);
 }

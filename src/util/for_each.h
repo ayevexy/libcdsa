@@ -5,6 +5,7 @@
 #include "list/linked_list.h"
 #include "map/hash_map.h"
 #include "set/hash_set.h"
+#include "deque/deque.h"
 
 #include "util/collection.h"
 #include "util/iterator.h"
@@ -21,6 +22,7 @@
             LinkedList*: linked_list_iterator,                                                  \
             HashMap*: hash_map_iterator,                                                        \
             HashSet*: hash_set_iterator,                                                        \
+            Deque*: deque_iterator,                                                             \
             Collection: collection_iterator                                                     \
         )(collection);                                                                          \
         _iter_;                                                                                 \

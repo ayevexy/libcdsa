@@ -3,9 +3,9 @@
 
 #include "../test_utilities.h"
 
-#define INT_ARRAY_LIST_OPTIONS DEFAULT_ARRAY_LIST_OPTIONS(  \
-    .equals = int_pointer_value_equals,                     \
-    .to_string = int_pointer_value_to_string                \
+#define INT_ARRAY_LIST_OPTIONS() DEFAULT_ARRAY_LIST_OPTIONS(    \
+    .equals = int_pointer_value_equals,                         \
+    .to_string = int_pointer_value_to_string                    \
 )
 
 #define POPULATE_ARRAY_LIST(array_list, array)                  \

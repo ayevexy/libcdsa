@@ -9,7 +9,7 @@
 static HashSet* hash_set;
 
 void setUp() {
-    hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
 }
 
 void tearDown() {
@@ -34,7 +34,7 @@ void test_create_hash_set_from_collection() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    HashSet* new_hash_set = hash_set_from(hash_set_to_collection(hash_set), INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_from(hash_set_to_collection(hash_set), INT_HASH_SET_OPTIONS());
     // then
     TEST_ASSERT_NOT_NULL(new_hash_set);
     TEST_ASSERT_HASH_SET_CONTAINS(new_hash_set, elements);
@@ -55,7 +55,7 @@ void test_do_not_create_hash_set_with_invalid_options_from_collection() {
 
 void test_destroy_hash_set_set_it_to_null() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // when
     hash_set_destroy(&new_hash_set);
     // then
@@ -97,7 +97,7 @@ void test_do_not_add_element_to_hash_set_if_already_present() {
 
 void test_add_all_elements_to_hash_set() {
     // given
-    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -114,7 +114,7 @@ void test_add_all_elements_to_hash_set() {
 
 void test_do_not_add_all_elements_to_hash_set_if_already_present() {
     // given
-    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* existing_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -166,7 +166,7 @@ void test_do_not_remove_element_from_hash_set_if_not_present() {
 
 void test_remove_all_elements_from_hash_set_matching_collection() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -204,7 +204,7 @@ void test_remove_elements_from_hash_set_matching_predicate() {
 
 void test_retain_all_elements_from_collection_in_hash_set() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -394,7 +394,7 @@ void test_hash_set_is_equal_to_it_self() {
 
 void test_hash_set_is_equal_to_another_hash_set() {
     // given
-    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -410,7 +410,7 @@ void test_hash_set_is_equal_to_another_hash_set() {
 
 void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
     // given
-    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -428,7 +428,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
 
 void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements() {
     // given
-    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* other_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -493,7 +493,7 @@ void test_hash_set_does_not_contains_element() {
 
 void test_hash_set_contains_all_elements() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
@@ -511,7 +511,7 @@ void test_hash_set_contains_all_elements() {
 
 void test_empty_hash_set_contains_all_elements_of_empty_collection() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // when
     bool contains_all = hash_set_contains_all(hash_set, hash_set_to_collection(new_hash_set));
     // then
@@ -522,7 +522,7 @@ void test_empty_hash_set_contains_all_elements_of_empty_collection() {
 
 void test_hash_set_does_not_contains_all_elements() {
     // given
-    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS);
+    HashSet* new_hash_set = hash_set_new(INT_HASH_SET_OPTIONS());
     // and
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);

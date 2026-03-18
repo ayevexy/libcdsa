@@ -3,7 +3,7 @@
 
 #include "../test_utilities.h"
 
-#define INT_DEQUE_OPTIONS DEFAULT_DEQUE_OPTIONS(    \
+#define INT_DEQUE_OPTIONS() DEFAULT_DEQUE_OPTIONS(  \
     .equals = int_pointer_value_equals,             \
     .to_string = int_pointer_value_to_string        \
 )

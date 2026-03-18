@@ -3,7 +3,7 @@
 
 #include "../test_utilities.h"
 
-#define CHAR_INT_HASH_MAP_OPTIONS DEFAULT_HASH_MAP_OPTIONS(     \
+#define CHAR_INT_HASH_MAP_OPTIONS() DEFAULT_HASH_MAP_OPTIONS(   \
     .hash = char_hash,                                          \
     .key_equals = char_pointer_value_equals,                    \
     .key_to_string = char_pointer_value_to_string,              \

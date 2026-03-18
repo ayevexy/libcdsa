@@ -3,10 +3,10 @@
 
 #include "../test_utilities.h"
 
-#define INT_HASH_SET_OPTIONS DEFAULT_HASH_SET_OPTIONS(  \
-    .hash = char_hash,                                  \
-    .equals = int_pointer_value_equals,                 \
-    .to_string = int_pointer_value_to_string            \
+#define INT_HASH_SET_OPTIONS() DEFAULT_HASH_SET_OPTIONS(    \
+    .hash = char_hash,                                      \
+    .equals = int_pointer_value_equals,                     \
+    .to_string = int_pointer_value_to_string                \
 )
 
 #define POPULATE_HASH_SET(hash_set, array)          \

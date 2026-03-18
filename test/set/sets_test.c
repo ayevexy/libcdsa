@@ -12,9 +12,9 @@ static HashSet* hash_set_b;
 static HashSet* hash_set_c;
 
 void setUp() {
-    hash_set_a = hash_set_new(INT_HASH_SET_OPTIONS);
-    hash_set_b = hash_set_new(INT_HASH_SET_OPTIONS);
-    hash_set_c = hash_set_new(INT_HASH_SET_OPTIONS);
+    hash_set_a = hash_set_new(INT_HASH_SET_OPTIONS());
+    hash_set_b = hash_set_new(INT_HASH_SET_OPTIONS());
+    hash_set_c = hash_set_new(INT_HASH_SET_OPTIONS());
 }
 
 void tearDown() {

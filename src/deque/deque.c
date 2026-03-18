@@ -383,7 +383,7 @@ char* deque_to_string(const Deque* deque) {
         return nullptr;
     }
     string[0] = '\0'; // initialize string to clear trash data
-    strcat(string, deque->size == 0 ? "[" : "[ ");
+    strcat(string, deque->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < deque->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
@@ -405,23 +405,23 @@ char* deque_to_string(const Deque* deque) {
         deque->memory_free(element_string);
     }
 
-    strcat(string, deque->size == 0 ? "]" : " ]");
+    strcat(string, deque->size == 0 ? "|" : " |");
     return string;
 }
 
 static size_t calculate_string_size(const Deque* deque) {
-    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int PIPES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (int i = 0; i < deque->size; i++) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         length += deque->to_string(deque->elements[index], nullptr, 0);
 
-        if (i == 0) length += 1; // space after opening bracket
+        if (i == 0) length += 1; // space after opening pipe
         if (i < deque->size - 1) length += SEPARATOR; // prevent separator on the last element
-        if (i == deque->size - 1) length += 1; // space before closing bracket
+        if (i == deque->size - 1) length += 1; // space before closing pipe
     }
-    return length + BRACKETS + NULL_TERMINATOR;
+    return length + PIPES + NULL_TERMINATOR;
 }
 
 static int next_power_of_two(int x) {

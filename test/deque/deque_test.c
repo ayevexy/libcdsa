@@ -117,7 +117,7 @@ void test_add_all_elements_from_collection_at_beginning_of_deque() {
     // when
     deque_add_all_first(deque, deque_to_collection(existing_deque));
     // then
-    int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
+    int new_values[] = { 30, 20, 10, 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
     // clean up
     deque_destroy(&existing_deque);

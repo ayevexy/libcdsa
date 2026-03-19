@@ -13,10 +13,10 @@
         deque_add_last(deque, new(int, array[i]));  \
     }
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(array, deque)         \
-    for (int i = 0; i < SIZE(array); i++) {                     \
-        TEST_ASSERT_TRUE(deque_contains(deque, &array[i]));     \
-    }                                                           \
-    TEST_ASSERT_EQUAL(SIZE(array), deque_size(deque));
+#define TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(array, deque)                     \
+    TEST_ASSERT_EQUAL(SIZE(array), deque_size(deque));                      \
+    for (int i = 0; i < SIZE(array); i++) {                                 \
+        TEST_ASSERT_EQUAL(array[i], *(int*) deque_remove_first(deque));     \
+    }                                                                       \
 
 #endif

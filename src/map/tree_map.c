@@ -8,20 +8,21 @@ typedef enum {
     BLACK
 } Color;
 
-typedef struct Node {
+typedef struct Entry {
     union {
         MapEntry entry;
         struct { void* key; void* value; };
     };
     Color color;
-    struct Node* parent;
-    struct Node* left;
-    struct Node* right;
-} Node;
+    struct Entry* parent;
+    struct Entry* left;
+    struct Entry* right;
+} Entry;
+
+static Entry sentinel = { .color = BLACK };
 
 struct TreeMap {
-    Node* root;
-    Node* sentinel;
+    Entry* root;
     int size;
     Comparator compare_keys;
     struct {
@@ -41,6 +42,10 @@ struct TreeMap {
     int modification_count;
 };
 
+static Entry* create_entry(const TreeMap*, const void*, const void*);
+
+static Entry* get_entry(const TreeMap*, const void*);
+
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare_keys || !options->key_destruct || !options->key_equals
@@ -55,8 +60,7 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_map'");
         return nullptr;
     }
-    tree_map->root = nullptr;
-    tree_map->sentinel = nullptr;
+    tree_map->root = &sentinel;
     tree_map->size = 0;
     tree_map->compare_keys = options->compare_keys;
     tree_map->key_destruct = options->key_destruct;
@@ -86,4 +90,91 @@ void tree_map_set_key_destructor(TreeMap* tree_map, void(*destructor)(void*)) {
 void tree_map_set_value_destructor(TreeMap* tree_map, void(*destructor)(void*)) {
     if (require_non_null(tree_map)) return;
     tree_map->value_destruct = destructor;
+}
+
+void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
+    if (require_non_null(tree_map)) return nullptr;
+    Entry* current = tree_map->root, * previous = &sentinel;
+    while (current != &sentinel) {
+        const int result = tree_map->compare_keys(key, current->key);
+        previous = current;
+        if (result < 0) {
+            current = current->left;
+        } else if (result > 0) {
+            current = current->right;
+        } else {
+            void* old_value = current->value;
+            current->value = (void*) value;
+            if (old_value != value) {
+                tree_map->value_destruct(old_value);
+            }
+            return old_value;
+        }
+    }
+    current = previous;
+    Entry* entry = create_entry(tree_map, key, value);
+    if (!entry) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new entry'");
+        return nullptr;
+    }
+    entry->parent = current;
+    if (current == &sentinel) {
+        entry->color = BLACK;
+        tree_map->root = entry;
+    } else {
+        entry->color = RED;
+        if (tree_map->compare_keys(key, entry->key) < 0) {
+            current->left = entry;
+        } else {
+            current->right = entry;
+        }
+        // TODO: rebalance
+    }
+    tree_map->size++;
+    tree_map->modification_count++;
+    return nullptr;
+}
+
+void* tree_map_get(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return nullptr;
+    const Entry* entry = get_entry(tree_map, key);
+    return entry ? entry->value : nullptr;
+}
+
+int tree_map_size(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return 0;
+    return tree_map->size;
+}
+
+bool tree_map_is_empty(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return false;
+    return tree_map->size == 0;
+}
+
+static Entry* create_entry(const TreeMap* tree_map, const void* key, const void* value) {
+    Entry* entry = tree_map->memory_alloc(sizeof(Entry));
+    if (!entry) {
+        return nullptr;
+    }
+    entry->key = (void*) key;
+    entry->value = (void*) value;
+    entry->parent = nullptr;
+    entry->left = &sentinel;
+    entry->right = &sentinel;
+    return entry;
+}
+
+static Entry* get_entry(const TreeMap* tree_map, const void* key) {
+    Entry* current = tree_map->root;
+    while (current != &sentinel) {
+        const int result = tree_map->compare_keys(key, current->key);
+        if (result < 0) {
+            current = current->left;
+        } else if (result > 0) {
+            current = current->right;
+        } else {
+            return current;
+        }
+    }
+    return nullptr;
 }

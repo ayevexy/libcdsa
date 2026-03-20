@@ -156,6 +156,66 @@ void test_tree_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_tree_map_contains_entry() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_entry(tree_map, &(char){'c'}, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_tree_map_does_not_contains_entry() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_entry(tree_map, &(char){'c'}, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
+void test_tree_map_contains_key() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_key(tree_map, &(char){'c'});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_tree_map_does_not_contains_key() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_key(tree_map, &(char){'k'});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
+void test_tree_map_contains_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_value(tree_map, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_tree_map_does_not_contains_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool contains = tree_map_contains_value(tree_map, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_map);
@@ -175,5 +235,12 @@ int main(void) {
     RUN_TEST(test_get_tree_map_size);
     RUN_TEST(test_tree_map_is_empty);
     RUN_TEST(test_tree_map_is_not_empty);
+    
+    RUN_TEST(test_tree_map_contains_entry);
+    RUN_TEST(test_tree_map_does_not_contains_entry);
+    RUN_TEST(test_tree_map_contains_key);
+    RUN_TEST(test_tree_map_does_not_contains_key);
+    RUN_TEST(test_tree_map_contains_value);
+    RUN_TEST(test_tree_map_does_not_contains_value);
     return UNITY_END();
 }

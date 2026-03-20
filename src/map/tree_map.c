@@ -46,6 +46,10 @@ static Entry* create_entry(const TreeMap*, const void*, const void*);
 
 static Entry* get_entry(const TreeMap*, const void*);
 
+static Entry* get_successor_entry(Entry*);
+
+static Entry* get_lower_entry(Entry*);
+
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare_keys || !options->key_destruct || !options->key_equals
@@ -166,6 +170,29 @@ bool tree_map_is_empty(const TreeMap* tree_map) {
     return tree_map->size == 0;
 }
 
+bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value) {
+    if (require_non_null(tree_map)) return false;
+    const Entry* entry = get_entry(tree_map, key);
+    return entry ? tree_map->value_equals(entry->value, value) : false;
+}
+
+bool tree_map_contains_key(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return false;
+    return get_entry(tree_map, key) != nullptr;
+}
+
+bool tree_map_contains_value(const TreeMap* tree_map, const void* value) {
+    if (require_non_null(tree_map)) return false;
+    Entry* current = get_lower_entry(tree_map->root);
+    while (current != &sentinel) {
+        if (tree_map->value_equals(value, current->value)) {
+            return true;
+        }
+        current = get_successor_entry(current);
+    }
+    return false;
+}
+
 static Entry* create_entry(const TreeMap* tree_map, const void* key, const void* value) {
     Entry* entry = tree_map->memory_alloc(sizeof(Entry));
     if (!entry) {
@@ -192,4 +219,26 @@ static Entry* get_entry(const TreeMap* tree_map, const void* key) {
         }
     }
     return nullptr;
+}
+
+static Entry* get_successor_entry(Entry* entry) {
+    if (entry->right != &sentinel) {
+        return get_lower_entry(entry->right);
+    }
+    Entry* parent = entry->parent;
+    while (parent != &sentinel && entry == parent->right) {
+        entry = parent;
+        parent = parent->parent;
+    }
+    return parent;
+}
+
+static Entry* get_lower_entry(Entry* entry) {
+    if (entry == &sentinel) {
+        return entry;
+    }
+    while (entry->left != &sentinel) {
+        entry = entry->left;
+    }
+    return entry;
 }

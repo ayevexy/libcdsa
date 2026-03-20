@@ -100,6 +100,50 @@ void tree_map_set_value_destructor(TreeMap* tree_map, void(*destructor)(void*)) 
     tree_map->value_destruct = destructor;
 }
 
+void* tree_map_compute(TreeMap* tree_map, const void* key, BiOperator remapper) {
+    if (require_non_null(tree_map, remapper)) return nullptr;
+    void* old_value = tree_map_get(tree_map, key);
+    void* new_value = remapper((void*) key, old_value);
+    if (new_value) {
+        tree_map_put(tree_map, key, new_value);
+    } else if (old_value || tree_map_contains_key(tree_map, key)) {
+        tree_map_remove(tree_map, key);
+    }
+    return new_value;
+}
+
+void* tree_map_compute_if_absent(TreeMap* tree_map, const void* key, Operator mapper) {
+    if (require_non_null(tree_map, mapper)) return nullptr;
+    if (!tree_map_contains_key(tree_map, key)) {
+        void* new_value = mapper((void*) key);
+        if (new_value) {
+            tree_map_put(tree_map, key, new_value);
+        }
+        return new_value;
+    }
+    return nullptr;
+}
+
+void* tree_map_compute_if_present(TreeMap* tree_map, const void* key, BiOperator remapper) {
+    if (require_non_null(tree_map, remapper)) return nullptr;
+    if (tree_map_contains_key(tree_map, key)) {
+        return tree_map_compute(tree_map, key, remapper);
+    }
+    return nullptr;
+}
+
+void* tree_map_merge(TreeMap* tree_map, const void* key, const void* value, BiOperator remapper) {
+    if (require_non_null(tree_map, remapper)) return nullptr;
+    void* old_value = tree_map_get(tree_map, key);
+    void* new_value = !old_value ? (void*) value : remapper(old_value, (void*) value);
+    if (!new_value) {
+        tree_map_remove(tree_map, key);
+    } else {
+        tree_map_put(tree_map, key, new_value);
+    }
+    return new_value;
+}
+
 void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return nullptr;
     Entry* current = tree_map->root, * previous = &sentinel;

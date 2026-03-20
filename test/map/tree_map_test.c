@@ -49,6 +49,145 @@ void test_destroy_null_tree_map_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
+static void* remapper_return_null(void* key, void* value) {
+    return nullptr;
+}
+
+static void* remapper_return_new_value(void* key, void* value) {
+    return new(int, 10);
+}
+
+static void* remapper_sum_values(void* old_value, void* new_value) {
+    *(int*) old_value += *(int*) new_value;
+    return old_value;
+}
+
+void test_compute_mapping_of_tree_map_if_remapper_return_value_is_null_remove_mapping() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute(tree_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_compute_mapping_of_tree_map_if_remapper_return_value_is_not_null_put_mapping() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    tree_map_put(tree_map, new(char, 'a'), nullptr);
+    // when
+    int* value = tree_map_compute(tree_map, &(char){'a'}, remapper_return_new_value);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_compute_mapping_of_tree_map_if_key_is_absent_and_remapper_return_null_do_nothing() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute(tree_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+static void* mapper(void* key) {
+    return new(int, 10);
+}
+
+void test_compute_mapping_of_tree_map_if_absent() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute_if_absent(tree_map, new(char, 'a'), mapper);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_do_not_compute_mapping_of_tree_map_if_not_absent() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute_if_absent(tree_map, &(char){'a'}, mapper);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_compute_mapping_of_tree_map_if_present() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute_if_present(tree_map, new(char, 'a'), remapper_return_new_value);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 10 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(10, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_do_not_compute_mapping_of_tree_map_if_not_present() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_compute_if_present(tree_map, &(char){'a'}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_merge_mapping_of_tree_map_if_old_value_is_null_insert_new_value() {
+    // given
+    CharIntEntry entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    tree_map_put(tree_map, new(char, 'a'), nullptr);
+    // when
+    int* value = tree_map_merge(tree_map, &(char){'a'}, new(int, 1), remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(1, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_merge_mapping_of_tree_map_if_old_value_is_not_null_merge_with_new_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_merge(tree_map, &(char){'a'}, &(int){1}, remapper_sum_values);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 2 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(2, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_merge_mapping_of_tree_map_if_merged_value_is_null_remove_mapping() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_merge(tree_map, &(char){'a'}, &(int){1}, remapper_return_null);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
 void test_put_entry_to_tree_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -313,8 +452,22 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_map);
     RUN_TEST(test_do_not_create_tree_map_with_invalid_options);
+    
     RUN_TEST(test_destroy_tree_map_set_it_to_null);
     RUN_TEST(test_destroy_null_tree_map_fails);
+    
+    RUN_TEST(test_compute_mapping_of_tree_map_if_remapper_return_value_is_null_remove_mapping);
+    RUN_TEST(test_compute_mapping_of_tree_map_if_remapper_return_value_is_not_null_put_mapping);
+    RUN_TEST(test_compute_mapping_of_tree_map_if_key_is_absent_and_remapper_return_null_do_nothing);
+
+    RUN_TEST(test_compute_mapping_of_tree_map_if_absent);
+    RUN_TEST(test_do_not_compute_mapping_of_tree_map_if_not_absent);
+    RUN_TEST(test_compute_mapping_of_tree_map_if_present);
+    RUN_TEST(test_do_not_compute_mapping_of_tree_map_if_not_present);
+
+    RUN_TEST(test_merge_mapping_of_tree_map_if_old_value_is_null_insert_new_value);
+    RUN_TEST(test_merge_mapping_of_tree_map_if_old_value_is_not_null_merge_with_new_value);
+    RUN_TEST(test_merge_mapping_of_tree_map_if_merged_value_is_null_remove_mapping);
 
     RUN_TEST(test_put_entry_to_tree_map);
     RUN_TEST(test_put_entry_to_tree_map_if_key_already_exists_update_value);

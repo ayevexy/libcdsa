@@ -123,7 +123,7 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
         tree_map->root = entry;
     } else {
         entry->color = RED;
-        if (tree_map->compare_keys(key, entry->key) < 0) {
+        if (tree_map->compare_keys(key, current->key) < 0) {
             current->left = entry;
         } else {
             current->right = entry;
@@ -135,10 +135,25 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
     return nullptr;
 }
 
+void* tree_map_put_if_absent(TreeMap* tree_map, const void* key, const void* value) {
+    if (require_non_null(tree_map)) return nullptr;
+    void* old_value = tree_map_get(tree_map, key);
+    if (!old_value) {
+        old_value = tree_map_put(tree_map, key, value);
+    }
+    return old_value;
+}
+
 void* tree_map_get(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return nullptr;
     const Entry* entry = get_entry(tree_map, key);
     return entry ? entry->value : nullptr;
+}
+
+void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const void* default_value) {
+    if (require_non_null(tree_map)) return nullptr;
+    const Entry* entry = get_entry(tree_map, key);
+    return entry ? entry->value : (void*) default_value;
 }
 
 int tree_map_size(const TreeMap* tree_map) {

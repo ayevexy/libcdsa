@@ -76,6 +76,20 @@ static void iterator_remove_internal(void*);
 
 static void iterator_reset_internal(void*);
 
+static int collection_size_internal(const void*);
+
+static Iterator* entry_collection_iterator_internal(const void*);
+
+static Iterator* key_collection_iterator_internal(const void*);
+
+static Iterator* value_collection_iterator_internal(const void*);
+
+static bool entry_collection_contains_internal(const void*, const void*);
+
+static bool key_collection_contains_internal(const void*, const void*);
+
+static bool value_collection_contains_internal(const void*, const void*);
+
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare_keys || !options->key_destruct || !options->key_equals
@@ -283,6 +297,7 @@ Iterator* tree_map_iterator(const TreeMap* tree_map) {
     Iterator* iterator = create_iterator(tree_map, iterator_next_internal, iterator_previous_internal);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
     }
     return iterator;
 }
@@ -308,6 +323,36 @@ bool tree_map_contains_value(const TreeMap* tree_map, const void* value) {
         current = get_successor_entry(current);
     }
     return false;
+}
+
+Collection tree_map_keys(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = tree_map,
+        .size = collection_size_internal,
+        .iterator = key_collection_iterator_internal,
+        .contains = key_collection_contains_internal
+    };
+}
+
+Collection tree_map_values(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = tree_map,
+        .size = collection_size_internal,
+        .iterator = value_collection_iterator_internal,
+        .contains = value_collection_contains_internal
+    };
+}
+
+Collection tree_map_entries(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = tree_map,
+        .size = collection_size_internal,
+        .iterator = entry_collection_iterator_internal,
+        .contains = entry_collection_contains_internal
+    };
 }
 
 static Entry* create_entry(const TreeMap* tree_map, const void* key, const void* value) {
@@ -487,6 +532,16 @@ static void* iterator_next_internal(void* raw_iteration_context) {
     return &iteration_context->entry->view;
 }
 
+static void* iterator_next_key_internal(void* raw_iteration_context) {
+    const MapEntry* entry = iterator_next_internal(raw_iteration_context);
+    return entry ? entry->key : nullptr;
+}
+
+static void* iterator_next_value_internal(void* raw_iteration_context) {
+    const MapEntry* entry = iterator_next_internal(raw_iteration_context);
+    return entry ? entry->value : nullptr;
+}
+
 static bool iterator_has_previous_internal(const void* raw_iteration_context) {
     const IterationContext* iteration_context = raw_iteration_context;
     return iteration_context->count > 0;
@@ -514,6 +569,16 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     iteration_context->last_removed = false;
     iteration_context->count--;
     return entry_view;
+}
+
+static void* iterator_previous_key_internal(void* raw_iteration_context) {
+    const MapEntry* entry = iterator_previous_internal(raw_iteration_context);
+    return entry ? entry->key : nullptr;
+}
+
+static void* iterator_previous_value_internal(void* raw_iteration_context) {
+    const MapEntry* entry = iterator_previous_internal(raw_iteration_context);
+    return entry ? entry->value : nullptr;
 }
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
@@ -551,4 +616,44 @@ static void iterator_reset_internal(void* raw_iteration_context) {
     iteration_context->last_returned = false;
     iteration_context->last_removed = false;
     iteration_context->modification_count = iteration_context->tree_map->modification_count;
+}
+
+static int collection_size_internal(const void* tree_map) {
+    return tree_map_size(tree_map);
+}
+
+static Iterator* entry_collection_iterator_internal(const void* tree_map) {
+    return tree_map_iterator(tree_map);
+}
+
+static Iterator* key_collection_iterator_internal(const void* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    Iterator* iterator = create_iterator(tree_map, iterator_next_key_internal, iterator_previous_key_internal);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+static Iterator* value_collection_iterator_internal(const void* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    Iterator* iterator = create_iterator(tree_map, iterator_next_value_internal, iterator_previous_value_internal);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+static bool entry_collection_contains_internal(const void* tree_map, const void* entry) {
+    return tree_map_contains_entry(tree_map, ((MapEntry*) entry)->key, ((MapEntry*) entry)->value);
+}
+
+static bool key_collection_contains_internal(const void* tree_map, const void* key) {
+    return tree_map_contains_key(tree_map, key);
+}
+
+static bool value_collection_contains_internal(const void* tree_map, const void* value) {
+    return tree_map_contains_value(tree_map, value);
 }

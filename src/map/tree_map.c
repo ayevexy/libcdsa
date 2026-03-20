@@ -118,6 +118,22 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
     return tree_map;
 }
 
+TreeMap* tree_map_from(Collection entry_collection, const TreeMapOptions* options) {
+    if (require_non_null(options)) return nullptr;
+    TreeMap* tree_map; Error error;
+
+    if ((error = attempt(tree_map = tree_map_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(tree_map_put_all(tree_map, entry_collection)))) {
+        tree_map_destroy(&tree_map);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    return tree_map;
+}
+
 void tree_map_destroy(TreeMap** tree_map_pointer) {
     if (require_non_null(tree_map_pointer, *tree_map_pointer)) return;
     TreeMap* tree_map = *tree_map_pointer;
@@ -230,6 +246,24 @@ void* tree_map_put_if_absent(TreeMap* tree_map, const void* key, const void* val
         old_value = tree_map_put(tree_map, key, value);
     }
     return old_value;
+}
+
+void tree_map_put_all(TreeMap* tree_map, Collection entry_collection) {
+    if (require_non_null(tree_map)) return;
+
+    Iterator* iterator; Error error = attempt(iterator = collection_iterator(entry_collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        const MapEntry* entry = iterator_next(iterator);
+        if ((error = attempt(tree_map_put(tree_map, entry->key, entry->value)))) {
+            set_error(error, "%s", plain_error_message());
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
 }
 
 void* tree_map_get(const TreeMap* tree_map, const void* key) {

@@ -31,6 +31,19 @@ void test_do_not_create_tree_map_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_tree_map_from_entry_collection() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* new_tree_map = tree_map_from(tree_map_entries(tree_map), CHAR_INT_TREE_MAP_OPTIONS());
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, new_tree_map);
+    // clean up
+    tree_map_destroy(&new_tree_map);
+}
+
 void test_destroy_tree_map_set_it_to_null() {
     // given
     TreeMap* new_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS());
@@ -235,6 +248,21 @@ void test_do_not_put_entry_to_tree_map_if_key_is_not_absent() {
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL(1, *(int*) old_value);
     TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_put_all_entries_to_tree_map() {
+    // given
+    TreeMap* new_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS());
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(new_tree_map, entries);
+    // when
+    tree_map_put_all(tree_map, tree_map_entries(new_tree_map));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+    // clean up
+    tree_map_destroy(&new_tree_map);
 }
 
 void test_get_value_from_tree_map() {
@@ -674,6 +702,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_map);
     RUN_TEST(test_do_not_create_tree_map_with_invalid_options);
+    RUN_TEST(test_create_tree_map_from_entry_collection);
     
     RUN_TEST(test_destroy_tree_map_set_it_to_null);
     RUN_TEST(test_destroy_null_tree_map_fails);
@@ -695,6 +724,7 @@ int main(void) {
     RUN_TEST(test_put_entry_to_tree_map_if_key_already_exists_update_value);
     RUN_TEST(test_put_entry_to_tree_map_if_key_is_absent);
     RUN_TEST(test_do_not_put_entry_to_tree_map_if_key_is_not_absent);
+    RUN_TEST(test_put_all_entries_to_tree_map);
 
     RUN_TEST(test_get_value_from_tree_map);
     RUN_TEST(test_get_value_from_tree_map_no_mapping_fails);

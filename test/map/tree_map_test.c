@@ -178,6 +178,51 @@ void test_replace_entry_from_tree_map_no_matching_value_fails() {
     TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
 }
 
+void test_remove_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_remove(tree_map, &(char){'c'});
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(3, *value);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_remove_entry_from_tree_map_no_mapping_fails() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    int* value = tree_map_remove(tree_map, &(char){'k'});
+    // then
+    TEST_ASSERT_NULL(value);
+}
+
+void test_remove_entry_from_tree_map_matching_value() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool removed = tree_map_remove_if_equals(tree_map, &(char){'c'}, &(int){3});
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_TRUE(removed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_remove_entry_from_tree_map_no_matching_value_fails() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool removed = tree_map_remove_if_equals(tree_map, &(char){'c'}, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(removed);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(entries, tree_map);
+}
+
 void test_get_tree_map_size() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -284,6 +329,11 @@ int main(void) {
     RUN_TEST(test_replace_value_from_tree_map_no_mapping_fails);
     RUN_TEST(test_replace_entry_from_tree_map_matching_value);
     RUN_TEST(test_replace_entry_from_tree_map_no_matching_value_fails);
+
+    RUN_TEST(test_remove_entry_from_tree_map);
+    RUN_TEST(test_remove_entry_from_tree_map_no_mapping_fails);
+    RUN_TEST(test_remove_entry_from_tree_map_matching_value);
+    RUN_TEST(test_remove_entry_from_tree_map_no_matching_value_fails);
 
     RUN_TEST(test_get_tree_map_size);
     RUN_TEST(test_tree_map_is_empty);

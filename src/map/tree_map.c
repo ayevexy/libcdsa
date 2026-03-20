@@ -50,6 +50,10 @@ static Entry* get_successor_entry(Entry*);
 
 static Entry* get_lower_entry(Entry*);
 
+static void remove_node(TreeMap*, Entry*);
+
+static void transplant(TreeMap*, Entry*, Entry*);
+
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare_keys || !options->key_destruct || !options->key_equals
@@ -177,6 +181,27 @@ bool tree_map_replace_if_equals(TreeMap* tree_map, const void* key, const void* 
     return false;
 }
 
+void* tree_map_remove(TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return nullptr;
+    Entry* entry = get_entry(tree_map, key);
+    if (!entry) {
+        return nullptr;
+    }
+    void* value = entry->value;
+    tree_map->value_destruct(value);
+    remove_node(tree_map, entry);
+    return value;
+}
+
+bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* value) {
+    if (require_non_null(tree_map)) return false;
+    if (tree_map_contains_entry(tree_map, key, value)) {
+        tree_map_remove(tree_map, key);
+        return true;
+    }
+    return false;
+}
+
 int tree_map_size(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return 0;
     return tree_map->size;
@@ -258,4 +283,45 @@ static Entry* get_lower_entry(Entry* entry) {
         entry = entry->left;
     }
     return entry;
+}
+
+static void remove_node(TreeMap* tree_map, Entry* entry) {
+    Entry* current = entry;
+    Color current_color = current->color;
+    if (entry->left == &sentinel) {
+        transplant(tree_map, entry, entry->right);
+    } else if (entry->right == &sentinel) {
+        transplant(tree_map, entry, entry->left);
+    } else {
+        current = get_lower_entry(entry->right);
+        current_color = current->color;
+        if (current->parent == entry) {
+            current->right->parent = current;
+        } else {
+            transplant(tree_map, current, current->right);
+            current->right = entry->right;
+            current->right->parent = current;
+        }
+        transplant(tree_map, entry, current);
+        current->left = entry->left;
+        current->left->parent = current;
+        current->color = entry->color;
+    }
+    if (current_color == BLACK) {
+        // TODO: rebalance
+    }
+    tree_map->memory_free(entry);
+    tree_map->size--;
+    tree_map->modification_count++;
+}
+
+static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {
+    if (first->parent == &sentinel) {
+        tree_map->root = second;
+    } else if (first == first->parent->left) {
+        first->parent->left = second;
+    } else {
+        first->parent->right = second;
+    }
+    second->parent = first->parent;
 }

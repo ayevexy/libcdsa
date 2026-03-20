@@ -160,6 +160,23 @@ void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const vo
     return entry ? entry->value : (void*) default_value;
 }
 
+void* tree_map_replace(TreeMap* tree_map, const void* key, const void* value) {
+    if (require_non_null(tree_map)) return nullptr;
+    if (tree_map_contains_key(tree_map, key)) {
+        return tree_map_put(tree_map, key, value);
+    }
+    return nullptr;
+}
+
+bool tree_map_replace_if_equals(TreeMap* tree_map, const void* key, const void* old_value, const void* value) {
+    if (require_non_null(tree_map)) return false;
+    if (tree_map_contains_entry(tree_map, key, old_value)) {
+        tree_map_put(tree_map, key, value);
+        return true;
+    }
+    return false;
+}
+
 int tree_map_size(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return 0;
     return tree_map->size;

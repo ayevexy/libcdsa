@@ -318,6 +318,20 @@ bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* v
     return false;
 }
 
+void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {
+    if (require_non_null(tree_map, bi_operator)) return;
+    Entry* entry = get_lower_entry(tree_map->root);
+    while (entry != &sentinel) {
+        void* old_value = entry->value;
+        void* new_value = bi_operator(entry->key, entry->value);
+        if (old_value != new_value) {
+            tree_map->value_destruct(old_value);
+        }
+        entry->value = new_value;
+        entry = get_successor_entry(entry);
+    }
+}
+
 int tree_map_size(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return 0;
     return tree_map->size;

@@ -390,6 +390,22 @@ void test_remove_entry_from_tree_map_no_matching_value_fails() {
     TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(entries, tree_map);
 }
 
+static void* replace_by_2_times_original(void* key, void* value) {
+    *(int*) value *= 2;
+    return value;
+}
+
+void test_replace_all_values_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    tree_map_replace_all(tree_map, replace_by_2_times_original);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 2 }, { 'b', 4 }, { 'c', 6 }, { 'd', 8 }, { 'e', 10 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
 void test_get_tree_map_size() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -837,6 +853,7 @@ int main(void) {
     RUN_TEST(test_remove_entry_from_tree_map_no_mapping_fails);
     RUN_TEST(test_remove_entry_from_tree_map_matching_value);
     RUN_TEST(test_remove_entry_from_tree_map_no_matching_value_fails);
+    RUN_TEST(test_replace_all_values_from_tree_map);
 
     RUN_TEST(test_get_tree_map_size);
     RUN_TEST(test_tree_map_is_empty);

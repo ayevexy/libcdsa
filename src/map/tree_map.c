@@ -58,6 +58,8 @@ static void remove_node(TreeMap*, Entry*);
 
 static void transplant(TreeMap*, Entry*, Entry*);
 
+static void destroy_entries(TreeMap*, Entry*);
+
 static Iterator* create_iterator(const TreeMap*, void* (*)(void*), void* (*)(void*));
 
 static bool iterator_has_next_internal(const void*);
@@ -137,7 +139,7 @@ TreeMap* tree_map_from(Collection entry_collection, const TreeMapOptions* option
 void tree_map_destroy(TreeMap** tree_map_pointer) {
     if (require_non_null(tree_map_pointer, *tree_map_pointer)) return;
     TreeMap* tree_map = *tree_map_pointer;
-    // Todo: deletion logic
+    destroy_entries(tree_map, tree_map->root);
     tree_map->memory_free(tree_map);
     *tree_map_pointer = nullptr;
 }
@@ -336,6 +338,42 @@ Iterator* tree_map_iterator(const TreeMap* tree_map) {
     return iterator;
 }
 
+bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
+    if (require_non_null(tree_map, other_tree_map)) return false;
+    if (tree_map == other_tree_map) {
+        return true;
+    }
+    if (tree_map->size != other_tree_map->size) {
+        return false;
+    }
+    Entry * entry = get_lower_entry(tree_map->root), * other_entry = get_lower_entry(other_tree_map->root);
+    while (entry != &sentinel && other_entry != &sentinel) {
+        if (!(tree_map->key_equals(other_entry->key, entry->key) && tree_map->value_equals(entry->value, other_entry->value))) {
+            return false;
+        }
+        entry = get_successor_entry(entry);
+        other_entry = get_successor_entry(other_entry);
+    }
+    return true;
+}
+
+void tree_map_for_each(TreeMap* tree_map, BiConsumer action) {
+    if (require_non_null(tree_map, action)) return;
+    Entry* entry = get_lower_entry(tree_map->root);
+    while (entry != &sentinel) {
+        action(entry->key, entry->value);
+        entry = get_successor_entry(entry);
+    }
+}
+
+void tree_map_clear(TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return;
+    destroy_entries(tree_map, tree_map->root);
+    tree_map->root = &sentinel;
+    tree_map->size = 0;
+    tree_map->modification_count++;
+}
+
 bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return false;
     const Entry* entry = get_entry(tree_map, key);
@@ -500,6 +538,17 @@ static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {
         first->parent->right = second;
     }
     second->parent = first->parent;
+}
+
+static void destroy_entries(TreeMap* tree_map, Entry* entry) {
+    if (entry == &sentinel) {
+        return;
+    }
+    destroy_entries(tree_map, entry->left);
+    destroy_entries(tree_map, entry->right);
+    tree_map->key_destruct(entry->key);
+    tree_map->value_destruct(entry->value);
+    tree_map->memory_free(entry);
 }
 
 typedef struct {

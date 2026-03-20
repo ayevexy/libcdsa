@@ -569,6 +569,104 @@ void test_tree_map_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_tree_map_is_equal_to_it_self() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    bool equals = tree_map_equals(tree_map, tree_map);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_tree_map_is_equal_to_another_tree_map() {
+    // given
+    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS());
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    POPULATE_TREE_MAP(other_tree_map, entries);
+    // when
+    bool equals = tree_map_equals(tree_map, other_tree_map);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    tree_map_set_key_destructor(tree_map, free);
+    tree_map_set_value_destructor(tree_map, free);
+    tree_map_destroy(&other_tree_map);
+}
+
+void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
+    // given
+    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS());
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    POPULATE_TREE_MAP(other_tree_map, entries);
+    // and
+    tree_map_put(other_tree_map, new(char, 'k'), new(int, 10));
+    // when
+    bool equals = tree_map_equals(tree_map, other_tree_map);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    tree_map_set_key_destructor(tree_map, free);
+    tree_map_set_value_destructor(tree_map, free);
+    tree_map_destroy(&other_tree_map);
+}
+
+void test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings() {
+    // given
+    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS());
+    // and
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    CharIntEntry other_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 } };
+    POPULATE_TREE_MAP(other_tree_map, other_entries);
+    // when
+    bool equals = tree_map_equals(tree_map, other_tree_map);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    tree_map_set_key_destructor(tree_map, free);
+    tree_map_set_value_destructor(tree_map, free);
+    tree_map_destroy(&other_tree_map);
+}
+
+static void action_add_one_every_two_keys(void* key, void* value) {
+    switch (*(char*) key) {
+        case 'a':
+        case 'c':
+        case 'e': { *(int*) value += 1; break; }
+        default: ;
+    }
+}
+
+void test_perform_action_for_each_entry_of_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    tree_map_for_each(tree_map, action_add_one_every_two_keys);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 2 }, { 'b', 2 }, { 'c', 4 }, { 'd', 4}, { 'e', 6 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_clear_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    tree_map_clear(tree_map);
+    // then
+    TEST_ASSERT_EQUAL(0, tree_map_size(tree_map));
+    TEST_ASSERT_NULL(tree_map_get(tree_map, &(char){'a'}));
+    TEST_ASSERT_NULL(tree_map_get(tree_map, &(char){'b'}));
+    TEST_ASSERT_NULL(tree_map_get(tree_map, &(char){'c'}));
+}
+
 void test_tree_map_contains_entry() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -752,6 +850,14 @@ int main(void) {
     RUN_TEST(test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called);
     RUN_TEST(test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row);
     RUN_TEST(test_tree_map_iterator_reset);
+
+    RUN_TEST(test_tree_map_is_equal_to_it_self);
+    RUN_TEST(test_tree_map_is_equal_to_another_tree_map);
+    RUN_TEST(test_tree_map_is_not_equal_to_another_tree_map_with_different_size);
+    RUN_TEST(test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings);
+    
+    RUN_TEST(test_perform_action_for_each_entry_of_tree_map);
+    RUN_TEST(test_clear_tree_map);
     
     RUN_TEST(test_tree_map_contains_entry);
     RUN_TEST(test_tree_map_does_not_contains_entry);

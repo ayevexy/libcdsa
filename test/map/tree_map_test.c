@@ -388,6 +388,159 @@ void test_tree_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_tree_map_iterator_forward_iteration() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    Iterator* iterator = tree_map_iterator(tree_map);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_backward_iteration() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    Iterator* iterator = tree_map_iterator(tree_map);
+    iterator_advance(iterator, 5);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_previous(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_detects_concurrent_modification() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    Iterator* iterator = tree_map_iterator(tree_map);
+    tree_map_remove(tree_map, &(char){'a'});
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_remove_element_after_next() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    Iterator* iterator = tree_map_iterator(tree_map);
+    iterator_next(iterator);
+    // when
+    iterator_remove(iterator); // { 'a', 1 }
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_remove_element_after_previous() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    Iterator* iterator = tree_map_iterator(tree_map);
+    iterator_advance(iterator, 5);
+    // when
+    iterator_remove(iterator); // { 'e', 5 }
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    Iterator* iterator = tree_map_iterator(tree_map);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    Iterator* iterator = tree_map_iterator(tree_map);
+    iterator_next(iterator);
+    iterator_remove(iterator);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_map_iterator_reset() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // and
+    Iterator* iterator = tree_map_iterator(tree_map);
+    iterator_advance(iterator, 3);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_tree_map_contains_entry() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -491,6 +644,15 @@ int main(void) {
     RUN_TEST(test_get_tree_map_size);
     RUN_TEST(test_tree_map_is_empty);
     RUN_TEST(test_tree_map_is_not_empty);
+    
+    RUN_TEST(test_tree_map_iterator_forward_iteration);
+    RUN_TEST(test_tree_map_iterator_backward_iteration);
+    RUN_TEST(test_tree_map_iterator_detects_concurrent_modification);
+    RUN_TEST(test_tree_map_iterator_remove_element_after_next);
+    RUN_TEST(test_tree_map_iterator_remove_element_after_previous);
+    RUN_TEST(test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called);
+    RUN_TEST(test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row);
+    RUN_TEST(test_tree_map_iterator_reset);
     
     RUN_TEST(test_tree_map_contains_entry);
     RUN_TEST(test_tree_map_does_not_contains_entry);

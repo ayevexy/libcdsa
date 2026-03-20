@@ -10,7 +10,7 @@ typedef enum {
 
 typedef struct Entry {
     union {
-        MapEntry entry;
+        MapEntry view;
         struct { void* key; void* value; };
     };
     Color color;
@@ -48,11 +48,33 @@ static Entry* get_entry(const TreeMap*, const void*);
 
 static Entry* get_successor_entry(Entry*);
 
+static Entry* get_predecessor_entry(Entry*);
+
 static Entry* get_lower_entry(Entry*);
+
+static Entry* get_higher_entry(Entry*);
 
 static void remove_node(TreeMap*, Entry*);
 
 static void transplant(TreeMap*, Entry*, Entry*);
+
+static Iterator* create_iterator(const TreeMap*, void* (*)(void*), void* (*)(void*));
+
+static bool iterator_has_next_internal(const void*);
+
+static void* iterator_next_internal(void*);
+
+static bool iterator_has_previous_internal(const void*);
+
+static void* iterator_previous_internal(void*);
+
+static void iterator_add_internal(void*, const void*);
+
+static void iterator_set_internal(void*, const void*);
+
+static void iterator_remove_internal(void*);
+
+static void iterator_reset_internal(void*);
 
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
@@ -256,6 +278,15 @@ bool tree_map_is_empty(const TreeMap* tree_map) {
     return tree_map->size == 0;
 }
 
+Iterator* tree_map_iterator(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    Iterator* iterator = create_iterator(tree_map, iterator_next_internal, iterator_previous_internal);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+    }
+    return iterator;
+}
+
 bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return false;
     const Entry* entry = get_entry(tree_map, key);
@@ -319,12 +350,34 @@ static Entry* get_successor_entry(Entry* entry) {
     return parent;
 }
 
+static Entry* get_predecessor_entry(Entry* entry) {
+    if (entry->left != &sentinel) {
+        return get_higher_entry(entry->left);
+    }
+    Entry* parent = entry->parent;
+    while (parent != &sentinel && entry == parent->left) {
+        entry = parent;
+        parent = parent->parent;
+    }
+    return parent;
+}
+
 static Entry* get_lower_entry(Entry* entry) {
     if (entry == &sentinel) {
         return entry;
     }
     while (entry->left != &sentinel) {
         entry = entry->left;
+    }
+    return entry;
+}
+
+static Entry* get_higher_entry(Entry* entry) {
+    if (entry == &sentinel) {
+        return entry;
+    }
+    while (entry->right != &sentinel) {
+        entry = entry->right;
     }
     return entry;
 }
@@ -368,4 +421,134 @@ static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {
         first->parent->right = second;
     }
     second->parent = first->parent;
+}
+
+typedef struct {
+    Iterator iterator;
+    TreeMap* tree_map;
+    Entry* entry;
+    int count;
+    bool last_returned;
+    bool last_removed;
+    int modification_count;
+} IterationContext;
+
+static Iterator* create_iterator(const TreeMap* tree_map, void* next_function(void*), void* previous_function(void*)) {
+    IterationContext* iteration_context = tree_map->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = iterator_has_next_internal;
+    iteration_context->iterator.next = next_function;
+    iteration_context->iterator.has_previous = iterator_has_previous_internal;
+    iteration_context->iterator.previous = previous_function;
+
+    iteration_context->iterator.add = iterator_add_internal;
+    iteration_context->iterator.set = iterator_set_internal;
+    iteration_context->iterator.remove = iterator_remove_internal;
+    iteration_context->iterator.reset = iterator_reset_internal;
+    iteration_context->iterator.memory_free = tree_map->memory_free;
+
+    iteration_context->tree_map = (TreeMap*) tree_map;
+    iteration_context->entry = nullptr;
+    iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
+    iteration_context->modification_count = tree_map->modification_count;
+
+    return &iteration_context->iterator;
+}
+
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count < iteration_context->tree_map->size;
+}
+
+static void* iterator_next_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_next_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    if (!iteration_context->entry) {
+        iteration_context->entry = get_lower_entry(iteration_context->tree_map->root);
+    } else if (!iteration_context->last_removed)  {
+        iteration_context->entry = get_successor_entry(iteration_context->entry);
+    }
+    iteration_context->last_returned = true;
+    iteration_context->last_removed = false;
+    iteration_context->count++;
+    return &iteration_context->entry->view;
+}
+
+static bool iterator_has_previous_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count > 0;
+}
+
+static void* iterator_previous_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_previous_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    MapEntry* entry_view = nullptr;
+    if (!iteration_context->entry) {
+        iteration_context->entry = get_lower_entry(iteration_context->tree_map->root);
+        entry_view = &iteration_context->entry->view;
+    } else if (!iteration_context->last_removed) {
+        entry_view = &iteration_context->entry->view;
+        iteration_context->entry = get_predecessor_entry(iteration_context->entry);
+    }
+    iteration_context->last_returned = true;
+    iteration_context->last_removed = false;
+    iteration_context->count--;
+    return entry_view;
+}
+
+static void iterator_add_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeMap iterators doesn't support adding elements");
+}
+
+static void iterator_set_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeMap iterators doesn't support setting elements");
+}
+
+static void iterator_remove_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (!iteration_context->last_returned) {
+        set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
+        return;
+    }
+    Entry* right = iteration_context->entry->right;
+    tree_map_remove(iteration_context->tree_map, iteration_context->entry->key);
+    iteration_context->entry = right;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = true;
+    iteration_context->modification_count = iteration_context->tree_map->modification_count;
+}
+
+static void iterator_reset_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->entry = nullptr;
+    iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
+    iteration_context->modification_count = iteration_context->tree_map->modification_count;
 }

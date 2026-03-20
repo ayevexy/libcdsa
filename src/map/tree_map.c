@@ -2,6 +2,7 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
+#include <string.h>
 
 typedef enum {
     RED,
@@ -41,6 +42,8 @@ struct TreeMap {
     };
     int modification_count;
 };
+
+static size_t calculate_string_size(const TreeMap*);
 
 static Entry* create_entry(const TreeMap*, const void*, const void*);
 
@@ -439,6 +442,98 @@ Collection tree_map_entries(const TreeMap* tree_map) {
         .iterator = entry_collection_iterator_internal,
         .contains = entry_collection_contains_internal
     };
+}
+
+TreeMap* tree_map_clone(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    TreeMap* new_tree_map; Error error = attempt(new_tree_map = tree_map_new(&(TreeMapOptions){
+        .compare_keys = tree_map->compare_keys,
+        .key_destruct = noop_destruct,
+        .key_equals = tree_map->key_equals,
+        .key_to_string = tree_map->key_to_string,
+        .value_destruct = noop_destruct,
+        .value_equals = tree_map->value_equals,
+        .value_to_string = tree_map->value_to_string,
+        .memory_alloc = tree_map->memory_alloc,
+        .memory_free = tree_map->memory_free
+    }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    Entry* entry = get_lower_entry(tree_map->root);
+    while (entry != &sentinel) {
+        if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
+            tree_map_destroy(&new_tree_map);
+            set_error(error, "%s", plain_error_message());
+            return nullptr;
+        }
+        entry = get_successor_entry(entry);
+    }
+    return new_tree_map;
+}
+
+char* tree_map_to_string(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+
+    char* string = tree_map->memory_alloc(calculate_string_size(tree_map));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to clear trash data
+    strcat(string, tree_map->size == 0 ? "[" : "[ ");
+
+    int count = 0;
+    Entry* entry = get_lower_entry(tree_map->root);
+    while (entry != &sentinel) {
+        constexpr int SEPARATOR = 3; constexpr int NULL_TERMINATOR = 1;
+
+        const int key_length = tree_map->key_to_string(entry->key, nullptr, 0);
+        const int value_length = tree_map->value_to_string(entry->value, nullptr, 0);
+
+        char* element_string = tree_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
+        if (!element_string) {
+            tree_map->memory_free(string);
+            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            return nullptr;
+        }
+        tree_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
+        strcat(element_string, " = ");
+        tree_map->value_to_string(entry->value, element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
+
+        strcat(string, element_string);
+        if (count < tree_map->size - 1) {
+            strcat(string, ", ");
+        }
+        count++;
+        tree_map->memory_free(element_string);
+        entry = get_successor_entry(entry);
+    }
+
+    strcat(string, tree_map->size == 0 ? "]" : " ]");
+    return string;
+}
+
+static size_t calculate_string_size(const TreeMap* tree_map) {
+    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+    int count = 0;
+
+    Entry* entry = get_lower_entry(tree_map->root);
+    while (entry != &sentinel) {
+        length += tree_map->key_to_string(entry->key, nullptr, 0);
+        length += tree_map->value_to_string(entry->value, nullptr, 0);
+        length += 3; // ' = ' separator
+
+        if (count == 0) length += 1; // space after opening bracket
+        if (count < tree_map->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (count == tree_map->size - 1) length += 1; // space before closing bracket
+
+        entry = get_successor_entry(entry);
+        count++;
+    }
+    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static Entry* create_entry(const TreeMap* tree_map, const void* key, const void* value) {

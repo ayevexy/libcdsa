@@ -812,6 +812,39 @@ void test_get_tree_map_entries() {
     iterator_destroy(&iterator);
 }
 
+void test_clone_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* copy_tree_map = tree_map_clone(tree_map);
+    // then
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(entries, copy_tree_map);
+    // clean up
+    tree_map_destroy(&copy_tree_map);
+}
+
+void test_get_tree_map_string_representation() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    char* string = tree_map_to_string(tree_map);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[ a = 1, b = 2, c = 3, d = 4, e = 5 ]", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_tree_map_string_representation() {
+    // when
+    char* string = tree_map_to_string(tree_map);
+    // then
+    TEST_ASSERT_EQUAL_STRING("[]", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_map);
@@ -886,5 +919,9 @@ int main(void) {
     RUN_TEST(test_get_tree_map_keys);
     RUN_TEST(test_get_tree_map_values);
     RUN_TEST(test_get_tree_map_entries);
+
+    RUN_TEST(test_clone_tree_map);
+    RUN_TEST(test_get_tree_map_string_representation);
+    RUN_TEST(test_get_empty_tree_map_string_representation);
     return UNITY_END();
 }

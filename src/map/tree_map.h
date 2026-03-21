@@ -440,17 +440,6 @@ void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator);
 int tree_map_size(const TreeMap* tree_map);
 
 /**
- * @brief Retrieves the current capacity of the provided TreeMap.
- *
- * @param tree_map pointer to a TreeMap
- *
- * @return the current capacity of the provided TreeMap
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-int tree_map_capacity(const TreeMap* tree_map);
-
-/**
  * @brief Checks whether the provided TreeMap is empty.
  *
  * @param tree_map pointer to a TreeMap

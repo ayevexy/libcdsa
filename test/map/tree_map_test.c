@@ -786,6 +786,46 @@ void test_perform_action_for_each_entry_of_tree_map() {
     TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
 }
 
+void test_get_higher_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_higher_entry(tree_map, &(char){'c'});
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, &entry);
+}
+
+void test_get_ceiling_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_ceiling_entry(tree_map, &(char){'e'});
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
+}
+
+void test_get_floor_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_floor_entry(tree_map, &(char){'c'});
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
+}
+
+void test_get_lower_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_lower_entry(tree_map, &(char){'a'});
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
+}
+
 void test_clear_tree_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
@@ -1036,6 +1076,11 @@ int main(void) {
     
     RUN_TEST(test_perform_action_for_each_entry_of_tree_map);
     RUN_TEST(test_clear_tree_map);
+
+    RUN_TEST(test_get_higher_entry_from_tree_map);
+    RUN_TEST(test_get_ceiling_entry_from_tree_map);
+    RUN_TEST(test_get_floor_entry_from_tree_map);
+    RUN_TEST(test_get_lower_entry_from_tree_map);
     
     RUN_TEST(test_tree_map_contains_entry);
     RUN_TEST(test_tree_map_does_not_contains_entry);

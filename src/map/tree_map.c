@@ -459,6 +459,50 @@ void tree_map_clear(TreeMap* tree_map) {
     tree_map->modification_count++;
 }
 
+MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* current = get_entry(tree_map, key);
+    const Entry* entry = get_successor_entry(current);
+    return current && entry != &sentinel ? entry->view : (MapEntry) {};
+}
+
+MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* current = get_entry(tree_map, key);
+    const Entry* entry = get_successor_entry(current);
+    return current && entry != &sentinel ? entry->view : current->view;
+}
+
+MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* current = get_entry(tree_map, key);
+    const Entry* entry = get_predecessor_entry(current);
+    return current && entry != &sentinel ? entry->view : (MapEntry) {};
+}
+
+MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* current = get_entry(tree_map, key);
+    const Entry* entry = get_predecessor_entry(current);
+    return current && entry != &sentinel ? entry->view : current->view;
+}
+
+void* tree_map_higher_key(const TreeMap* tree_map, const void* key) {
+    return tree_map_higher_entry(tree_map, key).key;
+}
+
+void* tree_map_ceiling_key(const TreeMap* tree_map, const void* key) {
+    return tree_map_ceiling_entry(tree_map, key).key;
+}
+
+void* tree_map_floor_key(const TreeMap* tree_map, const void* key) {
+    return tree_map_floor_entry(tree_map, key).key;
+}
+
+void* tree_map_lower_key(const TreeMap* tree_map, const void* key) {
+    return tree_map_lower_entry(tree_map, key).key;
+}
+
 bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return false;
     const Entry* entry = get_entry(tree_map, key);

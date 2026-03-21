@@ -503,10 +503,21 @@ void tree_map_for_each(TreeMap* tree_map, BiConsumer action);
 void tree_map_clear(TreeMap* tree_map);
 
 // TODO: document
-MapEntry* tree_map_find_entry(const TreeMap* tree_map, const void* key, ComparisonCondition condition);
+MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key);
 
-// TODO: document
-void* tree_map_find_key(const TreeMap* tree_map, const void* key, ComparisonCondition condition);
+MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key);
+
+MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key);
+
+MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key);
+
+void* tree_map_higher_key(const TreeMap* tree_map, const void* key);
+
+void* tree_map_ceiling_key(const TreeMap* tree_map, const void* key);
+
+void* tree_map_floor_key(const TreeMap* tree_map, const void* key);
+
+void* tree_map_lower_key(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Checks whether the provided TreeMap contains the specified entry.

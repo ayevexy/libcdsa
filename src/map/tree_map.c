@@ -556,6 +556,73 @@ Collection tree_map_entries(const TreeMap* tree_map) {
     };
 }
 
+// TODO: refactor
+TreeMap* tree_map_head_map(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return nullptr;
+    if (!tree_map_contains_key(tree_map, key)) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "inexistent 'key");
+        return nullptr;
+    }
+    TreeMap* new_tree_map; Error error = attempt(new_tree_map = tree_map_new(&(TreeMapOptions){
+       .compare_keys = tree_map->compare_keys,
+       .key_destruct = noop_destruct,
+       .key_equals = tree_map->key_equals,
+       .key_to_string = tree_map->key_to_string,
+       .value_destruct = noop_destruct,
+       .value_equals = tree_map->value_equals,
+       .value_to_string = tree_map->value_to_string,
+       .memory_alloc = tree_map->memory_alloc,
+       .memory_free = tree_map->memory_free
+   }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    Entry* entry = get_entry(tree_map, key);
+    while (entry != &sentinel) {
+        if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
+            tree_map_destroy(&new_tree_map);
+            set_error(error, "%s", plain_error_message());
+            return nullptr;
+        }
+        entry = get_predecessor_entry(entry);
+    }
+    return new_tree_map;
+}
+
+TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key) {
+    if (require_non_null(tree_map)) return nullptr;
+    if (!tree_map_contains_key(tree_map, key)) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "inexistent 'key");
+        return nullptr;
+    }
+    TreeMap* new_tree_map; Error error = attempt(new_tree_map = tree_map_new(&(TreeMapOptions){
+       .compare_keys = tree_map->compare_keys,
+       .key_destruct = noop_destruct,
+       .key_equals = tree_map->key_equals,
+       .key_to_string = tree_map->key_to_string,
+       .value_destruct = noop_destruct,
+       .value_equals = tree_map->value_equals,
+       .value_to_string = tree_map->value_to_string,
+       .memory_alloc = tree_map->memory_alloc,
+       .memory_free = tree_map->memory_free
+   }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    Entry* entry = get_entry(tree_map, key);
+    while (entry != &sentinel) {
+        if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
+            tree_map_destroy(&new_tree_map);
+            set_error(error, "%s", plain_error_message());
+            return nullptr;
+        }
+        entry = get_successor_entry(entry);
+    }
+    return new_tree_map;
+}
+
 TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const void* end_key) {
     if (require_non_null(tree_map)) return nullptr;
     if (!tree_map_contains_key(tree_map, start_key)

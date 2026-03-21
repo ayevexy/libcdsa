@@ -969,6 +969,28 @@ void test_get_tree_map_entries() {
     iterator_destroy(&iterator);
 }
 
+void test_create_head_map_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* new_tree_map = tree_map_head_map(tree_map, &(char){'c'});
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, new_tree_map);
+}
+
+void test_create_tail_map_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* new_tree_map = tree_map_tail_map(tree_map, &(char){'c'});
+    // then
+    CharIntEntry new_entries[] = { { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, new_tree_map);
+}
+
 void test_create_sub_map_of_tree_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -1137,6 +1159,9 @@ int main(void) {
     RUN_TEST(test_get_tree_map_keys);
     RUN_TEST(test_get_tree_map_values);
     RUN_TEST(test_get_tree_map_entries);
+
+    RUN_TEST(test_create_head_map_from_tree_map);
+    RUN_TEST(test_create_tail_map_from_tree_map);
 
     RUN_TEST(test_create_sub_map_of_tree_map);
     RUN_TEST(test_create_empty_sub_map_of_tree_map);

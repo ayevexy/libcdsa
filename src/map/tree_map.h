@@ -598,8 +598,9 @@ Collection tree_map_entries(const TreeMap* tree_map);
 // TODO: document
 TreeMap* tree_map_reversed(const TreeMap* tree_map);
 
-// TODO: document
-TreeMap* tree_map_filter(const TreeMap* tree_map, const void* key);
+TreeMap* tree_map_head_map(const TreeMap* tree_map, const void* key);
+
+TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Creates a submap of the provided TreeMap within the specified range.

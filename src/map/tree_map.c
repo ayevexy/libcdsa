@@ -63,6 +63,14 @@ static void transplant(TreeMap*, Entry*, Entry*);
 
 static void destroy_entries(TreeMap*, Entry*);
 
+static void rebalance_after_insert(TreeMap*, Entry*);
+
+static void rebalance_after_delete(TreeMap*, Entry*);
+
+static void rotate_left(TreeMap*, Entry*);
+
+static void rotate_right(TreeMap*, Entry*);
+
 static Iterator* create_iterator(const TreeMap*, void* (*)(void*), void* (*)(void*));
 
 static bool iterator_has_next_internal(const void*);
@@ -237,7 +245,7 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
         } else {
             current->right = entry;
         }
-        // TODO: rebalance
+        rebalance_after_insert(tree_map, entry);
     }
     tree_map->size++;
     tree_map->modification_count++;
@@ -824,17 +832,20 @@ static Entry* get_higher_entry(Entry* entry) {
 }
 
 static void remove_node(TreeMap* tree_map, Entry* entry) {
-    Entry* current = entry;
+    Entry* current = entry, * auxiliar;
     Color current_color = current->color;
     if (entry->left == &sentinel) {
+        auxiliar = entry->right;
         transplant(tree_map, entry, entry->right);
     } else if (entry->right == &sentinel) {
+        auxiliar = entry->left;
         transplant(tree_map, entry, entry->left);
     } else {
         current = get_lower_entry(entry->right);
         current_color = current->color;
+        auxiliar = current->right;
         if (current->parent == entry) {
-            current->right->parent = current;
+            auxiliar->parent = current;
         } else {
             transplant(tree_map, current, current->right);
             current->right = entry->right;
@@ -846,7 +857,7 @@ static void remove_node(TreeMap* tree_map, Entry* entry) {
         current->color = entry->color;
     }
     if (current_color == BLACK) {
-        // TODO: rebalance
+        rebalance_after_delete(tree_map, auxiliar);
     }
     tree_map->memory_free(entry);
     tree_map->size--;
@@ -873,6 +884,138 @@ static void destroy_entries(TreeMap* tree_map, Entry* entry) {
     tree_map->key_destruct(entry->key);
     tree_map->value_destruct(entry->value);
     tree_map->memory_free(entry);
+}
+
+static void rebalance_after_insert(TreeMap* tree_map, Entry* entry) {
+    Entry* current;
+    while (entry->parent->color == RED) {
+        if (entry->parent == entry->parent->parent->left) {
+            current = entry->parent->parent->right;
+            if (current->color == RED) {
+                entry->parent->color = BLACK;
+                current->color = BLACK;
+                entry->parent->parent->color = RED;
+                entry = entry->parent->parent;
+            } else {
+                if (entry == entry->parent->right) {
+                    entry = entry->parent;
+                    rotate_left(tree_map, entry);
+                }
+                entry->parent->color = BLACK;
+                entry->parent->parent->color = RED;
+                rotate_right(tree_map, entry->parent->parent);
+            }
+        } else {
+            current = entry->parent->parent->left;
+            if (current->color == RED) {
+                entry->parent->color = BLACK;
+                current->color = BLACK;
+                entry->parent->parent->color = RED;
+                entry = entry->parent->parent;
+            } else {
+                if (entry == entry->parent->left) {
+                    entry = entry->parent;
+                    rotate_right(tree_map, entry);
+                }
+                entry->parent->color = BLACK;
+                entry->parent->parent->color = RED;
+                rotate_left(tree_map, entry->parent->parent);
+            }
+        }
+    }
+    tree_map->root->color = BLACK;
+}
+
+static void rebalance_after_delete(TreeMap* tree_map, Entry* entry) {
+    Entry* current;
+    while (entry != tree_map->root && entry->color == BLACK) {
+        if (entry == entry->parent->left) {
+            current = entry->parent->right;
+            if (current->color == RED) {
+                current->color = BLACK;
+                entry->parent->color = RED;
+                rotate_left(tree_map, entry->parent);
+                current = entry->parent->right;
+            }
+            if (current->left->color == BLACK && current->right->color == BLACK) {
+                current->color = RED;
+                entry = entry->parent;
+            } else {
+                if (current->right->color == BLACK) {
+                    current->left->color = BLACK;
+                    current->color = RED;
+                    rotate_right(tree_map, current);
+                    current = entry->parent->right;
+                }
+                current->color = entry->parent->color;
+                entry->parent->color = BLACK;
+                current->right->color = BLACK;
+                rotate_left(tree_map, entry->parent);
+                entry = tree_map->root;
+            }
+        } else {
+            current = entry->parent->left;
+            if (current->color == RED) {
+                current->color = BLACK;
+                entry->parent->color = RED;
+                rotate_right(tree_map, entry->parent);
+                current = entry->parent->left;
+            }
+            if (current->right->color == BLACK && current->left->color == BLACK) {
+                current->color = RED;
+                entry = entry->parent;
+            } else {
+                if (current->left->color == BLACK) {
+                    current->right->color = BLACK;
+                    current->color = RED;
+                    rotate_left(tree_map, current);
+                    current = entry->parent->left;
+                }
+                current->color = entry->parent->color;
+                entry->parent->color = BLACK;
+                current->left->color = BLACK;
+                rotate_right(tree_map, entry->parent);
+                entry = tree_map->root;
+            }
+        }
+    }
+    entry->color = BLACK;
+}
+
+static void rotate_left(TreeMap* tree_map, Entry* entry) {
+    Entry* current = entry->right;
+    entry->right = current->left;
+    if (current->left != &sentinel) {
+        current->left->parent = entry;
+    }
+    current->parent = entry->parent;
+    if (entry->parent == &sentinel) {
+        tree_map->root = current;
+    } else if (entry == entry->parent->left) {
+        entry->parent->left = current;
+    } else {
+        entry->parent->right = current;
+    }
+    current->left = entry;
+    entry->parent = current;
+}
+
+static void rotate_right(TreeMap* tree_map, Entry* entry) {
+    Entry* current = entry->left;
+    entry->left = current->right;
+    if (current->right != &sentinel) {
+        current->right->parent = entry;
+    }
+    current->parent = entry->parent;
+    if (entry->parent == &sentinel) {
+        tree_map->root = current;
+    } else if (entry == entry->parent->right) {
+        entry->parent->right = current;
+    } else {
+        entry->parent->left = current;
+    }
+    current->right = entry;
+    entry->parent = current;
 }
 
 typedef struct {

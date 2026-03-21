@@ -40,7 +40,7 @@ The library implements the following data structures:
 - [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
 - [Linked List](src/list/linked_list.h): A linear generic and dynamic data structure that stores data in non-consecutive memory locations linked by references.
 - [Hash Map](src/map/hash_map.h): A generic dynamic associative data structure that maps keys to values using a hashing function.
-- [Tree Map](src/map/tree_map.h): ...
+- [Tree Map](src/map/tree_map.h): A generic dynamic ordered associative data structure that maps unique keys to values backed by a self-balancing binary search tree.
 - [Hash Set](src/set/hash_set.h): A generic dynamic unordered data structure that stores elements using a hashing function to ensure uniqueness.
 - [Tree Set](src/set/tree_set.h): ...
 - [Deque](src/deque/deque.h): A generic dynamic linear data structure that allows insertion and removal of elements at both the front and back of the sequence.

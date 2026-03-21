@@ -21,6 +21,9 @@
 /** @brief Hash table based map implementation */
 #include "map/hash_map.h"
 
+/** @brief Self-balancing binary tree based map implementation */
+#include "map/tree_map.h"
+
 /** @brief Hash based set implementation */
 #include "set/hash_set.h"
 

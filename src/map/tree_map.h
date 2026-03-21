@@ -297,22 +297,24 @@ void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const vo
  *
  * @param tree_map pointer to a TreeMap
  *
- * @return the map entry view, or nullptr if empty
+ * @return the map entry view
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-MapEntry* tree_map_get_first_entry(const TreeMap* tree_map);
+MapEntry tree_map_first_entry(const TreeMap* tree_map);
 
 /**
  * @brief Retrieves the last entry of the provided TreeMap.
  *
  * @param tree_map pointer to a TreeMap
  *
- * @return the map entry view, or nullptr if empty
+ * @return the map entry view
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-MapEntry* tree_map_get_last_entry(const TreeMap* tree_map);
+MapEntry tree_map_last_entry(const TreeMap* tree_map);
 
 /**
  * @brief Retrieves the first entry's key of the provided TreeMap.
@@ -322,8 +324,9 @@ MapEntry* tree_map_get_last_entry(const TreeMap* tree_map);
  * @return the entry's key, or nullptr if empty
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-void* tree_map_get_first_key(const TreeMap* tree_map);
+void* tree_map_first_key(const TreeMap* tree_map);
 
 /**
  * @brief Retrieves the last entry's key of the provided TreeMap.
@@ -333,8 +336,9 @@ void* tree_map_get_first_key(const TreeMap* tree_map);
  * @return the entry's key, or nullptr if empty
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-void* tree_map_get_last_key(const TreeMap* tree_map);
+void* tree_map_last_key(const TreeMap* tree_map);
 
 /**
  * @brief Replaces the value associated with the specified key.
@@ -378,28 +382,6 @@ bool tree_map_replace_if_equals(TreeMap* tree_map, const void* key, const void* 
 void* tree_map_remove(TreeMap* tree_map, const void* key);
 
 /**
- * @brief Removes the first entry of the provided TreeMap, (optionally) destructing it.
- *
- * @param tree_map pointer to a TreeMap
- *
- * @return pointer to the removed entry's value, or nullptr if not present
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_remove_first(TreeMap* tree_map);
-
-/**
- * @brief Removes the last entry of the provided TreeMap, (optionally) destructing it.
- *
- * @param tree_map pointer to a TreeMap
- *
- * @return pointer to the removed entry's value, or nullptr if not present
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_remove_last(TreeMap* tree_map);
-
-/**
  * @brief Removes the entry matching the given key and value of the provided TreeMap, (optionally) destructing it.
  *
  * @param tree_map pointer to a TreeMap
@@ -411,6 +393,30 @@ void* tree_map_remove_last(TreeMap* tree_map);
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
 bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* value);
+
+/**
+ * @brief Removes the first entry of the provided TreeMap, (optionally) destructing it.
+ *
+ * @param tree_map pointer to a TreeMap
+ *
+ * @return the map entry view
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
+ */
+MapEntry tree_map_poll_first_entry(TreeMap* tree_map);
+
+/**
+ * @brief Removes the last entry of the provided TreeMap, (optionally) destructing it.
+ *
+ * @param tree_map pointer to a TreeMap
+ *
+ * @return the map entry view
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
+ */
+MapEntry tree_map_poll_last_entry(TreeMap* tree_map);
 
 /**
  * @brief Replaces all entries using the given BiOperator of the provided TreeMap, (optionally) destructing the old entries.

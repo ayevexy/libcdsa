@@ -283,6 +283,46 @@ void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const vo
     return entry ? entry->value : (void*) default_value;
 }
 
+MapEntry tree_map_first_entry(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    const Entry* entry = get_lower_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return (MapEntry) {};
+    }
+    return entry->view;
+}
+
+MapEntry tree_map_last_entry(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    const Entry* entry = get_higher_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return (MapEntry) {};
+    }
+    return entry->view;
+}
+
+void* tree_map_first_key(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    const Entry* entry = get_lower_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return nullptr;
+    }
+    return entry->key;
+}
+
+void* tree_map_last_key(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
+    const Entry* entry = get_higher_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return nullptr;
+    }
+    return entry->key;
+}
+
 void* tree_map_replace(TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return nullptr;
     if (tree_map_contains_key(tree_map, key)) {
@@ -319,6 +359,34 @@ bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* v
         return true;
     }
     return false;
+}
+
+MapEntry tree_map_poll_first_entry(TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* entry = get_lower_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return (MapEntry) {};
+    }
+    const MapEntry view = entry->view;
+    tree_map->key_destruct(entry->key);
+    tree_map->value_destruct(entry->value);
+    remove_node(tree_map, entry);
+    return view;
+}
+
+MapEntry tree_map_poll_last_entry(TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (MapEntry) {};
+    Entry* entry = get_higher_entry(tree_map->root);
+    if (entry == &sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
+        return (MapEntry) {};
+    }
+    const MapEntry view = entry->view;
+    tree_map->key_destruct(entry->key);
+    tree_map->value_destruct(entry->value);
+    remove_node(tree_map, entry);
+    return view;
 }
 
 void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {

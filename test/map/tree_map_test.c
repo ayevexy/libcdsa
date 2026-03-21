@@ -297,6 +297,80 @@ void test_get_default_value_from_tree_map() {
     TEST_ASSERT_EQUAL(10, *value_b);
 }
 
+void test_get_first_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_first_entry(tree_map);
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
+}
+
+void test_get_first_entry_from_empty_tree_map_fails() {
+    // when
+    MapEntry entry; Error error = attempt(entry = tree_map_first_entry(tree_map));
+    // then
+    TEST_ASSERT_NULL(entry.key);
+    TEST_ASSERT_NULL(entry.value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_get_last_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_last_entry(tree_map);
+    // then
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
+}
+
+void test_get_last_entry_from_empty_tree_map_fails() {
+    // when
+    MapEntry entry; Error error = attempt(entry = tree_map_last_entry(tree_map));
+    // then
+    TEST_ASSERT_NULL(entry.key);
+    TEST_ASSERT_NULL(entry.value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_get_first_key_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    char* key = tree_map_first_key(tree_map);
+    // then
+    TEST_ASSERT_EQUAL('a', *key);
+}
+
+void test_get_first_key_from_empty_tree_map_fails() {
+    // when
+    char* key; Error error = attempt(key = tree_map_first_key(tree_map));
+    // then
+    TEST_ASSERT_NULL(key);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_get_last_key_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    char* key = tree_map_last_key(tree_map);
+    // then
+    TEST_ASSERT_EQUAL('e', *key);
+}
+
+void test_get_last_key_from_empty_tree_map_fails() {
+    // when
+    char* key; Error error = attempt(key = tree_map_last_key(tree_map));
+    // then
+    TEST_ASSERT_NULL(key);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_replace_value_from_tree_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -388,6 +462,48 @@ void test_remove_entry_from_tree_map_no_matching_value_fails() {
     // then
     TEST_ASSERT_FALSE(removed);
     TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(entries, tree_map);
+}
+
+void test_remove_first_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_poll_first_entry(tree_map);
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_remove_first_entry_from_empty_tree_map_fails() {
+    // when
+    MapEntry entry; Error error = attempt(entry = tree_map_poll_first_entry(tree_map));
+    // then
+    TEST_ASSERT_NULL(entry.key);
+    TEST_ASSERT_NULL(entry.value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_remove_last_entry_from_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    MapEntry entry = tree_map_poll_last_entry(tree_map);
+    // then
+    CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 } };
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, tree_map);
+}
+
+void test_remove_last_entry_from_empty_tree_map_fails() {
+    // when
+    MapEntry entry; Error error = attempt(entry = tree_map_poll_last_entry(tree_map));
+    // then
+    TEST_ASSERT_NULL(entry.key);
+    TEST_ASSERT_NULL(entry.value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
 static void* replace_by_2_times_original(void* key, void* value) {
@@ -876,6 +992,14 @@ int main(void) {
     RUN_TEST(test_get_value_from_tree_map);
     RUN_TEST(test_get_value_from_tree_map_no_mapping_fails);
     RUN_TEST(test_get_default_value_from_tree_map);
+    RUN_TEST(test_get_first_entry_from_tree_map);
+    RUN_TEST(test_get_first_entry_from_empty_tree_map_fails);
+    RUN_TEST(test_get_last_entry_from_tree_map);
+    RUN_TEST(test_get_last_entry_from_empty_tree_map_fails);
+    RUN_TEST(test_get_first_key_from_tree_map);
+    RUN_TEST(test_get_first_key_from_empty_tree_map_fails);
+    RUN_TEST(test_get_last_key_from_tree_map);
+    RUN_TEST(test_get_last_key_from_empty_tree_map_fails);
     
     RUN_TEST(test_replace_value_from_tree_map);
     RUN_TEST(test_replace_value_from_tree_map_no_mapping_fails);
@@ -886,6 +1010,10 @@ int main(void) {
     RUN_TEST(test_remove_entry_from_tree_map_no_mapping_fails);
     RUN_TEST(test_remove_entry_from_tree_map_matching_value);
     RUN_TEST(test_remove_entry_from_tree_map_no_matching_value_fails);
+    RUN_TEST(test_remove_first_entry_from_tree_map);
+    RUN_TEST(test_remove_first_entry_from_empty_tree_map_fails);
+    RUN_TEST(test_remove_last_entry_from_tree_map);
+    RUN_TEST(test_remove_last_entry_from_empty_tree_map_fails);
     RUN_TEST(test_replace_all_values_from_tree_map);
 
     RUN_TEST(test_get_tree_map_size);

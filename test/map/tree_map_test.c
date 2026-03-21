@@ -803,8 +803,11 @@ void test_get_ceiling_entry_from_tree_map() {
     POPULATE_TREE_MAP(tree_map, entries);
     // when
     MapEntry entry = tree_map_ceiling_entry(tree_map, &(char){'e'});
+    MapEntry not_found = tree_map_ceiling_entry(tree_map, &(char){'f'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
+    TEST_ASSERT_NULL(not_found.key);
+    TEST_ASSERT_NULL(not_found.value);
 }
 
 void test_get_floor_entry_from_tree_map() {
@@ -813,8 +816,11 @@ void test_get_floor_entry_from_tree_map() {
     POPULATE_TREE_MAP(tree_map, entries);
     // when
     MapEntry entry = tree_map_floor_entry(tree_map, &(char){'a'});
+    MapEntry not_found = tree_map_floor_entry(tree_map, &(char){'`'}); // backtick is below 'a' in ASCII
     // then
     TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
+    TEST_ASSERT_NULL(not_found.key);
+    TEST_ASSERT_NULL(not_found.value);
 }
 
 void test_get_lower_entry_from_tree_map() {

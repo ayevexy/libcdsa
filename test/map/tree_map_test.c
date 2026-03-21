@@ -812,9 +812,9 @@ void test_get_floor_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_floor_entry(tree_map, &(char){'c'});
+    MapEntry entry = tree_map_floor_entry(tree_map, &(char){'a'});
     // then
-    TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
 }
 
 void test_get_lower_entry_from_tree_map() {
@@ -822,9 +822,9 @@ void test_get_lower_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_lower_entry(tree_map, &(char){'a'});
+    MapEntry entry = tree_map_lower_entry(tree_map, &(char){'c'});
     // then
-    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
 }
 
 void test_clear_tree_map() {

@@ -485,14 +485,14 @@ MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
     Entry* current = get_entry(tree_map, key);
     const Entry* entry = get_predecessor_entry(current);
-    return current && entry != &sentinel ? entry->view : (MapEntry) {};
+    return current && entry != &sentinel ? entry->view : current->view;
 }
 
 MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
     Entry* current = get_entry(tree_map, key);
     const Entry* entry = get_predecessor_entry(current);
-    return current && entry != &sentinel ? entry->view : current->view;
+    return current && entry != &sentinel ? entry->view : (MapEntry) {};
 }
 
 void* tree_map_higher_key(const TreeMap* tree_map, const void* key) {

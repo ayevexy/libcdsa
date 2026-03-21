@@ -9,14 +9,14 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-// TODO: document
 /**
- * A tree map is a...
- * It automatically resizes to accommodate new entries and allows insertion of values of any type.
+ * A tree map is an ordered associative container that maps unique keys to values.
+ * It automatically maintains the entries in sorted order according to a key comparator
+ * and allows insertion of keys and values of any type.
  *
- * Internally, the implementation uses...                                           .Collisions are
- * resolved by...    All operations on a tree map receive a pointer to the tree map itself as their first argument.
- * The TreeMap type is opaque and can only be modified through the API.
+ * Internally, the implementation uses a self-balancing binary search tree.
+ * All operations on a TreeMap receive a pointer to the TreeMap itself as their first argument.
+ * The TreeMap type is opaque and can only be modified through the provided API functions.
  *
  * It must be configured using a TreeMapOptions defining:
  * - the function to compare keys
@@ -321,7 +321,7 @@ MapEntry tree_map_last_entry(const TreeMap* tree_map);
  *
  * @param tree_map pointer to a TreeMap
  *
- * @return the entry's key, or nullptr if empty
+ * @return the entry's key, or nullptr on failure
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
@@ -333,7 +333,7 @@ void* tree_map_first_key(const TreeMap* tree_map);
  *
  * @param tree_map pointer to a TreeMap
  *
- * @return the entry's key, or nullptr if empty
+ * @return the entry's key, or nullptr on failure
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
@@ -453,7 +453,7 @@ bool tree_map_is_empty(const TreeMap* tree_map);
 /**
  * @brief Instantiates an Iterator for the provided TreeMap.
  *
- * The iteration order of entries is unspecified and may change when the tree map resizes.
+ * The iteration order is ascending according to the key comparator.
  *
  * @param tree_map pointer to a TreeMap
  *
@@ -462,7 +462,7 @@ bool tree_map_is_empty(const TreeMap* tree_map);
  * @exception NULL_POINTER_ERROR if tree_map is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
  *
- * @note this iterator doesn't support backward traversal nor adding or setting elements
+ * @note this iterator doesn't support adding or setting elements
  */
 Iterator* tree_map_iterator(const TreeMap* tree_map);
 
@@ -502,21 +502,100 @@ void tree_map_for_each(TreeMap* tree_map, BiConsumer action);
  */
 void tree_map_clear(TreeMap* tree_map);
 
-// TODO: document
+/**
+ * @brief Retrieves the least entry strictly greater than the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the map entry view, or a null-equivalent entry if no such entry exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the least entry greater than or equal to the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the map entry view, or a null-equivalent entry if no such entry exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the greatest entry less than or equal to the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the map entry view, or a null-equivalent entry if no such entry exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the greatest entry strictly less than the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the map entry view, or a null-equivalent entry if no such entry exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the least key strictly greater than the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the key pointer, or nullptr if no such key exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 void* tree_map_higher_key(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the least key greater than or equal to the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the key pointer, or nullptr if no such key exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 void* tree_map_ceiling_key(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the greatest key less than or equal to the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the key pointer, or nullptr if no such key exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 void* tree_map_floor_key(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Retrieves the greatest key strictly less than the specified key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the key
+ *
+ * @return the key pointer, or nullptr if no such key exists
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
 void* tree_map_lower_key(const TreeMap* tree_map, const void* key);
 
 /**
@@ -595,11 +674,46 @@ Collection tree_map_values(const TreeMap* tree_map);
  */
 Collection tree_map_entries(const TreeMap* tree_map);
 
-// TODO: document
+/**
+ * @brief Returns a new TreeMap with the ordering of entries reversed.
+ *
+ * The original TreeMap remains unchanged. The comparator is inverted, and all keys/values are shared (shallow copy).
+ *
+ * @param tree_map pointer to a TreeMap
+ *
+ * @return a newly created TreeMap with reversed ordering, or nullptr on failure
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
 TreeMap* tree_map_reversed(const TreeMap* tree_map);
 
+/**
+ * @brief Returns a view of the portion of the TreeMap whose keys are less than or equal the given key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the exclusive upper bound key
+ *
+ * @return a newly created TreeMap containing the head map, or nullptr on failure
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if key is inexistent
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
 TreeMap* tree_map_head_map(const TreeMap* tree_map, const void* key);
 
+/**
+ * @brief Returns a view of the portion of the TreeMap whose keys are greater than or equal to the given key.
+ *
+ * @param tree_map pointer to a TreeMap
+ * @param key pointer to the inclusive lower bound key
+ *
+ * @return a newly created TreeMap containing the tail map, or nullptr on failure
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if key is inexistent
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
 TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key);
 
 /**
@@ -615,6 +729,7 @@ TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key);
  * @return a newly created TreeMap containing the specified range, or nullptr on failure
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if start_key or end_key are inexistent or start_key is greater than end_key
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const void* end_key);

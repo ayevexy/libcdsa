@@ -793,8 +793,11 @@ void test_get_higher_entry_from_tree_map() {
     POPULATE_TREE_MAP(tree_map, entries);
     // when
     MapEntry entry = tree_map_higher_entry(tree_map, &(char){'c'});
+    MapEntry not_found = tree_map_higher_entry(tree_map, &(char){'f'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('d', 4, &entry);
+    TEST_ASSERT_NULL(not_found.key);
+    TEST_ASSERT_NULL(not_found.value);
 }
 
 void test_get_ceiling_entry_from_tree_map() {
@@ -829,8 +832,11 @@ void test_get_lower_entry_from_tree_map() {
     POPULATE_TREE_MAP(tree_map, entries);
     // when
     MapEntry entry = tree_map_lower_entry(tree_map, &(char){'c'});
+    MapEntry not_found = tree_map_lower_entry(tree_map, &(char){'`'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
+    TEST_ASSERT_NULL(not_found.key);
+    TEST_ASSERT_NULL(not_found.value);
 }
 
 void test_clear_tree_map() {

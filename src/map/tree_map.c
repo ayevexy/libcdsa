@@ -20,10 +20,9 @@ typedef struct Entry {
     struct Entry* right;
 } Entry;
 
-static Entry sentinel = { .color = BLACK };
-
 struct TreeMap {
     Entry* root;
+    Entry* sentinel;
     int size;
     Comparator compare_keys;
     struct {
@@ -49,13 +48,13 @@ static Entry* create_entry(const TreeMap*, const void*, const void*);
 
 static Entry* get_entry(const TreeMap*, const void*);
 
-static Entry* get_successor_entry(Entry*);
+static Entry* get_successor_entry(const TreeMap*, Entry*);
 
-static Entry* get_predecessor_entry(Entry*);
+static Entry* get_predecessor_entry(const TreeMap*, Entry*);
 
-static Entry* get_lower_entry(Entry*);
+static Entry* get_lower_entry(const TreeMap*, Entry*);
 
-static Entry* get_higher_entry(Entry*);
+static Entry* get_higher_entry(const TreeMap*, Entry*);
 
 static void remove_node(TreeMap*, Entry*);
 
@@ -117,7 +116,17 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_map'");
         return nullptr;
     }
-    tree_map->root = &sentinel;
+    Entry* sentinel = options->memory_alloc(sizeof(Entry));
+    if (!sentinel) {
+        options->memory_free(tree_map);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_map'");
+        return nullptr;
+    }
+    memset(sentinel, 0, sizeof(Entry));
+    sentinel->color = BLACK;
+
+    tree_map->root = sentinel;
+    tree_map->sentinel = sentinel;
     tree_map->size = 0;
     tree_map->compare_keys = options->compare_keys;
     tree_map->key_destruct = options->key_destruct;
@@ -211,8 +220,8 @@ void* tree_map_merge(TreeMap* tree_map, const void* key, const void* value, BiOp
 
 void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return nullptr;
-    Entry* current = tree_map->root, * previous = &sentinel;
-    while (current != &sentinel) {
+    Entry* current = tree_map->root, * previous = tree_map->sentinel;
+    while (current != tree_map->sentinel) {
         const int result = tree_map->compare_keys(key, current->key);
         previous = current;
         if (result < 0) {
@@ -235,7 +244,7 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
         return nullptr;
     }
     entry->parent = current;
-    if (current == &sentinel) {
+    if (current == tree_map->sentinel) {
         entry->color = BLACK;
         tree_map->root = entry;
     } else {
@@ -293,8 +302,8 @@ void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const vo
 
 MapEntry tree_map_first_entry(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    const Entry* entry = get_lower_entry(tree_map->root);
-    if (entry == &sentinel) {
+    const Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
@@ -303,8 +312,8 @@ MapEntry tree_map_first_entry(const TreeMap* tree_map) {
 
 MapEntry tree_map_last_entry(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    const Entry* entry = get_higher_entry(tree_map->root);
-    if (entry == &sentinel) {
+    const Entry* entry = get_higher_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
@@ -313,8 +322,8 @@ MapEntry tree_map_last_entry(const TreeMap* tree_map) {
 
 void* tree_map_first_key(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    const Entry* entry = get_lower_entry(tree_map->root);
-    if (entry == &sentinel) {
+    const Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return nullptr;
     }
@@ -323,8 +332,8 @@ void* tree_map_first_key(const TreeMap* tree_map) {
 
 void* tree_map_last_key(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    const Entry* entry = get_higher_entry(tree_map->root);
-    if (entry == &sentinel) {
+    const Entry* entry = get_higher_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return nullptr;
     }
@@ -371,8 +380,8 @@ bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* v
 
 MapEntry tree_map_poll_first_entry(TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    Entry* entry = get_lower_entry(tree_map->root);
-    if (entry == &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
@@ -385,8 +394,8 @@ MapEntry tree_map_poll_first_entry(TreeMap* tree_map) {
 
 MapEntry tree_map_poll_last_entry(TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    Entry* entry = get_higher_entry(tree_map->root);
-    if (entry == &sentinel) {
+    Entry* entry = get_higher_entry(tree_map, tree_map->root);
+    if (entry == tree_map->sentinel) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
@@ -399,15 +408,15 @@ MapEntry tree_map_poll_last_entry(TreeMap* tree_map) {
 
 void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {
     if (require_non_null(tree_map, bi_operator)) return;
-    Entry* entry = get_lower_entry(tree_map->root);
-    while (entry != &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    while (entry != tree_map->sentinel) {
         void* old_value = entry->value;
         void* new_value = bi_operator(entry->key, entry->value);
         if (old_value != new_value) {
             tree_map->value_destruct(old_value);
         }
         entry->value = new_value;
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
 }
 
@@ -439,30 +448,34 @@ bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
     if (tree_map->size != other_tree_map->size) {
         return false;
     }
-    Entry * entry = get_lower_entry(tree_map->root), * other_entry = get_lower_entry(other_tree_map->root);
-    while (entry != &sentinel && other_entry != &sentinel) {
-        if (!(tree_map->key_equals(other_entry->key, entry->key) && tree_map->value_equals(entry->value, other_entry->value))) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    Entry* other_entry = get_lower_entry(other_tree_map, other_tree_map->root);
+
+    while (entry != tree_map->sentinel && other_entry != tree_map->sentinel) {
+        if (!(tree_map->key_equals(other_entry->key, entry->key)
+            && tree_map->value_equals(entry->value, other_entry->value))
+        ) {
             return false;
         }
-        entry = get_successor_entry(entry);
-        other_entry = get_successor_entry(other_entry);
+        entry = get_successor_entry(tree_map, entry);
+        other_entry = get_successor_entry(other_tree_map, other_entry);
     }
     return true;
 }
 
 void tree_map_for_each(TreeMap* tree_map, BiConsumer action) {
     if (require_non_null(tree_map, action)) return;
-    Entry* entry = get_lower_entry(tree_map->root);
-    while (entry != &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    while (entry != tree_map->sentinel) {
         action(entry->key, entry->value);
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
 }
 
 void tree_map_clear(TreeMap* tree_map) {
     if (require_non_null(tree_map)) return;
     destroy_entries(tree_map, tree_map->root);
-    tree_map->root = &sentinel;
+    tree_map->root = tree_map->sentinel;
     tree_map->size = 0;
     tree_map->modification_count++;
 }
@@ -473,8 +486,8 @@ MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key) {
     if (!current) {
         return (MapEntry) {};
     }
-    const Entry* entry = get_successor_entry(current);
-    return entry != &sentinel ? entry->view : (MapEntry) {};
+    const Entry* entry = get_successor_entry(tree_map, current);
+    return entry != tree_map->sentinel ? entry->view : (MapEntry) {};
 }
 
 MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key) {
@@ -483,8 +496,8 @@ MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key) {
     if (!current) {
         return (MapEntry) {};
     }
-    const Entry* entry = get_successor_entry(current);
-    return entry != &sentinel ? entry->view : current->view;
+    const Entry* entry = get_successor_entry(tree_map, current);
+    return entry != tree_map->sentinel ? entry->view : current->view;
 }
 
 MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key) {
@@ -493,8 +506,8 @@ MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key) {
     if (!current) {
         return (MapEntry) {};
     }
-    const Entry* entry = get_predecessor_entry(current);
-    return entry != &sentinel ? entry->view : current->view;
+    const Entry* entry = get_predecessor_entry(tree_map, current);
+    return entry != tree_map->sentinel ? entry->view : current->view;
 }
 
 MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key) {
@@ -503,8 +516,8 @@ MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key) {
     if (!current) {
         return (MapEntry) {};
     }
-    const Entry* entry = get_predecessor_entry(current);
-    return entry != &sentinel ? entry->view : (MapEntry) {};
+    const Entry* entry = get_predecessor_entry(tree_map, current);
+    return entry != tree_map->sentinel ? entry->view : (MapEntry) {};
 }
 
 void* tree_map_higher_key(const TreeMap* tree_map, const void* key) {
@@ -536,12 +549,12 @@ bool tree_map_contains_key(const TreeMap* tree_map, const void* key) {
 
 bool tree_map_contains_value(const TreeMap* tree_map, const void* value) {
     if (require_non_null(tree_map)) return false;
-    Entry* current = get_lower_entry(tree_map->root);
-    while (current != &sentinel) {
+    Entry* current = get_lower_entry(tree_map, tree_map->root);
+    while (current != tree_map->sentinel) {
         if (tree_map->value_equals(value, current->value)) {
             return true;
         }
-        current = get_successor_entry(current);
+        current = get_successor_entry(tree_map, current);
     }
     return false;
 }
@@ -599,13 +612,13 @@ TreeMap* tree_map_head_map(const TreeMap* tree_map, const void* key) {
         return nullptr;
     }
     Entry* entry = get_entry(tree_map, key);
-    while (entry != &sentinel) {
+    while (entry != tree_map->sentinel) {
         if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
             tree_map_destroy(&new_tree_map);
             set_error(error, "%s", plain_error_message());
             return nullptr;
         }
-        entry = get_predecessor_entry(entry);
+        entry = get_predecessor_entry(tree_map, entry);
     }
     return new_tree_map;
 }
@@ -632,13 +645,13 @@ TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key) {
         return nullptr;
     }
     Entry* entry = get_entry(tree_map, key);
-    while (entry != &sentinel) {
+    while (entry != tree_map->sentinel) {
         if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
             tree_map_destroy(&new_tree_map);
             set_error(error, "%s", plain_error_message());
             return nullptr;
         }
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
     return new_tree_map;
 }
@@ -668,13 +681,13 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
         return nullptr;
     }
     Entry* entry = get_entry(tree_map, start_key);
-    while (entry != &sentinel && !tree_map->key_equals(entry->key, end_key)) {
+    while (entry != tree_map->sentinel && !tree_map->key_equals(entry->key, end_key)) {
         if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
             tree_map_destroy(&new_tree_map);
             set_error(error, "%s", plain_error_message());
             return nullptr;
         }
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
     return new_tree_map;
 }
@@ -696,14 +709,14 @@ TreeMap* tree_map_clone(const TreeMap* tree_map) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
-    Entry* entry = get_lower_entry(tree_map->root);
-    while (entry != &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    while (entry != tree_map->sentinel) {
         if ((error = attempt(tree_map_put(new_tree_map, entry->key, entry->value)))) {
             tree_map_destroy(&new_tree_map);
             set_error(error, "%s", plain_error_message());
             return nullptr;
         }
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
     return new_tree_map;
 }
@@ -720,8 +733,8 @@ char* tree_map_to_string(const TreeMap* tree_map) {
     strcat(string, tree_map->size == 0 ? "[" : "[ ");
 
     int count = 0;
-    Entry* entry = get_lower_entry(tree_map->root);
-    while (entry != &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    while (entry != tree_map->sentinel) {
         constexpr int SEPARATOR = 3; constexpr int NULL_TERMINATOR = 1;
 
         const int key_length = tree_map->key_to_string(entry->key, nullptr, 0);
@@ -743,7 +756,7 @@ char* tree_map_to_string(const TreeMap* tree_map) {
         }
         count++;
         tree_map->memory_free(element_string);
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
     }
 
     strcat(string, tree_map->size == 0 ? "]" : " ]");
@@ -755,8 +768,8 @@ static size_t calculate_string_size(const TreeMap* tree_map) {
     size_t length = 0;
     int count = 0;
 
-    Entry* entry = get_lower_entry(tree_map->root);
-    while (entry != &sentinel) {
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    while (entry != tree_map->sentinel) {
         length += tree_map->key_to_string(entry->key, nullptr, 0);
         length += tree_map->value_to_string(entry->value, nullptr, 0);
         length += 3; // ' = ' separator
@@ -765,7 +778,7 @@ static size_t calculate_string_size(const TreeMap* tree_map) {
         if (count < tree_map->size - 1) length += SEPARATOR; // prevent separator on the last element
         if (count == tree_map->size - 1) length += 1; // space before closing bracket
 
-        entry = get_successor_entry(entry);
+        entry = get_successor_entry(tree_map, entry);
         count++;
     }
     return length + BRACKETS + NULL_TERMINATOR;
@@ -778,15 +791,15 @@ static Entry* create_entry(const TreeMap* tree_map, const void* key, const void*
     }
     entry->key = (void*) key;
     entry->value = (void*) value;
-    entry->parent = nullptr;
-    entry->left = &sentinel;
-    entry->right = &sentinel;
+    entry->parent = tree_map->sentinel;
+    entry->left = tree_map->sentinel;
+    entry->right = tree_map->sentinel;
     return entry;
 }
 
 static Entry* get_entry(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root;
-    while (current != &sentinel) {
+    while (current != tree_map->sentinel) {
         const int result = tree_map->compare_keys(key, current->key);
         if (result < 0) {
             current = current->left;
@@ -799,45 +812,45 @@ static Entry* get_entry(const TreeMap* tree_map, const void* key) {
     return nullptr;
 }
 
-static Entry* get_successor_entry(Entry* entry) {
-    if (entry->right != &sentinel) {
-        return get_lower_entry(entry->right);
+static Entry* get_successor_entry(const TreeMap* tree_map, Entry* entry) {
+    if (entry->right != tree_map->sentinel) {
+        return get_lower_entry(tree_map, entry->right);
     }
     Entry* parent = entry->parent;
-    while (parent != &sentinel && entry == parent->right) {
+    while (parent != tree_map->sentinel && entry == parent->right) {
         entry = parent;
         parent = parent->parent;
     }
     return parent;
 }
 
-static Entry* get_predecessor_entry(Entry* entry) {
-    if (entry->left != &sentinel) {
-        return get_higher_entry(entry->left);
+static Entry* get_predecessor_entry(const TreeMap* tree_map, Entry* entry) {
+    if (entry->left != tree_map->sentinel) {
+        return get_higher_entry(tree_map, entry->left);
     }
     Entry* parent = entry->parent;
-    while (parent != &sentinel && entry == parent->left) {
+    while (parent != tree_map->sentinel && entry == parent->left) {
         entry = parent;
         parent = parent->parent;
     }
     return parent;
 }
 
-static Entry* get_lower_entry(Entry* entry) {
-    if (entry == &sentinel) {
+static Entry* get_lower_entry(const TreeMap* tree_map, Entry* entry) {
+    if (entry == tree_map->sentinel) {
         return entry;
     }
-    while (entry->left != &sentinel) {
+    while (entry->left != tree_map->sentinel) {
         entry = entry->left;
     }
     return entry;
 }
 
-static Entry* get_higher_entry(Entry* entry) {
-    if (entry == &sentinel) {
+static Entry* get_higher_entry(const TreeMap* tree_map, Entry* entry) {
+    if (entry == tree_map->sentinel) {
         return entry;
     }
-    while (entry->right != &sentinel) {
+    while (entry->right != tree_map->sentinel) {
         entry = entry->right;
     }
     return entry;
@@ -846,14 +859,14 @@ static Entry* get_higher_entry(Entry* entry) {
 static void remove_node(TreeMap* tree_map, Entry* entry) {
     Entry* current = entry, * auxiliar;
     Color current_color = current->color;
-    if (entry->left == &sentinel) {
+    if (entry->left == tree_map->sentinel) {
         auxiliar = entry->right;
         transplant(tree_map, entry, entry->right);
-    } else if (entry->right == &sentinel) {
+    } else if (entry->right == tree_map->sentinel) {
         auxiliar = entry->left;
         transplant(tree_map, entry, entry->left);
     } else {
-        current = get_lower_entry(entry->right);
+        current = get_lower_entry(tree_map, entry->right);
         current_color = current->color;
         auxiliar = current->right;
         if (current->parent == entry) {
@@ -877,7 +890,7 @@ static void remove_node(TreeMap* tree_map, Entry* entry) {
 }
 
 static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {
-    if (first->parent == &sentinel) {
+    if (first->parent == tree_map->sentinel) {
         tree_map->root = second;
     } else if (first == first->parent->left) {
         first->parent->left = second;
@@ -888,7 +901,7 @@ static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {
 }
 
 static void destroy_entries(TreeMap* tree_map, Entry* entry) {
-    if (entry == &sentinel) {
+    if (entry == tree_map->sentinel) {
         return;
     }
     destroy_entries(tree_map, entry->left);
@@ -997,11 +1010,11 @@ static void rebalance_after_delete(TreeMap* tree_map, Entry* entry) {
 static void rotate_left(TreeMap* tree_map, Entry* entry) {
     Entry* current = entry->right;
     entry->right = current->left;
-    if (current->left != &sentinel) {
+    if (current->left != tree_map->sentinel) {
         current->left->parent = entry;
     }
     current->parent = entry->parent;
-    if (entry->parent == &sentinel) {
+    if (entry->parent == tree_map->sentinel) {
         tree_map->root = current;
     } else if (entry == entry->parent->left) {
         entry->parent->left = current;
@@ -1015,11 +1028,11 @@ static void rotate_left(TreeMap* tree_map, Entry* entry) {
 static void rotate_right(TreeMap* tree_map, Entry* entry) {
     Entry* current = entry->left;
     entry->left = current->right;
-    if (current->right != &sentinel) {
+    if (current->right != tree_map->sentinel) {
         current->right->parent = entry;
     }
     current->parent = entry->parent;
-    if (entry->parent == &sentinel) {
+    if (entry->parent == tree_map->sentinel) {
         tree_map->root = current;
     } else if (entry == entry->parent->right) {
         entry->parent->right = current;
@@ -1084,9 +1097,9 @@ static void* iterator_next_internal(void* raw_iteration_context) {
         return nullptr;
     }
     if (!iteration_context->entry) {
-        iteration_context->entry = get_lower_entry(iteration_context->tree_map->root);
+        iteration_context->entry = get_lower_entry(iteration_context->tree_map, iteration_context->tree_map->root);
     } else if (!iteration_context->last_removed)  {
-        iteration_context->entry = get_successor_entry(iteration_context->entry);
+        iteration_context->entry = get_successor_entry(iteration_context->tree_map, iteration_context->entry);
     }
     iteration_context->last_returned = true;
     iteration_context->last_removed = false;
@@ -1121,11 +1134,11 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     }
     MapEntry* entry_view = nullptr;
     if (!iteration_context->entry) {
-        iteration_context->entry = get_lower_entry(iteration_context->tree_map->root);
+        iteration_context->entry = get_lower_entry(iteration_context->tree_map, iteration_context->tree_map->root);
         entry_view = &iteration_context->entry->view;
     } else if (!iteration_context->last_removed) {
         entry_view = &iteration_context->entry->view;
-        iteration_context->entry = get_predecessor_entry(iteration_context->entry);
+        iteration_context->entry = get_predecessor_entry(iteration_context->tree_map, iteration_context->entry);
     }
     iteration_context->last_returned = true;
     iteration_context->last_removed = false;

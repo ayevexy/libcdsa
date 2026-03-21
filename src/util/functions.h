@@ -4,16 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/** @brief Enumeration of comparison conditions */
-typedef enum {
-    GREATER_THAN = 1,
-    GREATER_OR_EQUAL,
-    LESS_THAN,
-    LESS_OR_EQUAL,
-    EQUAL,
-    NOT_EQUAL
-} ComparisonCondition;
-
 /**
  * @brief Generic function pointer types for functional-style operations.
  */

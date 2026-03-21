@@ -5,6 +5,7 @@
 #include "util/errors.h"
 
 #include "unity.h"
+#include "list/array_list.h"
 
 static TreeMap* tree_map;
 
@@ -968,6 +969,50 @@ void test_get_tree_map_entries() {
     iterator_destroy(&iterator);
 }
 
+void test_create_sub_map_of_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* new_tree_map = tree_map_sub_map(tree_map, &(char){'b'}, &(char){'e'});
+    // then
+    CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 } };
+    TEST_ASSERT_ARRAY_EQUALS_TO_TREE_MAP(new_entries, new_tree_map);
+}
+
+void test_create_empty_sub_map_of_tree_map() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* new_tree_map = tree_map_sub_map(tree_map, &(char){'c'}, &(char){'c'});
+    // then
+    TEST_ASSERT_EQUAL(0, tree_map_size(new_tree_map));
+}
+
+static void sub_map_inexistent_key_test_helper(char* start_key, char* end_key) {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    TreeMap* sub_map; Error error = attempt(sub_map = tree_map_sub_map(tree_map, start_key, end_key));
+    // then
+    TEST_ASSERT_NULL(sub_map);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
+void test_create_sub_map_inexistent_end_key_fails() {
+    sub_map_inexistent_key_test_helper(&(char){'a'}, &(char){'f'});
+}
+
+void test_create_sub_map_inexistent_start_key_fails() {
+    sub_map_inexistent_key_test_helper(&(char){'`'}, &(char){'e'}); // backtick is below 'a' in ASCII
+}
+
+void test_create_sub_map_start_key_greater_than_end_key_fails() {
+    sub_map_inexistent_key_test_helper(&(char){'e'}, &(char){'c'});
+}
+
 void test_clone_tree_map() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -1092,6 +1137,12 @@ int main(void) {
     RUN_TEST(test_get_tree_map_keys);
     RUN_TEST(test_get_tree_map_values);
     RUN_TEST(test_get_tree_map_entries);
+
+    RUN_TEST(test_create_sub_map_of_tree_map);
+    RUN_TEST(test_create_empty_sub_map_of_tree_map);
+    RUN_TEST(test_create_sub_map_inexistent_end_key_fails);
+    RUN_TEST(test_create_sub_map_inexistent_start_key_fails);
+    RUN_TEST(test_create_sub_map_start_key_greater_than_end_key_fails);
 
     RUN_TEST(test_clone_tree_map);
     RUN_TEST(test_get_tree_map_string_representation);

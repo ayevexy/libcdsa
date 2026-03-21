@@ -160,6 +160,7 @@ void tree_map_destroy(TreeMap** tree_map_pointer) {
     if (require_non_null(tree_map_pointer, *tree_map_pointer)) return;
     TreeMap* tree_map = *tree_map_pointer;
     destroy_entries(tree_map, tree_map->root);
+    tree_map->memory_free(tree_map->sentinel);
     tree_map->memory_free(tree_map);
     *tree_map_pointer = nullptr;
 }

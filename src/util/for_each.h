@@ -4,6 +4,7 @@
 #include "list/array_list.h"
 #include "list/linked_list.h"
 #include "map/hash_map.h"
+#include "map/tree_map.h"
 #include "set/hash_set.h"
 #include "deque/deque.h"
 
@@ -21,6 +22,7 @@
             ArrayList*: array_list_iterator,                                                    \
             LinkedList*: linked_list_iterator,                                                  \
             HashMap*: hash_map_iterator,                                                        \
+            TreeMap*: tree_map_iterator,                                                        \
             HashSet*: hash_set_iterator,                                                        \
             Deque*: deque_iterator,                                                             \
             Collection: collection_iterator                                                     \

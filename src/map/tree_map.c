@@ -1135,7 +1135,7 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     }
     MapEntry* entry_view = nullptr;
     if (!iteration_context->entry) {
-        iteration_context->entry = get_lower_entry(iteration_context->tree_map, iteration_context->tree_map->root);
+        iteration_context->entry = get_higher_entry(iteration_context->tree_map, iteration_context->tree_map->root);
         entry_view = &iteration_context->entry->view;
     } else if (!iteration_context->last_removed) {
         entry_view = &iteration_context->entry->view;
@@ -1177,11 +1177,12 @@ static void iterator_remove_internal(void* raw_iteration_context) {
         set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
         return;
     }
-    Entry* right = iteration_context->entry->right;
+    Entry* successor = get_successor_entry(iteration_context->tree_map, iteration_context->entry);
     tree_map_remove(iteration_context->tree_map, iteration_context->entry->key);
-    iteration_context->entry = right;
+    iteration_context->entry = successor;
     iteration_context->last_returned = false;
     iteration_context->last_removed = true;
+    iteration_context->count--;
     iteration_context->modification_count = iteration_context->tree_map->modification_count;
 }
 

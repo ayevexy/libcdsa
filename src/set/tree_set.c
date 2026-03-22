@@ -55,6 +55,14 @@ static void transplant(TreeSet*, Node*, Node*);
 
 static void destroy_nodes(TreeSet*, Node*);
 
+static void rebalance_after_insert(TreeSet*, Node*);
+
+static void rebalance_after_delete(TreeSet*, Node*);
+
+static void rotate_left(TreeSet*, Node*);
+
+static void rotate_right(TreeSet*, Node*);
+
 static Iterator* create_iterator(const TreeSet*);
 
 static bool iterator_has_next_internal(const void*);
@@ -186,7 +194,7 @@ bool tree_set_add(TreeSet* tree_set, const void* element) {
         } else {
             current->right = node;
         }
-        //rebalance_after_insert(tree_set, node);
+        rebalance_after_insert(tree_set, node);
     }
     tree_set->size++;
     tree_set->modification_count++;
@@ -576,7 +584,7 @@ static void remove_node(TreeSet* tree_set, Node* node) {
         current->color = node->color;
     }
     if (current_color == BLACK) {
-        // rebalance_after_delete(tree_set, auxiliar);
+        rebalance_after_delete(tree_set, auxiliar);
     }
     tree_set->memory_free(node);
     tree_set->size--;
@@ -602,6 +610,138 @@ static void destroy_nodes(TreeSet* tree_set, Node* node) {
     destroy_nodes(tree_set, node->right);
     tree_set->destruct(node->element);
     tree_set->memory_free(node);
+}
+
+static void rebalance_after_insert(TreeSet* tree_set, Node* node) {
+    Node* current;
+    while (node->parent->color == RED) {
+        if (node->parent == node->parent->parent->left) {
+            current = node->parent->parent->right;
+            if (current->color == RED) {
+                node->parent->color = BLACK;
+                current->color = BLACK;
+                node->parent->parent->color = RED;
+                node = node->parent->parent;
+            } else {
+                if (node == node->parent->right) {
+                    node = node->parent;
+                    rotate_left(tree_set, node);
+                }
+                node->parent->color = BLACK;
+                node->parent->parent->color = RED;
+                rotate_right(tree_set, node->parent->parent);
+            }
+        } else {
+            current = node->parent->parent->left;
+            if (current->color == RED) {
+                node->parent->color = BLACK;
+                current->color = BLACK;
+                node->parent->parent->color = RED;
+                node = node->parent->parent;
+            } else {
+                if (node == node->parent->left) {
+                    node = node->parent;
+                    rotate_right(tree_set, node);
+                }
+                node->parent->color = BLACK;
+                node->parent->parent->color = RED;
+                rotate_left(tree_set, node->parent->parent);
+            }
+        }
+    }
+    tree_set->root->color = BLACK;
+}
+
+static void rebalance_after_delete(TreeSet* tree_set, Node* node) {
+    Node* current;
+    while (node != tree_set->root && node->color == BLACK) {
+        if (node == node->parent->left) {
+            current = node->parent->right;
+            if (current->color == RED) {
+                current->color = BLACK;
+                node->parent->color = RED;
+                rotate_left(tree_set, node->parent);
+                current = node->parent->right;
+            }
+            if (current->left->color == BLACK && current->right->color == BLACK) {
+                current->color = RED;
+                node = node->parent;
+            } else {
+                if (current->right->color == BLACK) {
+                    current->left->color = BLACK;
+                    current->color = RED;
+                    rotate_right(tree_set, current);
+                    current = node->parent->right;
+                }
+                current->color = node->parent->color;
+                node->parent->color = BLACK;
+                current->right->color = BLACK;
+                rotate_left(tree_set, node->parent);
+                node = tree_set->root;
+            }
+        } else {
+            current = node->parent->left;
+            if (current->color == RED) {
+                current->color = BLACK;
+                node->parent->color = RED;
+                rotate_right(tree_set, node->parent);
+                current = node->parent->left;
+            }
+            if (current->right->color == BLACK && current->left->color == BLACK) {
+                current->color = RED;
+                node = node->parent;
+            } else {
+                if (current->left->color == BLACK) {
+                    current->right->color = BLACK;
+                    current->color = RED;
+                    rotate_left(tree_set, current);
+                    current = node->parent->left;
+                }
+                current->color = node->parent->color;
+                node->parent->color = BLACK;
+                current->left->color = BLACK;
+                rotate_right(tree_set, node->parent);
+                node = tree_set->root;
+            }
+        }
+    }
+    node->color = BLACK;
+}
+
+static void rotate_left(TreeSet* tree_set, Node* node) {
+    Node* current = node->right;
+    node->right = current->left;
+    if (current->left != tree_set->sentinel) {
+        current->left->parent = node;
+    }
+    current->parent = node->parent;
+    if (node->parent == tree_set->sentinel) {
+        tree_set->root = current;
+    } else if (node == node->parent->left) {
+        node->parent->left = current;
+    } else {
+        node->parent->right = current;
+    }
+    current->left = node;
+    node->parent = current;
+}
+
+static void rotate_right(TreeSet* tree_set, Node* node) {
+    Node* current = node->left;
+    node->left = current->right;
+    if (current->right != tree_set->sentinel) {
+        current->right->parent = node;
+    }
+    current->parent = node->parent;
+    if (node->parent == tree_set->sentinel) {
+        tree_set->root = current;
+    } else if (node == node->parent->right) {
+        node->parent->right = current;
+    } else {
+        node->parent->left = current;
+    }
+    current->right = node;
+    node->parent = current;
 }
 
 typedef struct {

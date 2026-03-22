@@ -412,6 +412,95 @@ void test_tree_set_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_tree_set_is_equal_to_it_self() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    bool equals = tree_set_equals(tree_set, tree_set);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_tree_set_is_equal_to_another_tree_set() {
+    // given
+    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    POPULATE_TREE_SET(other_tree_set, elements);
+    // when
+    bool equals = tree_set_equals(tree_set, other_tree_set);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    tree_set_set_destructor(other_tree_set, free);
+    tree_set_destroy(&other_tree_set);
+}
+
+void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
+    // given
+    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    POPULATE_TREE_SET(other_tree_set, elements);
+    tree_set_add(other_tree_set, new(int, 10));
+    // when
+    bool equals = tree_set_equals(tree_set, other_tree_set);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    tree_set_set_destructor(other_tree_set, free);
+    tree_set_destroy(&other_tree_set);
+}
+
+void test_tree_set_is_not_equal_to_another_tree_set_with_different_elements() {
+    // given
+    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    int other_elements[] = { 2, 3, 4, 5, 6 };
+    POPULATE_TREE_SET(other_tree_set, other_elements);
+    // when
+    bool equals = tree_set_equals(tree_set, other_tree_set);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    tree_set_set_destructor(other_tree_set, free);
+    tree_set_destroy(&other_tree_set);
+}
+
+static int action_count = 0;
+
+static void action(void* element) {
+    action_count++;
+}
+
+void test_perform_action_for_each_element_of_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    tree_set_for_each(tree_set, action);
+    // then
+    TEST_ASSERT_EQUAL(5, action_count);
+}
+
+void test_clear_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    tree_set_clear(tree_set);
+    // then
+    TEST_ASSERT_EQUAL(0, tree_set_size(tree_set));
+    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, elements);
+}
+
 void test_get_higher_element_from_tree_set() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -460,17 +549,6 @@ void test_get_lower_element_from_tree_set() {
     TEST_ASSERT_NULL(not_found);
 }
 
-void test_clear_tree_set() {
-    // given
-    int elements[] = { 1, 2, 3, 4, 5 };
-    POPULATE_TREE_SET(tree_set, elements);
-    // when
-    tree_set_clear(tree_set);
-    // then
-    TEST_ASSERT_EQUAL(0, tree_set_size(tree_set));
-    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, elements);
-}
-
 void test_tree_set_contains_element() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -489,6 +567,35 @@ void test_tree_set_does_not_contains_element() {
     bool contains = tree_set_contains(tree_set, &(int){10});
     // then
     TEST_ASSERT_FALSE(contains);
+}
+
+void test_tree_set_contains_all_elements() {
+    // given
+    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    int other_elements[] = { 2, 3, 4};
+    POPULATE_TREE_SET(new_tree_set, other_elements);
+    // when
+    bool contains_all = tree_set_contains_all(tree_set, tree_set_to_collection(new_tree_set));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    tree_set_set_destructor(new_tree_set, free);
+    tree_set_destroy(&new_tree_set);
+}
+
+void test_empty_tree_set_contains_all_elements_of_empty_collection() {
+    // given
+    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // when
+    bool contains_all = tree_set_contains_all(tree_set, tree_set_to_collection(new_tree_set));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    tree_set_destroy(&new_tree_set);
 }
 
 void test_tree_set_to_collection() {
@@ -549,6 +656,11 @@ int main(void) {
     RUN_TEST(test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row);
     RUN_TEST(test_tree_set_iterator_reset);
 
+    RUN_TEST(test_tree_set_is_equal_to_it_self);
+    RUN_TEST(test_tree_set_is_equal_to_another_tree_set);
+    RUN_TEST(test_tree_set_is_not_equal_to_another_tree_set_with_different_size);
+    RUN_TEST(test_tree_set_is_not_equal_to_another_tree_set_with_different_elements);
+    RUN_TEST(test_perform_action_for_each_element_of_tree_set);
     RUN_TEST(test_clear_tree_set);
 
     RUN_TEST(test_get_higher_element_from_tree_set);
@@ -558,6 +670,8 @@ int main(void) {
 
     RUN_TEST(test_tree_set_contains_element);
     RUN_TEST(test_tree_set_does_not_contains_element);
+    RUN_TEST(test_tree_set_contains_all_elements);
+    RUN_TEST(test_empty_tree_set_contains_all_elements_of_empty_collection);
 
     RUN_TEST(test_tree_set_to_collection);
     return UNITY_END();

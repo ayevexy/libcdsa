@@ -196,7 +196,7 @@ bool tree_set_add_all(TreeSet* tree_set, Collection collection) {
 
     Iterator* iterator; Error error = attempt(iterator = collection_iterator(collection));
     if (error == MEMORY_ALLOCATION_ERROR) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
     bool changed = false;
@@ -291,6 +291,36 @@ Iterator* tree_set_iterator(const TreeSet* tree_set) {
     return iterator;
 }
 
+bool tree_set_equals(const TreeSet* tree_set, const TreeSet* other_tree_set) {
+    if (require_non_null(tree_set, other_tree_set)) return false;
+    if (tree_set == other_tree_set) {
+        return true;
+    }
+    if (tree_set->size != other_tree_set->size) {
+        return false;
+    }
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    Node* other_node = get_lower_node(other_tree_set, other_tree_set->root);
+
+    while (node != tree_set->sentinel && other_node != tree_set->sentinel) {
+        if (!(tree_set->equals(other_node->element, node->element))) {
+            return false;
+        }
+        node = get_successor_node(tree_set, node);
+        other_node = get_successor_node(other_tree_set, other_node);
+    }
+    return true;
+}
+
+void tree_set_for_each(TreeSet* tree_set, Consumer action) {
+    if (require_non_null(tree_set, action)) return;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        action(node->element);
+        node = get_successor_node(tree_set, node);
+    }
+}
+
 void tree_set_clear(TreeSet* tree_set) {
     if (require_non_null(tree_set)) return;
     destroy_nodes(tree_set, tree_set->root);
@@ -342,6 +372,26 @@ void* tree_set_lower(const TreeSet* tree_set, const void* element) {
 bool tree_set_contains(const TreeSet* tree_set, const void* element) {
     if (require_non_null(tree_set)) return false;
     return get_node(tree_set, element) != nullptr;
+}
+
+bool tree_set_contains_all(const TreeSet* tree_set, Collection collection) {
+    if (require_non_null(tree_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!tree_set_contains(tree_set, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
+    return contains;
 }
 
 Collection tree_set_to_collection(const TreeSet* tree_set) {

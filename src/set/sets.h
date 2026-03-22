@@ -2,12 +2,13 @@
 #define SETS_H
 
 #include "hash_set.h"
+#include "tree_set.h"
 #include "util/iterator.h"
 #include "util/pair.h"
 
 /**
  * @file sets.h
- * @brief Commom mathematical set operations and set view abstraction.
+ * @brief Common mathematical set operations and set view abstraction.
  */
 
 /**
@@ -188,9 +189,12 @@ bool _set_view_is_superset(SetView*, SetView*);
  */
 #define _set_view_of(set) _Generic((set),       \
     HashSet*: _hash_set_view((HashSet*) set),   \
+    TreeSet*: _tree_set_view((TreeSet*) set),   \
     SetView*: set                               \
 )
 
 extern SetView* _hash_set_view(const HashSet*);
+
+extern SetView* _tree_set_view(const TreeSet*);
 
 #endif

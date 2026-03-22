@@ -71,6 +71,18 @@ static void iterator_remove_internal(void*);
 
 static void iterator_reset_internal(void*);
 
+static int collection_size_internal(const void*);
+
+static Iterator* collection_iterator_internal(const void*);
+
+static bool collection_contains_internal(const void*, const void*);
+
+static int set_view_size_internal(const void*);
+
+static Iterator* set_view_iterator_internal(const void*);
+
+static bool set_view_contains_internal(const void*, const void*);
+
 TreeSet* tree_set_new(const TreeSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare || !options->destruct || !options->equals
@@ -102,6 +114,12 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
     tree_set->to_string = options->to_string;
     tree_set->memory_alloc = options->memory_alloc;
     tree_set->memory_free = options->memory_free;
+    tree_set->modification_count = 0;
+    tree_set->view.sets.first = tree_set;
+    tree_set->view.sets.second = nullptr;
+    tree_set->view.size = set_view_size_internal;
+    tree_set->view.iterator = set_view_iterator_internal;
+    tree_set->view.contains = set_view_contains_internal;
     return tree_set;
 }
 
@@ -285,6 +303,16 @@ void* tree_set_lower(const TreeSet* tree_set, const void* element) {
 bool tree_set_contains(const TreeSet* tree_set, const void* element) {
     if (require_non_null(tree_set)) return false;
     return get_node(tree_set, element) != nullptr;
+}
+
+Collection tree_set_to_collection(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return (Collection) {};
+    return (Collection) {
+        .data_structure = tree_set,
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
+    };
 }
 
 static Node* create_node(const TreeSet* tree_set, const void* element) {
@@ -541,4 +569,32 @@ static void iterator_reset_internal(void* raw_iteration_context) {
     iteration_context->last_returned = false;
     iteration_context->last_removed = false;
     iteration_context->modification_count = iteration_context->tree_set->modification_count;
+}
+
+static int collection_size_internal(const void* tree_set) {
+    return tree_set_size(tree_set);
+}
+
+static Iterator* collection_iterator_internal(const void* tree_set) {
+    return tree_set_iterator(tree_set);
+}
+
+static bool collection_contains_internal(const void* tree_set, const void* element) {
+    return tree_set_contains(tree_set, element);
+}
+
+static int set_view_size_internal(const void* tree_set) {
+    return tree_set_size(((Pair*) tree_set)->first);
+}
+
+static Iterator* set_view_iterator_internal(const void* tree_set) {
+    return tree_set_iterator(((Pair*) tree_set)->first);
+}
+
+static bool set_view_contains_internal(const void* tree_set, const void* element) {
+    return tree_set_contains(((Pair*) tree_set)->first, element);
+}
+
+SetView* _tree_set_view(const TreeSet* tree_set) {
+    return tree_set ? (SetView*) &tree_set->view : nullptr;
 }

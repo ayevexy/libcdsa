@@ -435,6 +435,23 @@ void test_tree_set_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_tree_set_to_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    Collection collection = tree_set_to_collection(tree_set);
+    // then
+    Iterator* iterator = collection_iterator(collection);
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_set);
@@ -481,5 +498,7 @@ int main(void) {
 
     RUN_TEST(test_tree_set_contains_element);
     RUN_TEST(test_tree_set_does_not_contains_element);
+
+    RUN_TEST(test_tree_set_to_collection);
     return UNITY_END();
 }

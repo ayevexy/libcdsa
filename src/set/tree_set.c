@@ -39,9 +39,13 @@ static Node* create_node(const TreeSet*, const void*);
 
 static Node* get_node(const TreeSet*, const void*);
 
-static Node* get_lower_node(const TreeSet*, Node*);
+static Node* get_successor_node(const TreeSet*, Node*);
+
+static Node* get_predecessor_node(const TreeSet*, Node*);
 
 static Node* get_higher_node(const TreeSet*, Node*);
+
+static Node* get_lower_node(const TreeSet*, Node*);
 
 static void remove_node(TreeSet*, Node*);
 
@@ -210,6 +214,46 @@ void tree_set_clear(TreeSet* tree_set) {
     tree_set->modification_count++;
 }
 
+void* tree_set_higher(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* current = get_node(tree_set, element);
+    if (!current) {
+        return nullptr;
+    }
+    const Node* node = get_successor_node(tree_set, current);
+    return node != tree_set->sentinel ? node->element : nullptr;
+}
+
+void* tree_set_ceiling(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* current = get_node(tree_set, element);
+    if (!current) {
+        return nullptr;
+    }
+    const Node* node = get_successor_node(tree_set, current);
+    return node != tree_set->sentinel ? node->element : current->element;
+}
+
+void* tree_set_floor(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* current = get_node(tree_set, element);
+    if (!current) {
+        return nullptr;
+    }
+    const Node* node = get_predecessor_node(tree_set, current);
+    return node != tree_set->sentinel ? node->element : current->element;
+}
+
+void* tree_set_lower(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* current = get_node(tree_set, element);
+    if (!current) {
+        return nullptr;
+    }
+    const Node* node = get_predecessor_node(tree_set, current);
+    return node != tree_set->sentinel ? node->element : nullptr;
+}
+
 bool tree_set_contains(const TreeSet* tree_set, const void* element) {
     if (require_non_null(tree_set)) return false;
     return get_node(tree_set, element) != nullptr;
@@ -242,14 +286,28 @@ static Node* get_node(const TreeSet* tree_set, const void* element) {
     return nullptr;
 }
 
-static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
-    if (node == tree_set->sentinel) {
-        return node;
+static Node* get_successor_node(const TreeSet* tree_set, Node* node) {
+    if (node->right != tree_set->sentinel) {
+        return get_lower_node(tree_set, node->right);
     }
-    while (node->left != tree_set->sentinel) {
-        node = node->left;
+    Node* parent = node->parent;
+    while (parent != tree_set->sentinel && node == parent->right) {
+        node = parent;
+        parent = parent->parent;
     }
-    return node;
+    return parent;
+}
+
+static Node* get_predecessor_node(const TreeSet* tree_set, Node* node) {
+    if (node->left != tree_set->sentinel) {
+        return get_higher_node(tree_set, node->left);
+    }
+    Node* parent = node->parent;
+    while (parent != tree_set->sentinel && node == parent->left) {
+        node = parent;
+        parent = parent->parent;
+    }
+    return parent;
 }
 
 static Node* get_higher_node(const TreeSet* tree_set, Node* node) {
@@ -258,6 +316,16 @@ static Node* get_higher_node(const TreeSet* tree_set, Node* node) {
     }
     while (node->right != tree_set->sentinel) {
         node = node->right;
+    }
+    return node;
+}
+
+static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
+    if (node == tree_set->sentinel) {
+        return node;
+    }
+    while (node->left != tree_set->sentinel) {
+        node = node->left;
     }
     return node;
 }

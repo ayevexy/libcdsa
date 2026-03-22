@@ -200,6 +200,54 @@ void test_tree_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_get_higher_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_higher(tree_set, &(int){3});
+    int* not_found = tree_set_higher(tree_set, &(int){6});
+    // then
+    TEST_ASSERT_EQUAL(4, *element);
+    TEST_ASSERT_NULL(not_found);
+}
+
+void test_get_ceiling_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_ceiling(tree_set, &(int){4});
+    int* not_found = tree_set_ceiling(tree_set, &(int){6});
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+    TEST_ASSERT_NULL(not_found);
+}
+
+void test_get_floor_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_floor(tree_set, &(int){1});
+    int* not_found = tree_set_floor(tree_set, &(int){0});
+    // then
+    TEST_ASSERT_EQUAL(1, *element);
+    TEST_ASSERT_NULL(not_found);
+}
+
+void test_get_lower_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_lower(tree_set, &(int){3});
+    int* not_found = tree_set_lower(tree_set, &(int){0});
+    // then
+    TEST_ASSERT_EQUAL(2, *element);
+    TEST_ASSERT_NULL(not_found);
+}
+
 void test_clear_tree_set() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -260,6 +308,11 @@ int main(void) {
     RUN_TEST(test_tree_set_is_not_empty);
 
     RUN_TEST(test_clear_tree_set);
+
+    RUN_TEST(test_get_higher_element_from_tree_set);
+    RUN_TEST(test_get_ceiling_element_from_tree_set);
+    RUN_TEST(test_get_floor_element_from_tree_set);
+    RUN_TEST(test_get_lower_element_from_tree_set);
 
     RUN_TEST(test_tree_set_contains_element);
     RUN_TEST(test_tree_set_does_not_contains_element);

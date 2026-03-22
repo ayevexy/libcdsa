@@ -615,6 +615,40 @@ void test_tree_set_to_collection() {
     iterator_destroy(&iterator);
 }
 
+void test_convert_tree_set_to_array() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    void** element_array = tree_set_to_array(tree_set);
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
+    // clean up
+    free(element_array);
+}
+
+void test_get_tree_set_string_representation() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    char* string = tree_set_to_string(tree_set);
+    // then
+    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_tree_set_string_representation() {
+    // when
+    char* string = tree_set_to_string(tree_set);
+    // then
+    TEST_ASSERT_EQUAL_STRING("()", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_set);
@@ -674,5 +708,8 @@ int main(void) {
     RUN_TEST(test_empty_tree_set_contains_all_elements_of_empty_collection);
 
     RUN_TEST(test_tree_set_to_collection);
+    RUN_TEST(test_convert_tree_set_to_array);
+    RUN_TEST(test_get_tree_set_string_representation);
+    RUN_TEST(test_get_empty_tree_set_string_representation);
     return UNITY_END();
 }

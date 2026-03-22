@@ -35,6 +35,8 @@ struct TreeSet {
     SetView view;
 };
 
+static size_t calculate_string_size(const TreeSet*);
+
 static Node* create_node(const TreeSet*, const void*);
 
 static Node* get_node(const TreeSet*, const void*);
@@ -402,6 +404,79 @@ Collection tree_set_to_collection(const TreeSet* tree_set) {
         .iterator = collection_iterator_internal,
         .contains = collection_contains_internal
     };
+}
+
+void** tree_set_to_array(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    void** elements = tree_set->memory_alloc(sizeof(void*) * tree_set->size);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    int i = 0;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        elements[i++] = node->element;
+        node = get_successor_node(tree_set, node);
+    }
+    return elements;
+}
+
+char* tree_set_to_string(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+
+    char* string = tree_set->memory_alloc(calculate_string_size(tree_set));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to clear trash data
+    strcat(string, tree_set->size == 0 ? "(" : "( ");
+
+    int count = 0;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        constexpr int NULL_TERMINATOR = 1;
+        const int length = tree_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
+
+        char* element_string = tree_set->memory_alloc(length);
+        if (!element_string) {
+            tree_set->memory_free(string);
+            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            return nullptr;
+        }
+        tree_set->to_string(node->element, element_string, length);
+        strcat(string, element_string);
+
+        if (count < tree_set->size - 1) {
+            strcat(string, ", ");
+        }
+        count++;
+        tree_set->memory_free(element_string);
+        node = get_successor_node(tree_set, node);
+    }
+
+    strcat(string, tree_set->size == 0 ? ")" : " )");
+    return string;
+}
+
+static size_t calculate_string_size(const TreeSet* tree_set) {
+    constexpr int PARENTHESES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+    int count = 0;
+
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        length += tree_set->to_string(node->element, nullptr, 0);
+
+        if (count == 0) length += 1; // space after opening parenthesis
+        if (count < tree_set->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (count == tree_set->size - 1) length += 1; // space before closing parenthesis
+
+        node = get_successor_node(tree_set, node);
+        count++;
+    }
+    return length + PARENTHESES + NULL_TERMINATOR;
 }
 
 static Node* create_node(const TreeSet* tree_set, const void* element) {

@@ -53,6 +53,24 @@ static void transplant(TreeSet*, Node*, Node*);
 
 static void destroy_nodes(TreeSet*, Node*);
 
+static Iterator* create_iterator(const TreeSet*);
+
+static bool iterator_has_next_internal(const void*);
+
+static void* iterator_next_internal(void*);
+
+static bool iterator_has_previous_internal(const void*);
+
+static void* iterator_previous_internal(void*);
+
+static void iterator_add_internal(void*, const void*);
+
+static void iterator_set_internal(void*, const void*);
+
+static void iterator_remove_internal(void*);
+
+static void iterator_reset_internal(void*);
+
 TreeSet* tree_set_new(const TreeSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare || !options->destruct || !options->equals
@@ -204,6 +222,16 @@ int tree_set_size(const TreeSet* tree_set) {
 bool tree_set_is_empty(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return false;
     return tree_set->size == 0;
+}
+
+Iterator* tree_set_iterator(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    Iterator* iterator = create_iterator(tree_set);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
 }
 
 void tree_set_clear(TreeSet* tree_set) {
@@ -382,4 +410,135 @@ static void destroy_nodes(TreeSet* tree_set, Node* node) {
     destroy_nodes(tree_set, node->right);
     tree_set->destruct(node->element);
     tree_set->memory_free(node);
+}
+
+typedef struct {
+    Iterator iterator;
+    TreeSet* tree_set;
+    Node* node;
+    int count;
+    bool last_returned;
+    bool last_removed;
+    int modification_count;
+} IterationContext;
+
+static Iterator* create_iterator(const TreeSet* tree_set) {
+    IterationContext* iteration_context = tree_set->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = iterator_has_next_internal;
+    iteration_context->iterator.next = iterator_next_internal;
+    iteration_context->iterator.has_previous = iterator_has_previous_internal;
+    iteration_context->iterator.previous = iterator_previous_internal;
+
+    iteration_context->iterator.add = iterator_add_internal;
+    iteration_context->iterator.set = iterator_set_internal;
+    iteration_context->iterator.remove = iterator_remove_internal;
+    iteration_context->iterator.reset = iterator_reset_internal;
+    iteration_context->iterator.memory_free = tree_set->memory_free;
+
+    iteration_context->tree_set = (TreeSet*) tree_set;
+    iteration_context->node = nullptr;
+    iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
+    iteration_context->modification_count = tree_set->modification_count;
+
+    return &iteration_context->iterator;
+}
+
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count < iteration_context->tree_set->size;
+}
+
+static void* iterator_next_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_next_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    if (!iteration_context->node) {
+        iteration_context->node = get_lower_node(iteration_context->tree_set, iteration_context->tree_set->root);
+    } else if (!iteration_context->last_removed)  {
+        iteration_context->node = get_successor_node(iteration_context->tree_set, iteration_context->node);
+    }
+    iteration_context->last_returned = true;
+    iteration_context->last_removed = false;
+    iteration_context->count++;
+    return iteration_context->node->element;
+}
+
+static bool iterator_has_previous_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->count > 0;
+}
+
+static void* iterator_previous_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return nullptr;
+    }
+    if (!iterator_has_previous_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    void* element = nullptr;
+    if (!iteration_context->node) {
+        iteration_context->node = get_higher_node(iteration_context->tree_set, iteration_context->tree_set->root);
+        element = iteration_context->node->element;
+    } else if (!iteration_context->last_removed) {
+        element = iteration_context->node->element;
+        iteration_context->node = get_predecessor_node(iteration_context->tree_set, iteration_context->node);
+    }
+    iteration_context->last_returned = true;
+    iteration_context->last_removed = false;
+    iteration_context->count--;
+    return element;
+}
+
+static void iterator_add_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeSet iterators doesn't support adding elements");
+}
+
+static void iterator_set_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeSet iterators doesn't support setting elements");
+}
+
+static void iterator_remove_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        return;
+    }
+    if (!iteration_context->last_returned) {
+        set_error(ILLEGAL_STATE_ERROR, "remove() called twice or before any next() or previous() call");
+        return;
+    }
+    Node* successor = get_successor_node(iteration_context->tree_set, iteration_context->node);
+    tree_set_remove(iteration_context->tree_set, iteration_context->node->element);
+    iteration_context->node = successor;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = true;
+    iteration_context->count--;
+    iteration_context->modification_count = iteration_context->tree_set->modification_count;
+}
+
+static void iterator_reset_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->node = nullptr;
+    iteration_context->count = 0;
+    iteration_context->last_returned = false;
+    iteration_context->last_removed = false;
+    iteration_context->modification_count = iteration_context->tree_set->modification_count;
 }

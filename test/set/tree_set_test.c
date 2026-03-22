@@ -200,6 +200,162 @@ void test_tree_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_tree_set_iterator_forward_iteration() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    Iterator* iterator = tree_set_iterator(tree_set);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_backward_iteration() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    Iterator* iterator = tree_set_iterator(tree_set);
+    iterator_advance(iterator, 5);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_previous(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_previous(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_detects_concurrent_modification() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    Iterator* iterator = tree_set_iterator(tree_set);
+    tree_set_clear(tree_set);
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_previous(iterator)));
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_remove(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_remove_element_after_next() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    Iterator* iterator = tree_set_iterator(tree_set);
+    iterator_next(iterator);
+    // when
+    iterator_remove(iterator); // 1
+    // then
+    int new_elements[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_remove_element_after_previous() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    Iterator* iterator = tree_set_iterator(tree_set);
+    iterator_advance(iterator, 5);
+    // when
+    iterator_remove(iterator); // 5
+    // then
+    int new_elements[] = { 1, 2, 3, 4 };
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){5}));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_remove_element_fails_if_no_next_or_previous_was_called() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    Iterator* iterator = tree_set_iterator(tree_set);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    Iterator* iterator = tree_set_iterator(tree_set);
+    iterator_next(iterator);
+    iterator_remove(iterator);
+    // when
+    Error error = attempt(iterator_remove(iterator));
+    // then
+    int new_elements[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_tree_set_iterator_reset() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    Iterator* iterator = tree_set_iterator(tree_set);
+    iterator_advance(iterator, 3);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_get_higher_element_from_tree_set() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -306,6 +462,15 @@ int main(void) {
     RUN_TEST(test_get_tree_set_size);
     RUN_TEST(test_tree_set_is_empty);
     RUN_TEST(test_tree_set_is_not_empty);
+    
+    RUN_TEST(test_tree_set_iterator_forward_iteration);
+    RUN_TEST(test_tree_set_iterator_backward_iteration);
+    RUN_TEST(test_tree_set_iterator_detects_concurrent_modification);
+    RUN_TEST(test_tree_set_iterator_remove_element_after_next);
+    RUN_TEST(test_tree_set_iterator_remove_element_after_previous);
+    RUN_TEST(test_tree_set_iterator_remove_element_fails_if_no_next_or_previous_was_called);
+    RUN_TEST(test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row);
+    RUN_TEST(test_tree_set_iterator_reset);
 
     RUN_TEST(test_clear_tree_set);
 

@@ -659,6 +659,62 @@ void test_empty_tree_set_contains_all_elements_of_empty_collection() {
     tree_set_destroy(&new_tree_set);
 }
 
+void test_create_sub_set_of_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set = tree_set_sub_set(tree_set, &(int){2}, &(int){5});
+    // then
+    int new_elements[] = { 2, 3, 4 };
+    TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
+}
+
+void test_create_empty_sub_set_of_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set = tree_set_sub_set(tree_set, &(int){3}, &(int){3});
+    // then
+    TEST_ASSERT_EQUAL(0, tree_set_size(new_tree_set));
+}
+
+static void sub_set_inexistent_element_test_helper(int* start_element, int* end_element) {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* sub_set; Error error = attempt(sub_set = tree_set_sub_set(tree_set, start_element, end_element));
+    // then
+    TEST_ASSERT_NULL(sub_set);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
+void test_create_sub_set_inexistent_end_element_fails() {
+    sub_set_inexistent_element_test_helper(&(int){1}, &(int){6});
+}
+
+void test_create_sub_set_inexistent_start_element_fails() {
+    sub_set_inexistent_element_test_helper(&(int){0}, &(int){5});
+}
+
+void test_create_sub_set_start_element_greater_than_end_element_fails() {
+    sub_set_inexistent_element_test_helper(&(int){5}, &(int){3});
+}
+
+void test_clone_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* copy_tree_set = tree_set_clone(tree_set);
+    // then
+    TEST_ASSERT_TREE_SET_CONTAINS(copy_tree_set, elements);
+    // clean up
+    tree_set_destroy(&copy_tree_set);
+}
+
 void test_tree_set_to_collection() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -770,6 +826,13 @@ int main(void) {
     RUN_TEST(test_tree_set_contains_all_elements);
     RUN_TEST(test_empty_tree_set_contains_all_elements_of_empty_collection);
 
+    RUN_TEST(test_create_sub_set_of_tree_set);
+    RUN_TEST(test_create_empty_sub_set_of_tree_set);
+    RUN_TEST(test_create_sub_set_inexistent_end_element_fails);
+    RUN_TEST(test_create_sub_set_inexistent_start_element_fails);
+    RUN_TEST(test_create_sub_set_start_element_greater_than_end_element_fails);
+
+    RUN_TEST(test_clone_tree_set);
     RUN_TEST(test_tree_set_to_collection);
     RUN_TEST(test_convert_tree_set_to_array);
     RUN_TEST(test_get_tree_set_string_representation);

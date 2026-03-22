@@ -28,6 +28,7 @@ add_library(${PROJECT_NAME}
         src/map/hash_map.c
         src/map/tree_map.c
         src/set/hash_set.c
+        src/set/tree_set.c
         src/set/sets.c
         src/util/errors.c
 )

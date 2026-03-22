@@ -6,6 +6,7 @@
 #include "map/hash_map.h"
 #include "map/tree_map.h"
 #include "set/hash_set.h"
+#include "set/tree_set.h"
 #include "deque/deque.h"
 
 #include "util/collection.h"
@@ -24,6 +25,7 @@
             HashMap*: hash_map_iterator,                                                        \
             TreeMap*: tree_map_iterator,                                                        \
             HashSet*: hash_set_iterator,                                                        \
+            TreeSet*: tree_set_iterator,                                                        \
             Deque*: deque_iterator,                                                             \
             Collection: collection_iterator                                                     \
         )(collection);                                                                          \

@@ -27,6 +27,9 @@
 /** @brief Hash based set implementation */
 #include "set/hash_set.h"
 
+/** @brief Self-balancing binary tree based set implementation */
+#include "set/tree_set.h"
+
 /** @brief Double-ended queue implemented with a resizable array. */
 #include "deque/deque.h"
 

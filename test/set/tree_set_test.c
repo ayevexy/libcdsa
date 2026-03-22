@@ -230,6 +230,67 @@ void test_remove_last_element_from_empty_tree_set_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
+void test_remove_all_elements_from_tree_set_matching_collection() {
+    // given
+    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    int sub_elements[] = { 2, 3, 4 };
+    POPULATE_TREE_SET(new_tree_set, sub_elements);
+    // when
+    int count = tree_set_remove_all(tree_set, tree_set_to_collection(new_tree_set));
+    // then
+    int new_elements[] = { 1, 5 };
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, sub_elements);
+    TEST_ASSERT_EQUAL(3, count);
+    // clean up
+    tree_set_set_destructor(new_tree_set, free);
+    tree_set_destroy(&new_tree_set);
+}
+
+static bool is_odd(const void* element) {
+    return *(int*) element % 2 != 0;
+}
+
+void test_remove_elements_from_tree_set_matching_predicate() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int count = tree_set_remove_if(tree_set, is_odd);
+    // then
+    TEST_ASSERT_EQUAL(3, count);
+    int new_elements[] = { 2, 4 };
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+    int removed_elements[] = { 1, 3, 5 };
+    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, removed_elements);
+}
+
+void test_retain_all_elements_from_collection_in_tree_set() {
+    // given
+    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    int new_elements[] = { 2, 4 };
+    POPULATE_TREE_SET(new_tree_set, new_elements);
+    // when
+    int count = tree_set_retain_all(tree_set, tree_set_to_collection(new_tree_set));
+    // then
+    TEST_ASSERT_EQUAL(3, count);
+    int retained_elements[] = { 2, 4 };
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, retained_elements);
+    int removed_elements[] = { 1, 3, 5 };
+    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, removed_elements);
+    // clean up
+    tree_set_set_destructor(new_tree_set, free);
+    tree_set_destroy(&new_tree_set);
+}
+
 void test_get_tree_set_size() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -671,11 +732,13 @@ int main(void) {
 
     RUN_TEST(test_remove_element_from_tree_set);
     RUN_TEST(test_do_not_remove_element_from_tree_set_if_not_present);
-
     RUN_TEST(test_remove_first_element_from_tree_set);
     RUN_TEST(test_remove_first_element_from_empty_tree_set_fails);
     RUN_TEST(test_remove_last_element_from_tree_set);
     RUN_TEST(test_remove_last_element_from_empty_tree_set_fails);
+    RUN_TEST(test_remove_all_elements_from_tree_set_matching_collection);
+    RUN_TEST(test_remove_elements_from_tree_set_matching_predicate);
+    RUN_TEST(test_retain_all_elements_from_collection_in_tree_set);
 
     RUN_TEST(test_get_tree_set_size);
     RUN_TEST(test_tree_set_is_empty);

@@ -281,6 +281,69 @@ void* tree_set_remove_last(TreeSet* tree_set) {
     return element;
 }
 
+int tree_set_remove_all(TreeSet* tree_set, Collection collection) {
+    if (require_non_null(tree_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    int count = 0;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (tree_set_remove(tree_set, element)) {
+            count++;
+        }
+    }
+    iterator_destroy(&iterator);
+    return count;
+}
+
+int tree_set_remove_if(TreeSet* tree_set, Predicate condition) {
+    if (require_non_null(tree_set, condition)) return false;
+
+    int count = 0;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        if (condition(node->element)) {
+            remove_node(tree_set, node);
+            count++;
+        }
+        node = get_successor_node(tree_set, node);
+    }
+    return count;
+}
+
+int tree_set_retain_all(TreeSet* tree_set, Collection collection) {
+    if (require_non_null(tree_set)) return false;
+
+    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    int count = 0;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        bool found = false;
+        while (iterator_has_next(iterator)) {
+            if (tree_set->equals(node->element, iterator_next(iterator))) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            remove_node(tree_set, node);
+            count++;
+        }
+        node = get_successor_node(tree_set, node);
+        iterator_reset(iterator);
+    }
+    iterator_destroy(&iterator);
+    return count;
+}
+
 int tree_set_size(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return 0;
     return tree_set->size;

@@ -71,6 +71,67 @@ void test_do_not_add_element_to_tree_set_if_already_present() {
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
+void test_get_first_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_get_first(tree_set);
+    // then
+    TEST_ASSERT_EQUAL(1, *element);
+}
+
+void test_get_first_element_from_empty_tree_set_fails() {
+    // when
+    int* element; Error error = attempt(element = tree_set_get_first(tree_set));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_get_last_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_get_last(tree_set);
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_get_last_element_from_empty_tree_set_fails() {
+    // when
+    int* element; Error error = attempt(element = tree_set_get_last(tree_set));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_remove_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    bool removed = tree_set_remove(tree_set, &(int){3});
+    // then
+    int new_elements[] = { 1, 2, 4, 5 };
+    TEST_ASSERT_TRUE(removed);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){3}));
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
+void test_do_not_remove_element_from_tree_set_if_not_present() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    bool removed = tree_set_remove(tree_set, &(int){10});
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_FALSE(removed);
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
 void test_get_tree_set_size() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -127,6 +188,14 @@ int main(void) {
 
     RUN_TEST(test_add_element_to_tree_set);
     RUN_TEST(test_do_not_add_element_to_tree_set_if_already_present);
+
+    RUN_TEST(test_get_first_element_from_tree_set);
+    RUN_TEST(test_get_first_element_from_empty_tree_set_fails);
+    RUN_TEST(test_get_last_element_from_tree_set);
+    RUN_TEST(test_get_last_element_from_empty_tree_set_fails);
+
+    RUN_TEST(test_remove_element_from_tree_set);
+    RUN_TEST(test_do_not_remove_element_from_tree_set_if_not_present);
 
     RUN_TEST(test_get_tree_set_size);
     RUN_TEST(test_tree_set_is_empty);

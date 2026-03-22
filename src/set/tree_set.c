@@ -39,6 +39,14 @@ static Node* create_node(const TreeSet*, const void*);
 
 static Node* get_node(const TreeSet*, const void*);
 
+static Node* get_lower_node(const TreeSet*, Node*);
+
+static Node* get_higher_node(const TreeSet*, Node*);
+
+static void remove_node(TreeSet*, Node*);
+
+static void transplant(TreeSet*, Node*, Node*);
+
 static void destroy_nodes(TreeSet*, Node*);
 
 TreeSet* tree_set_new(const TreeSetOptions* options) {
@@ -127,6 +135,37 @@ bool tree_set_add(TreeSet* tree_set, const void* element) {
     return true;
 }
 
+void* tree_set_get_first(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    const Node* node = get_lower_node(tree_set, tree_set->root);
+    if (node == tree_set->sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
+        return nullptr;
+    }
+    return node->element;
+}
+
+void* tree_set_get_last(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    const Node* node = get_higher_node(tree_set, tree_set->root);
+    if (node == tree_set->sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
+        return nullptr;
+    }
+    return node->element;
+}
+
+bool tree_set_remove(TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return false;
+    Node* node = get_node(tree_set, element);
+    if (!node) {
+        return false;
+    }
+    tree_set->destruct(node->element);
+    remove_node(tree_set, node);
+    return true;
+}
+
 int tree_set_size(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return 0;
     return tree_set->size;
@@ -167,6 +206,70 @@ static Node* get_node(const TreeSet* tree_set, const void* element) {
         }
     }
     return nullptr;
+}
+
+static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
+    if (node == tree_set->sentinel) {
+        return node;
+    }
+    while (node->left != tree_set->sentinel) {
+        node = node->left;
+    }
+    return node;
+}
+
+static Node* get_higher_node(const TreeSet* tree_set, Node* node) {
+    if (node == tree_set->sentinel) {
+        return node;
+    }
+    while (node->right != tree_set->sentinel) {
+        node = node->right;
+    }
+    return node;
+}
+
+static void remove_node(TreeSet* tree_set, Node* node) {
+    Node* current = node, * auxiliar;
+    Color current_color = current->color;
+    if (node->left == tree_set->sentinel) {
+        auxiliar = node->right;
+        transplant(tree_set, node, node->right);
+    } else if (node->right == tree_set->sentinel) {
+        auxiliar = node->left;
+        transplant(tree_set, node, node->left);
+    } else {
+        current = get_lower_node(tree_set, node->right);
+        current_color = current->color;
+        auxiliar = current->right;
+        if (current->parent == node) {
+            auxiliar->parent = current;
+        } else {
+            transplant(tree_set, current, current->right);
+            current->right = node->right;
+            current->right->parent = current;
+        }
+        transplant(tree_set, node, current);
+        current->left = node->left;
+        current->left->parent = current;
+        current->color = node->color;
+    }
+    if (current_color == BLACK) {
+        // rebalance_after_delete(tree_set, auxiliar);
+    }
+    tree_set->memory_free(node);
+    tree_set->size--;
+    tree_set->modification_count++;
+}
+
+static void transplant(TreeSet* tree_set, Node* first, Node* second) {
+    if (first->parent == tree_set->sentinel) {
+        tree_set->root = second;
+    } else if (first == first->parent->left) {
+        first->parent->left = second;
+    } else {
+        first->parent->right = second;
+    }
+    second->parent = first->parent;
 }
 
 static void destroy_nodes(TreeSet* tree_set, Node* node) {

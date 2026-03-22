@@ -29,6 +29,30 @@ void test_do_not_create_tree_set_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_tree_set_from_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set = tree_set_from(tree_set_to_collection(tree_set), INT_TREE_SET_OPTIONS());
+    // then
+    TEST_ASSERT_NOT_NULL(new_tree_set);
+    TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, elements);
+    // clean up
+    tree_set_destroy(&new_tree_set);
+}
+
+void test_do_not_create_tree_set_with_invalid_options_from_collection() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_from(tree_set_to_collection(tree_set), &(TreeSetOptions) {}));
+    // then
+    TEST_ASSERT_NULL(new_tree_set);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
 void test_destroy_tree_set_set_it_to_null() {
     // given
     TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
@@ -68,6 +92,38 @@ void test_do_not_add_element_to_tree_set_if_already_present() {
     // then
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_FALSE(added);
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
+void test_add_all_elements_to_tree_set() {
+    // given
+    TreeSet* existing_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // and
+    int other_elements[] = { 10, 20, 30 };
+    POPULATE_TREE_SET(existing_tree_set, other_elements);
+    // when
+    bool changed = tree_set_add_all(tree_set, tree_set_to_collection(existing_tree_set));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
+    TEST_ASSERT_TRUE(changed);
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
+void test_do_not_add_all_elements_to_tree_set_if_already_present() {
+    // given
+    TreeSet* existing_tree_set = tree_set_new(INT_TREE_SET_OPTIONS());
+    // and
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    POPULATE_TREE_SET(existing_tree_set, elements);
+    // when
+    bool changed = tree_set_add_all(tree_set, tree_set_to_collection(existing_tree_set));
+    // then
+    int new_elements[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_FALSE(changed);
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
@@ -456,12 +512,16 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_tree_set);
     RUN_TEST(test_do_not_create_tree_set_with_invalid_options);
+    RUN_TEST(test_create_tree_set_from_collection);
+    RUN_TEST(test_do_not_create_tree_set_with_invalid_options_from_collection);
 
     RUN_TEST(test_destroy_tree_set_set_it_to_null);
     RUN_TEST(test_destroy_null_tree_set_fails);
 
     RUN_TEST(test_add_element_to_tree_set);
     RUN_TEST(test_do_not_add_element_to_tree_set_if_already_present);
+    RUN_TEST(test_add_all_elements_to_tree_set);
+    RUN_TEST(test_do_not_add_all_elements_to_tree_set_if_already_present);
 
     RUN_TEST(test_get_first_element_from_tree_set);
     RUN_TEST(test_get_first_element_from_empty_tree_set_fails);

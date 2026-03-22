@@ -123,6 +123,22 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
     return tree_set;
 }
 
+TreeSet* tree_set_from(Collection collection, const TreeSetOptions* options) {
+    if (require_non_null(options)) return nullptr;
+    TreeSet* tree_set; Error error;
+
+    if ((error = attempt(tree_set = tree_set_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(tree_set_add_all(tree_set, collection)))) {
+        tree_set_destroy(&tree_set);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    return tree_set;
+}
+
 void tree_set_destroy(TreeSet** tree_set_pointer) {
     if (require_non_null(tree_set_pointer, *tree_set_pointer)) return;
     TreeSet* tree_set = *tree_set_pointer;
@@ -173,6 +189,29 @@ bool tree_set_add(TreeSet* tree_set, const void* element) {
     tree_set->size++;
     tree_set->modification_count++;
     return true;
+}
+
+bool tree_set_add_all(TreeSet* tree_set, Collection collection) {
+    if (require_non_null(tree_set)) return false;
+
+    Iterator* iterator; Error error = attempt(iterator = collection_iterator(collection));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s of 'entry collection'", plain_error_message());
+        return false;
+    }
+    bool changed = false;
+    while (iterator_has_next(iterator)) {
+        bool added = false;
+        if ((error = attempt(added = tree_set_add(tree_set, iterator_next(iterator))))) {
+            set_error(error, "%s", plain_error_message());
+            break;
+        }
+        if (added) {
+            changed = true;
+        }
+    }
+    iterator_destroy(&iterator);
+    return changed;
 }
 
 void* tree_set_get_first(const TreeSet* tree_set) {

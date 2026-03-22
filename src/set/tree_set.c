@@ -467,6 +467,67 @@ bool tree_set_contains_all(const TreeSet* tree_set, Collection collection) {
     return contains;
 }
 
+// TODO: refactor
+TreeSet* tree_set_head_set(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    if (!tree_set_contains(tree_set, element)) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "inexistent 'element");
+        return nullptr;
+    }
+    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
+       .compare = tree_set->compare,
+       .destruct = noop_destruct,
+       .equals = tree_set->equals,
+       .to_string = tree_set->to_string,
+       .memory_alloc = tree_set->memory_alloc,
+       .memory_free = tree_set->memory_free
+   }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    Node* node = get_node(tree_set, element);
+    while (node != tree_set->sentinel) {
+        if ((error = attempt(tree_set_add(new_tree_set, node->element)))) {
+            tree_set_destroy(&new_tree_set);
+            set_error(error, "%s", plain_error_message());
+            return nullptr;
+        }
+        node = get_predecessor_node(tree_set, node);
+    }
+    return new_tree_set;
+}
+
+TreeSet* tree_set_tail_set(const TreeSet* tree_set, const void* element) {
+    if (require_non_null(tree_set)) return nullptr;
+    if (!tree_set_contains(tree_set, element)) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "inexistent 'element");
+        return nullptr;
+    }
+    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
+       .compare = tree_set->compare,
+       .destruct = noop_destruct,
+       .equals = tree_set->equals,
+       .to_string = tree_set->to_string,
+       .memory_alloc = tree_set->memory_alloc,
+       .memory_free = tree_set->memory_free
+   }));
+    if (error == MEMORY_ALLOCATION_ERROR) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    Node* node = get_node(tree_set, element);
+    while (node != tree_set->sentinel) {
+        if ((error = attempt(tree_set_add(new_tree_set, node->element)))) {
+            tree_set_destroy(&new_tree_set);
+            set_error(error, "%s", plain_error_message());
+            return nullptr;
+        }
+        node = get_successor_node(tree_set, node);
+    }
+    return new_tree_set;
+}
+
 TreeSet* tree_set_sub_set(const TreeSet* tree_set, const void* start_element, const void* end_element) {
     if (require_non_null(tree_set)) return nullptr;
     if (!tree_set_contains(tree_set, start_element) || !tree_set_contains(tree_set, end_element)

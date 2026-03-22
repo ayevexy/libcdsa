@@ -659,6 +659,28 @@ void test_empty_tree_set_contains_all_elements_of_empty_collection() {
     tree_set_destroy(&new_tree_set);
 }
 
+void test_create_head_set_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set = tree_set_head_set(tree_set, &(int){3});
+    // then
+    int new_elements[] = { 1, 2, 3 };
+    TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
+}
+
+void test_create_tail_set_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    TreeSet* new_tree_set = tree_set_tail_set(tree_set, &(int){3});
+    // then
+    int new_elements[] = { 3, 4, 5 };
+    TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
+}
+
 void test_create_sub_set_of_tree_set() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -825,6 +847,9 @@ int main(void) {
     RUN_TEST(test_tree_set_does_not_contains_element);
     RUN_TEST(test_tree_set_contains_all_elements);
     RUN_TEST(test_empty_tree_set_contains_all_elements_of_empty_collection);
+    
+    RUN_TEST(test_create_head_set_from_tree_set);
+    RUN_TEST(test_create_tail_set_from_tree_set);
 
     RUN_TEST(test_create_sub_set_of_tree_set);
     RUN_TEST(test_create_empty_sub_set_of_tree_set);

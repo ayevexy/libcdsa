@@ -166,6 +166,32 @@ bool tree_set_remove(TreeSet* tree_set, const void* element) {
     return true;
 }
 
+void* tree_set_remove_first(TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    if (node == tree_set->sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
+        return nullptr;
+    }
+    void* element = node->element;
+    tree_set->destruct(node->element);
+    remove_node(tree_set, node);
+    return element;
+}
+
+void* tree_set_remove_last(TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
+    Node* node = get_higher_node(tree_set, tree_set->root);
+    if (node == tree_set->sentinel) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
+        return nullptr;
+    }
+    void* element = node->element;
+    tree_set->destruct(node->element);
+    remove_node(tree_set, node);
+    return element;
+}
+
 int tree_set_size(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return 0;
     return tree_set->size;
@@ -174,6 +200,14 @@ int tree_set_size(const TreeSet* tree_set) {
 bool tree_set_is_empty(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return false;
     return tree_set->size == 0;
+}
+
+void tree_set_clear(TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return;
+    destroy_nodes(tree_set, tree_set->root);
+    tree_set->root = tree_set->sentinel;
+    tree_set->size = 0;
+    tree_set->modification_count++;
 }
 
 bool tree_set_contains(const TreeSet* tree_set, const void* element) {

@@ -132,6 +132,48 @@ void test_do_not_remove_element_from_tree_set_if_not_present() {
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
+void test_remove_first_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_remove_first(tree_set);
+    // then
+    int new_elements[] = { 2, 3, 4, 5 };
+    TEST_ASSERT_EQUAL(1, *element);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
+void test_remove_first_element_from_empty_tree_set_fails() {
+    // when
+    int* element; Error error = attempt(element = tree_set_remove_first(tree_set));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
+void test_remove_last_element_from_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    int* element = tree_set_remove_last(tree_set);
+    // then
+    int new_elements[] = { 1, 2, 3, 4 };
+    TEST_ASSERT_EQUAL(5, *element);
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){5}));
+    TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
+}
+
+void test_remove_last_element_from_empty_tree_set_fails() {
+    // when
+    int* element; Error error = attempt(element = tree_set_remove_last(tree_set));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_get_tree_set_size() {
     // given
     int elements[] = { 1, 2, 3, 4, 5 };
@@ -156,6 +198,17 @@ void test_tree_set_is_not_empty() {
     bool empty = tree_set_is_empty(tree_set);
     // then
     TEST_ASSERT_FALSE(empty);
+}
+
+void test_clear_tree_set() {
+    // given
+    int elements[] = { 1, 2, 3, 4, 5 };
+    POPULATE_TREE_SET(tree_set, elements);
+    // when
+    tree_set_clear(tree_set);
+    // then
+    TEST_ASSERT_EQUAL(0, tree_set_size(tree_set));
+    TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, elements);
 }
 
 void test_tree_set_contains_element() {
@@ -197,10 +250,17 @@ int main(void) {
     RUN_TEST(test_remove_element_from_tree_set);
     RUN_TEST(test_do_not_remove_element_from_tree_set_if_not_present);
 
+    RUN_TEST(test_remove_first_element_from_tree_set);
+    RUN_TEST(test_remove_first_element_from_empty_tree_set_fails);
+    RUN_TEST(test_remove_last_element_from_tree_set);
+    RUN_TEST(test_remove_last_element_from_empty_tree_set_fails);
+
     RUN_TEST(test_get_tree_set_size);
     RUN_TEST(test_tree_set_is_empty);
     RUN_TEST(test_tree_set_is_not_empty);
-    
+
+    RUN_TEST(test_clear_tree_set);
+
     RUN_TEST(test_tree_set_contains_element);
     RUN_TEST(test_tree_set_does_not_contains_element);
     return UNITY_END();

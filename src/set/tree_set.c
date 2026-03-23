@@ -180,7 +180,7 @@ bool tree_set_add(TreeSet* tree_set, const void* element) {
     current = previous;
     Node* node = create_node(tree_set, element);
     if (!node) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'node'");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return false;
     }
     node->parent = current;
@@ -1021,12 +1021,12 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeSet iterators doesn't support adding elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "tree set iterators doesn't support adding elements");
 }
 
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeSet iterators doesn't support setting elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "tree set iterators doesn't support setting elements");
 }
 
 static void iterator_remove_internal(void* raw_iteration_context) {

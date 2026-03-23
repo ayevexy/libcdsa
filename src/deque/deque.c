@@ -535,17 +535,17 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support adding elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "deque iterators doesn't support adding elements");
 }
 
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support setting elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "deque iterators doesn't support setting elements");
 }
 
 static void iterator_remove_internal(void* raw_iteration_context) {
     (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "Deque iterators doesn't support setting elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "deque iterators doesn't support removing elements");
 }
 
 static void iterator_reset_internal(void* raw_iteration_context) {

@@ -284,7 +284,7 @@ void* linked_list_set(LinkedList* linked_list, int index, const void* element) {
 void linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
     if (require_non_null(linked_list)) return;
     if (index_a < 0 || index_a >= linked_list->size || index_b < 0 || index_b >= linked_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, linked_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid indexes first = %d, second = %d; size = %d", index_a, index_b, linked_list->size);
         return;
     }
     swap(&get_node(linked_list, index_a)->element, &get_node(linked_list, index_b)->element);
@@ -359,7 +359,7 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
     if (require_non_null(linked_list)) return 0;
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, end = %d; size = %d", start_index, end_index, linked_list->size);
         return 0;
     }
     Node* node = get_node(linked_list, start_index);
@@ -669,7 +669,7 @@ LinkedList* linked_list_clone(const LinkedList* linked_list) {
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index) {
     if (require_non_null(linked_list)) return nullptr;
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, end = %d; size = %d", start_index, end_index, linked_list->size);
         return nullptr;
     }
     LinkedList* new_linked_list; Error error;

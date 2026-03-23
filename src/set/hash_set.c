@@ -184,7 +184,7 @@ bool hash_set_add_all(HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
     bool changed = false;
@@ -221,7 +221,7 @@ int hash_set_remove_all(HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
     int count = 0;
@@ -260,7 +260,7 @@ int hash_set_retain_all(HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
     int count = 0;
@@ -378,7 +378,7 @@ bool hash_set_contains_all(const HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
     bool contains = true;
@@ -648,24 +648,24 @@ static void* iterator_next_internal(void* raw_iteration_context) {
 
 static bool iterator_has_previous_internal(const void* raw_iteration_context) {
     (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "HashSet iterators doesn't support backward traversal");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "hash set iterators doesn't support backward traversal");
     return false;
 }
 
 static void* iterator_previous_internal(void* raw_iteration_context) {
     (void) raw_iteration_context;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "HashSet iterators doesn't support backward traversal");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "hash set iterators doesn't support backward traversal");
     return nullptr;
 }
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "HashSet iterators doesn't support adding elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "hash set iterators doesn't support adding elements");
 }
 
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "HashSet iterators doesn't support setting elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "hash set iterators doesn't support setting elements");
 }
 
 static void iterator_remove_internal(void* raw_iteration_context) {

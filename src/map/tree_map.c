@@ -1158,12 +1158,12 @@ static void* iterator_previous_value_internal(void* raw_iteration_context) {
 
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeMap iterators doesn't support adding elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "tree map iterators doesn't support adding elements");
 }
 
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
     (void) raw_iteration_context, (void) element;
-    set_error(UNSUPPORTED_OPERATION_ERROR, "TreeMap iterators doesn't support setting elements");
+    set_error(UNSUPPORTED_OPERATION_ERROR, "tree map iterators doesn't support setting elements");
 }
 
 static void iterator_remove_internal(void* raw_iteration_context) {

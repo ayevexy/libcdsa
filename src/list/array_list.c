@@ -252,7 +252,7 @@ void* array_list_set(ArrayList* array_list, int index, const void* element) {
 void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
     if (require_non_null(array_list)) return;
     if (index_a < 0 || index_a >= array_list->size || index_b < 0 || index_b >= array_list->size) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index_a = %d, index_b = %d, size = %d", index_a, index_b, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid indexes first = %d, second = %d; size = %d", index_a, index_b, array_list->size);
         return;
     }
     swap(&array_list->elements[index_a], &array_list->elements[index_b]);
@@ -328,7 +328,7 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return 0;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, end = %d; size = %d", start_index, end_index, array_list->size);
         return 0;
     }
     const int count = end_index - start_index;
@@ -654,7 +654,7 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return nullptr;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, end = %d; size = %d", start_index, end_index, array_list->size);
         return nullptr;
     }
     ArrayList* new_array_list; Error error;

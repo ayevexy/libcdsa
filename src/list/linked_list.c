@@ -337,9 +337,9 @@ bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
 
 int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
     if (require_non_null(linked_list)) return 0;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return 0;
     }
@@ -398,9 +398,9 @@ void linked_list_replace_all(LinkedList* linked_list, Operator operator) {
 
 int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
     if (require_non_null(linked_list)) return 0;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return 0;
     }
@@ -602,9 +602,9 @@ bool linked_list_contains(const LinkedList* linked_list, const void* element) {
 
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection) {
     if (require_non_null(linked_list)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -657,8 +657,9 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
 
 LinkedList* linked_list_clone(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    LinkedList* new_linked_list; const Error error = attempt(new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    LinkedList* new_linked_list; Error error;
+
+    if ((error = attempt(new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size)))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
@@ -671,22 +672,20 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, linked_list->size);
         return nullptr;
     }
-    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
+    LinkedList* new_linked_list; Error error;
+    if ((error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
         .destruct = noop_destruct,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
         .memory_free = linked_list->memory_free
-    }));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
     const Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
-        error = attempt(linked_list_add_last(new_linked_list, node->element));
-
-        if (error == MEMORY_ALLOCATION_ERROR) {
+        if ((error = attempt(linked_list_add_last(new_linked_list, node->element)))) {
             set_error(error, "%s", plain_error_message());
             linked_list_destroy(&new_linked_list);
             return nullptr;
@@ -829,8 +828,9 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
 
 static Pair segment_from(LinkedList* linked_list, Collection collection) {
     assert(collection_size(collection) != 0);
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return (Pair) {};
     }

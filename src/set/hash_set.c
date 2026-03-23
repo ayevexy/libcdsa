@@ -181,9 +181,9 @@ bool hash_set_add(HashSet* hash_set, const void* element) {
 
 bool hash_set_add_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return false;
     }
@@ -218,9 +218,9 @@ bool hash_set_remove(HashSet* hash_set, const void* element) {
 
 int hash_set_remove_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return false;
     }
@@ -257,9 +257,9 @@ int hash_set_remove_if(HashSet* hash_set, Predicate condition) {
 
 int hash_set_retain_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return false;
     }
@@ -309,6 +309,7 @@ Iterator* hash_set_iterator(const HashSet* hash_set) {
     Iterator* iterator = create_iterator(hash_set);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
     }
     return iterator;
 }
@@ -374,9 +375,9 @@ bool hash_set_contains(const HashSet* hash_set, const void* element) {
 
 bool hash_set_contains_all(const HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return false;
     }
@@ -404,8 +405,9 @@ Collection hash_set_to_collection(const HashSet* hash_set) {
 
 HashSet* hash_set_clone(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
+    HashSet* new_hash_set; Error error;
 
-    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {
+    if ((error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {
         .initial_capacity = hash_set->capacity,
         .load_factor = hash_set->load_factor,
         .hash = hash_set->hash,
@@ -414,8 +416,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
         .to_string = hash_set->to_string,
         .memory_alloc = hash_set->memory_alloc,
         .memory_free = hash_set->memory_free
-    }));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
@@ -707,10 +708,6 @@ static bool collection_contains_internal(const void* hash_set, const void* eleme
     return hash_set_contains(hash_set, element);
 }
 
-SetView* _hash_set_view(const HashSet* hash_set) {
-    return hash_set ? (SetView*) &hash_set->view : nullptr;
-}
-
 static int set_view_size_internal(const void* hash_set) {
     return hash_set_size(((Pair*) hash_set)->first);
 }
@@ -721,4 +718,8 @@ static Iterator* set_view_iterator_internal(const void* hash_set) {
 
 static bool set_view_contains_internal(const void* hash_set, const void* element) {
     return hash_set_contains(((Pair*) hash_set)->first, element);
+}
+
+SetView* _hash_set_view(const HashSet* hash_set) {
+    return hash_set ? (SetView*) &hash_set->view : nullptr;
 }

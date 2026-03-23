@@ -148,8 +148,9 @@ void deque_add_last(Deque* deque, const void* element) {
 
 void deque_add_all_first(Deque* deque, Collection collection) {
     if (require_non_null(deque)) return;
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return;
     }
@@ -167,8 +168,9 @@ void deque_add_all_first(Deque* deque, Collection collection) {
 
 void deque_add_all_last(Deque* deque, Collection collection) {
     if (require_non_null(deque)) return;
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return;
     }
@@ -256,6 +258,7 @@ Iterator* deque_iterator(const Deque* deque) {
     Iterator* iterator = create_iterator(deque);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
     }
     return iterator;
 }
@@ -312,9 +315,9 @@ bool deque_contains(const Deque* deque, const void* element) {
 
 bool deque_contains_all(const Deque* deque, Collection collection) {
     if (require_non_null(deque)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -332,15 +335,16 @@ bool deque_contains_all(const Deque* deque, Collection collection) {
 
 Deque* deque_clone(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    Deque* new_deque; const Error error = attempt(new_deque = deque_new(&(DequeOptions) {
+    Deque* new_deque; Error error;
+
+    if ((error = attempt(new_deque = deque_new(&(DequeOptions) {
          .initial_capacity = deque->capacity,
          .destruct = noop_destruct,
          .equals = deque->equals,
          .to_string = deque->to_string,
          .memory_alloc = deque->memory_alloc,
          .memory_free = deque->memory_free
-    }));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }

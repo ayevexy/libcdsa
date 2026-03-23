@@ -58,8 +58,8 @@ static int arithmetic_mean(int values[], int count) {
     for (int i = 0; i < count; i++) {
         sum += values[i];
     }
-    int result; Error error = attempt(result = divide(sum, count));
-    if (error) {
+    int result; Error error;
+    if ((error = attempt(result = divide(sum, count)))) {
         // Additional context
         set_error(error, "Arithmetic Mean can't be calculated with zero values.\n\tDetails: %s", error_message());
     }

@@ -178,8 +178,8 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_list->size);
         return;
     }
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    Iterator* iterator; Error error;
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return;
     }
@@ -306,9 +306,9 @@ bool array_list_remove_element(ArrayList* array_list, const void* element) {
 
 int array_list_remove_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return 0;
     }
@@ -370,9 +370,9 @@ void array_list_replace_all(ArrayList* array_list, Operator operator) {
 
 int array_list_retain_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return 0;
     }
@@ -433,6 +433,7 @@ Iterator* array_list_iterator(const ArrayList* array_list) {
     Iterator* iterator = create_iterator(array_list);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
     }
     return iterator;
 }
@@ -566,9 +567,9 @@ bool array_list_contains(const ArrayList* array_list, const void* element) {
 
 bool array_list_contains_all(const ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -641,8 +642,9 @@ int array_list_binary_search(const ArrayList* array_list, const void* element, C
 
 ArrayList* array_list_clone(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_sub_list(array_list, 0, array_list->size));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    ArrayList* new_array_list; Error error;
+
+    if ((error = attempt(new_array_list = array_list_sub_list(array_list, 0, array_list->size)))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }
@@ -655,7 +657,8 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "start_index = %d, end_index = %d, size = %d", start_index, end_index, array_list->size);
         return nullptr;
     }
-    ArrayList* new_array_list; const Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
+    ArrayList* new_array_list; Error error;
+    if ((error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {
         .initial_capacity = end_index - start_index < MIN_CAPACITY ? MIN_CAPACITY : end_index - start_index,
         .growth_factor = array_list->growth_factor,
         .destruct = noop_destruct,
@@ -664,8 +667,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_alloc = array_list->memory_alloc,
         .memory_realloc = array_list->memory_realloc,
         .memory_free = array_list->memory_free
-    }));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }

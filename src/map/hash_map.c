@@ -254,9 +254,9 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
 
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     if (require_non_null(hash_map)) return;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; Error error = attempt(iterator = collection_iterator(entry_collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(entry_collection)))) {
         set_error(error, "%s of 'entry collection'", plain_error_message());
         return;
     }
@@ -369,6 +369,7 @@ Iterator* hash_map_iterator(const HashMap* hash_map) {
     Iterator* iterator = create_iterator(hash_map, iterator_next_internal);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
     }
     return iterator;
 }
@@ -479,7 +480,9 @@ Collection hash_map_entries(const HashMap* hash_map) {
 
 HashMap* hash_map_clone(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
-    HashMap* new_hash_map; Error error = attempt(new_hash_map = hash_map_new(&(HashMapOptions){
+    HashMap* new_hash_map; Error error;
+
+    if ((error = attempt(new_hash_map = hash_map_new(&(HashMapOptions){
         .initial_capacity = hash_map->capacity,
         .load_factor = hash_map->load_factor,
         .hash = hash_map->hash,
@@ -491,8 +494,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         .value_to_string = hash_map->value_to_string,
         .memory_alloc = hash_map->memory_alloc,
         .memory_free = hash_map->memory_free
-    }));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
     }

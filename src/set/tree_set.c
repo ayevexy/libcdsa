@@ -203,9 +203,9 @@ bool tree_set_add(TreeSet* tree_set, const void* element) {
 
 bool tree_set_add_all(TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -283,9 +283,9 @@ void* tree_set_remove_last(TreeSet* tree_set) {
 
 int tree_set_remove_all(TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -317,9 +317,9 @@ int tree_set_remove_if(TreeSet* tree_set, Predicate condition) {
 
 int tree_set_retain_all(TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }
@@ -449,9 +449,9 @@ bool tree_set_contains(const TreeSet* tree_set, const void* element) {
 
 bool tree_set_contains_all(const TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
+    Iterator* iterator; Error error;
 
-    Iterator* iterator; const Error error = attempt(iterator = collection_iterator(collection));
-    if (error == MEMORY_ALLOCATION_ERROR) {
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return false;
     }

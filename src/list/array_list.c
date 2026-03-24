@@ -3,11 +3,10 @@
 #include "util/errors.h"
 #include "util/constraints.h"
 #include <string.h>
-#include <limits.h>
 
 constexpr int MIN_CAPACITY = 10;
-constexpr int MAX_CAPACITY = (INT_MAX - 1);
-constexpr float MIN_GROWTH_FACTOR = 1.1f;
+constexpr int MAX_CAPACITY = 1'073'741'824;
+constexpr float MIN_GROWTH_FACTOR = 1.10f;
 
 struct ArrayList {
     void** elements;
@@ -141,9 +140,9 @@ void array_list_destroy(ArrayList** array_list_pointer) {
     *array_list_pointer = nullptr;
 }
 
-void array_list_set_destructor(ArrayList* array_list, void (*destructor)(void*)) {
-    if (require_non_null(array_list, destructor)) return;
-    array_list->destruct = destructor;
+void array_list_set_destructor(ArrayList* array_list, void (*destruct)(void*)) {
+    if (require_non_null(array_list, destruct)) return;
+    array_list->destruct = destruct;
 }
 
 void array_list_add(ArrayList* array_list, int index, const void* element) {
@@ -298,12 +297,13 @@ bool array_list_remove_element(ArrayList* array_list, const void* element) {
     if (require_non_null(array_list)) return false;
     const int index = array_list_index_of(array_list, element);
     if (index >= 0) {
-        array_list->destruct(array_list_remove(array_list, index));
+        array_list_remove(array_list, index);
         return true;
     }
     return false;
 }
 
+// TODO: invert iteration
 int array_list_remove_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
     Iterator* iterator; Error error;
@@ -314,17 +314,16 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
     }
     int count = 0;
     while (iterator_has_next(iterator)) {
-        void* element = iterator_next(iterator);
-        if (!array_list_remove_element(array_list, element)) {
-            continue;
+        const void* element = iterator_next(iterator);
+        if (array_list_remove_element(array_list, element)) {
+            count++;
         }
-        array_list->destruct(element);
-        count++;
     }
     iterator_destroy(&iterator);
     return count;
 }
 
+// TODO: fix
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return 0;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
@@ -344,12 +343,13 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
     return count;
 }
 
+// TODO: weird
 int array_list_remove_if(ArrayList* array_list, Predicate condition) {
     if (require_non_null(array_list, condition)) return 0;
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
-            array_list->destruct(array_list_remove(array_list, i));
+            array_list_remove(array_list, i);
             count++;
         }
     }
@@ -368,6 +368,7 @@ void array_list_replace_all(ArrayList* array_list, Operator operator) {
     }
 }
 
+// TODO: refactor
 int array_list_retain_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
     Iterator* iterator; Error error;
@@ -386,7 +387,7 @@ int array_list_retain_all(ArrayList* array_list, Collection collection) {
             }
         }
         if (!found) {
-            array_list->destruct(array_list_remove(array_list, i));
+            array_list_remove(array_list, i);
             count++;
         }
         iterator_reset(iterator);
@@ -489,6 +490,7 @@ void array_list_reverse(ArrayList* array_list) {
     reverse(array_list, 0, array_list->size - 1);
 }
 
+// TODO:
 void array_list_rotate(ArrayList* array_list, int distance) {
     if (require_non_null(array_list)) return;
     if (array_list->size <= 1) return;
@@ -651,6 +653,7 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
     return new_array_list;
 }
 
+// TODO: I think it's okay
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return nullptr;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
@@ -689,9 +692,9 @@ Collection array_list_to_collection(const ArrayList* array_list) {
 
 void** array_list_to_array(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    void** elements = array_list->memory_alloc(sizeof(void*) * array_list->size);
+    void** elements = array_list->memory_alloc(array_list->size * sizeof(void*));
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
     }
     for (int i = 0; i < array_list->size; i++) {
@@ -705,10 +708,10 @@ char* array_list_to_string(const ArrayList* array_list) {
 
     char* string = array_list->memory_alloc(calculate_string_size(array_list));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, array_list->size == 0 ? "[" : "[ ");
 
     for (int i = 0; i < array_list->size; i++) {
@@ -718,7 +721,7 @@ char* array_list_to_string(const ArrayList* array_list) {
         char* element_string = array_list->memory_alloc(length);
         if (!element_string) {
             array_list->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
         array_list->to_string(array_list->elements[i], element_string, length);
@@ -735,14 +738,14 @@ char* array_list_to_string(const ArrayList* array_list) {
 }
 
 static size_t calculate_string_size(const ArrayList* array_list) {
-    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (int i = 0; i < array_list->size; i++) {
         length += array_list->to_string(array_list->elements[i], nullptr, 0);
 
         if (i == 0) length += 1; // space after opening bracket
-        if (i < array_list->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (i < array_list->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
         if (i == array_list->size - 1) length += 1; // space before closing bracket
     }
     return length + BRACKETS + NULL_TERMINATOR;
@@ -754,7 +757,10 @@ static bool ensure_capacity(ArrayList* array_list, int capacity) {
     }
     int new_capacity = array_list->capacity;
     while (new_capacity < capacity) {
-        new_capacity = (int) (new_capacity * array_list->growth_factor);
+        if (array_list->growth_factor > MAX_CAPACITY / new_capacity) {
+            return false;
+        }
+        new_capacity *= array_list->growth_factor;
     }
     return resize(array_list, new_capacity);
 }
@@ -814,7 +820,7 @@ static bool iterator_has_next_internal(const void* raw_iteration_context) {
 static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_next_internal(iteration_context)) {
@@ -833,7 +839,7 @@ static bool iterator_has_previous_internal(const void* raw_iteration_context) {
 static void* iterator_previous_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_previous_internal(iteration_context)) {
@@ -847,7 +853,7 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     array_list_add(iteration_context->array_list, iteration_context->cursor++, element);
@@ -857,7 +863,7 @@ static void iterator_add_internal(void* raw_iteration_context, const void* eleme
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     if (iteration_context->last_returned < 0) {
@@ -870,7 +876,7 @@ static void iterator_set_internal(void* raw_iteration_context, const void* eleme
 static void iterator_remove_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->array_list->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     if (iteration_context->last_returned < 0) {
@@ -926,6 +932,7 @@ static void insertion_sort(ArrayList* array_list, Comparator compare) {
     }
 }
 
+// TODO: improve
 static void merge_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
     if (start_index < end_index) {
         const int middle_index = start_index + (end_index - start_index) / 2;
@@ -977,6 +984,7 @@ static void merge(void** elements, int start_index, int middle_index, int end_in
     }
 }
 
+// TODO: improve
 static void quick_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
     if (start_index < end_index) {
         const int pivot = partition(array_list->elements, start_index, end_index, compare);

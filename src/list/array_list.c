@@ -303,23 +303,15 @@ bool array_list_remove_element(ArrayList* array_list, const void* element) {
     return false;
 }
 
-// TODO: invert iteration
 int array_list_remove_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return 0;
-    }
     int count = 0;
-    while (iterator_has_next(iterator)) {
-        const void* element = iterator_next(iterator);
-        if (array_list_remove_element(array_list, element)) {
+    for (int i = array_list->size - 1; i >= 0; i--) {
+        if (collection_contains(collection, array_list->elements[i])) {
+            array_list_remove(array_list, i);
             count++;
         }
     }
-    iterator_destroy(&iterator);
     return count;
 }
 
@@ -343,7 +335,6 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
     return count;
 }
 
-// TODO: weird
 int array_list_remove_if(ArrayList* array_list, Predicate condition) {
     if (require_non_null(array_list, condition)) return 0;
     int count = 0;
@@ -368,31 +359,15 @@ void array_list_replace_all(ArrayList* array_list, Operator operator) {
     }
 }
 
-// TODO: refactor
 int array_list_retain_all(ArrayList* array_list, Collection collection) {
     if (require_non_null(array_list)) return 0;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return 0;
-    }
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
-        bool found = false;
-        while (iterator_has_next(iterator)) {
-            if (array_list->equals(array_list->elements[i], iterator_next(iterator))) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
+        if (!collection_contains(collection, array_list->elements[i])) {
             array_list_remove(array_list, i);
             count++;
         }
-        iterator_reset(iterator);
     }
-    iterator_destroy(&iterator);
     return count;
 }
 

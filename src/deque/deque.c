@@ -3,11 +3,10 @@
 #include "util/errors.h"
 #include "util/constraints.h"
 #include <string.h>
-#include <limits.h>
 
 constexpr int MIN_CAPACITY = 8;
-constexpr int MAX_CAPACITY = (INT_MAX - 1);
-constexpr float GROWTH_FACTOR = 2;
+constexpr int MAX_CAPACITY = 1'073'741'824;
+constexpr int GROWTH_FACTOR = 2;
 
 struct Deque {
     void** elements;
@@ -210,7 +209,7 @@ void* deque_remove_first(Deque* deque) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'deque' is empty");
         return nullptr;
     }
-    void *element = deque->elements[deque->first];
+    void* element = deque->elements[deque->first];
     deque->destruct(element);
     deque->elements[deque->first] = nullptr;
 
@@ -228,7 +227,7 @@ void* deque_remove_last(Deque* deque) {
     }
     const int last = (deque->last - 1) & (deque->capacity - 1);
 
-    void *element = deque->elements[last];
+    void* element = deque->elements[last];
     deque->destruct(element);
     deque->elements[last] = nullptr;
 
@@ -349,8 +348,8 @@ Deque* deque_clone(const Deque* deque) {
         return nullptr;
     }
     for (int i = 0; i < deque->size; i++) {
-        const void* element = deque->elements[(deque->first + i) & (deque->capacity - 1)];
-        deque_add_last(new_deque, element);
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        deque_add_last(new_deque, deque->elements[index]);
     }
     return new_deque;
 }
@@ -367,13 +366,14 @@ Collection deque_to_collection(const Deque* deque) {
 
 void** deque_to_array(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    void** elements = deque->memory_alloc(sizeof(void*) * deque->size);
+    void** elements = deque->memory_alloc(deque->size * sizeof(void*));
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
     }
     for (int i = 0; i < deque->size; i++) {
-        elements[i] = deque->elements[(deque->first + i) & (deque->capacity - 1)];
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        elements[i] = deque->elements[index];
     }
     return elements;
 }
@@ -383,10 +383,10 @@ char* deque_to_string(const Deque* deque) {
 
     char* string = deque->memory_alloc(calculate_string_size(deque));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, deque->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < deque->size; i++) {
@@ -397,7 +397,7 @@ char* deque_to_string(const Deque* deque) {
         char* element_string = deque->memory_alloc(length);
         if (!element_string) {
             deque->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
         deque->to_string(deque->elements[index], element_string, length);
@@ -414,7 +414,7 @@ char* deque_to_string(const Deque* deque) {
 }
 
 static size_t calculate_string_size(const Deque* deque) {
-    constexpr int PIPES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int PIPES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (int i = 0; i < deque->size; i++) {
@@ -422,7 +422,7 @@ static size_t calculate_string_size(const Deque* deque) {
         length += deque->to_string(deque->elements[index], nullptr, 0);
 
         if (i == 0) length += 1; // space after opening pipe
-        if (i < deque->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (i < deque->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
         if (i == deque->size - 1) length += 1; // space before closing pipe
     }
     return length + PIPES + NULL_TERMINATOR;
@@ -431,7 +431,7 @@ static size_t calculate_string_size(const Deque* deque) {
 static int next_power_of_two(int x) {
     int power = 1;
     while (power < x) {
-        power <<= 1;
+        power *= 2;
     }
     return power;
 }
@@ -442,16 +442,18 @@ static bool ensure_capacity(Deque* deque, int capacity) {
     }
     int new_capacity = deque->capacity;
     while (new_capacity < capacity) {
-        new_capacity = (int) (new_capacity * GROWTH_FACTOR);
+        if (GROWTH_FACTOR > MAX_CAPACITY / new_capacity) {
+            return false;
+        }
+        new_capacity *= GROWTH_FACTOR;
     }
-    new_capacity = new_capacity > MAX_CAPACITY ? MAX_CAPACITY : new_capacity;
-
     void** elements = deque->memory_alloc(new_capacity * sizeof(void*));
     if (!elements) {
         return false;
     }
     for (int i = 0; i < deque->size; i++) {
-        elements[i] = deque->elements[(deque->first + i) & (deque->capacity - 1)];
+        const int index = (deque->first + i) & (deque->capacity - 1);
+        elements[i] = deque->elements[index];
     }
     deque->memory_free(deque->elements);
     deque->elements = elements;
@@ -501,7 +503,7 @@ static bool iterator_has_next_internal(const void* raw_iteration_context) {
 static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->deque->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_next_internal(iteration_context)) {
@@ -521,7 +523,7 @@ static bool iterator_has_previous_internal(const void* raw_iteration_context) {
 static void* iterator_previous_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->deque->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_previous_internal(iteration_context)) {

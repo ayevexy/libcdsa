@@ -58,11 +58,11 @@ static void insertion_sort(ArrayList*, Comparator);
 
 static void merge_sort(ArrayList*, int, int, Comparator);
 
-static void merge(void**, int, int, int, Comparator);
+static void merge(ArrayList*, int, int, int, Comparator);
 
 static void quick_sort(ArrayList*, int, int, Comparator);
 
-static int partition(void**, int, int, Comparator);
+static int partition(ArrayList*, int, int, Comparator);
 
 static void durstenfeld_shuffle(ArrayList*, int (*random)(void));
 
@@ -468,7 +468,6 @@ void array_list_reverse(ArrayList* array_list) {
     reverse(array_list, 0, array_list->size - 1);
 }
 
-// TODO:
 void array_list_rotate(ArrayList* array_list, int distance) {
     if (require_non_null(array_list)) return;
     if (array_list->size <= 1) return;
@@ -631,7 +630,6 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
     return new_array_list;
 }
 
-// TODO: I think it's okay
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return nullptr;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
@@ -910,7 +908,6 @@ static void insertion_sort(ArrayList* array_list, Comparator compare) {
     }
 }
 
-// TODO: improve
 static void merge_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
     if (start_index < end_index) {
         const int middle_index = start_index + (end_index - start_index) / 2;
@@ -918,70 +915,75 @@ static void merge_sort(ArrayList* array_list, int start_index, int end_index, Co
         merge_sort(array_list, start_index, middle_index, compare);
         merge_sort(array_list, middle_index + 1, end_index, compare);
 
-        merge(array_list->elements, start_index, middle_index, end_index, compare);
+        merge(array_list, start_index, middle_index, end_index, compare);
     }
 }
 
-static void merge(void** elements, int start_index, int middle_index, int end_index, Comparator compare) {
+// TODO: replace by a single temporary array to avoid to many allocations
+static void merge(ArrayList* array_list, int start_index, int middle_index, int end_index, Comparator compare) {
     const int LEFT_ELEMENTS_SIZE = middle_index - start_index + 1;
     const int RIGHT_ELEMENTS_SIZE = end_index - middle_index;
 
-    void* left_elements[LEFT_ELEMENTS_SIZE];
-    void* right_elements[RIGHT_ELEMENTS_SIZE];
+    void** left_elements = array_list->memory_alloc(LEFT_ELEMENTS_SIZE * sizeof(void*));
+    void** right_elements = array_list->memory_alloc(RIGHT_ELEMENTS_SIZE * sizeof(void*));
 
+    if (!left_elements || !right_elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate temporary arrays for merge");
+        free(left_elements);
+        free(right_elements);
+        return;
+    }
     for (int i = 0; i < LEFT_ELEMENTS_SIZE; i++) {
-        left_elements[i] = elements[start_index + i];
+        left_elements[i] = array_list->elements[start_index + i];
     }
     for (int i = 0; i < RIGHT_ELEMENTS_SIZE; i++) {
-        right_elements[i] = elements[middle_index + 1 + i];
+        right_elements[i] = array_list->elements[middle_index + 1 + i];
     }
-
     int left_elements_index = 0, right_elements_index = 0, index = start_index;
 
     while (left_elements_index < LEFT_ELEMENTS_SIZE && right_elements_index < RIGHT_ELEMENTS_SIZE) {
         if (compare(left_elements[left_elements_index], right_elements[right_elements_index]) <= 0) {
-            elements[index] = left_elements[left_elements_index];
+            array_list->elements[index] = left_elements[left_elements_index];
             left_elements_index++;
         } else {
-            elements[index] = right_elements[right_elements_index];
+            array_list->elements[index] = right_elements[right_elements_index];
             right_elements_index++;
         }
         index++;
     }
-
     while (left_elements_index < LEFT_ELEMENTS_SIZE) {
-        elements[index] = left_elements[left_elements_index];
+        array_list->elements[index] = left_elements[left_elements_index];
         left_elements_index++;
         index++;
     }
-
     while (right_elements_index < RIGHT_ELEMENTS_SIZE) {
-        elements[index] = right_elements[right_elements_index];
+        array_list->elements[index] = right_elements[right_elements_index];
         right_elements_index++;
         index++;
     }
+    array_list->memory_free(left_elements);
+    array_list->memory_free(right_elements);
 }
 
-// TODO: improve
 static void quick_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
     if (start_index < end_index) {
-        const int pivot = partition(array_list->elements, start_index, end_index, compare);
+        const int pivot = partition(array_list, start_index, end_index, compare);
 
         quick_sort(array_list, start_index, pivot - 1, compare);
         quick_sort(array_list, pivot + 1, end_index, compare);
     }
 }
 
-static int partition(void** elements, int start_index, int end_index, Comparator compare) {
+static int partition(ArrayList* array_list, int start_index, int end_index, Comparator compare) {
     int pivot = start_index - 1;
 
     for (int i = start_index; i < end_index; i++) {
-        if (compare(elements[i], elements[end_index]) <= 0) {
+        if (compare(array_list->elements[i], array_list->elements[end_index]) <= 0) {
             pivot++;
-            swap(&elements[i], &elements[pivot]);
+            swap(&array_list->elements[i], &array_list->elements[pivot]);
         }
     }
-    swap(&elements[pivot + 1], &elements[end_index]);
+    swap(&array_list->elements[pivot + 1], &array_list->elements[end_index]);
     return pivot + 1;
 }
 

@@ -315,7 +315,6 @@ int array_list_remove_all(ArrayList* array_list, Collection collection) {
     return count;
 }
 
-// TODO: fix
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index) {
     if (require_non_null(array_list)) return 0;
     if (start_index < 0 || end_index > array_list->size || start_index > end_index) {
@@ -323,12 +322,16 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
         return 0;
     }
     const int count = end_index - start_index;
-    for (int i = start_index; i < array_list->size - count; i++) {
-        void* element = array_list->elements[i + count];
-        array_list->elements[i] = element;
-
-        array_list->destruct(element);
-        array_list->elements[i + count] = nullptr;
+    const int old_size = array_list->size;
+    for (int i = start_index; i < old_size; i++) {
+        if (i < end_index) {
+            array_list->destruct(array_list->elements[i]);
+        } else {
+            array_list->elements[i - count] = array_list->elements[i];
+        }
+        if (i >= old_size - count) {
+            array_list->elements[i] = nullptr;
+        }
     }
     array_list->size -= count;
     array_list->modification_count++;

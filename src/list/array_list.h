@@ -11,42 +11,66 @@
 #include <stddef.h>
 
 /**
- * An array list is a linear, generic, and dynamic data structure that stores data contiguously in memory.
- * It automatically grows to accommodate new elements and allows insertion of values of any type.
+ * An array list is a generic dynamic linear data structure that stores elements
+ * contiguously in memory allowing random access to any of them.
+ * It automatically resizes to accommodate new elements and supports storing
+ * elements of any type, including null pointers.
  *
- * Internally, the implementation uses a struct containing an array of void pointers. All operations on an array list
- * receive a pointer to the array list itself as their first argument. The ArrayList type is opaque and can
- * only be modified through the API.
+ * Internally, the implementation uses a dynamically allocated array of `void*`.
+ * All operations receive a pointer to the array list as their first argument.
+ * The ArrayList type is opaque and can only be modified through the public API.
  *
- * It must be configured using an ArrayListOptions defining:
- * - its initial capacity
- * - its growth factor
- * - the destruct function utilized to free elements memory
- * - the equals function utilized to compare elements
- * - the to string function utilized to convert its elements to a string representation
- * - the function used internally to allocate memory
- * - the function used internally to reallocate memory
- * - the function used internally to free memory
+ * An array list must be configured using an ArrayListOptions structure specifying:
+ * - the initial capacity
+ * - the growth factor
+ * - the destruct function used to free element memory
+ * - the equality function used to compare elements
+ * - the to_string function used to convert elements to strings
+ * - the memory allocation function
+ * - the memory reallocation function
+ * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
  * struct ArrayList {
  *      void** elements;
  *      int size;
+ *      int capacity;
  * };
  * @endcode
  *
- * Error handling: Functions signal errors by exiting the program (printing to stderr),
+ * Memory ownership:
+ * By default, the array list does not own its elements. If a destruct function is
+ * provided, it will be invoked when:
+ * - elements are removed (e.g., array_list_remove, array_list_remove_all)
+ * - elements are replaced (e.g., array_list_set, array_list_replace_all)
+ * - the array list is cleared (array_list_clear)
+ * - the array_list is destroyed (array_list_destroy)
+ *
+ * Error handling:
+ * Functions signal errors by printing to stderr and terminating the program,
  * or by returning an error object when wrapped with the attempt macro.
+ *
+ * Iterator invalidation:
+ * Any structural modification (insertion, removal, clear, etc.) invalidates all active iterators.
+ *
+ * Time complexity:
+ * - array_list_add / array_list_add_first: O(n)
+ * - array_list_add_last: amortized O(1)
+ * - array_list_remove / array_list_remove_first: O(n)
+ * - array_list_remove_last: O(1)
+ * - array_list_get: O(1)
+ * - array_list_set: O(1)
+ * - array_list_contains / array_list_index_of: O(n)
  */
 typedef struct ArrayList ArrayList;
 
 /**
- * ArrayList configuration structure. Used to define the default behavior and attributes of an ArrayList.
+ * ArrayList configuration structure. Defines the behavior and attributes of an array list.
  *
  * @pre initial_capacity >= 10
- * @pre initial_capacity < INT_MAX
- * @pre growth_factor >= 1.1
+ * @pre initial_capacity <= 1'073'741'824
+ * @pre growth_factor >= 1.10
  * @pre destruct != nullptr
  * @pre equals != nullptr
  * @pre to_string != nullptr
@@ -70,7 +94,7 @@ typedef struct {
 } ArrayListOptions;
 
 /**
- * @brief A utility macro that provides a reasonable default ArrayListOptions.
+ * @brief Utility macro providing default ArrayListOptions.
  *
  * @param ... optional field overrides
  */
@@ -87,36 +111,36 @@ typedef struct {
 }
 
 /**
- * @brief Creates a new empty ArrayList using the specified options.
+ * @brief Creates a new empty array list using the specified options.
  *
- * @param options pointer to an ArrayListOptions defining the array list configuration
+ * @param options pointer to an ArrayListOptions structure
  *
- * @return Pointer to a newly created ArrayList on success, or nullptr if creation fails
+ * @return pointer to a newly created array list
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the ArrayList fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for fails
  */
 ArrayList* array_list_new(const ArrayListOptions* options);
 
 /**
- * @brief Creates a new ArrayList containing all elements of the given collection using the specified options.
+ * @brief Creates a new array list containing all elements of the given collection.
  *
- * @param collection a Collection containing the elements to be added
- * @param options pointer to an ArrayListOptions containing configuration settings
+ * @param collection source collection
+ * @param options configuration options
  *
- * @return pointer to a newly created ArrayList on success, or nullptr if creation fails
+ * @return pointer to a newly created array list
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates the required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the new ArrayList or collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation or creation of the collection iterator fails
  */
 ArrayList* array_list_from(Collection collection, const ArrayListOptions* options);
 
 /**
- * @brief Destroys an existing ArrayList and (optionally) its elements using the provided destruct function.
+ * @brief Destroys an array list and optionally its elements.
  *
- * @param array_list_pointer pointer to an ArrayList pointer
+ * @param array_list_pointer pointer to an array list pointer
  *
  * @exception NULL_POINTER_ERROR if array_list_pointer or *array_list_pointer is null
  *
@@ -125,227 +149,246 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_destroy(ArrayList** array_list_pointer);
 
 /**
- * @brief Set the current destruct function.
+ * @brief Sets the element destruct function.
  *
- * @param array_list pointer to an ArrayList
- * @param destructor the new destruct function
+ * @param array_list pointer to an array list
+ * @param destruct new destruct function
+ *
+ * @exception NULL_POINTER_ERROR if array_list or destruct is null
  */
-void array_list_set_destructor(ArrayList* array_list, void (*destructor)(void*));
+void array_list_set_destructor(ArrayList* array_list, void (*destruct)(void*));
 
 /**
- * @brief Inserts the specified element at the specified position in the provided ArrayList.
+ * @brief Inserts an element at the specified position of the array list.
  *
- * @param array_list pointer to an ArrayList.
- * @param index index at which the specified element is to be inserted
- * @param element pointer to the element to be inserted
+ * @param array_list pointer to an array list
+ * @param index insertion position
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
 void array_list_add(ArrayList* array_list, int index, const void* element);
 
 /**
- * @brief Inserts the specified element at the beginning of the provided ArrayList.
+ * @brief Inserts an element at the beginning of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be inserted
+ * @param array_list pointer to an array list
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
 void array_list_add_first(ArrayList* array_list, const void* element);
 
 /**
- * @brief Inserts the specified element at the end of the provided ArrayList.
+ * @brief Inserts an element at the end of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be inserted
+ * @param array_list pointer to an array list
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
 void array_list_add_last(ArrayList* array_list, const void* element);
 
 /**
- * @brief Inserts all elements of the specified Collection at the specified position in the provided ArrayList.
+ * @brief Inserts all elements of a collection at the specified position of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param index start index at which the elements will be inserted
- * @param collection a Collection containing the elements to be added
+ * @param array_list pointer to an array list
+ * @param index insertion position
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > array_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if resizing or creation of the collection iterator fails
  */
 void array_list_add_all(ArrayList* array_list, int index, Collection collection);
 
 /**
- * @brief Inserts all elements of the specified Collection at the beginning of the provided ArrayList.
+ * @brief Inserts all elements of a collection at the beginning of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be added
+ * @param array_list pointer to an array list
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception MEMORY_ALLOCATION_ERROR if resizing or creation of the collection iterator fails
  */
 void array_list_add_all_first(ArrayList* array_list, Collection collection);
 
 /**
- * @brief Inserts all elements of the specified Collection at the end of the provided ArrayList.
+ * @brief Inserts all elements of a collection at the end of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be added
+ * @param array_list pointer to an array list
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception MEMORY_ALLOCATION_ERROR if resizing or creation of the collection iterator fails
  */
 void array_list_add_all_last(ArrayList* array_list, Collection collection);
 
 /**
- * @brief Retrieves the element at the specified position in the provided ArrayList.
+ * @brief Retrieves the element at the specified position of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param index index at which the element will be retrieved
+ * @param array_list pointer to an array list
+ * @param index element position
  *
- * @return pointer to the retrieved element
+ * @return pointer to the element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list.size
  */
 void* array_list_get(const ArrayList* array_list, int index);
 
 /**
- * @brief Retrieves the first element in the provided ArrayList.
+ * @brief Retrieves the first element of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return pointer to the retrieved element
+ * @return pointer to the first element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if array_list is empty
  */
 void* array_list_get_first(const ArrayList* array_list);
 
 /**
- * @brief Retrieves the last element in the provided ArrayList.
+ * @brief Retrieves the last element of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return pointer to the retrieved element
+ * @return pointer to the last element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if array_list is empty
  */
 void* array_list_get_last(const ArrayList* array_list);
 
 /**
- * @brief Replaces the element at the specified position of the provided ArrayList, (optionally) destructing the old element.
+ * @brief Replaces the element at the specified position of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param index index of the element to be replaced
+ * @param array_list pointer to an array list
+ * @param index element position
  * @param element the new element
  *
  * @return pointer to the old element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list.size
+ * 
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the old element, the returned pointer becomes invalid.
  */
 void* array_list_set(ArrayList* array_list, int index, const void* element);
 
 /**
- * @brief Swaps the elements at specified positions of the provided ArrayList.
+ * @brief Swaps the elements at specified positions of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param index_a index of the first element to be swapped
- * @param index_b index of the second element to be swapped
+ * @param array_list pointer to an array list
+ * @param index_a first element position
+ * @param index_b second element position
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list.size
  */
 void array_list_swap(ArrayList* array_list, int index_a, int index_b);
 
 /**
- * @brief Removes the element at the specified position of the provided ArrayList, (optionally) destructing it.
+ * @brief Removes and returns the element at the specified position of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param index index of the element to be removed
+ * @param array_list pointer to an array list
+ * @param index element position
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array_list.size
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* array_list_remove(ArrayList* array_list, int index);
 
 /**
- * @brief Removes the first element of the provided ArrayList, (optionally) destructing it.
+ * @brief Removes and returns the first element of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if array_list is empty
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* array_list_remove_first(ArrayList* array_list);
 
 /**
- * @brief Removes the last element of the provided ArrayList, (optionally) destructing it.
+ * @brief Removes and returns the last element of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided ArrayList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if array_list is empty
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* array_list_remove_last(ArrayList* array_list);
 
 /**
- * @brief Removes the specified element (if present) of the provided ArrayList, (optionally) destructing it.
+ * @brief Removes the specified element (if present) of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be removed
+ * @param array_list pointer to an array list
+ * @param element element to remove
  *
  * @return true if removed, false if not present
  *
  * @exception NULL_POINTER_ERROR if array_list is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 bool array_list_remove_element(ArrayList* array_list, const void* element);
 
 /**
- * @brief Removes all elements of the given collection present in the provided ArrayList, (optionally) destructing them.
+ * @brief Removes all elements of a collection present in the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be removed
+ * @param array_list pointer to an array list
+ * @param collection source collection
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ *
+ * @note this function calls the element destruct before returning.
  */
 int array_list_remove_all(ArrayList* array_list, Collection collection);
 
 /**
- * @brief Removes all elements at the specified range in the provided ArrayList, (optionally) destructing them.
+ * @brief Removes all elements at the specified range of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  * @param start_index start index (inclusive)
  * @param end_index end index (exclusive)
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list_size() || start_index > end_index
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list.size || start_index > end_index
+ *
+ * @note this function calls the element destruct before returning.
  */
 int array_list_remove_range(ArrayList* array_list, int start_index, int end_index);
 
 /**
- * @brief Removes all elements matching the given Predicate in the provided ArrayList, (optionally) destructing them.
+ * @brief Removes all elements of the array list matching a predicate.
  *
- * @param array_list pointer to an ArrayList
- * @param condition the condition to remove elements
+ * @param array_list pointer to an array list
+ * @param condition condition to remove
  *
  * @return number of elements removed
  *
@@ -354,76 +397,80 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
 int array_list_remove_if(ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Replaces all elements using the given Operator of the provided ArrayList, (optionally) destructing the old elements.
+ * @brief Replaces all elements using an operator function of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param operator the operator to replace elements
+ * @param array_list pointer to an array list
+ * @param operator operator function
  *
  * @exception NULL_POINTER_ERROR if array_list or operator is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 void array_list_replace_all(ArrayList* array_list, Operator operator);
 
 /**
- * @brief Retains all elements of the given collection present in the provided
- * ArrayList while removing all other elements, (optionally) destructing them.
+ * @brief Retains all elements of a collection present in the array list while removing all other elements.
  *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing the elements to be held
+ * @param array_list pointer to an array list
+ * @param collection source collection
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ *
+ * @note this function calls the element destruct before returning.
  */
 int array_list_retain_all(ArrayList* array_list, Collection collection);
 
 /**
- * @brief Retrieves the current size of the provided ArrayList.
+ * @brief Returns the current number of elements in the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return the current size of the provided ArrayList
+ * @return the current size
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_size(const ArrayList* array_list);
 
 /**
- * @brief Trims the current capacity to match the minimum size of the provided ArrayList.
+ * @brief Shrink the current capacity to match the current size of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to shrink array_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if resizing fails
+ *
+ * @note this function will not shrink below MIN_CAPACITY.
  */
 void array_list_trim_to_size(ArrayList* array_list);
 
 /**
- * @brief Retrieves the current capacity of the provided ArrayList.
+ * @brief Returns the current capacity of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return the current capacity of the provided ArrayList
+ * @return the current capacity
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_capacity(const ArrayList* array_list);
 
 /**
- * @brief Ensures the provided ArrayList has sufficient capacity, if not, it will expand.
+ * @brief Ensures the array list has the specified sufficient capacity, expanding if necessary.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  * @param capacity the required capacity
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand array_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
 void array_list_ensure_capacity(ArrayList* array_list, int capacity);
 
 /**
- * @brief Checks whether the provided ArrayList is empty.
+ * @brief Checks whether the array list is empty.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @return true if empty, false otherwise
  *
@@ -432,230 +479,231 @@ void array_list_ensure_capacity(ArrayList* array_list, int capacity);
 bool array_list_is_empty(const ArrayList* array_list);
 
 /**
- * @brief Instantiates an Iterator for the provided ArrayList.
+ * @brief Creates an iterator for the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return pointer to the newly created Iterator
+ * @return pointer to a newly created iterator
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator supports all operations
  */
 Iterator* array_list_iterator(const ArrayList* array_list);
 
 /**
- * @brief Checks whether two ArrayList objects are equal.
+ * @brief Checks whether two array lists are equal.
  *
- * Two array lists are considered equal if either of the following conditions is true:
- * 1. They reference the same memory location.
- * 2. They have the same size, and each corresponding element in the first array list is considered equal to the element
- * at the same position in the second array list according to the equals function of the first array list.
+ * Two array lists are equal if:
+ * - they reference the same memory address, or
+ * - they have the same size and corresponding elements are equal
+ *   according to the configured equality function of the first array list
  *
- * @param array_list pointer to an ArrayList
- * @param other_array_list pointer to an ArrayList
+ * @param array_list first array list
+ * @param other_array_list second array list
  *
  * @return true if equal, false otherwise
  *
- * @exception NULL_POINTER_ERROR if array_list or other_array_list is null
+ * @exception NULL_POINTER_ERROR if either array list is null
  */
 bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array_list);
 
 /**
- * @brief Performs an action for each element of the provided ArrayList.
+ * @brief Applies an action to each element of the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param action the action to be performed
+ * @param array_list pointer to an array list
+ * @param action function to apply
  *
  * @exception NULL_POINTER_ERROR if array_list or action is null
  */
 void array_list_for_each(ArrayList* array_list, Consumer action);
 
 /**
- * @brief Sorts using the given Comparator and SortingAlgorithm the provided ArrayList.
+ * @brief Sorts the elements of the array list according to a comparator and a sorting algorithm.
  *
- * @param array_list pointer to an ArrayList
- * @param comparator the comparator to be used to compare elements
- * @param algorithm the algorithm used to sort the ArrayList
+ * @param array_list pointer to an array list
+ * @param comparator comparator function
+ * @param algorithm sorting algorithm
  *
  * @exception NULL_POINTER_ERROR if array_list or comparator is null
+ * @exception MEMORY_ALLOCATION_ERROR if merge sort is chosen and memory allocation for temporary arrays fails
  */
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm);
 
 /**
- * @brief Shuffles using the given random function and ShufflingAlgorithm the provided ArrayList.
+ * @brief Shuffles the elements of the array list according to an RNG function and a shuffle algorithm.
  *
- * @param array_list pointer to an ArrayList
- * @param random a function to generate random numbers
- * @param algorithm the algorithm used to shuffle the ArrayList
+ * @param array_list pointer to an array list
+ * @param random random number generator function
+ * @param algorithm shuffling algorithm
  *
  * @exception NULL_POINTER_ERROR if array_list or random is null
  */
 void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm);
 
 /**
- * @brief Reverses the provided ArrayList.
+ * @brief Reverses the elements of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_reverse(ArrayList* array_list);
 
 /**
- * @brief Rotates using the given distance the provided ArrayList.
+ * @brief Rotates the elements of the array list by the specified distance.
  *
- * @param array_list pointer to an ArrayList
- * @param distance how many positions to shift
+ * @param array_list pointer to an array list
+ * @param distance number of positions to shift (can be negative)
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 void array_list_rotate(ArrayList* array_list, int distance);
 
 /**
- * @brief Removes all elements of the provided ArrayList, (optionally) destructing them.
+ * @brief Removes all elements of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
  * @exception NULL_POINTER_ERROR if array_list is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 void array_list_clear(ArrayList* array_list);
 
 /**
- * @brief Finds the first element matching the given Predicate in the provided ArrayList.
+ * @brief Finds the first element of the array list matching a predicate.
  *
- * @param array_list pointer to an ArrayList
- * @param condition the predicate used to test elements
+ * @param array_list pointer to an array list
+ * @param condition condition to test
  *
- * @return an Optional containing the found element, or an empty Optional if no match is found
+ * @return an optional containing the result
  *
  * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 Optional array_list_find(const ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Finds the last element matching the given Predicate in the provided ArrayList.
+ * @brief Finds the last element of the array list matching a predicate.
  *
- * @param array_list pointer to an ArrayList
- * @param condition the predicate used to test elements
+ * @param array_list pointer to an array list
+ * @param condition condition to test
  *
- * @return an Optional containing the found element, or an empty Optional if no match is found
+ * @return an optional containing the result
  *
  * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 Optional array_list_find_last(const ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Retrieves the index of the first element matching the given Predicate.
+ * @brief Retrieves the index of the first element of the array list matching a predicate.
  *
- * @param array_list pointer to an ArrayList
- * @param condition the predicate used to test elements
+ * @param array_list pointer to an array list
+ * @param condition condition to test
  *
- * @return the index of the first matching element, or -1 if no match is found
+ * @return the first element index, or -1 if no match
  *
  * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 int array_list_index_where(const ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Retrieves the index of the last element matching the given Predicate.
+ * @brief Retrieves the index of the last element of the array list matching a predicate.
  *
- * @param array_list pointer to an ArrayList
- * @param condition the predicate used to test elements
+ * @param array_list pointer to an array list
+ * @param condition condition to test
  *
- * @return the index of the last matching element, or -1 if no match is found
+ * @return the last element index, or -1 if no match
  *
  * @exception NULL_POINTER_ERROR if array_list or condition is null
  */
 int array_list_last_index_where(const ArrayList* array_list, Predicate condition);
 
 /**
- * @brief Checks whether the provided ArrayList contains the specified element.
+ * @brief Checks whether an element is present in the array list.
  *
- * Comparison is performed using the equals function configured in the ArrayListOptions.
+ * @param array_list pointer to an array list
+ * @param element element to check
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be checked
- *
- * @return true if the element is present, false otherwise
+ * @return true if present, false otherwise
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 bool array_list_contains(const ArrayList* array_list, const void* element);
 
 /**
- * @brief Checks whether the provided ArrayList contains all elements of the given collection.
+ * @brief Checks whether all elements of a collection are present in the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param collection a Collection containing elements to be checked
+ * @param array_list pointer to an array list
+ * @param collection source collection
  *
  * @return true if all elements are present, false otherwise
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
 bool array_list_contains_all(const ArrayList* array_list, Collection collection);
 
 /**
- * @brief Counts the number of occurrences of the specified element in the provided ArrayList.
+ * @brief Counts the number of occurrences of an element in the array list.
  *
- * Comparison is performed using the equals function configured in the ArrayListOptions.
+ * @param array_list pointer to an array list
+ * @param element element to be counted
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to be counted
- *
- * @return the number of occurrences of the specified element
+ * @return the number of occurrences
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_occurrences_of(const ArrayList* array_list, const void* element);
 
 /**
- * @brief Retrieves the index of the first occurrence of the specified element.
+ * @brief Retrieves the index of the first occurrence of the specified element in the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to search for
+ * @param array_list pointer to an array list
+ * @param element element to search
  *
- * @return the index of the first occurrence, or -1 if not found
+ * @return the element first index, or -1 if not present
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_index_of(const ArrayList* array_list, const void* element);
 
 /**
- * @brief Retrieves the index of the last occurrence of the specified element.
+ * @brief Retrieves the index of the last occurrence of the specified element in the array list.
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to search for
+ * @param array_list pointer to an array list
+ * @param element element to search
  *
- * @return the index of the last occurrence, or -1 if not found
+ * @return the element last index, or -1 if not present
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 int array_list_last_index_of(const ArrayList* array_list, const void* element);
 
 /**
- * @brief Performs a binary search for the specified element in the provided ArrayList.
+ * @brief Performs a binary search for the specified element in the array list
  *
- * The ArrayList must be sorted according to the same Comparator prior to calling this function.
+ * @param array_list pointer to an array list
+ * @param element element to search
+ * @param comparator comparator function
  *
- * @param array_list pointer to an ArrayList
- * @param element pointer to the element to search for
- * @param comparator the comparator used to compare elements
- *
- * @return the index of the found element, or -1 if not found
+ * @return the element index, or -1 if not found
  *
  * @exception NULL_POINTER_ERROR if array_list or comparator is null
+ *
+ * @note the array list must be sorted before calling this function, otherwise, it is undefined behavior.
  */
 int array_list_binary_search(const ArrayList* array_list, const void* element, Comparator comparator);
 
 /**
- * @brief Creates a shallow copy of the provided ArrayList.
+ * @brief Creates a shallow copy of the array list.
  *
- * The new ArrayList will contain the same element pointers but will have independent internal storage.
+ * The new array list shares element pointers but has independent storage.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return a newly created ArrayList clone, or nullptr on failure
+ * @return pointer to the newly created array list
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
@@ -663,60 +711,58 @@ int array_list_binary_search(const ArrayList* array_list, const void* element, C
 ArrayList* array_list_clone(const ArrayList* array_list);
 
 /**
- * @brief Creates a sublist of the provided ArrayList within the specified range.
+ * @brief Creates a sublist of the array list within the specified range.
  *
- * The returned ArrayList contains elements from start_index (inclusive)
- * to end_index (exclusive).
- *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  * @param start_index start index (inclusive)
  * @param end_index end index (exclusive)
  *
- * @return a newly created ArrayList containing the specified range, or nullptr on failure
+ * @return pointer to the newly created array list
  *
  * @exception NULL_POINTER_ERROR if array_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list_size() || start_index > end_index
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > array_list.size || start_index > end_index
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int end_index);
 
 /**
- * @brief Converts the provided ArrayList into a Collection view.
+ * @brief Returns a Collection view of the array list.
  *
- * The returned Collection does not own the underlying elements.
+ * The returned collection does not own the elements.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return a Collection representation of the ArrayList
+ * @return a collection view
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  */
 Collection array_list_to_collection(const ArrayList* array_list);
 
 /**
- * @brief Converts the provided ArrayList into a newly allocated array.
+ * @brief Returns a newly allocated array containing all elements of the array list.
  *
- * @param array_list pointer to an ArrayList
+ * @param array_list pointer to an array list
  *
- * @return a newly allocated array containing all elements
+ * @return an array of elements
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created array must be freed manually
  */
 void** array_list_to_array(const ArrayList* array_list);
 
 /**
- * @brief Converts the provided ArrayList to a string representation.
+ * @brief Converts the array list to a string representation.
  *
- * Each element is converted using the to_string function configured
- * in the ArrayListOptions.
+ * @param array_list pointer to an array list
  *
- * @param array_list pointer to an ArrayList
- *
- * @return a newly allocated null-terminated string representation, or nullptr on failure
+ * @return a newly allocated string
  *
  * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created string must be freed manually
  */
 char* array_list_to_string(const ArrayList* array_list);
 

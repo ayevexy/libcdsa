@@ -573,17 +573,16 @@ int linked_list_index_where(const LinkedList* linked_list, Predicate condition) 
     return -1;
 }
 
-// TODO: refactor
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition) {
     if (require_non_null(linked_list, condition)) return 0;
-    int index = -1, count = 0;
+    int index = 0, last_index = -1;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
-            index = count;
+            last_index = index;
         }
-        count++;
+        index++;
     }
-    return index;
+    return last_index;
 }
 
 bool linked_list_contains(const LinkedList* linked_list, const void* element) {
@@ -634,17 +633,16 @@ int linked_list_index_of(const LinkedList* linked_list, const void* element) {
     return -1;
 }
 
-// TODO: refactor
 int linked_list_last_index_of(const LinkedList* linked_list, const void* element) {
     if (require_non_null(linked_list)) return 0;
-    int index = -1, count = 0;
+    int index = 0, last_index = -1;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (linked_list->equals(node->element, element)) {
-            index = count;
+            last_index = index;
         }
-        count++;
+        index++;
     }
-    return index;
+    return last_index;
 }
 
 LinkedList* linked_list_clone(const LinkedList* linked_list) {
@@ -788,14 +786,11 @@ static Node* get_node(const LinkedList* linked_list, int index) {
     return node;
 }
 
-// TODO: refactor
 static Node* find_node(const LinkedList* linked_list, const void* element) {
-    Node* node = linked_list->head;
-    while (node) {
-        if (linked_list->equals(node->element, element)) {
+    for (Node* node = linked_list->head; node; node = node->next) {
+        if (linked_list->equals(element, node->element)) {
             return node;
         }
-        node = node->next;
     }
     return nullptr;
 }

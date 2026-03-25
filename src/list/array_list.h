@@ -45,7 +45,7 @@
  * - elements are removed (e.g., array_list_remove, array_list_remove_all)
  * - elements are replaced (e.g., array_list_set, array_list_replace_all)
  * - the array list is cleared (array_list_clear)
- * - the array_list is destroyed (array_list_destroy)
+ * - the array list is destroyed (array_list_destroy)
  *
  * Error handling:
  * Functions signal errors by printing to stderr and terminating the program,

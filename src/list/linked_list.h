@@ -11,18 +11,21 @@
 #include <stddef.h>
 
 /**
- * A linked list is a linear, generic, dynamic data structure consisting of nodes that hold data and a pointer to the next and previous node.
+ * A linked list is a generic dynamic linear data structure where elements are
+ * stored in nodes allocated non-contiguously in memory.
+ * It supports storing elements of any type, including null pointers.
  *
- * Internally, the implementation records the head and the tail, and each node links to a previous and next node.
- * All operations on a linked list receive a pointer to the linked list itself as their first argument.
- * The LinkedList type is opaque and can only be modified through the API.
+ * Internally, the list maintains pointers to the head and tail nodes, and
+ * each node links to both its previous and next node (doubly linked).
+ * All operations receive a pointer to the linked list as their first argument.
+ * The LinkedList type is opaque and can only be modified through the public API.
  *
- * It must be configured using an LinkedListOptions structure defining:
- * - the destruct function utilized to free elements memory
- * - the equals function utilized to compare elements
- * - the to string function utilized to convert its elements to a string representation
- * - the function used internally to allocate memory
- * - the function used internally to free memory
+ * A linked list must be configured using a LinkedListOptions structure specifying:
+ * - the destruct function used to free element memory
+ * - the equality function used to compare elements
+ * - the to_string function used to convert elements to strings
+ * - the memory allocation function
+ * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
@@ -33,13 +36,35 @@
  * };
  * @endcode
  *
- * Error handling: Functions signal errors by exiting the program (printing to stderr),
+ * Memory ownership:
+ * By default, the linked list does not own its elements. If a destruct function is
+ * provided, it will be invoked when:
+ * - elements are removed (e.g., linked_list_remove, linked_list_remove_all)
+ * - elements are replaced (e.g., linked_list_set, linked_list_replace_all)
+ * - the linked list is cleared (linked_list_clear)
+ * - the linked list is destroyed (linked_list_destroy)
+ *
+ * Error handling:
+ * Functions signal errors by printing to stderr and terminating the program,
  * or by returning an error object when wrapped with the attempt macro.
+ *
+ * Iterator invalidation:
+ * Any structural modification (insertion, removal, clear, etc.) invalidates all active iterators.
+ *
+ * Time complexity:
+ * - linked_list_add_first / linked_list_add_last: O(1)
+ * - linked_list_add: O(n)
+ * - linked_list_remove_first / linked_list_remove_last: O(1)
+ * - linked_list_remove: O(n)
+ * - linked_list_get_first / linked_list_get_last: O(1)
+ * - linked_list_get: O(n)
+ * - linked_list_set: O(n)
+ * - linked_list_contains / linked_list_index_of: O(n)
  */
 typedef struct LinkedList LinkedList;
 
 /**
- * LinkedList configuration structure. Used to define the default behavior and attributes of an LinkedList.
+ * LinkedList configuration structure. Defines the behavior and attributes of a linked list.
  *
  * @pre destruct != nullptr
  * @pre equals != nullptr
@@ -60,7 +85,7 @@ typedef struct {
 } LinkedListOptions;
 
 /**
- * @brief A utility macro that provides a reasonable default LinkedListOptions.
+ * @brief Utility macro providing default LinkedListOptions.
  *
  * @param ... optional field overrides
  */
@@ -74,36 +99,36 @@ typedef struct {
 }
 
 /**
- * @brief Creates a new empty LinkedList using the specified options.
+ * @brief Creates a new empty linked list using the specified options.
  *
- * @param options pointer to an LinkedListOptions defining the linked list configuration
+ * @param options pointer to an LinkedListOptions structure
  *
- * @return Pointer to a newly created LinkedList on success, or nullptr if creation fails
+ * @return pointer to a newly created linked list
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the LinkedList fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 LinkedList* linked_list_new(const LinkedListOptions* options);
 
 /**
- * @brief Creates a new LinkedList containing all elements of the given collection using the specified options.
+ * @brief Creates a new linked list containing all elements of the given collection.
  *
- * @param collection a Collection containing the elements to be added
- * @param options pointer to an LinkedListOptions containing configuration settings
+ * @param collection source collection
+ * @param options configuration options
  *
- * @return pointer to a newly created LinkedList on success, or nullptr if creation fails
+ * @return pointer to a newly created linked list
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates the required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the new LinkedList or collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation or creation of the collection iterator fails
  */
 LinkedList* linked_list_from(Collection collection, const LinkedListOptions* options);
 
 /**
- * @brief Destroys an existing LinkedList and (optionally) its elements using the provided destruct function.
+ * @brief Destroys a linked list and optionally its elements.
  *
- * @param linked_list_pointer pointer to an LinkedList pointer
+ * @param linked_list_pointer pointer to a linked list pointer
  *
  * @exception NULL_POINTER_ERROR if linked_list_pointer or *linked_list_pointer is null
  *
@@ -112,227 +137,246 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer);
 
 /**
- * @brief Set the current destruct function.
+ * @brief Sets the element destruct function.
  *
- * @param linked_list pointer to a LinkedList
- * @param destructor the new destruct function
+ * @param linked_list pointer to a linked list
+ * @param destruct new destruct function
+ *
+ * @exception NULL_POINTER_ERROR if linked_list or destruct is null
  */
-void linked_list_set_destructor(LinkedList* linked_list, void (*destructor)(void*));
+void linked_list_set_destructor(LinkedList* linked_list, void (*destruct)(void*));
 
 /**
- * @brief Inserts the specified element at the specified position in the provided LinkedList.
+ * @brief Inserts an element at the specified position of the linked list.
  *
- * @param linked_list pointer to an LinkedList.
- * @param index index at which the specified element is to be inserted
- * @param element pointer to the element to be inserted
+ * @param linked_list pointer to a linked list
+ * @param index insertion position
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation fails
  */
 void linked_list_add(LinkedList* linked_list, int index, const void* element);
 
 /**
- * @brief Inserts the specified element at the beginning of the provided LinkedList.
+ * @brief Inserts an element at the beginning of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be inserted
+ * @param linked_list pointer to a linked list
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation fails
  */
 void linked_list_add_first(LinkedList* linked_list, const void* element);
 
 /**
- * @brief Inserts the specified element at the end of the provided LinkedList.
+ * @brief Inserts an element at the end of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be inserted
+ * @param linked_list pointer to a linked list
+ * @param element element to insert
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand linked_list capacity
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation fails
  */
 void linked_list_add_last(LinkedList* linked_list, const void* element);
 
 /**
- * @brief Inserts all elements of the specified Collection at the specified position in the provided LinkedList.
+ * @brief Inserts all elements of a collection at the specified position of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param index start index at which the elements will be inserted
- * @param collection a Collection containing the elements to be added
+ * @param linked_list pointer to a linked list
+ * @param index insertion position
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list_size()
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > linked_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation or creation of the collection iterator fails
  */
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection);
 
 /**
- * @brief Inserts all elements of the specified Collection at the beginning of the provided LinkedList.
+ * @brief Inserts all elements of a collection at the beginning of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be added
+ * @param linked_list pointer to a linked list
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation or creation of the collection iterator fails
  */
 void linked_list_add_all_first(LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Inserts all elements of the specified Collection at the end of the provided LinkedList.
+ * @brief Inserts all elements of a collection at the end of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be added
+ * @param linked_list pointer to a linked list
+ * @param collection source collection
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails.
+ * @exception MEMORY_ALLOCATION_ERROR if node allocation or creation of the collection iterator fails
  */
 void linked_list_add_all_last(LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Retrieves the element at the specified position in the provided LinkedList.
+ * @brief Retrieves the element at the specified position of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param index index at which the element will be retrieved
+ * @param linked_list pointer to a linked list
+ * @param index element position
  *
- * @return pointer to the retrieved element
+ * @return pointer to the element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list.size
  */
 void* linked_list_get(const LinkedList* linked_list, int index);
 
 /**
- * @brief Retrieves the first element in the provided LinkedList.
+ * @brief Retrieves the first element of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return pointer to the retrieved element
+ * @return pointer to the first element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if linked_list is empty
  */
 void* linked_list_get_first(const LinkedList* linked_list);
 
 /**
- * @brief Retrieves the last element in the provided LinkedList.
+ * @brief Retrieves the last element of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return pointer to the retrieved element
+ * @return pointer to the last element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if linked_list is empty
  */
 void* linked_list_get_last(const LinkedList* linked_list);
 
 /**
- * @brief Replaces the element at the specified position of the provided LinkedList, (optionally) destructing the old element.
+ * @brief Replaces the element at the specified position of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param index index of the element to be replaced
+ * @param linked_list pointer to a linked list
+ * @param index element position
  * @param element the new element
  *
  * @return pointer to the old element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list.size
+ * 
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the old element, the returned pointer becomes invalid.
  */
 void* linked_list_set(LinkedList* linked_list, int index, const void* element);
 
 /**
- * @brief Swaps the elements at specified positions of the provided LinkedList.
+ * @brief Swaps the elements at specified positions of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param index_a index of the first element to be swapped
- * @param index_b index of the second element to be swapped
+ * @param linked_list pointer to a linked list
+ * @param index_a first element position
+ * @param index_b second element position
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list.size
  */
 void linked_list_swap(LinkedList* linked_list, int index_a, int index_b);
 
 /**
- * @brief Removes the element at the specified position of the provided LinkedList, (optionally) destructing it.
+ * @brief Removes and returns the element at the specified position of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param index index of the element to be removed
+ * @param linked_list pointer to a linked list
+ * @param index element position
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list_size()
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= linked_list.size
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* linked_list_remove(LinkedList* linked_list, int index);
 
 /**
- * @brief Removes the first element of the provided LinkedList, (optionally) destructing it.
+ * @brief Removes and returns the first element of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if linked_list is empty
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* linked_list_remove_first(LinkedList* linked_list);
 
 /**
- * @brief Removes the last element of the provided LinkedList, (optionally) destructing it.
+ * @brief Removes and returns the last element of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
  * @return pointer to the removed element
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception NO_SUCH_ELEMENT_ERROR if the provided LinkedList is empty
+ * @exception NO_SUCH_ELEMENT_ERROR if linked_list is empty
+ *
+ * @note this function calls the element destruct before returning.
+ *       If the destruct frees the element, the returned pointer becomes invalid.
  */
 void* linked_list_remove_last(LinkedList* linked_list);
 
 /**
- * @brief Removes the specified element (if present) of the provided LinkedList, (optionally) destructing it.
+ * @brief Removes the specified element (if present) of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be removed
+ * @param linked_list pointer to a linked list
+ * @param element element to remove
  *
  * @return true if removed, false if not present
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 bool linked_list_remove_element(LinkedList* linked_list, const void* element);
 
 /**
- * @brief Removes all elements of the given collection present in the provided LinkedList, (optionally) destructing them.
+ * @brief Removes all elements of a collection present in the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be removed
+ * @param linked_list pointer to a linked list
+ * @param collection source collection
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ *
+ * @note this function calls the element destruct before returning.
  */
 int linked_list_remove_all(LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Removes all elements at the specified range in the provided LinkedList, (optionally) destructing them.
+ * @brief Removes all elements at the specified range of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  * @param start_index start index (inclusive)
  * @param end_index end index (exclusive)
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list_size() || start_index > end_index
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list.size || start_index > end_index
+ *
+ * @note this function calls the element destruct before returning.
  */
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index);
 
 /**
- * @brief Removes all elements matching the given Predicate in the provided LinkedList, (optionally) destructing them.
+ * @brief Removes all elements of the linked list matching a predicate.
  *
- * @param linked_list pointer to an LinkedList
- * @param condition the condition to remove elements
+ * @param linked_list pointer to a linked list
+ * @param condition condition to remove
  *
  * @return number of elements removed
  *
@@ -341,44 +385,46 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
 int linked_list_remove_if(LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Replaces all elements using the given Operator of the provided LinkedList, (optionally) destructing the old elements.
+ * @brief Replaces all elements using an operator function of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param operator the operator to replace elements
+ * @param linked_list pointer to a linked list
+ * @param operator operator function
  *
  * @exception NULL_POINTER_ERROR if linked_list or operator is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 void linked_list_replace_all(LinkedList* linked_list, Operator operator);
 
 /**
- * @brief Retains all elements of the given collection present in the provided
- * LinkedList while removing all other elements, (optionally) destructing them.
+ * @brief Retains all elements of a collection present in the linked list while removing all other elements.
  *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing the elements to be held
+ * @param linked_list pointer to a linked list
+ * @param collection source collection
  *
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ *
+ * @note this function calls the element destruct before returning.
  */
 int linked_list_retain_all(LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Retrieves the current size of the provided LinkedList.
+ * @brief Returns the current number of elements in the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return the current size of the provided LinkedList
+ * @return the current size
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_size(const LinkedList* linked_list);
 
 /**
- * @brief Checks whether the provided LinkedList is empty.
+ * @brief Checks whether the linked list is empty.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
  * @return true if empty, false otherwise
  *
@@ -387,216 +433,216 @@ int linked_list_size(const LinkedList* linked_list);
 bool linked_list_is_empty(const LinkedList* linked_list);
 
 /**
- * @brief Instantiates an Iterator for the provided LinkedList.
+ * @brief Creates an iterator for the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return pointer to the newly created Iterator
+ * @return pointer to a newly created iterator
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator supports all operations
  */
 Iterator* linked_list_iterator(const LinkedList* linked_list);
 
 /**
- * @brief Checks whether two LinkedList objects are equal.
+ * @brief Checks whether two linked lists are equal.
  *
- * Two linked lists are considered equal if either of the following conditions is true:
- * 1. They reference the same memory location.
- * 2. They have the same size, and each corresponding element in the first linked list is considered equal to the element
- * at the same position in the second linked list according to the equals function of the first linked list.
+ * Two linked lists are equal if:
+ * - they reference the same memory address, or
+ * - they have the same size and corresponding elements are equal
+ *   according to the configured equality function of the first linked list
  *
- * @param linked_list pointer to an LinkedList
- * @param other_linked_list pointer to an LinkedList
+ * @param linked_list first linked list
+ * @param other_linked_list second linked list
  *
  * @return true if equal, false otherwise
  *
- * @exception NULL_POINTER_ERROR if linked_list or other_linked_list is null
+ * @exception NULL_POINTER_ERROR if either linked list is null
  */
 bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_linked_list);
 
 /**
- * @brief Performs an action for each element of the provided LinkedList.
+ * @brief Applies an action to each element of the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param action the action to be performed
+ * @param linked_list pointer to a linked list
+ * @param action function to apply
  *
  * @exception NULL_POINTER_ERROR if linked_list or action is null
  */
 void linked_list_for_each(LinkedList* linked_list, Consumer action);
 
 /**
- * @brief Sorts using the given Comparator and SortingAlgorithm the provided LinkedList.
+ * @brief Sorts the elements of the linked list according to a comparator and a sorting algorithm.
  *
- * @param linked_list pointer to an LinkedList
- * @param comparator the comparator to be used to compare elements
- * @param algorithm the algorithm used to sort the LinkedList
+ * @param linked_list pointer to a linked list
+ * @param comparator comparator function
+ * @param algorithm sorting algorithm
  *
  * @exception NULL_POINTER_ERROR if linked_list or comparator is null
  */
 void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm);
 
 /**
- * @brief Shuffles using the given random function and ShufflingAlgorithm the provided LinkedList.
+ * @brief Shuffles the elements of the linked list according to an RNG function and a shuffle algorithm.
  *
- * @param linked_list pointer to an LinkedList
- * @param random a function to generate random numbers
- * @param algorithm the algorithm used to shuffle the LinkedList
+ * @param linked_list pointer to a linked list
+ * @param random random number generator function
+ * @param algorithm shuffling algorithm
  *
  * @exception NULL_POINTER_ERROR if linked_list or random is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory while converting linked_list to array (needed for shuffling strategy)
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for creation of the temporary array fails
  */
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm);
 
 /**
- * @brief Reverses the provided LinkedList.
+ * @brief Reverses the elements of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_reverse(LinkedList* linked_list);
 
 /**
- * @brief Rotates using the given distance the provided LinkedList.
+ * @brief Rotates the elements of the linked list by the specified distance.
  *
- * @param linked_list pointer to an LinkedList
- * @param distance how many positions to shift
+ * @param linked_list pointer to a linked list
+ * @param distance number of positions to shift (can be negative)
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 void linked_list_rotate(LinkedList* linked_list, int distance);
 
 /**
- * @brief Removes all elements of the provided LinkedList, (optionally) destructing them.
+ * @brief Removes all elements of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 void linked_list_clear(LinkedList* linked_list);
 
 /**
- * @brief Finds the first element matching the given Predicate in the provided LinkedList.
+ * @brief Finds the first element of the linked list matching a predicate.
  *
- * @param linked_list pointer to an LinkedList
- * @param condition the predicate used to test elements
+ * @param linked_list pointer to a linked list
+ * @param condition condition to test
  *
- * @return an Optional containing the found element, or an empty Optional if no match is found
+ * @return an optional containing the result
  *
  * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Finds the last element matching the given Predicate in the provided LinkedList.
+ * @brief Finds the last element of the linked list matching a predicate.
  *
- * @param linked_list pointer to an LinkedList
- * @param condition the predicate used to test elements
+ * @param linked_list pointer to a linked list
+ * @param condition condition to test
  *
- * @return an Optional containing the found element, or an empty Optional if no match is found
+ * @return an optional containing the result
  *
  * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 Optional linked_list_find_last(const LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Retrieves the index of the first element matching the given Predicate.
+ * @brief Retrieves the index of the first element of the linked list matching a predicate.
  *
- * @param linked_list pointer to an LinkedList
- * @param condition the predicate used to test elements
+ * @param linked_list pointer to a linked list
+ * @param condition condition to test
  *
- * @return the index of the first matching element, or -1 if no match is found
+ * @return the first element index, or -1 if no match
  *
  * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 int linked_list_index_where(const LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Retrieves the index of the last element matching the given Predicate.
+ * @brief Retrieves the index of the last element of the linked list matching a predicate.
  *
- * @param linked_list pointer to an LinkedList
- * @param condition the predicate used to test elements
+ * @param linked_list pointer to a linked list
+ * @param condition condition to test
  *
- * @return the index of the last matching element, or -1 if no match is found
+ * @return the last element index, or -1 if no match
  *
  * @exception NULL_POINTER_ERROR if linked_list or condition is null
  */
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition);
 
 /**
- * @brief Checks whether the provided LinkedList contains the specified element.
+ * @brief Checks whether an element is present in the linked list.
  *
- * Comparison is performed using the equals function configured in the LinkedListOptions.
+ * @param linked_list pointer to a linked list
+ * @param element element to check
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be checked
- *
- * @return true if the element is present, false otherwise
+ * @return true if present, false otherwise
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 bool linked_list_contains(const LinkedList* linked_list, const void* element);
 
 /**
- * @brief Checks whether the provided LinkedList contains all elements of the given collection.
+ * @brief Checks whether all elements of a collection are present in the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param collection a Collection containing elements to be checked
+ * @param linked_list pointer to a linked list
+ * @param collection source collection
  *
  * @return true if all elements are present, false otherwise
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection);
 
 /**
- * @brief Counts the number of occurrences of the specified element in the provided LinkedList.
+ * @brief Counts the number of occurrences of an element in the linked list.
  *
- * Comparison is performed using the equals function configured in the LinkedListOptions.
+ * @param linked_list pointer to a linked list
+ * @param element element to be counted
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to be counted
- *
- * @return the number of occurrences of the specified element
+ * @return the number of occurrences
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_occurrences_of(const LinkedList* linked_list, const void* element);
 
 /**
- * @brief Retrieves the index of the first occurrence of the specified element.
+ * @brief Retrieves the index of the first occurrence of the specified element in the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to search for
+ * @param linked_list pointer to a linked list
+ * @param element element to search
  *
- * @return the index of the first occurrence, or -1 if not found
+ * @return the element first index, or -1 if not present
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_index_of(const LinkedList* linked_list, const void* element);
 
 /**
- * @brief Retrieves the index of the last occurrence of the specified element.
+ * @brief Retrieves the index of the last occurrence of the specified element in the linked list.
  *
- * @param linked_list pointer to an LinkedList
- * @param element pointer to the element to search for
+ * @param linked_list pointer to a linked list
+ * @param element element to search
  *
- * @return the index of the last occurrence, or -1 if not found
+ * @return the element last index, or -1 if not present
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 int linked_list_last_index_of(const LinkedList* linked_list, const void* element);
 
 /**
- * @brief Creates a shallow copy of the provided LinkedList.
+ * @brief Creates a shallow copy of the linked list.
  *
- * The new LinkedList will contain the same element pointers but will have independent internal storage.
+ * The new linked list shares element pointers but has independent storage.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return a newly created LinkedList clone, or nullptr on failure
+ * @return pointer to the newly created linked list
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
@@ -604,60 +650,58 @@ int linked_list_last_index_of(const LinkedList* linked_list, const void* element
 LinkedList* linked_list_clone(const LinkedList* linked_list);
 
 /**
- * @brief Creates a sublist of the provided LinkedList within the specified range.
+ * @brief Creates a sublist of the linked list within the specified range.
  *
- * The returned LinkedList contains elements from start_index (inclusive)
- * to end_index (exclusive).
- *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  * @param start_index start index (inclusive)
  * @param end_index end index (exclusive)
  *
- * @return a newly created LinkedList containing the specified range, or nullptr on failure
+ * @return pointer to the newly created linked list
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
- * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list_size() || start_index > end_index
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if start_index < 0 || end_index > linked_list.size || start_index > end_index
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index);
 
 /**
- * @brief Converts the provided LinkedList into a Collection view.
+ * @brief Returns a Collection view of the linked list.
  *
- * The returned Collection does not own the underlying elements.
+ * The returned collection does not own the elements.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return a Collection representation of the LinkedList
+ * @return a collection view
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  */
 Collection linked_list_to_collection(const LinkedList* linked_list);
 
 /**
- * @brief Converts the provided LinkedList into a newly allocated array.
+ * @brief Returns a newly allocated array containing all elements of the linked list.
  *
- * @param linked_list pointer to an LinkedList
+ * @param linked_list pointer to a linked list
  *
- * @return a newly allocated array containing all elements
+ * @return an array of elements
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created array must be freed manually
  */
 void** linked_list_to_array(const LinkedList* linked_list);
 
 /**
- * @brief Converts the provided LinkedList to a string representation.
+ * @brief Converts the linked list to a string representation.
  *
- * Each element is converted using the to_string function configured
- * in the LinkedListOptions.
+ * @param linked_list pointer to a linked list
  *
- * @param linked_list pointer to an LinkedList
- *
- * @return a newly allocated null-terminated string representation, or nullptr on failure
+ * @return a newly allocated string
  *
  * @exception NULL_POINTER_ERROR if linked_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created string must be freed manually
  */
 char* linked_list_to_string(const LinkedList* linked_list);
 

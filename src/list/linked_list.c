@@ -779,7 +779,7 @@ static Node* get_node(const LinkedList* linked_list, int index) {
 
 static Node* find_node(const LinkedList* linked_list, const void* element) {
     for (Node* node = linked_list->head; node; node = node->next) {
-        if (linked_list->equals(element, node->element)) {
+        if (linked_list->equals(node->element, element)) {
             return node;
         }
     }
@@ -811,8 +811,8 @@ typedef struct {
     Iterator iterator;
     LinkedList* linked_list;
     int cursor;
-    Node* last_returned;
     Node* current;
+    Node* last_returned;
     int modification_count;
 } IterationContext;
 
@@ -836,8 +836,8 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
 
     iteration_context->linked_list = (LinkedList*) linked_list;
     iteration_context->cursor = 0;
-    iteration_context->last_returned = nullptr;
     iteration_context->current = linked_list->head;
+    iteration_context->last_returned = nullptr;
     iteration_context->modification_count = linked_list->modification_count;
 
     return &iteration_context->iterator;
@@ -890,14 +890,35 @@ static void* iterator_previous_internal(void* raw_iteration_context) {
     return iteration_context->last_returned->element;
 }
 
-// TODO: improve performance
 static void iterator_add_internal(void* raw_iteration_context, const void* element) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->linked_list->modification_count) {
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return;
     }
-    linked_list_add(iteration_context->linked_list, iteration_context->cursor++, element);
+    Node* node = create_node(iteration_context->linked_list, element);
+    if (!node) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
+        return;
+    }
+    Node* next = iteration_context->current;
+    Node* prev = next ? next->prev : iteration_context->linked_list->tail;
+    node->prev = prev;
+    node->next = next;
+    if (prev) {
+        prev->next = node;
+    } else {
+        iteration_context->linked_list->head = node;
+    }
+    if (next) {
+        next->prev = node;
+    } else {
+        iteration_context->linked_list->tail = node;
+    }
+    iteration_context->linked_list->size++;
+    iteration_context->linked_list->modification_count++;
+    iteration_context->cursor++;
+    iteration_context->last_returned = nullptr;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 
@@ -942,8 +963,8 @@ static void iterator_remove_internal(void* raw_iteration_context) {
 static void iterator_reset_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iteration_context->cursor = 0;
-    iteration_context->last_returned = nullptr;
     iteration_context->current = iteration_context->linked_list->head;
+    iteration_context->last_returned = nullptr;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 

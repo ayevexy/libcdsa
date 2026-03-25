@@ -711,7 +711,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
         return nullptr;
     }
     string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string, linked_list->size == 0 ? "{" : "{ ");
+    strcat(string, linked_list->size == 0 ? "[" : "[ ");
 
     for (const Node* node = linked_list->head; node; node = node->next) {
         constexpr int NULL_TERMINATOR = 1;
@@ -727,27 +727,27 @@ char* linked_list_to_string(const LinkedList* linked_list) {
         strcat(string, element_string);
 
         if (node->next) {
-            strcat(string, " -> ");
+            strcat(string, ", ");
         }
         linked_list->memory_free(element_string);
     }
 
-    strcat(string, linked_list->size == 0 ? "}" : " }");
+    strcat(string, linked_list->size == 0 ? "]" : " ]");
     return string;
 }
 
 static size_t calculate_string_size(const LinkedList* linked_list) {
-    constexpr int BRACES = 2; constexpr int SPACE_ARROW_SPACE = 4; constexpr int NULL_TERMINATOR = 1;
+    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (const Node* node = linked_list->head; node; node = node->next) {
         length += linked_list->to_string(node->element, nullptr, 0);
 
-        if (node == linked_list->head) length += 1; // space after opening brace
-        if (node != linked_list->tail) length += SPACE_ARROW_SPACE; // prevent " -> " on the last element
-        if (node == linked_list->tail) length += 1; // space before closing brace
+        if (node == linked_list->head) length += 1; // space after opening bracket
+        if (node != linked_list->tail) length += COMMA_SPACE; // prevent ", " on the last element
+        if (node == linked_list->tail) length += 1; // space before closing bracket
     }
-    return length + BRACES + NULL_TERMINATOR;
+    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static Node* create_node(const LinkedList* linked_list, const void* element) {

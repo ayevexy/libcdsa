@@ -1210,7 +1210,7 @@ void test_get_linked_list_string_representation() {
     // when
     char* string = linked_list_to_string(linked_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("{ 1 -> 2 -> 3 -> 4 -> 5 }", string);
+    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string);
     // clean up
     free(string);
 }
@@ -1219,7 +1219,7 @@ void test_get_empty_linked_list_string_representation() {
     // when
     char* string = linked_list_to_string(linked_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("{}", string);
+    TEST_ASSERT_EQUAL_STRING("[]", string);
     // clean up
     free(string);
 }

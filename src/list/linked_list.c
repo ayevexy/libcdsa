@@ -54,8 +54,6 @@ static void iterator_remove_internal(void*);
 
 static void iterator_reset_internal(void*);
 
-static void iterator_reset_internal(void*);
-
 static void bubble_sort(LinkedList*, Comparator);
 
 static void selection_sort(LinkedList*, Comparator);
@@ -159,7 +157,7 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
     }
     Node* node = create_node(linked_list, element);
     if (!node) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new_node'");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return;
     }
     if (linked_list->size == 0) {
@@ -207,7 +205,14 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
     while (iterator_has_next(iterator)) {
         Node* node = create_node(linked_list, iterator_next(iterator));
         if (!node) {
-            break;
+            while (head) {
+                Node* temporary = head;
+                head = head->next;
+                linked_list->memory_free(temporary);
+            }
+            iterator_destroy(&iterator);
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
+            return;
         }
         if (!head) {
             head = tail = node;

@@ -309,10 +309,7 @@ void* linked_list_remove(LinkedList* linked_list, int index) {
         return nullptr;
     }
     Node* node = get_node(linked_list, index);
-    void* element = remove_node(linked_list, node);
-
-    linked_list->destruct(element);
-    return element;
+    return remove_node(linked_list, node);
 }
 
 void* linked_list_remove_first(LinkedList* linked_list) {
@@ -321,9 +318,7 @@ void* linked_list_remove_first(LinkedList* linked_list) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty");
         return nullptr;
     }
-    void* element = remove_node(linked_list, linked_list->head);
-    linked_list->destruct(element);
-    return element;
+    return remove_node(linked_list, linked_list->head);
 }
 
 void* linked_list_remove_last(LinkedList* linked_list) {
@@ -332,16 +327,14 @@ void* linked_list_remove_last(LinkedList* linked_list) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'linked_list' is empty");
         return nullptr;
     }
-    void* element = remove_node(linked_list, linked_list->tail);
-    linked_list->destruct(element);
-    return element;
+    return remove_node(linked_list, linked_list->tail);
 }
 
 bool linked_list_remove_element(LinkedList* linked_list, const void* element) {
     if (require_non_null(linked_list)) return false;
     Node* node = find_node(linked_list, element);
     if (node) {
-        linked_list->destruct(remove_node(linked_list, node));
+        remove_node(linked_list, node);
         return true;
     }
     return false;
@@ -353,7 +346,7 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
         if (collection_contains(collection, node->element)) {
-            linked_list->destruct(remove_node(linked_list, node));
+            remove_node(linked_list, node);
             count++;
         }
     }
@@ -370,7 +363,7 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
     Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
         Node* next = node->next;
-        linked_list->destruct(remove_node(linked_list, node));
+        remove_node(linked_list, node);
         node = next;
     }
     return end_index - start_index;
@@ -382,7 +375,7 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
         if (condition(node->element)) {
-            linked_list->destruct(remove_node(linked_list, node));
+            remove_node(linked_list, node);
             count++;
         }
     }
@@ -407,7 +400,7 @@ int linked_list_retain_all(LinkedList* linked_list, Collection collection) {
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
         if (!collection_contains(collection, node->element)) {
-            linked_list->destruct(remove_node(linked_list, node));
+            remove_node(linked_list, node);
             count++;
         }
     }
@@ -809,6 +802,7 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
     if (node->next) {
         node->next->prev = node->prev;
     }
+    linked_list->destruct(node->element);
     linked_list->memory_free(node);
     linked_list->size--;
     linked_list->modification_count++;

@@ -192,7 +192,6 @@ void linked_list_add_last(LinkedList* linked_list, const void* element) {
     linked_list_add(linked_list, linked_list ? linked_list->size : -1, element);
 }
 
-// TODO: fix
 void linked_list_add_all(LinkedList* linked_list, int index, Collection collection) {
     if (require_non_null(linked_list)) return;
     if (index < 0 || index > linked_list->size) {
@@ -353,7 +352,6 @@ int linked_list_remove_all(LinkedList* linked_list, Collection collection) {
     return count;
 }
 
-// TODO: does this works?
 int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_index) {
     if (require_non_null(linked_list)) return 0;
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
@@ -649,7 +647,6 @@ LinkedList* linked_list_clone(const LinkedList* linked_list) {
     return new_linked_list;
 }
 
-// TODO: refactor
 LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index, int end_index) {
     if (require_non_null(linked_list)) return nullptr;
     if (start_index < 0 || end_index > linked_list->size || start_index > end_index) {
@@ -669,11 +666,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
     }
     const Node* node = get_node(linked_list, start_index);
     for (int i = start_index; i < end_index; i++) {
-        if ((error = attempt(linked_list_add_last(new_linked_list, node->element)))) {
-            set_error(error, "%s", plain_error_message());
-            linked_list_destroy(&new_linked_list);
-            return nullptr;
-        }
+        linked_list_add_last(new_linked_list, node->element);
         node = node->next;
     }
     return new_linked_list;

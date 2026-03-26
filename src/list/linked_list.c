@@ -36,6 +36,8 @@ static Node* find_node(const LinkedList*, const void*);
 
 static void* remove_node(LinkedList*, Node*);
 
+static void destroy_nodes(LinkedList*);
+
 static Iterator* create_iterator(const LinkedList*);
 
 static bool iterator_has_next_internal(const void*);
@@ -132,14 +134,7 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer) {
     if (require_non_null(linked_list_pointer, *linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
-    Node* current = linked_list->head;
-    while (current) {
-        Node* temporary = current;
-        current = current->next;
-        
-        linked_list->destruct(temporary->element);
-        linked_list->memory_free(temporary);
-    }
+    destroy_nodes(linked_list);
     linked_list->memory_free(linked_list);
     *linked_list_pointer = nullptr;
 }
@@ -521,14 +516,7 @@ void linked_list_rotate(LinkedList* linked_list, int distance) {
 
 void linked_list_clear(LinkedList* linked_list) {
     if (require_non_null(linked_list)) return;
-    Node* current = linked_list->head;
-    while (current) {
-        Node* temporary = current;
-        current = current->next;
-
-        linked_list->destruct(temporary->element);
-        linked_list->memory_free(temporary);
-    }
+    destroy_nodes(linked_list);
     linked_list->head = linked_list->tail = nullptr;
     linked_list->size = 0;
     linked_list->modification_count++;
@@ -807,6 +795,14 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
     return element;
 }
 
+static void destroy_nodes(LinkedList* linked_list) {
+    for (Node* current = linked_list->head, * next; current; current = next) {
+        next = current->next;
+        linked_list->destruct(current->element);
+        linked_list->memory_free(current);
+    }
+}
+
 typedef struct {
     Iterator iterator;
     LinkedList* linked_list;
@@ -1038,7 +1034,6 @@ static Node* merge_sort_internal(Node* head, Comparator compare) {
 
     return merge(head, second, compare);
 }
-
 
 static Node* split(Node* head) {
     Node* slow = head, * fast = head;

@@ -510,10 +510,10 @@ char* hash_map_to_string(const HashMap* hash_map) {
 
     char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, hash_map->size == 0 ? "[" : "[ ");
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
@@ -527,7 +527,7 @@ char* hash_map_to_string(const HashMap* hash_map) {
             char* element_string = hash_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
             if (!element_string) {
                 hash_map->memory_free(string);
-                set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+                set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return nullptr;
             }
             hash_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
@@ -549,7 +549,7 @@ char* hash_map_to_string(const HashMap* hash_map) {
 }
 
 static size_t calculate_string_size(const HashMap* hash_map) {
-    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
@@ -560,7 +560,7 @@ static size_t calculate_string_size(const HashMap* hash_map) {
             length += 3; // ' = ' separator
 
             if (count == 0) length += 1; // space after opening bracket
-            if (count < hash_map->size - 1) length += SEPARATOR; // prevent separator on the last element
+            if (count < hash_map->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
             if (count == hash_map->size - 1) length += 1; // space before closing bracket
 
             entry = entry->next;

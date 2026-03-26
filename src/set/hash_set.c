@@ -294,12 +294,10 @@ bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
         return false;
     }
     for (int i = 0; i < other_hash_set->capacity; i++) {
-        const Node* node = other_hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = other_hash_set->buckets[i]; node; node = node->next) {
             if (!hash_set_contains(hash_set, node->element)) {
                 return false;
             }
-            node = node->next;
         }
     }
     return true;
@@ -308,10 +306,8 @@ bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
 void hash_set_for_each(HashSet* hash_set, Consumer action) {
     if (require_non_null(hash_set, action)) return;
     for (int i = 0; i < hash_set->capacity; i++) {
-        const Node* node = hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             action(node->element);
-            node = node->next;
         }
     }
 }
@@ -326,12 +322,11 @@ void hash_set_clear(HashSet* hash_set) {
 
 bool hash_set_contains(const HashSet* hash_set, const void* element) {
     if (require_non_null(hash_set)) return false;
-    const Node* node = hash_set->buckets[hash_set->hash(element) & (hash_set->capacity - 1)];
-    while (node) {
+    const int index = hash_set->hash(element) & (hash_set->capacity - 1);
+    for (const Node* node = hash_set->buckets[index]; node; node = node->next) {
         if (hash_set->equals(node->element, element)) {
             return true;
         }
-        node = node->next;
     }
     return false;
 }
@@ -384,14 +379,12 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
         return nullptr;
     }
     for (int i = 0; i < hash_set->capacity; i++) {
-        const Node* node = hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             if ((error = attempt(hash_set_add(new_hash_set, node->element)))) {
                 hash_set_destroy(&new_hash_set);
                 set_error(error, "%s", plain_error_message());
                 return nullptr;
             }
-            node = node->next;
         }
     }
     return new_hash_set;
@@ -399,16 +392,14 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
 
 void** hash_set_to_array(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
-    void** elements = hash_set->memory_alloc(sizeof(void*) * hash_set->size);
+    void** elements = hash_set->memory_alloc(hash_set->size * sizeof(void*));
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
     }
     for (int i = 0, j = 0; i < hash_set->capacity; i++) {
-        const Node* node = hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             elements[j++] = node->element;
-            node = node->next;
         }
     }
     return elements;
@@ -419,22 +410,21 @@ char* hash_set_to_string(const HashSet* hash_set) {
 
     char* string = hash_set->memory_alloc(calculate_string_size(hash_set));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, hash_set->size == 0 ? "(" : "( ");
 
     for (int i = 0; i < hash_set->capacity; i++) {
-        const Node* node = hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             constexpr int NULL_TERMINATOR = 1;
             const int length = hash_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
             char* element_string = hash_set->memory_alloc(length);
             if (!element_string) {
                 hash_set->memory_free(string);
-                set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+                set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return nullptr;
             }
             hash_set->to_string(node->element, element_string, length);
@@ -444,7 +434,6 @@ char* hash_set_to_string(const HashSet* hash_set) {
                 strcat(string, ", ");
             }
             hash_set->memory_free(element_string);
-            node = node->next;
         }
     }
 
@@ -453,19 +442,16 @@ char* hash_set_to_string(const HashSet* hash_set) {
 }
 
 static size_t calculate_string_size(const HashSet* hash_set) {
-    constexpr int PARENTHESES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int PARENTHESES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
 
     for (int i = 0; i < hash_set->capacity; i++) {
-        const Node* node = hash_set->buckets[i];
-        while (node) {
+        for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             length += hash_set->to_string(node->element, nullptr, 0);
 
-            if (i == 0) length += 1; // space after opening bracket
-            if (i < hash_set->size - 1) length += SEPARATOR; // prevent separator on the last element
-            if (i == hash_set->size - 1) length += 1; // space before closing bracket
-
-            node = node->next;
+            if (i == 0) length += 1; // space after opening parenthesis
+            if (i < hash_set->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
+            if (i == hash_set->size - 1) length += 1; // space before closing parenthesis
         }
     }
     return length + PARENTHESES + NULL_TERMINATOR;
@@ -492,10 +478,9 @@ static bool ensure_capacity(HashSet* hash_set) {
     }
     memset(buckets, 0, new_capacity * sizeof(Node*));
     for (int i = 0; i < hash_set->capacity; i++) {
-        Node* node = hash_set->buckets[i];
-        while (node) {
+       for (Node* node = hash_set->buckets[i], * next; node; node = next) {
             const int index = hash_set->hash(node->element) & (new_capacity - 1);
-            Node* next_node = node->next;
+            next = node->next;
             node->next = nullptr;
 
             Node* current = buckets[index];
@@ -503,7 +488,6 @@ static bool ensure_capacity(HashSet* hash_set) {
                 node->next = current;
             }
             buckets[index] = node;
-            node = next_node;
         }
     }
     hash_set->memory_free(hash_set->buckets);

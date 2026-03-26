@@ -1,8 +1,11 @@
 ![Project Logo](logo.svg)
 
+> [!WARNING]
+> This library is currently a work in progress. It is experimental and may be unstable — use it at your own risk.
+
 ---
 
-# Data Structures and Algorithms Library in C (Experimental)
+# Data Structures and Algorithms Library in C
 
 ---
 

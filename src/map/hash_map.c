@@ -52,6 +52,8 @@ static Entry* create_entry(HashMap*, const void*, const void*);
 
 static Entry* get_entry(const HashMap*, const void*);
 
+static void destroy_entries(HashMap*);
+
 static Iterator* create_iterator(const HashMap*, void* (*)(void*));
 
 static bool iterator_has_next_internal(const void*);
@@ -142,15 +144,7 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 void hash_map_destroy(HashMap** hash_map_pointer) {
     if (require_non_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
-    for (int i = 0; i < hash_map->capacity; i++) {
-        for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
-            hash_map->key_destruct(current->key);
-            hash_map->value_destruct(current->value);
-
-            next = current->next;
-            hash_map->memory_free(current);
-        }
-    }
+    destroy_entries(hash_map);
     hash_map->memory_free(hash_map->buckets);
     hash_map->memory_free(hash_map);
     *hash_map_pointer = nullptr;
@@ -396,15 +390,7 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
 
 void hash_map_clear(HashMap* hash_map) {
     if (require_non_null(hash_map)) return;
-    for (int i = 0; i < hash_map->capacity; i++) {
-        for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
-            hash_map->key_destruct(current->key);
-            hash_map->value_destruct(current->value);
-
-            next = current->next;
-            hash_map->memory_free(current);
-        }
-    }
+    destroy_entries(hash_map);
     memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
     hash_map->modification_count++;
@@ -613,6 +599,18 @@ static Entry* get_entry(const HashMap* hash_map, const void* key) {
         }
     }
     return nullptr;
+}
+
+static void destroy_entries(HashMap* hash_map) {
+    for (int i = 0; i < hash_map->capacity; i++) {
+        for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
+            hash_map->key_destruct(current->key);
+            hash_map->value_destruct(current->value);
+
+            next = current->next;
+            hash_map->memory_free(current);
+        }
+    }
 }
 
 typedef struct {

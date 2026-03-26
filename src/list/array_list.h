@@ -119,7 +119,7 @@ typedef struct {
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 ArrayList* array_list_new(const ArrayListOptions* options);
 

@@ -182,12 +182,8 @@ bool hash_set_add_all(HashSet* hash_set, Collection collection) {
     }
     bool changed = false;
     while (iterator_has_next(iterator)) {
-        bool added = false;
-        if ((error = attempt(added = hash_set_add(hash_set, iterator_next(iterator))))) {
-            set_error(error, "%s", plain_error_message());
-            break;
-        }
-        if (added) {
+        const void* element = iterator_next(iterator);
+        if (hash_set_add(hash_set, element)) {
             changed = true;
         }
     }
@@ -380,11 +376,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
     }
     for (int i = 0; i < hash_set->capacity; i++) {
         for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
-            if ((error = attempt(hash_set_add(new_hash_set, node->element)))) {
-                hash_set_destroy(&new_hash_set);
-                set_error(error, "%s", plain_error_message());
-                return nullptr;
-            }
+            hash_set_add(new_hash_set, node->element);
         }
     }
     return new_hash_set;

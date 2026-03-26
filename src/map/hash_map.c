@@ -252,7 +252,6 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
     return old_value;
 }
 
-// TODO: refactor
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     if (require_non_null(hash_map)) return;
     Iterator* iterator; Error error;
@@ -263,10 +262,7 @@ void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     }
     while (iterator_has_next(iterator)) {
         const MapEntry* entry = iterator_next(iterator);
-        if ((error = attempt(hash_map_put(hash_map, entry->key, entry->value)))) {
-            set_error(error, "%s", plain_error_message());
-            break;
-        }
+        hash_map_put(hash_map, entry->key, entry->value);
     }
     iterator_destroy(&iterator);
 }
@@ -479,7 +475,6 @@ Collection hash_map_entries(const HashMap* hash_map) {
     };
 }
 
-// TODO: refactor
 HashMap* hash_map_clone(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
     HashMap* new_hash_map; Error error;
@@ -503,11 +498,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
     for (int i = 0; i < hash_map->capacity; i++) {
         const Entry* entry = hash_map->buckets[i];
         while (entry) {
-            if ((error = attempt(hash_map_put(new_hash_map, entry->key, entry->value)))) {
-                hash_map_destroy(&new_hash_map);
-                set_error(error, "%s", plain_error_message());
-                return nullptr;
-            }
+            hash_map_put(new_hash_map, entry->key, entry->value);
             entry = entry->next;
         }
     }
@@ -635,14 +626,12 @@ static Entry* create_entry(HashMap* hash_map, const void* key, const void* value
     return entry;
 }
 
-// TODO: refactor
 static Entry* get_entry(const HashMap* hash_map, const void* key) {
-    Entry* entry = hash_map->buckets[hash_map->hash(key) & (hash_map->capacity - 1)];
-    while (entry) {
+    const int index = hash_map->hash(key) & (hash_map->capacity - 1);
+    for (Entry* entry = hash_map->buckets[index]; entry; entry = entry->next) {
         if (hash_map->key_equals(entry->key, key)) {
             return entry;
         }
-        entry = entry->next;
     }
     return nullptr;
 }

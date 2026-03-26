@@ -833,6 +833,7 @@ static void iterator_add_internal(void* raw_iteration_context, const void* eleme
         return;
     }
     array_list_add(iteration_context->array_list, iteration_context->cursor++, element);
+    iteration_context->last_returned = -1;
     iteration_context->modification_count = iteration_context->array_list->modification_count;
 }
 

@@ -810,9 +810,9 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
 typedef struct {
     Iterator iterator;
     LinkedList* linked_list;
-    int cursor;
     Node* current;
     Node* last_returned;
+    int cursor;
     int modification_count;
 } IterationContext;
 
@@ -835,9 +835,9 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     iteration_context->iterator.memory_free = linked_list->memory_free;
 
     iteration_context->linked_list = (LinkedList*) linked_list;
-    iteration_context->cursor = 0;
     iteration_context->current = linked_list->head;
     iteration_context->last_returned = nullptr;
+    iteration_context->cursor = 0;
     iteration_context->modification_count = linked_list->modification_count;
 
     return &iteration_context->iterator;
@@ -901,25 +901,28 @@ static void iterator_add_internal(void* raw_iteration_context, const void* eleme
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return;
     }
-    Node* next = iteration_context->current;
-    Node* prev = next ? next->prev : iteration_context->linked_list->tail;
-    node->prev = prev;
-    node->next = next;
-    if (prev) {
-        prev->next = node;
+    LinkedList* linked_list = iteration_context->linked_list;
+    if (linked_list->size == 0) {
+        linked_list->head = node;
+        linked_list->tail = node;
+    } else if (iteration_context->cursor == 0) {
+        node->next = linked_list->head;
+        linked_list->head->prev = node;
+        linked_list->head = node;
+    } else if (iteration_context->cursor == linked_list->size) {
+        node->prev = linked_list->tail;
+        linked_list->tail->next = node;
+        linked_list->tail = node;
     } else {
-        iteration_context->linked_list->head = node;
-    }
-    if (next) {
-        next->prev = node;
-    } else {
-        iteration_context->linked_list->tail = node;
+        Node* current = iteration_context->current;
+        node->prev = current->prev;
+        node->prev->next = node;
+        node->next = current;
+        current->prev = node;
     }
     iteration_context->linked_list->size++;
-    iteration_context->linked_list->modification_count++;
     iteration_context->cursor++;
     iteration_context->last_returned = nullptr;
-    iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 
 static void iterator_set_internal(void* raw_iteration_context, const void* element) {
@@ -962,9 +965,9 @@ static void iterator_remove_internal(void* raw_iteration_context) {
 
 static void iterator_reset_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
-    iteration_context->cursor = 0;
     iteration_context->current = iteration_context->linked_list->head;
     iteration_context->last_returned = nullptr;
+    iteration_context->cursor = 0;
     iteration_context->modification_count = iteration_context->linked_list->modification_count;
 }
 

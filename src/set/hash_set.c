@@ -211,38 +211,33 @@ bool hash_set_remove(HashSet* hash_set, const void* element) {
 
 int hash_set_remove_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return false;
-    }
     int count = 0;
-    while (iterator_has_next(iterator)) {
-        const void* element = iterator_next(iterator);
-        if (hash_set_remove(hash_set, element)) {
-            count++;
+    for (int i = 0; i < hash_set->capacity; i++) {
+        for (Node* node = hash_set->buckets[i], * prev = nullptr, * next; node; node = next) {
+            next = node->next;
+            if (collection_contains(collection, node->element)) {
+                remove_node(hash_set, i, prev, node);
+                count++;
+            } else {
+                prev = node;
+            }
         }
     }
-    iterator_destroy(&iterator);
     return count;
 }
 
 int hash_set_remove_if(HashSet* hash_set, Predicate condition) {
     if (require_non_null(hash_set, condition)) return false;
-
     int count = 0;
     for (int i = 0; i < hash_set->capacity; i++) {
-        Node* prev_node = nullptr, * node = hash_set->buckets[i];
-        while (node) {
-            Node* next = node->next;
+        for (Node* node = hash_set->buckets[i], * prev = nullptr, * next; node; node = next) {
+            next = node->next;
             if (condition(node->element)) {
-                remove_node(hash_set, i, prev_node, node);
+                remove_node(hash_set, i, prev, node);
                 count++;
             } else {
-                prev_node = node;
+                prev = node;
             }
-            node = next;
         }
     }
     return count;
@@ -250,35 +245,18 @@ int hash_set_remove_if(HashSet* hash_set, Predicate condition) {
 
 int hash_set_retain_all(HashSet* hash_set, Collection collection) {
     if (require_non_null(hash_set)) return false;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return false;
-    }
     int count = 0;
     for (int i = 0; i < hash_set->capacity; i++) {
-        bool found = false;
-        Node* prev_node = nullptr, * node = hash_set->buckets[i];
-        while (node) {
-            Node* next = node->next;
-            while (iterator_has_next(iterator)) {
-                if (hash_set->equals(node->element, iterator_next(iterator))) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                remove_node(hash_set, i, prev_node, node);
+        for (Node* node = hash_set->buckets[i], * prev = nullptr, * next; node; node = next) {
+            next = node->next;
+            if (!collection_contains(collection, node->element)) {
+                remove_node(hash_set, i, prev, node);
                 count++;
             } else {
-                prev_node = node;
+                prev = node;
             }
-            node = next;
-            iterator_reset(iterator);
         }
     }
-    iterator_destroy(&iterator);
     return count;
 }
 

@@ -12,9 +12,9 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Features](#features)
-- [Limitations](#limitations)
-- [Technologies](#technologies)
+  - [Features](#features)
+  - [Limitations](#limitations)
+  - [Technologies](#technologies)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installing](#installing)
@@ -30,25 +30,29 @@
 
 ## Overview
 
-A Feature-Rich High-Level Data Structures and Algorithms Library Implemented in C.
+A Feature-Rich, High-Level, and Easy-to-Use Data Structures and Algorithms Library for the C programming language.
 
-This library is meant to implement the most common algorithms and data structures using high-level abstractions in pure C code.
-It aims to implement common data structures like array lists, linked lists, hashtable, etc. as well as sorting algorithms like merge sort, quick sort.
-The library provides a high level feature-rich API to operate on these structures, instead of just basic operations.
-The library comes with reasonable defaults but provides some configuration. 
-The API is heavily based on the Java Collections Framework and shares many similarities with it.
+This project provides common data structures and algorithms with clean, expressive, and
+reusable abstractions — bringing a modern programming experience to C.
+It includes implementations of widely used data structures such as array lists, linked lists, hash maps, and hash sets,
+along with classic algorithms like merge sort and quick sort. The API is heavily inspired by the 
+Java Collections Framework, offering a familiar interface for developers with a Java background.
 
-The library implements the following data structures:
+---
 
-- [Array List](src/list/array_list.h): A linear generic and dynamic data structure that stores data consecutively in memory.
-- [Linked List](src/list/linked_list.h): A linear generic and dynamic data structure that stores data in non-consecutive memory locations linked by references.
-- [Hash Map](src/map/hash_map.h): A generic dynamic associative data structure that maps keys to values using a hashing function.
-- [Tree Map](src/map/tree_map.h): A generic dynamic ordered associative data structure that maps unique keys to values backed by a self-balancing binary search tree.
-- [Hash Set](src/set/hash_set.h): A generic dynamic unordered data structure that stores elements using a hashing function to ensure uniqueness.
-- [Tree Set](src/set/tree_set.h): A generic dynamic ordered data structure that stores unique elements.
-- [Deque](src/deque/deque.h): A generic dynamic linear data structure that allows insertion and removal of elements at both the front and back of the sequence.
-- [Stack](src/stack/stack.h): A generic dynamic linear data structure that follows the Last-In, First-Out (LIFO) principle, allowing insertion and removal only at the top.
-- [Queue](src/queue/queue.h): A generic dynamic linear data structure that follows the First-In, First-Out (FIFO) principle, allowing insertion at the rear and removal from the front.
+### Features
+
+The library currently provides the following data structures:
+
+- [Array List](src/list/array_list.h): A dynamic, linear structure that stores elements contiguously in memory for fast random access.
+- [Linked List](src/list/linked_list.h): A dynamic, linear structure that stores elements in non-contiguous memory, linked by references.
+- [Hash Map](src/map/hash_map.h): An unordered associative structure mapping unique keys to values using a hash function.
+- [Tree Map](src/map/tree_map.h): An ordered associative structure mapping unique keys to values, backed by a binary search tree.
+- [Hash Set](src/set/hash_set.h): An unordered structure storing unique elements with hash-based lookup.
+- [Tree Set](src/set/tree_set.h): An ordered structure storing unique elements in a sorted manner, backed by a binary search tree.
+- [Deque](src/deque/deque.h): A linear structure allowing insertion and removal at both ends of the sequence.
+- [Stack](src/stack/stack.h): A linear LIFO structure where elements are inserted and removed from the top.
+- [Queue](src/queue/queue.h): A linear FIFO structure where elements are added at the rear and removed from the front.
 - [Priority Queue](src/priority_queue/priority_queue.h): ...
 
 Also, there is some other utilities which may be useful:
@@ -64,22 +68,6 @@ Also, there is some other utilities which may be useful:
 - [Memory](src/util/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
-
----
-
-### Features
-
-This project aims to accomplish the following features:
-
-- Most Common Data Structures Implemented
-- High-Level Abstractions
-- Ease of Use
-- Feature Rich API
-- Configurable
-- Reasonable Defaults
-- Great Test Coverage
-- Simple Documentation
-- ISO C23 Compliance
 
 ---
 

@@ -143,14 +143,12 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
     if (require_non_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
     for (int i = 0; i < hash_map->capacity; i++) {
-        Entry* current = hash_map->buckets[i];
-        while (current) {
+        for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
             hash_map->key_destruct(current->key);
             hash_map->value_destruct(current->value);
 
-            Entry* temporary = current->next;
+            next = current->next;
             hash_map->memory_free(current);
-            current = temporary;
         }
     }
     hash_map->memory_free(hash_map->buckets);
@@ -333,15 +331,13 @@ bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* v
 void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
     if (require_non_null(hash_map, bi_operator)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
-        Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             void* old_value = entry->value;
             void* new_value = bi_operator(entry->key, entry->value);
             if (old_value != new_value) {
                 hash_map->value_destruct(old_value);
             }
             entry->value = new_value;
-            entry = entry->next;
         }
     }
 }
@@ -380,12 +376,10 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
         return false;
     }
     for (int i = 0; i < other_hash_map->capacity; i++) {
-        const Entry* entry = other_hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = other_hash_map->buckets[i]; entry; entry = entry->next) {
             if (!hash_map_contains_entry(hash_map, entry->key, entry->value)) {
                 return false;
             }
-            entry = entry->next;
         }
     }
     return true;
@@ -394,10 +388,8 @@ bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
 void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     if (require_non_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             action(entry->key, entry->value);
-            entry = entry->next;
         }
     }
 }
@@ -405,14 +397,12 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
 void hash_map_clear(HashMap* hash_map) {
     if (require_non_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
-        Entry* current = hash_map->buckets[i];
-        while (current) {
+        for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
             hash_map->key_destruct(current->key);
             hash_map->value_destruct(current->value);
 
-            Entry* temporary = current->next;
+            next = current->next;
             hash_map->memory_free(current);
-            current = temporary;
         }
     }
     memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
@@ -434,12 +424,10 @@ bool hash_map_contains_key(const HashMap* hash_map, const void* key) {
 bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
     if (require_non_null(hash_map)) return false;
     for (int i = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             if (hash_map->value_equals(entry->value, value)) {
                 return true;
             }
-            entry = entry->next;
         }
     }
     return false;
@@ -496,10 +484,8 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         return nullptr;
     }
     for (int i = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             hash_map_put(new_hash_map, entry->key, entry->value);
-            entry = entry->next;
         }
     }
     return new_hash_map;
@@ -517,8 +503,7 @@ char* hash_map_to_string(const HashMap* hash_map) {
     strcat(string, hash_map->size == 0 ? "[" : "[ ");
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             constexpr int SEPARATOR = 3; constexpr int NULL_TERMINATOR = 1;
 
             const int key_length = hash_map->key_to_string(entry->key, nullptr, 0);
@@ -540,7 +525,6 @@ char* hash_map_to_string(const HashMap* hash_map) {
             }
             count++;
             hash_map->memory_free(element_string);
-            entry = entry->next;
         }
     }
 
@@ -553,8 +537,7 @@ static size_t calculate_string_size(const HashMap* hash_map) {
     size_t length = 0;
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
-        const Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             length += hash_map->key_to_string(entry->key, nullptr, 0);
             length += hash_map->value_to_string(entry->value, nullptr, 0);
             length += 3; // ' = ' separator
@@ -563,7 +546,6 @@ static size_t calculate_string_size(const HashMap* hash_map) {
             if (count < hash_map->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
             if (count == hash_map->size - 1) length += 1; // space before closing bracket
 
-            entry = entry->next;
             count++;
         }
     }
@@ -592,10 +574,9 @@ static bool ensure_capacity(HashMap* hash_map) {
     }
     memset(buckets, 0, new_capacity * sizeof(Entry*));
     for (int i = 0; i < hash_map->capacity; i++) {
-        Entry* entry = hash_map->buckets[i];
-        while (entry) {
+        for (Entry* entry = hash_map->buckets[i], * next; entry; entry = next) {
             const int index = entry->hash & (new_capacity - 1);
-            Entry* next_entry = entry->next;
+            next = entry->next;
             entry->next = nullptr;
 
             Entry* current = buckets[index];
@@ -603,8 +584,6 @@ static bool ensure_capacity(HashMap* hash_map) {
                 entry->next = current;
             }
             buckets[index] = entry;
-
-            entry = next_entry;
         }
     }
     hash_map->memory_free(hash_map->buckets);

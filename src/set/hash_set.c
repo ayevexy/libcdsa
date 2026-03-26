@@ -573,7 +573,7 @@ static bool iterator_has_next_internal(const void* raw_iteration_context) {
 static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->hash_set->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_next_internal(iteration_context)) {
@@ -622,7 +622,7 @@ static void iterator_set_internal(void* raw_iteration_context, const void* eleme
 static void iterator_remove_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->hash_set->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     if (!iteration_context->last_returned) {

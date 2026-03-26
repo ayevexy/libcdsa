@@ -466,12 +466,13 @@ static int next_power_of_two(int x) {
 }
 
 static bool ensure_capacity(HashSet* hash_set) {
-    const int new_capacity = hash_set->capacity > (MAX_CAPACITY / GROWN_FACTOR)
-        ? MAX_CAPACITY
-        : hash_set->capacity * GROWN_FACTOR;
     if (hash_set->size < hash_set->threshold) {
         return true;
     }
+    if (GROWN_FACTOR > MAX_CAPACITY / hash_set->capacity) {
+        return false;
+    }
+    const int new_capacity = hash_set->capacity * GROWN_FACTOR;
     Node** buckets = hash_set->memory_alloc(new_capacity * sizeof(Node*));
     if (!buckets) {
         return false;

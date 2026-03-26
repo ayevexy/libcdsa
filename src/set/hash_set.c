@@ -8,7 +8,7 @@
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
 constexpr float MIN_LOAD_FACTOR = 0.5;
-constexpr float GROWN_FACTOR = 2;
+constexpr int GROWN_FACTOR = 2;
 
 typedef struct Node {
     void* element;
@@ -44,6 +44,8 @@ static bool ensure_capacity(HashSet*);
 static Node* create_node(const HashSet*, const void*);
 
 static void* remove_node(HashSet*, int, Node*, Node*);
+
+static void destroy_nodes(HashSet*);
 
 static Iterator* create_iterator(const HashSet*);
 
@@ -134,16 +136,7 @@ HashSet* hash_set_from(Collection collection, const HashSetOptions* options) {
 void hash_set_destroy(HashSet** hash_set_pointer) {
     if (require_non_null(hash_set_pointer, *hash_set_pointer)) return;
     HashSet* hash_set = *hash_set_pointer;
-    for (int i = 0; i < hash_set->capacity; i++) {
-        Node* current = hash_set->buckets[i];
-        while (current) {
-            hash_set->destruct(current->element);
-
-            Node* temporary = current->next;
-            hash_set->memory_free(current);
-            current = temporary;
-        }
-    }
+    destroy_nodes(hash_set);
     hash_set->memory_free(hash_set->buckets);
     hash_set->memory_free(hash_set);
     *hash_set_pointer = nullptr;
@@ -347,15 +340,7 @@ void hash_set_for_each(HashSet* hash_set, Consumer action) {
 
 void hash_set_clear(HashSet* hash_set) {
     if (require_non_null(hash_set)) return;
-    for (int i = 0; i < hash_set->capacity; i++) {
-        Node* current = hash_set->buckets[i];
-        while (current) {
-            hash_set->destruct(current->element);
-            Node* temporary = current->next;
-            hash_set->memory_free(current);
-            current = temporary;
-        }
-    }
+    destroy_nodes(hash_set);
     memset(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
     hash_set->size = 0;
     hash_set->modification_count++;
@@ -572,6 +557,17 @@ static void* remove_node(HashSet* hash_set, int bucket, Node* prev_node, Node* n
     hash_set->size--;
     hash_set->modification_count++;
     return element;
+}
+
+static void destroy_nodes(HashSet* hash_set) {
+    for (int i = 0; i < hash_set->capacity; i++) {
+        for (Node* current = hash_set->buckets[i], * next; current; current = next) {
+            hash_set->destruct(current->element);
+
+            next = current->next;
+            hash_set->memory_free(current);
+        }
+    }
 }
 
 typedef struct {

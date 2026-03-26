@@ -451,7 +451,7 @@ bool hash_map_is_empty(const HashMap* hash_map);
  * @exception NULL_POINTER_ERROR if hash_map is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the iterator does not support the following operations: has_previous(), previous(), add(), set(), and remove()
+ * @note the iterator does not support the following operations: has_previous(), previous(), add() and set()
  */
 Iterator* hash_map_iterator(const HashMap* hash_map);
 

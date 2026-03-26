@@ -145,21 +145,21 @@ void hash_map_destroy(HashMap** hash_map_pointer);
  * @brief Sets the key destructor used by the provided HashMap.
  *
  * @param hash_map pointer to a HashMap
- * @param destructor function used to destroy keys
+ * @param destruct function used to destroy keys
  *
  * @exception NULL_POINTER_ERROR if hash_map or destructor are null
  */
-void hash_map_set_key_destructor(HashMap* hash_map, void(*destructor)(void*));
+void hash_map_set_key_destructor(HashMap* hash_map, void(*destruct)(void*));
 
 /**
  * @brief Sets the value destructor used by the provided HashMap.
  *
  * @param hash_map pointer to a HashMap
- * @param destructor function used to destroy values
+ * @param destruct function used to destroy values
  *
  * @exception NULL_POINTER_ERROR if hash_map or destructor are null
  */
-void hash_map_set_value_destructor(HashMap* hash_map, void(*destructor)(void*));
+void hash_map_set_value_destructor(HashMap* hash_map, void(*destruct)(void*));
 
 /**
  * @brief Computes a new value for the specified key using the provided remapping function.

@@ -7,7 +7,7 @@
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
 constexpr float MIN_LOAD_FACTOR = 0.5;
-constexpr float GROWN_FACTOR = 2.0;
+constexpr int GROWN_FACTOR = 2;
 
 typedef struct Entry {
     union {
@@ -158,14 +158,14 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
     *hash_map_pointer = nullptr;
 }
 
-void hash_map_set_key_destructor(HashMap* hash_map, void(*destructor)(void*)) {
-    if (require_non_null(hash_map, destructor)) return;
-    hash_map->key_destruct = destructor;
+void hash_map_set_key_destructor(HashMap* hash_map, void(*destruct)(void*)) {
+    if (require_non_null(hash_map, destruct)) return;
+    hash_map->key_destruct = destruct;
 }
 
-void hash_map_set_value_destructor(HashMap* hash_map, void(*destructor)(void*)) {
-    if (require_non_null(hash_map, destructor)) return;
-    hash_map->value_destruct = destructor;
+void hash_map_set_value_destructor(HashMap* hash_map, void(*destruct)(void*)) {
+    if (require_non_null(hash_map, destruct)) return;
+    hash_map->value_destruct = destruct;
 }
 
 void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) {
@@ -252,6 +252,7 @@ void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* val
     return old_value;
 }
 
+// TODO: refactor
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     if (require_non_null(hash_map)) return;
     Iterator* iterator; Error error;
@@ -478,6 +479,7 @@ Collection hash_map_entries(const HashMap* hash_map) {
     };
 }
 
+// TODO: refactor
 HashMap* hash_map_clone(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
     HashMap* new_hash_map; Error error;
@@ -585,6 +587,7 @@ static int next_power_of_two(int x) {
     return power;
 }
 
+// TODO: fix
 static bool ensure_capacity(HashMap* hash_map) {
     const int new_capacity = hash_map->capacity > (MAX_CAPACITY / GROWN_FACTOR)
         ? MAX_CAPACITY
@@ -632,6 +635,7 @@ static Entry* create_entry(HashMap* hash_map, const void* key, const void* value
     return entry;
 }
 
+// TODO: refactor
 static Entry* get_entry(const HashMap* hash_map, const void* key) {
     Entry* entry = hash_map->buckets[hash_map->hash(key) & (hash_map->capacity - 1)];
     while (entry) {

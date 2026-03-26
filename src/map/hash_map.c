@@ -578,14 +578,14 @@ static int next_power_of_two(int x) {
     return power;
 }
 
-// TODO: fix
 static bool ensure_capacity(HashMap* hash_map) {
-    const int new_capacity = hash_map->capacity > (MAX_CAPACITY / GROWN_FACTOR)
-        ? MAX_CAPACITY
-        : hash_map->capacity * GROWN_FACTOR;
     if (hash_map->size < hash_map->threshold) {
         return true;
     }
+    if (GROWN_FACTOR > MAX_CAPACITY / hash_map->capacity) {
+        return false;
+    }
+    const int new_capacity = hash_map->capacity * GROWN_FACTOR;
     Entry** buckets = hash_map->memory_alloc(new_capacity * sizeof(Entry*));
     if (!buckets) {
         return false;

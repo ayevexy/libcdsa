@@ -10,25 +10,27 @@
 #include <stddef.h>
 
 /**
- * A hash map is a generic dynamic associative data structure that maps keys to values using a hashing function.
- * It automatically resizes to accommodate new entries and allows insertion of values of any type.
+ * A hash map is a generic dynamic associative data structure that maps keys to values
+ * using a hash function to compute the index of a key within an array.
+ * It automatically resizes to accommodate new entries and allows insertion of keys and values of any type.
  *
- * Internally, the implementation uses a struct containing an array of Entry pointers (buckets). Collisions are
- * resolved by chaining entries. All operations on a hash map receive a pointer to the hash map itself as their first argument.
- * The HashMap type is opaque and can only be modified through the API.
+ * Internally, the implementation uses a dynamically allocated array of `Entry*` (buckets).
+ * Collisions are resolved by chaining entries in a singly linked list per bucket.
+ * All operations receive a pointer to the hash map as their first argument.
+ * The HashMap type is opaque and can only be modified through the public API.
  *
- * It must be configured using a HashMapOptions defining:
- * - its initial capacity (must be a power of two, otherwise it will be automatically rounded to the next power of two)
- * - its load factor
- * - its hash function
- * - the destruct function utilized to free key memory
- * - the equals function utilized to compare keys
- * - the to string function utilized to convert its keys to a string representation
- * - the destruct function utilized to free value memory
- * - the equals function utilized to compare values
- * - the to string function utilized to convert its values to a string representation
- * - the function used internally to allocate memory
- * - the function used internally to free memory
+ * A hash map must be configured using a HashMapOptions structure specifying:
+ * - the initial capacity (must be a power of two, otherwise it will be automatically rounded to the next power of two)
+ * - the load factor
+ * - the hash function
+ * - the destruct function used to free key memory
+ * - the equality function used to compare keys
+ * - the to_string function used to convert keys to strings
+ * - the destruct function used to free value memory
+ * - the equality function used to compare values
+ * - the to_string function used to convert values to strings
+ * - the memory allocation function
+ * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
@@ -39,13 +41,37 @@
  * };
  * @endcode
  *
- * Error handling: Functions signal errors by exiting the program (printing to stderr),
+ * Memory ownership:
+ * By default, the hash map does not own either its keys or values. If destruct functions are
+ * provided, it will be invoked when:
+ * - mappings are removed (e.g., hash_map_remove, hash_map_remove_if_equals)
+ * - mappings are replaced (e.g., hash_map_put, hash_map_replace, hash_map_replace_all)
+ * - the hash map is cleared (hash_map_clear)
+ * - the hash map is destroyed (hash_map_destroy)
+ *
+ * Error handling:
+ * Functions signal errors by printing to stderr and terminating the program,
  * or by returning an error object when wrapped with the attempt macro.
+ *
+ * Iterator invalidation:
+ * Any structural modification (insertion, removal, clear, etc.) invalidates all active iterators.
+ *
+ * Time complexity:
+ * - hash_map_put: O(1) average, O(n) worst-case
+ * - hash_map_remove: O(1) average, O(n) worst-case
+ * - hash_map_get: O(1) average, O(n) worst-case
+ * - hash_map_replace: O(1) average, O(n) worst-case
+ * - hash_map_contains_entry / contains_key: O(1) average, O(n) worst-case
+ * - hash_map_contains_value: O(n)
+ * 
+ * Note:
+ * - Average-case O(1) assumes a good hash function and low load factor.
+ * - Worst-case O(n) occurs due to hash collisions (e.g., all keys in one bucket).
  */
 typedef struct HashMap HashMap;
 
 /**
- * HashMap configuration structure. Used to define the default behavior and attributes of a HashMap.
+ * HashMap configuration structure. Defines the behavior and attributes of a hash map.
  *
  * @pre initial_capacity >= 8
  * @pre initial_capacity <= 1'073'741'824
@@ -81,7 +107,7 @@ typedef struct {
 } HashMapOptions;
 
 /**
- * @brief A utility macro that provides a reasonable default HashMapOptions.
+ * @brief Utility macro providing default HashMapOptions.
  *
  * @param ... optional field overrides
  */
@@ -101,39 +127,38 @@ typedef struct {
 }
 
 /**
- * @brief Creates a new empty HashMap using the specified options.
+ * @brief Creates a new empty hash map using the specified options.
  *
- * @param options pointer to an HashMapOptions defining the hash map configuration
+ * @param options pointer to a HashMapOptions structure
  *
- * @return pointer to the newly created HashMap on success, or nullptr if creation fails
+ * @return pointer to a newly created hash map
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the HashMap fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 HashMap* hash_map_new(const HashMapOptions* options);
 
 /**
- * @brief Creates a new HashMap populated with entries from the provided Collection using the specified options.
+ * @brief Creates a new hash map containing all entries of the given collection.
  *
- * Each element of the collection must be a pointer to a MapEntry structure.
- * The entries are inserted into the new HashMap using their respective keys and values.
+ * The collection must contain only `MapEntry*` elements, otherwise, the behavior is undefined.
  *
- * @param entry_collection a Collection containing the entries to be added
- * @param options pointer to a HashMapOptions containing configuration settings
+ * @param entry_collection source collection
+ * @param options configuration options
  *
- * @return pointer to the newly created HashMap on success, or nullptr if creation fails
+ * @return pointer to a newly created hash map
  *
  * @exception NULL_POINTER_ERROR if options is null
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the HashMap fails or entry_collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation or creation of the collection iterator fails
  */
 HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* options);
 
 /**
- * @brief Destroys an existing HashMap and (optionally) its entries using the provided destruct functions.
+ * @brief Destroys a hash map and optionally its entries.
  *
- * @param hash_map_pointer pointer to a HashMap pointer
+ * @param hash_map_pointer pointer to a hash map pointer
  *
  * @exception NULL_POINTER_ERROR if hash_map_pointer or *hash_map_pointer is null
  *
@@ -142,22 +167,22 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 void hash_map_destroy(HashMap** hash_map_pointer);
 
 /**
- * @brief Sets the key destructor used by the provided HashMap.
+ * @brief Sets the key destruct function.
  *
- * @param hash_map pointer to a HashMap
- * @param destruct function used to destroy keys
+ * @param hash_map pointer to a hash map
+ * @param destruct new destruct function
  *
- * @exception NULL_POINTER_ERROR if hash_map or destructor are null
+ * @exception NULL_POINTER_ERROR if hash_map or destruct is null
  */
 void hash_map_set_key_destructor(HashMap* hash_map, void(*destruct)(void*));
 
 /**
- * @brief Sets the value destructor used by the provided HashMap.
+ * @brief Sets the value destruct function.
  *
- * @param hash_map pointer to a HashMap
- * @param destruct function used to destroy values
+ * @param hash_map pointer to a hash map
+ * @param destruct new destruct function
  *
- * @exception NULL_POINTER_ERROR if hash_map or destructor are null
+ * @exception NULL_POINTER_ERROR if hash_map or destruct is null
  */
 void hash_map_set_value_destructor(HashMap* hash_map, void(*destruct)(void*));
 
@@ -168,7 +193,7 @@ void hash_map_set_value_destructor(HashMap* hash_map, void(*destruct)(void*));
  * If the remapper returns nullptr, the entry is removed if it exists.
  * Otherwise, the returned value is stored as the new mapping.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param remapper function used to compute the new value
  *
@@ -184,7 +209,7 @@ void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper);
  * If the key is absent, the mapper function is invoked with the key to compute a value.
  * If the computed value is not nullptr, it is inserted into the HashMap.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param mapper function used to compute the value
  *
@@ -201,7 +226,7 @@ void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator ma
  * If the remapper returns nullptr, the entry is removed.
  * Otherwise, the returned value replaces the existing value.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param remapper function used to compute the new value
  *
@@ -218,7 +243,7 @@ void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator
  * If the key is present, the remapper is invoked with the existing value and the given value.
  * If the remapper returns nullptr, the entry is removed.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param value pointer to the value to merge
  * @param remapper function used to merge values
@@ -230,56 +255,61 @@ void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator
 void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOperator remapper);
 
 /**
- * @brief Associates the specified value with the specified key.
+ * @brief Associates the specified value with the specified key in the hash map.
  *
- * If the key already exists, the existing value is replaced (optionally destructed) and returned.
+ * If the key already exists, the existing value is replaced and returned.
  * Otherwise, a new entry is created.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param value pointer to the value
  *
  * @return the previous value associated with the key, or nullptr if none
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand hash_map capacity on resize or creating a new entry
+ * @exception MEMORY_ALLOCATION_ERROR if resizing or creating a new entry fails
+ * 
+ * @note this function calls the value destruct before returning if the key is already mapped.
+ *       If the value destruct frees the old value, the returned pointer becomes invalid.
  */
 void* hash_map_put(HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Associates the specified value with the specified key only if it is absent.
+ * @brief Associates the specified value with the specified key only if it is absent in the hash map.
  *
  * If the key already exists, the existing value is returned and no modification occurs.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param value pointer to the value
  *
  * @return the existing value if present, otherwise nullptr
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand hash_map capacity on resize or creating a new entry
+ * @exception MEMORY_ALLOCATION_ERROR if resizing or creating a new entry fails
  */
 void* hash_map_put_if_absent(HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Inserts all entries from the provided entry collection into the HashMap.
+ * @brief Inserts all entries of a collection into the hash map.
  *
- * Each element of the collection must be a pointer to a MapEntry structure.
+ * The collection must contain only `MapEntry*` elements, otherwise, the behavior is undefined.
  * Existing mappings are replaced if keys collide.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param entry_collection collection containing Entry elements
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to expand hash_map capacity on resize or creating a new entry or entry collection's iterator fails
+ * @exception MEMORY_ALLOCATION_ERROR if resizing, creating a new entry or creation of the collection iterator fails
+ * 
+ * @note this function calls the value destruct before returning if keys are already mapped.
  */
 void hash_map_put_all(HashMap* hash_map, Collection entry_collection);
 
 /**
- * @brief Retrieves the value associated with the specified key.
+ * @brief Retrieves the value associated with the specified key of the hash map.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  *
  * @return the associated value, or nullptr if the key is not present
@@ -289,9 +319,9 @@ void hash_map_put_all(HashMap* hash_map, Collection entry_collection);
 void* hash_map_get(const HashMap* hash_map, const void* key);
 
 /**
- * @brief Retrieves the value associated with the specified key, or returns a default value.
+ * @brief Retrieves the value associated with the specified key of the hash map, or returns a default value.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param default_value value returned if the key is not present
  *
@@ -302,24 +332,25 @@ void* hash_map_get(const HashMap* hash_map, const void* key);
 void* hash_map_get_or_default(const HashMap* hash_map, const void* key, const void* default_value);
 
 /**
- * @brief Replaces the value associated with the specified key.
+ * @brief Replaces the value associated with the specified key, if present, in the hash map,
  *
- * If the key is present, the value is replaced and the previous value is (optionally) destructed and returned.
- *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param value pointer to the new value
  *
  * @return the previous value, or nullptr if the key was not present
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
+ * 
+ * @note this function calls the value destruct before returning.
+ *       If the value destruct frees the old value, the returned pointer becomes invalid.
  */
 void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Replaces the value associated with the specified key only if it matches the expected value, (optionally) destructing the old value.
+ * @brief Replaces the value associated with the specified key of the hash map, only if it matches the expected value.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  * @param key pointer to the key
  * @param old_value expected current value
  * @param value new value to store
@@ -327,70 +358,79 @@ void* hash_map_replace(HashMap* hash_map, const void* key, const void* value);
  * @return true if replacement occurred, false otherwise
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
+ * 
+ * @note this function calls the value destruct before returning.
  */
 bool hash_map_replace_if_equals(HashMap* hash_map, const void* key, const void* old_value, const void* value);
 
 /**
- * @brief Removes the entry matching the given key of the provided HashMap, (optionally) destructing it.
+ * @brief Removes the entry matching the given key of the hash map.
  *
- * @param hash_map pointer to a HashMap
- * @param key pointer to the key to search for removal
+ * @param hash_map pointer to a hash map
+ * @param key pointer to the key
  *
  * @return pointer to the removed entry's value, or nullptr if not present
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
+ *
+ * @note this function calls both key destruct and value destruct before returning.
+ *       If the value destruct frees the old value, the returned pointer becomes invalid.
  */
 void* hash_map_remove(HashMap* hash_map, const void* key);
 
 /**
- * @brief Removes the entry matching the given key and value of the provided HashMap, (optionally) destructing it.
+ * @brief Removes the entry matching the given key and value of the hash map.
  *
- * @param hash_map pointer to a HashMap
- * @param key pointer to the key to search for removal
- * @param value pointer to the value to search for removal
+ * @param hash_map pointer to a hash map
+ * @param key pointer to the key
+ * @param value pointer to the value
  *
  * @return true if removed, false if not present
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
+ *
+ * @note this function calls both key destruct and value destruct before returning.
  */
 bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Replaces all entries using the given BiOperator of the provided HashMap, (optionally) destructing the old entries.
+ * @brief Replaces all entry values using a bi-operator function.
  *
- * @param hash_map pointer to a HashMap
- * @param bi_operator the bi-operator to replace entries
+ * @param hash_map pointer to a hash map
+ * @param bi_operator bi-operator function
  *
  * @exception NULL_POINTER_ERROR if hash_map or bi_operator is null
+ *
+ * @note this function calls the value destruct before returning.
  */
 void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator);
 
 /**
- * @brief Retrieves the current size of the provided HashMap.
+ * @brief Returns the current number of mappings in the hash map.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
- * @return the current size of the provided HashMap
+ * @return the current size
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  */
 int hash_map_size(const HashMap* hash_map);
 
 /**
- * @brief Retrieves the current capacity of the provided HashMap.
+ * @brief Returns the current capacity of the hash map.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
- * @return the current capacity of the provided HashMap
+ * @return the current capacity
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  */
 int hash_map_capacity(const HashMap* hash_map);
 
 /**
- * @brief Checks whether the provided HashMap is empty.
+ * @brief Checks whether the hash map is empty.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
  * @return true if empty, false otherwise
  *
@@ -399,65 +439,66 @@ int hash_map_capacity(const HashMap* hash_map);
 bool hash_map_is_empty(const HashMap* hash_map);
 
 /**
- * @brief Instantiates an Iterator for the provided HashMap.
+ * @brief Creates an iterator for the hash map.
  *
- * The iteration order of entries is unspecified and may change when the hash map resizes.
+ * The iteration order is not stable and may change after resizing.
+ * The iterator returns objects of type `MapEntry*`.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
- * @return pointer to the newly created Iterator
+ * @return pointer to a newly created Iterator
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
- * @exception MEMORY_ALLOCATION_ERROR if failed to allocate memory for iterator
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note this iterator doesn't support backward traversal nor adding or setting elements
+ * @note the iterator does not support the following operations: has_previous(), previous(), add(), set(), and remove()
  */
 Iterator* hash_map_iterator(const HashMap* hash_map);
 
 /**
- * @brief Checks whether two HashMap objects are equal.
+ * @brief Checks whether two hash maps are equal.
  *
- * Two hash maps are considered equal if either of the following conditions is true:
- * 1. They reference the same memory location.
- * 2. They have the same size, and each corresponding entry in the first hash map is considered equal to the element
- * of the second hash map according to both key_equals and value_equals functions of the first hash map.
+ * Two hash maps are equal if:
+ * - they reference the same memory address, or
+ * - they have the same size, and each entry in the first hash map is present in the second
+ *   hash map according to both key_equals and value_equals functions of the first hash map.
  *
- * @param hash_map pointer to a HashMap
- * @param other_hash_map pointer to a HashMap
+ * @param hash_map first hash map
+ * @param other_hash_map second hash map
  *
  * @return true if equal, false otherwise
  *
- * @exception NULL_POINTER_ERROR if hash_map is null
+ * @exception NULL_POINTER_ERROR if either hash_map is null
  */
 bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map);
 
 /**
- * @brief Performs an action for each entry of the provided HashMap.
+ * @brief Applies an action to each entry of the hash map.
  *
- * @param hash_map pointer to a HashMap
- * @param action the action to be performed
+ * @param hash_map pointer to a hash map
+ * @param action function to apply
  *
  * @exception NULL_POINTER_ERROR if hash_map or action is null
  */
 void hash_map_for_each(HashMap* hash_map, BiConsumer action);
 
 /**
- * @brief Removes all entries of the provided HashMap, (optionally) destructing them.
+ * @brief Removes all entries of the hash map.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
+ *
+ * @note this function calls both key destruct and value destruct before returning.
  */
 void hash_map_clear(HashMap* hash_map);
 
 /**
- * @brief Checks whether the provided HashMap contains the specified entry.
+ * @brief Checks whether the hash map contains the specified entry.
  *
- * Comparison is performed using both key_equals and value_equals functions configured in the HashMapOptions.
- *
- * @param hash_map pointer to a HashMap
- * @param key pointer to the key of the entry to be checked
- * @param value pointer to the value of the entry to be checked
+ * @param hash_map pointer to a hash map
+ * @param key pointer to the key
+ * @param value pointer to the value
  *
  * @return true if the entry is present, false otherwise
  *
@@ -466,12 +507,10 @@ void hash_map_clear(HashMap* hash_map);
 bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const void* value);
 
 /**
- * @brief Checks whether the provided HashMap contains the specified key.
+ * @brief Checks whether the hash map contains the specified key.
  *
- * Comparison is performed using the key_equals function configured in the HashMapOptions.
- *
- * @param hash_map pointer to a HashMap
- * @param key pointer to the key to be checked
+ * @param hash_map pointer to a hash map
+ * @param key pointer to the key
  *
  * @return true if the key is present, false otherwise
  *
@@ -480,12 +519,10 @@ bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const voi
 bool hash_map_contains_key(const HashMap* hash_map, const void* key);
 
 /**
- * @brief Checks whether the provided HashMap contains the specified value.
+ * @brief Checks whether the hash map contains the specified value.
  *
- * Comparison is performed using the value_equals function configured in the HashMapOptions.
- *
- * @param hash_map pointer to a HashMap
- * @param value pointer to the value to be checked
+ * @param hash_map pointer to a hash map
+ * @param value pointer to the value
  *
  * @return true if the value is present, false otherwise
  *
@@ -494,46 +531,46 @@ bool hash_map_contains_key(const HashMap* hash_map, const void* key);
 bool hash_map_contains_value(const HashMap* hash_map, const void* value);
 
 /**
- * @brief Returns a Collection view of the keys of the provided HashMap.
+ * @brief Returns a collection view of the entries of the hash map.
  *
- * @param hash_map pointer to a HashMap
+ * @param hash_map pointer to a hash map
  *
- * @return a Collection view containing the HashMap's keys
- *
- * @exception NULL_POINTER_ERROR if hash_map is null
- */
-Collection hash_map_keys(const HashMap* hash_map);
-
-/**
- * @brief Returns a Collection view of the values of the provided HashMap.
- *
- * @param hash_map pointer to a HashMap
- *
- * @return a Collection view containing the HashMap's values
- *
- * @exception NULL_POINTER_ERROR if hash_map is null
- */
-Collection hash_map_values(const HashMap* hash_map);
-
-/**
- * @brief Returns a Collection view of the entries of the provided HashMap.
- *
- * @param hash_map pointer to a HashMap
- *
- * @return a Collection view containing the HashMap's entries
+ * @return a collection view
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  */
 Collection hash_map_entries(const HashMap* hash_map);
 
 /**
- * @brief Creates a shallow copy of the provided HashMap.
+ * @brief Returns a collection view of the keys of the hash map.
  *
- * The new HashMap will contain the same mappings but will have independent internal storage.
+ * @param hash_map pointer to a hash map
  *
- * @param hash_map pointer to a HashMap
+ * @return a collection view
  *
- * @return a newly created HashMap clone, or nullptr on failure
+ * @exception NULL_POINTER_ERROR if hash_map is null
+ */
+Collection hash_map_keys(const HashMap* hash_map);
+
+/**
+ * @brief Returns a collection view of the values of the hash map.
+ *
+ * @param hash_map pointer to a hash map
+ *
+ * @return a collection view
+ *
+ * @exception NULL_POINTER_ERROR if hash_map is null
+ */
+Collection hash_map_values(const HashMap* hash_map);
+
+/**
+ * @brief Creates a shallow copy of the hash map.
+ *
+ * The new hash map contains the same mappings but will have independent internal storage.
+ *
+ * @param hash_map pointer to a hash map
+ *
+ * @return pointer to the newly created hash map
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
@@ -541,17 +578,16 @@ Collection hash_map_entries(const HashMap* hash_map);
 HashMap* hash_map_clone(const HashMap* hash_map);
 
 /**
- * @brief Converts the provided HashMap to a string representation.
+ * @brief Converts the hash map to a string representation.
  *
- * Each entry is converted using both key_to_string and value_to_string functions configured
- * in the HashMapOptions.
+ * @param hash_map pointer to a hash map
  *
- * @param hash_map pointer to a HashMap
- *
- * @return a newly allocated null-terminated string representation, or nullptr on failure
+ * @return a newly allocated string
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created string must be freed manually
  */
 char* hash_map_to_string(const HashMap* hash_map);
 

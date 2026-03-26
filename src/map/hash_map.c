@@ -419,6 +419,16 @@ bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
     return false;
 }
 
+Collection hash_map_entries(const HashMap* hash_map) {
+    if (require_non_null(hash_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = hash_map,
+        .size = collection_size_internal,
+        .iterator = entry_collection_iterator_internal,
+        .contains = entry_collection_contains_internal
+    };
+}
+
 Collection hash_map_keys(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
@@ -436,16 +446,6 @@ Collection hash_map_values(const HashMap* hash_map) {
         .size = collection_size_internal,
         .iterator = value_collection_iterator_internal,
         .contains = value_collection_contains_internal
-    };
-}
-
-Collection hash_map_entries(const HashMap* hash_map) {
-    if (require_non_null(hash_map)) return (Collection) {};
-    return (Collection) {
-        .data_structure = hash_map,
-        .size = collection_size_internal,
-        .iterator = entry_collection_iterator_internal,
-        .contains = entry_collection_contains_internal
     };
 }
 

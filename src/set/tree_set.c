@@ -49,7 +49,7 @@ static Node* get_higher_node(const TreeSet*, Node*);
 
 static Node* get_lower_node(const TreeSet*, Node*);
 
-static void remove_node(TreeSet*, Node*);
+static void* remove_node(TreeSet*, Node*);
 
 static void transplant(TreeSet*, Node*, Node*);
 
@@ -246,7 +246,6 @@ bool tree_set_remove(TreeSet* tree_set, const void* element) {
     if (!node) {
         return false;
     }
-    tree_set->destruct(node->element);
     remove_node(tree_set, node);
     return true;
 }
@@ -258,10 +257,7 @@ void* tree_set_remove_first(TreeSet* tree_set) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
         return nullptr;
     }
-    void* element = node->element;
-    tree_set->destruct(node->element);
-    remove_node(tree_set, node);
-    return element;
+    return remove_node(tree_set, node);
 }
 
 void* tree_set_remove_last(TreeSet* tree_set) {
@@ -271,10 +267,7 @@ void* tree_set_remove_last(TreeSet* tree_set) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree set' is empty");
         return nullptr;
     }
-    void* element = node->element;
-    tree_set->destruct(node->element);
-    remove_node(tree_set, node);
-    return element;
+    return remove_node(tree_set, node);
 }
 
 int tree_set_remove_all(TreeSet* tree_set, Collection collection) {
@@ -736,7 +729,7 @@ static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
     return node;
 }
 
-static void remove_node(TreeSet* tree_set, Node* node) {
+static void* remove_node(TreeSet* tree_set, Node* node) {
     Node* current = node, * auxiliar;
     Color current_color = current->color;
     if (node->left == tree_set->sentinel) {
@@ -764,9 +757,12 @@ static void remove_node(TreeSet* tree_set, Node* node) {
     if (current_color == BLACK) {
         rebalance_after_delete(tree_set, auxiliar);
     }
+    void* element = node->element;
+    tree_set->destruct(node->element);
     tree_set->memory_free(node);
     tree_set->size--;
     tree_set->modification_count++;
+    return element;
 }
 
 static void transplant(TreeSet* tree_set, Node* first, Node* second) {

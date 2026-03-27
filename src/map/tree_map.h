@@ -717,6 +717,20 @@ TreeMap* tree_map_head_map(const TreeMap* tree_map, const void* key);
 TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key);
 
 /**
+ * @brief Creates a shallow copy of the provided TreeMap.
+ *
+ * The new TreeMap will contain the same mappings but will have independent internal storage.
+ *
+ * @param tree_map pointer to a TreeMap
+ *
+ * @return a newly created TreeMap clone, or nullptr on failure
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+TreeMap* tree_map_clone(const TreeMap* tree_map);
+
+/**
  * @brief Creates a submap of the provided TreeMap within the specified range.
  *
  * The returned TreeMap contains elements from start_key (inclusive)
@@ -733,20 +747,6 @@ TreeMap* tree_map_tail_map(const TreeMap* tree_map, const void* key);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const void* end_key);
-
-/**
- * @brief Creates a shallow copy of the provided TreeMap.
- *
- * The new TreeMap will contain the same mappings but will have independent internal storage.
- *
- * @param tree_map pointer to a TreeMap
- *
- * @return a newly created TreeMap clone, or nullptr on failure
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-TreeMap* tree_map_clone(const TreeMap* tree_map);
 
 /**
  * @brief Converts the provided TreeMap to a string representation.

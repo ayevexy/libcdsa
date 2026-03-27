@@ -211,12 +211,8 @@ bool tree_set_add_all(TreeSet* tree_set, Collection collection) {
     }
     bool changed = false;
     while (iterator_has_next(iterator)) {
-        bool added = false;
-        if ((error = attempt(added = tree_set_add(tree_set, iterator_next(iterator))))) {
-            set_error(error, "%s", plain_error_message());
-            break;
-        }
-        if (added) {
+        const void* element = iterator_next(iterator);
+        if (tree_set_add(tree_set, element)) {
             changed = true;
         }
     }

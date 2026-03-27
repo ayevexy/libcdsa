@@ -2,12 +2,7 @@
 #define OPTIONAL_H
 
 /**
- * @brief A container object which may or may not contain a non-null value.
- *
- * Optional is a lightweight value-type structure used to explicitly represent
- * the presence or absence of a value without relying on nullptr.
- *
- * An Optional is immutable once created.
+ * @brief A container object which may or may not contain a value.
  */
 typedef struct {
     void* const value;
@@ -15,23 +10,23 @@ typedef struct {
 } Optional;
 
 /**
- * @brief Creates an empty Optional.
+ * @brief Creates an empty optional.
  *
- * The returned Optional has no value present.
- *
- * @return an empty Optional
+ * @return an empty optional
  */
-#define optional_empty() (Optional) { .value = (void*) 0xDEADBEEF, .present = false }
+static inline Optional optional_empty() {
+    return (Optional) { .present = false };
+}
 
 /**
- * @brief Creates an Optional containing the specified value.
+ * @brief Creates an optional containing the specified value.
  *
- * @param _value pointer to the value to be wrapped
+ * @param value the value
  *
- * @return an Optional containing _value
- *
- * @pre _value may be nullptr, but the Optional will be considered present
+ * @return an optional containing the value
  */
-#define optional_of(_value) (Optional) { .value = _value, .present = true }
+static inline Optional optional_of(void* value) {
+    return (Optional) { .value = value, .present = true };
+}
 
 #endif

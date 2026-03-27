@@ -656,10 +656,10 @@ char* tree_map_to_string(const TreeMap* tree_map) {
 
     char* string = tree_map->memory_alloc(calculate_string_size(tree_map));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, tree_map->size == 0 ? "[" : "[ ");
 
     int count = 0;
@@ -673,7 +673,7 @@ char* tree_map_to_string(const TreeMap* tree_map) {
         char* element_string = tree_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
         if (!element_string) {
             tree_map->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
         tree_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
@@ -694,7 +694,7 @@ char* tree_map_to_string(const TreeMap* tree_map) {
 }
 
 static size_t calculate_string_size(const TreeMap* tree_map) {
-    constexpr int BRACKETS = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
     int count = 0;
 
@@ -705,7 +705,7 @@ static size_t calculate_string_size(const TreeMap* tree_map) {
         length += 3; // ' = ' separator
 
         if (count == 0) length += 1; // space after opening bracket
-        if (count < tree_map->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (count < tree_map->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
         if (count == tree_map->size - 1) length += 1; // space before closing bracket
 
         entry = get_successor_entry(tree_map, entry);
@@ -1038,7 +1038,7 @@ static bool iterator_has_next_internal(const void* raw_iteration_context) {
 static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_next_internal(iteration_context)) {
@@ -1074,7 +1074,7 @@ static bool iterator_has_previous_internal(const void* raw_iteration_context) {
 static void* iterator_previous_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_previous_internal(iteration_context)) {
@@ -1118,7 +1118,7 @@ static void iterator_set_internal(void* raw_iteration_context, const void* eleme
 static void iterator_remove_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_map->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     if (!iteration_context->last_returned) {

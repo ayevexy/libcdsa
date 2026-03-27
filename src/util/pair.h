@@ -2,7 +2,7 @@
 #define PAIR_H
 
 /**
- * @brief a container object which contains two independently values.
+ * @brief A container object which contains two independently values.
  */
 typedef struct {
     void* first;

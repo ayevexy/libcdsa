@@ -7,7 +7,7 @@
  * @brief Verifies that one or more pointers are not null
  * and set NULL_POINTER_ERROR with a predefined message format if true.
  *
-* This macro can accept 1 to 6 pointer arguments.
+ * This macro can accept 1 to 6 pointer arguments.
  *
  * @param ... one or more pointers to check.
  */

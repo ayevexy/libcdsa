@@ -4,15 +4,7 @@
 #include "iterator.h"
 
 /**
- * @brief Generic collection view abstraction.
- *
- * Collection provides a lightweight, non-owning view over a data structure
- * that supports size retrieval and iteration.
- *
- * It allows generic algorithms to operate on different container types
- * without knowledge of their internal representation.
- *
- * A Collection does not own the underlying data structure or its elements.
+ * @brief A generic collection view abstraction that provides a common interface over data structures.
  */
 typedef struct {
     const void* const data_structure;
@@ -22,20 +14,20 @@ typedef struct {
 } Collection;
 
 /**
- * @brief Retrieves the size of the given Collection.
+ * @brief Retrieves the current size of the collection.
  *
- * @param collection a Collection
+ * @param collection the collection
  *
- * @return number of elements in the collection
+ * @return the current size
  */
 static inline int collection_size(Collection collection) {
     return collection.size(collection.data_structure);
 }
 
 /**
- * @brief Checks whether the given Collection is empty.
+ * @brief Checks whether the collection is empty.
  *
- * @param collection a Collection
+ * @param collection the collection
  *
  * @return true if empty, false otherwise
  */
@@ -44,9 +36,9 @@ static inline bool collection_is_empty(Collection collection) {
 }
 
 /**
- * @brief Creates an iterator for the given Collection.
+ * @brief Creates an iterator for the collection.
  *
- * @param collection a Collection
+ * @param collection the collection
  *
  * @return pointer to a newly created Iterator
  */
@@ -54,9 +46,9 @@ static inline Iterator* collection_iterator(Collection collection) {
     return collection.iterator(collection.data_structure);
 }
 /**
- * @brief Checks whether an element is present in the given Collection.
+ * @brief Checks whether an element is present in the collection.
  *
- * @param collection a Collection
+ * @param collection the collection
  * @param element the element to check
  *
  * @return true if the element is present, false otherwise

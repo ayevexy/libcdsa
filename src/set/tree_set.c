@@ -272,64 +272,46 @@ void* tree_set_remove_last(TreeSet* tree_set) {
 
 int tree_set_remove_all(TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return false;
-    }
     int count = 0;
-    while (iterator_has_next(iterator)) {
-        const void* element = iterator_next(iterator);
-        if (tree_set_remove(tree_set, element)) {
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    while (node != tree_set->sentinel) {
+        Node* next = get_successor_node(tree_set, node);
+        if (collection_contains(collection, node->element)) {
+            remove_node(tree_set, node);
             count++;
         }
+        node = next;
     }
-    iterator_destroy(&iterator);
     return count;
 }
 
 int tree_set_remove_if(TreeSet* tree_set, Predicate condition) {
     if (require_non_null(tree_set, condition)) return false;
-
     int count = 0;
     Node* node = get_lower_node(tree_set, tree_set->root);
     while (node != tree_set->sentinel) {
+        Node* next = get_successor_node(tree_set, node);
         if (condition(node->element)) {
             remove_node(tree_set, node);
             count++;
         }
-        node = get_successor_node(tree_set, node);
+        node = next;
     }
     return count;
 }
 
 int tree_set_retain_all(TreeSet* tree_set, Collection collection) {
     if (require_non_null(tree_set)) return false;
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return false;
-    }
     int count = 0;
     Node* node = get_lower_node(tree_set, tree_set->root);
     while (node != tree_set->sentinel) {
-        bool found = false;
-        while (iterator_has_next(iterator)) {
-            if (tree_set->equals(node->element, iterator_next(iterator))) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
+        Node* next = get_successor_node(tree_set, node);
+        if (!collection_contains(collection, node->element)) {
             remove_node(tree_set, node);
             count++;
         }
-        node = get_successor_node(tree_set, node);
-        iterator_reset(iterator);
+        node = next;
     }
-    iterator_destroy(&iterator);
     return count;
 }
 

@@ -569,9 +569,9 @@ Collection tree_set_to_collection(const TreeSet* tree_set) {
 
 void** tree_set_to_array(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
-    void** elements = tree_set->memory_alloc(sizeof(void*) * tree_set->size);
+    void** elements = tree_set->memory_alloc(tree_set->size * sizeof(void*));
     if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
     }
     int i = 0;
@@ -588,10 +588,10 @@ char* tree_set_to_string(const TreeSet* tree_set) {
 
     char* string = tree_set->memory_alloc(calculate_string_size(tree_set));
     if (!string) {
-        set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string[0] = '\0'; // initialize string to clear trash data
+    string[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string, tree_set->size == 0 ? "(" : "( ");
 
     int count = 0;
@@ -603,7 +603,7 @@ char* tree_set_to_string(const TreeSet* tree_set) {
         char* element_string = tree_set->memory_alloc(length);
         if (!element_string) {
             tree_set->memory_free(string);
-            set_error(MEMORY_ALLOCATION_ERROR, "no additional details available");
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
         tree_set->to_string(node->element, element_string, length);
@@ -622,7 +622,7 @@ char* tree_set_to_string(const TreeSet* tree_set) {
 }
 
 static size_t calculate_string_size(const TreeSet* tree_set) {
-    constexpr int PARENTHESES = 2; constexpr int SEPARATOR = 2; constexpr int NULL_TERMINATOR = 1;
+    constexpr int PARENTHESES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
     size_t length = 0;
     int count = 0;
 
@@ -631,7 +631,7 @@ static size_t calculate_string_size(const TreeSet* tree_set) {
         length += tree_set->to_string(node->element, nullptr, 0);
 
         if (count == 0) length += 1; // space after opening parenthesis
-        if (count < tree_set->size - 1) length += SEPARATOR; // prevent separator on the last element
+        if (count < tree_set->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
         if (count == tree_set->size - 1) length += 1; // space before closing parenthesis
 
         node = get_successor_node(tree_set, node);
@@ -946,7 +946,7 @@ static bool iterator_has_next_internal(const void* raw_iteration_context) {
 static void* iterator_next_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_next_internal(iteration_context)) {
@@ -972,7 +972,7 @@ static bool iterator_has_previous_internal(const void* raw_iteration_context) {
 static void* iterator_previous_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return nullptr;
     }
     if (!iterator_has_previous_internal(iteration_context)) {
@@ -1006,7 +1006,7 @@ static void iterator_set_internal(void* raw_iteration_context, const void* eleme
 static void iterator_remove_internal(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     if (iteration_context->modification_count != iteration_context->tree_set->modification_count) {
-        set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
         return;
     }
     if (!iteration_context->last_returned) {

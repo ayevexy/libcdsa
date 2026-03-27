@@ -38,8 +38,8 @@
  * };
  * @endcode
  *
-* Memory ownership:
- * By default, the hashset does not own either its keys or values. If a destruct function is
+ * Memory ownership:
+ * By default, the hash set does not own its elements. If a destruct function is
  * provided, it will be invoked when:
  * - elements are removed (e.g., hash_set_remove, hash_set_remove_all)
  * - the hash set is cleared (hash_set_clear)
@@ -111,7 +111,7 @@ typedef struct {
 /**
  * @brief Creates a new empty hash set using the specified options.
  *
- * @param options pointer to a hash setOptions structure
+ * @param options pointer to a HashSetOptions structure
  *
  * @return pointer to a newly created hash set
  *
@@ -223,6 +223,8 @@ int hash_set_remove_all(HashSet* hash_set, Collection collection);
  * @return number of elements removed
  *
  * @exception NULL_POINTER_ERROR if hash_set or condition is null
+ *
+ * @note this function calls the element destruct before returning.
  */
 int hash_set_remove_if(HashSet* hash_set, Predicate condition);
 

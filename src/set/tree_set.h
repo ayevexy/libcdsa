@@ -421,6 +421,18 @@ TreeSet* tree_set_head_set(const TreeSet* tree_set, const void* element);
 TreeSet* tree_set_tail_set(const TreeSet* tree_set, const void* element);
 
 /**
+ * @brief Creates a shallow copy of the provided TreeSet.
+ *
+ * @param tree_set pointer to a TreeSet
+ *
+ * @return a newly created TreeSet clone, or nullptr on failure
+ *
+ * @exception NULL_POINTER_ERROR if tree_set is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+TreeSet* tree_set_clone(const TreeSet* tree_set);
+
+/**
  * @brief Creates a subset of the provided TreeSet within the specified range.
  *
  * The returned TreeSet contains elements from start_element (inclusive)
@@ -437,18 +449,6 @@ TreeSet* tree_set_tail_set(const TreeSet* tree_set, const void* element);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 TreeSet* tree_set_sub_set(const TreeSet* tree_set, const void* start_element, const void* end_element);
-
-/**
- * @brief Creates a shallow copy of the provided TreeSet.
- *
- * @param tree_set pointer to a TreeSet
- *
- * @return a newly created TreeSet clone, or nullptr on failure
- *
- * @exception NULL_POINTER_ERROR if tree_set is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-TreeSet* tree_set_clone(const TreeSet* tree_set);
 
 /**
  * @brief Converts the provided TreeSet into a Collection view.

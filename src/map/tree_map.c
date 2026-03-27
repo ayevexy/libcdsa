@@ -280,10 +280,7 @@ void tree_map_put_all(TreeMap* tree_map, Collection entry_collection) {
     }
     while (iterator_has_next(iterator)) {
         const MapEntry* entry = iterator_next(iterator);
-        if ((error = attempt(tree_map_put(tree_map, entry->key, entry->value)))) {
-            set_error(error, "%s", plain_error_message());
-            break;
-        }
+        tree_map_put(tree_map, entry->key, entry->value);
     }
     iterator_destroy(&iterator);
 }

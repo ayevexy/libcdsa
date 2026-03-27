@@ -160,9 +160,9 @@ void tree_set_destroy(TreeSet** tree_set_pointer) {
     *tree_set_pointer = nullptr;
 }
 
-void tree_set_set_destructor(TreeSet* tree_set, void(*destructor)(void*)) {
-    if (require_non_null(tree_set, destructor)) return;
-    tree_set->destruct = destructor;
+void tree_set_set_destructor(TreeSet* tree_set, void(*destruct)(void*)) {
+    if (require_non_null(tree_set, destruct)) return;
+    tree_set->destruct = destruct;
 }
 
 bool tree_set_add(TreeSet* tree_set, const void* element) {

@@ -136,21 +136,21 @@ void tree_map_destroy(TreeMap** tree_map_pointer);
  * @brief Sets the key destructor used by the provided TreeMap.
  *
  * @param tree_map pointer to a TreeMap
- * @param destructor function used to destroy keys
+ * @param destruct function used to destroy keys
  *
  * @exception NULL_POINTER_ERROR if tree_map or destructor are null
  */
-void tree_map_set_key_destructor(TreeMap* tree_map, void(*destructor)(void*));
+void tree_map_set_key_destructor(TreeMap* tree_map, void(*destruct)(void*));
 
 /**
  * @brief Sets the value destructor used by the provided TreeMap.
  *
  * @param tree_map pointer to a TreeMap
- * @param destructor function used to destroy values
+ * @param destruct function used to destroy values
  *
  * @exception NULL_POINTER_ERROR if tree_map or destructor are null
  */
-void tree_map_set_value_destructor(TreeMap* tree_map, void(*destructor)(void*));
+void tree_map_set_value_destructor(TreeMap* tree_map, void(*destruct)(void*));
 
 /**
  * @brief Computes a new value for the specified key using the provided remapping function.
@@ -642,6 +642,17 @@ bool tree_map_contains_key(const TreeMap* tree_map, const void* key);
 bool tree_map_contains_value(const TreeMap* tree_map, const void* value);
 
 /**
+ * @brief Returns a Collection view of the entries of the provided TreeMap.
+ *
+ * @param tree_map pointer to a TreeMap
+ *
+ * @return a Collection view containing the TreeMap's entries
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
+Collection tree_map_entries(const TreeMap* tree_map);
+
+/**
  * @brief Returns a Collection view of the keys of the provided TreeMap.
  *
  * @param tree_map pointer to a TreeMap
@@ -662,17 +673,6 @@ Collection tree_map_keys(const TreeMap* tree_map);
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
 Collection tree_map_values(const TreeMap* tree_map);
-
-/**
- * @brief Returns a Collection view of the entries of the provided TreeMap.
- *
- * @param tree_map pointer to a TreeMap
- *
- * @return a Collection view containing the TreeMap's entries
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-Collection tree_map_entries(const TreeMap* tree_map);
 
 /**
  * @brief Returns a new TreeMap with the ordering of entries reversed.

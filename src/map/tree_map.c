@@ -164,14 +164,14 @@ void tree_map_destroy(TreeMap** tree_map_pointer) {
     *tree_map_pointer = nullptr;
 }
 
-void tree_map_set_key_destructor(TreeMap* tree_map, void(*destructor)(void*)) {
+void tree_map_set_key_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
     if (require_non_null(tree_map)) return;
-    tree_map->key_destruct = destructor;
+    tree_map->key_destruct = destruct;
 }
 
-void tree_map_set_value_destructor(TreeMap* tree_map, void(*destructor)(void*)) {
+void tree_map_set_value_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
     if (require_non_null(tree_map)) return;
-    tree_map->value_destruct = destructor;
+    tree_map->value_destruct = destruct;
 }
 
 void* tree_map_compute(TreeMap* tree_map, const void* key, BiOperator remapper) {
@@ -559,6 +559,16 @@ bool tree_map_contains_value(const TreeMap* tree_map, const void* value) {
     return false;
 }
 
+Collection tree_map_entries(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return (Collection) {};
+    return (Collection) {
+        .data_structure = tree_map,
+        .size = collection_size_internal,
+        .iterator = entry_collection_iterator_internal,
+        .contains = entry_collection_contains_internal
+    };
+}
+
 Collection tree_map_keys(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (Collection) {};
     return (Collection) {
@@ -576,16 +586,6 @@ Collection tree_map_values(const TreeMap* tree_map) {
         .size = collection_size_internal,
         .iterator = value_collection_iterator_internal,
         .contains = value_collection_contains_internal
-    };
-}
-
-Collection tree_map_entries(const TreeMap* tree_map) {
-    if (require_non_null(tree_map)) return (Collection) {};
-    return (Collection) {
-        .data_structure = tree_map,
-        .size = collection_size_internal,
-        .iterator = entry_collection_iterator_internal,
-        .contains = entry_collection_contains_internal
     };
 }
 

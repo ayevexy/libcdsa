@@ -155,6 +155,15 @@ void priority_queue_enqueue_all(PriorityQueue* priority_queue, Collection collec
     iterator_destroy(&iterator);
 }
 
+void* priority_queue_peek(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+    if (priority_queue->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'priority queue' is empty");
+        return nullptr;
+    }
+    return priority_queue->elements[0];
+}
+
 void* priority_queue_dequeue(PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
 
@@ -196,8 +205,33 @@ Iterator* priority_queue_iterator(const PriorityQueue* priority_queue) {
 }
 
 bool priority_queue_contains(const PriorityQueue* priority_queue, const void* element) {
-    (void) priority_queue, (void) element;
+    if (require_non_null(priority_queue)) return false;
+    for (int i = 0; i < priority_queue->size; i++) {
+        if (priority_queue->equals(priority_queue->elements[i], element)) {
+            return true;
+        }
+    }
     return false;
+}
+
+bool priority_queue_contains_all(const PriorityQueue* priority_queue, Collection collection) {
+    if (require_non_null(priority_queue)) return false;
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!priority_queue_contains(priority_queue, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
+    return contains;
 }
 
 Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {

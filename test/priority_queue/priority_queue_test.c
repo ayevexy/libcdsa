@@ -113,6 +113,24 @@ void test_enqueue_all_elements_of_a_collection_in_priority_queue() {
     priority_queue_destroy(&existing_priority_queue);
 }
 
+void test_peek_element_from_priority_queue() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    int* element = priority_queue_peek(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL(5, *element);
+}
+
+void test_peek_element_from_empty_priority_queue_fails() {
+    // when
+    int* element; Error error = attempt(element = priority_queue_peek(priority_queue));
+    // then
+    TEST_ASSERT_NULL(element);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_dequeue_element_from_priority_queue() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -214,6 +232,73 @@ void test_priority_queue_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_priority_queue_contains_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    bool contains = priority_queue_contains(priority_queue, &(int){3});
+    // then
+    TEST_ASSERT_TRUE(contains);
+}
+
+void test_priority_queue_does_not_contains_element() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    bool contains = priority_queue_contains(priority_queue, &(int){10});
+    // then
+    TEST_ASSERT_FALSE(contains);
+}
+
+void test_priority_queue_contains_all_elements() {
+    // given
+    PriorityQueue* new_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    int other_values[] = { 2, 3, 4};
+    POPULATE_PRIORITY_QUEUE(new_priority_queue, other_values);
+    // when
+    bool contains_all = priority_queue_contains_all(priority_queue, priority_queue_to_collection(new_priority_queue));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    priority_queue_set_destructor(new_priority_queue, free);
+    priority_queue_destroy(&new_priority_queue);
+}
+
+void test_empty_priority_queue_contains_all_elements_of_empty_collection() {
+    // given
+    PriorityQueue* new_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // when
+    bool contains_all = priority_queue_contains_all(priority_queue, priority_queue_to_collection(new_priority_queue));
+    // then
+    TEST_ASSERT_TRUE(contains_all);
+    // clean up
+    priority_queue_destroy(&new_priority_queue);
+}
+
+void test_priority_queue_does_not_contains_all_elements() {
+    // given
+    PriorityQueue* new_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    int other_values[] = { 2, 10, 4};
+    POPULATE_PRIORITY_QUEUE(new_priority_queue, other_values);
+    // when
+    bool contains_all = priority_queue_contains_all(priority_queue, priority_queue_to_collection(new_priority_queue));
+    // then
+    TEST_ASSERT_FALSE(contains_all);
+    // clean up
+    priority_queue_set_destructor(new_priority_queue, free);
+    priority_queue_destroy(&new_priority_queue);
+}
+
 void test_convert_priority_queue_to_collection() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -242,6 +327,10 @@ int main(void) {
     RUN_TEST(test_enqueue_element_to_priority_queue);
     RUN_TEST(test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it);
     RUN_TEST(test_enqueue_all_elements_of_a_collection_in_priority_queue);
+
+    RUN_TEST(test_peek_element_from_priority_queue);
+    RUN_TEST(test_peek_element_from_empty_priority_queue_fails);
+
     RUN_TEST(test_dequeue_element_from_priority_queue);
 
     RUN_TEST(test_get_priority_queue_size);
@@ -252,6 +341,12 @@ int main(void) {
     RUN_TEST(test_priority_queue_iterator_forward_iteration);
     RUN_TEST(test_priority_queue_iterator_detects_concurrent_modification);
     RUN_TEST(test_priority_queue_iterator_reset);
+    
+    RUN_TEST(test_priority_queue_contains_element);
+    RUN_TEST(test_priority_queue_does_not_contains_element);
+    RUN_TEST(test_priority_queue_contains_all_elements);
+    RUN_TEST(test_empty_priority_queue_contains_all_elements_of_empty_collection);
+    RUN_TEST(test_priority_queue_does_not_contains_all_elements);
 
     RUN_TEST(test_convert_priority_queue_to_collection);
     return UNITY_END();

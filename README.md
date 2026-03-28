@@ -3,11 +3,7 @@
 > [!WARNING]
 > This library is currently a work in progress. It is experimental and may be unstable — use it at your own risk.
 
----
-
 # Data Structures and Algorithms Library in C
-
----
 
 ## Table of Contents
 
@@ -26,8 +22,6 @@
 - [Contributing](#contributing)
 - [License](#license)
 
----
-
 ## Overview
 
 A Feature-Rich, High-Level, and Easy-to-Use Data Structures and Algorithms Library for the C programming language.
@@ -37,8 +31,6 @@ reusable abstractions — bringing a modern programming experience to C.
 It includes implementations of widely used data structures such as array lists, linked lists, hash maps, and hash sets,
 along with classic algorithms like merge sort and quick sort. The API is heavily inspired by the 
 Java Collections Framework, offering a familiar interface for developers with a Java background.
-
----
 
 ### Features
 
@@ -69,8 +61,6 @@ Also, there is some other utilities which may be useful:
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
 
----
-
 ### Limitations
 
 Like any other project, there are some limitations (most by design):
@@ -82,8 +72,6 @@ Like any other project, there are some limitations (most by design):
 - Not Thread-Safe.
 - It Mighty have some Bugs... (help find them!)
 
----
-
 ### Technologies
 
 This project is being built using the following technologies:
@@ -91,8 +79,6 @@ This project is being built using the following technologies:
 - The C Programming Language
 - CMake Build System
 - Unity Test Framework
-
----
 
 ## Getting Started
 
@@ -154,8 +140,6 @@ The library also provides the `libcdsa.h` header file to include all functionali
 Each data structure and utility is documented in its corresponding header file within the `src` folder.
 For usage examples, see the corresponding test file in the `test` folder.
 
----
-
 ### Building
 
 If you want to build the project locally follow these steps instead:
@@ -203,13 +187,9 @@ To install the library system-wide in `/usr/local`, execute the following comman
   sudo cmake --install build
 ```
 
----
-
 ## Contributing
 
 Open an issue to request a feature, report a bug, suggest some improvement or ask something.
-
----
 
 ## License
 

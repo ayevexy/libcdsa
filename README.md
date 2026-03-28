@@ -1,4 +1,4 @@
-![Project Logo](logo.svg)
+<p align="center"><img src="logo.svg" alt="Project Logo"></p>
 
 > [!WARNING]
 > This library is currently a work in progress. It is experimental and may be unstable — use it at your own risk.

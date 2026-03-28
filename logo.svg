@@ -1,24 +1,24 @@
-<svg width="640" height="220" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+<svg width="532" height="187" viewBox="0 0 532 187" xmlns="http://www.w3.org/2000/svg">
     <!-- Background -->
     <rect width="100%" height="100%" fill="#2B2B2B"/>
     <!-- Graph / network symbol forming a "C" -->
     <g stroke="#519ABA" stroke-width="3" fill="#2B2B2B">
-        <circle cx="120" cy="80" r="7"/>
-        <circle cx="90" cy="110" r="7"/>
-        <circle cx="120" cy="140" r="7"/>
-        <circle cx="160" cy="140" r="7"/>
-        <circle cx="160" cy="110" r="7"/>
-        <line x1="120" y1="80" x2="90" y2="110"/>
-        <line x1="90" y1="110" x2="120" y2="140"/>
-        <line x1="120" y1="140" x2="160" y2="140"/>
-        <line x1="160" y1="140" x2="160" y2="110"/>
+        <circle cx="120" cy="64" r="7"/>
+        <circle cx="90" cy="94" r="7"/>
+        <circle cx="120" cy="124" r="7"/>
+        <circle cx="160" cy="124" r="7"/>
+        <circle cx="160" cy="94" r="7"/>
+        <line x1="120" y1="64" x2="90" y2="94"/>
+        <line x1="90" y1="94" x2="120" y2="124"/>
+        <line x1="120" y1="124" x2="160" y2="124"/>
+        <line x1="160" y1="124" x2="160" y2="94"/>
     </g>
     <!-- Highlight node -->
-    <circle cx="120" cy="80" r="5.5" fill="#CC7832"/>
+    <circle cx="120" cy="64" r="5.5" fill="#CC7832"/>
     <!-- Text -->
-    <text x="260" y="125"
+    <text x="200" y="116"
           font-family="JetBrains Mono, monospace"
-          font-size="48"
+          font-size="56"
           fill="#A9B7C6"
           letter-spacing="2">libcdsa</text>
 </svg>

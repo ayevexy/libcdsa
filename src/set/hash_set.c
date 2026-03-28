@@ -29,7 +29,7 @@ struct HashSet {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
     int modification_count;
     SetView view;
@@ -81,7 +81,7 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->destruct
-        || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_free
+        || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -94,7 +94,7 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->capacity = next_power_of_two(options->initial_capacity);
     hash_set->buckets = options->memory_alloc(hash_set->capacity * sizeof(Node*));
     if (!hash_set->buckets) {
-        options->memory_free(hash_set);
+        options->memory_dealloc(hash_set);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_set'");
         return nullptr;
     }
@@ -107,7 +107,7 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->equals = options->equals;
     hash_set->to_string = options->to_string;
     hash_set->memory_alloc = options->memory_alloc;
-    hash_set->memory_free = options->memory_free;
+    hash_set->memory_dealloc = options->memory_dealloc;
     hash_set->modification_count = 0;
     hash_set->view.sets.first = hash_set;
     hash_set->view.sets.second = nullptr;
@@ -137,8 +137,8 @@ void hash_set_destroy(HashSet** hash_set_pointer) {
     if (require_non_null(hash_set_pointer, *hash_set_pointer)) return;
     HashSet* hash_set = *hash_set_pointer;
     destroy_nodes(hash_set);
-    hash_set->memory_free(hash_set->buckets);
-    hash_set->memory_free(hash_set);
+    hash_set->memory_dealloc(hash_set->buckets);
+    hash_set->memory_dealloc(hash_set);
     *hash_set_pointer = nullptr;
 }
 
@@ -369,7 +369,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
         .equals = hash_set->equals,
         .to_string = hash_set->to_string,
         .memory_alloc = hash_set->memory_alloc,
-        .memory_free = hash_set->memory_free
+        .memory_dealloc = hash_set->memory_dealloc
     })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
@@ -415,7 +415,7 @@ char* hash_set_to_string(const HashSet* hash_set) {
 
             char* element_string = hash_set->memory_alloc(length);
             if (!element_string) {
-                hash_set->memory_free(string);
+                hash_set->memory_dealloc(string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return nullptr;
             }
@@ -425,7 +425,7 @@ char* hash_set_to_string(const HashSet* hash_set) {
             if (i < hash_set->size - 1) {
                 strcat(string, ", ");
             }
-            hash_set->memory_free(element_string);
+            hash_set->memory_dealloc(element_string);
         }
     }
 
@@ -483,7 +483,7 @@ static bool ensure_capacity(HashSet* hash_set) {
             buckets[index] = node;
         }
     }
-    hash_set->memory_free(hash_set->buckets);
+    hash_set->memory_dealloc(hash_set->buckets);
     hash_set->buckets = buckets;
     hash_set->capacity = new_capacity;
     hash_set->threshold = hash_set->capacity * hash_set->load_factor;
@@ -508,7 +508,7 @@ static void* remove_node(HashSet* hash_set, int bucket, Node* prev_node, Node* n
     }
     void* element = node->element;
     hash_set->destruct(node->element);
-    hash_set->memory_free(node);
+    hash_set->memory_dealloc(node);
     hash_set->size--;
     hash_set->modification_count++;
     return element;
@@ -520,7 +520,7 @@ static void destroy_nodes(HashSet* hash_set) {
             hash_set->destruct(current->element);
 
             next = current->next;
-            hash_set->memory_free(current);
+            hash_set->memory_dealloc(current);
         }
     }
 }
@@ -552,7 +552,7 @@ static Iterator* create_iterator(const HashSet* hash_set) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = hash_set->memory_free;
+    iteration_context->iterator.memory_dealloc = hash_set->memory_dealloc;
 
     iteration_context->hash_set = (HashSet*) hash_set;
     iteration_context->node = nullptr;

@@ -21,7 +21,7 @@ struct LinkedList {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
     int modification_count;
 };
@@ -94,7 +94,7 @@ static bool collection_contains_internal(const void*, const void*);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (!options->destruct || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_free) {
+    if (!options->destruct || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_dealloc) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
@@ -110,7 +110,7 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->equals = options->equals;
     linked_list->to_string = options->to_string;
     linked_list->memory_alloc = options->memory_alloc;
-    linked_list->memory_free = options->memory_free;
+    linked_list->memory_dealloc = options->memory_dealloc;
     linked_list->modification_count = 0;
     return linked_list;
 }
@@ -135,7 +135,7 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     if (require_non_null(linked_list_pointer, *linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
     destroy_nodes(linked_list);
-    linked_list->memory_free(linked_list);
+    linked_list->memory_dealloc(linked_list);
     *linked_list_pointer = nullptr;
 }
 
@@ -203,7 +203,7 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
             while (head) {
                 Node* temporary = head;
                 head = head->next;
-                linked_list->memory_free(temporary);
+                linked_list->memory_dealloc(temporary);
             }
             iterator_destroy(&iterator);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
@@ -652,7 +652,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         .equals = linked_list->equals,
         .to_string = linked_list->to_string,
         .memory_alloc = linked_list->memory_alloc,
-        .memory_free = linked_list->memory_free
+        .memory_dealloc = linked_list->memory_dealloc
     })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
@@ -707,7 +707,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
 
         char* element_string = linked_list->memory_alloc(length);
         if (!element_string) {
-            linked_list->memory_free(string);
+            linked_list->memory_dealloc(string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
@@ -717,7 +717,7 @@ char* linked_list_to_string(const LinkedList* linked_list) {
         if (node->next) {
             strcat(string, ", ");
         }
-        linked_list->memory_free(element_string);
+        linked_list->memory_dealloc(element_string);
     }
 
     strcat(string, linked_list->size == 0 ? "]" : " ]");
@@ -789,7 +789,7 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
         node->next->prev = node->prev;
     }
     linked_list->destruct(node->element);
-    linked_list->memory_free(node);
+    linked_list->memory_dealloc(node);
     linked_list->size--;
     linked_list->modification_count++;
     return element;
@@ -799,7 +799,7 @@ static void destroy_nodes(LinkedList* linked_list) {
     for (Node* current = linked_list->head, * next; current; current = next) {
         next = current->next;
         linked_list->destruct(current->element);
-        linked_list->memory_free(current);
+        linked_list->memory_dealloc(current);
     }
 }
 
@@ -828,7 +828,7 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = linked_list->memory_free;
+    iteration_context->iterator.memory_dealloc = linked_list->memory_dealloc;
 
     iteration_context->linked_list = (LinkedList*) linked_list;
     iteration_context->current = linked_list->head;
@@ -1105,7 +1105,7 @@ static bool durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_free(elements);
+    linked_list->memory_dealloc(elements);
     return true;
 }
 
@@ -1119,7 +1119,7 @@ static bool sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_free(elements);
+    linked_list->memory_dealloc(elements);
     return true;
 }
 
@@ -1133,7 +1133,7 @@ static bool naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_free(elements);
+    linked_list->memory_dealloc(elements);
     return true;
 }
 

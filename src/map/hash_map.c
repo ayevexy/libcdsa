@@ -37,7 +37,7 @@ struct HashMap {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
     int modification_count;
 };
@@ -91,7 +91,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->key_destruct
         || !options->key_equals || !options->key_to_string || !options->value_destruct || !options->value_equals
-        || !options->value_to_string || !options->memory_alloc || !options->memory_free
+        || !options->value_to_string || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -104,7 +104,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     hash_map->capacity = next_power_of_two(options->initial_capacity);
     hash_map->buckets = options->memory_alloc(hash_map->capacity * sizeof(Entry*));
     if (!hash_map->buckets) {
-        options->memory_free(hash_map);
+        options->memory_dealloc(hash_map);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_map'");
         return nullptr;
     }
@@ -120,7 +120,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     hash_map->value_equals = options->value_equals;
     hash_map->value_to_string = options->value_to_string;
     hash_map->memory_alloc = options->memory_alloc;
-    hash_map->memory_free = options->memory_free;
+    hash_map->memory_dealloc = options->memory_dealloc;
     hash_map->modification_count = 0;
     return hash_map;
 }
@@ -145,8 +145,8 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
     if (require_non_null(hash_map_pointer, *hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
     destroy_entries(hash_map);
-    hash_map->memory_free(hash_map->buckets);
-    hash_map->memory_free(hash_map);
+    hash_map->memory_dealloc(hash_map->buckets);
+    hash_map->memory_dealloc(hash_map);
     *hash_map_pointer = nullptr;
 }
 
@@ -309,7 +309,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
     void* value = entry->value;
     hash_map->size--;
     hash_map->modification_count++;
-    hash_map->memory_free(entry);
+    hash_map->memory_dealloc(entry);
     return value;
 }
 
@@ -464,7 +464,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         .value_equals = hash_map->value_equals,
         .value_to_string = hash_map->value_to_string,
         .memory_alloc = hash_map->memory_alloc,
-        .memory_free = hash_map->memory_free
+        .memory_dealloc = hash_map->memory_dealloc
     })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
@@ -497,7 +497,7 @@ char* hash_map_to_string(const HashMap* hash_map) {
 
             char* element_string = hash_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
             if (!element_string) {
-                hash_map->memory_free(string);
+                hash_map->memory_dealloc(string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return nullptr;
             }
@@ -510,7 +510,7 @@ char* hash_map_to_string(const HashMap* hash_map) {
                 strcat(string, ", ");
             }
             count++;
-            hash_map->memory_free(element_string);
+            hash_map->memory_dealloc(element_string);
         }
     }
 
@@ -572,7 +572,7 @@ static bool ensure_capacity(HashMap* hash_map) {
             buckets[index] = entry;
         }
     }
-    hash_map->memory_free(hash_map->buckets);
+    hash_map->memory_dealloc(hash_map->buckets);
     hash_map->buckets = buckets;
     hash_map->capacity = new_capacity;
     hash_map->threshold = hash_map->capacity * hash_map->load_factor;
@@ -608,7 +608,7 @@ static void destroy_entries(HashMap* hash_map) {
             hash_map->value_destruct(current->value);
 
             next = current->next;
-            hash_map->memory_free(current);
+            hash_map->memory_dealloc(current);
         }
     }
 }
@@ -640,7 +640,7 @@ static Iterator* create_iterator(const HashMap* hash_map, void* next_function(vo
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = hash_map->memory_free;
+    iteration_context->iterator.memory_dealloc = hash_map->memory_dealloc;
 
     iteration_context->hash_map = (HashMap*) hash_map;
     iteration_context->entry = nullptr;

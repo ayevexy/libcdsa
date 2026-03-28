@@ -84,7 +84,7 @@ typedef struct HashMap HashMap;
  * @pre value_equals != nullptr
  * @pre value_to_string != nullptr
  * @pre memory_alloc != nullptr
- * @pre memory_free != nullptr
+ * @pre memory_dealloc != nullptr
  */
 typedef struct {
     int initial_capacity;
@@ -102,7 +102,7 @@ typedef struct {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
 } HashMapOptions;
 
@@ -122,7 +122,7 @@ typedef struct {
     .value_equals = pointer_equals,                         \
     .value_to_string = pointer_to_string,                   \
     .memory_alloc = malloc,                                 \
-    .memory_free = free,                                    \
+    .memory_dealloc = free,                                 \
     __VA_ARGS__                                             \
 }
 

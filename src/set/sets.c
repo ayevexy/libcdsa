@@ -9,7 +9,7 @@
 
 void* (*sets_memory_alloc)(size_t) = malloc;
 
-void (*sets_memory_free)(void*) = free;
+void (*sets_memory_dealloc)(void*) = free;
 
 typedef enum {
     READY,
@@ -71,7 +71,7 @@ static void iteration_context_destroy(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iterator_destroy((Iterator**) &iteration_context->set_iterators.first);
     iterator_destroy((Iterator**) &iteration_context->set_iterators.second);
-    sets_memory_free(iteration_context);
+    sets_memory_dealloc(iteration_context);
 }
 
 static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(void*)) {
@@ -97,7 +97,7 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
     iteration_context->iterator.has_next = iterator_has_next_internal;
     iteration_context->iterator.next = iterator_next_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = iteration_context_destroy;
+    iteration_context->iterator.memory_dealloc = iteration_context_destroy;
     
     iteration_context->sets = (Pair) { set_a, set_b };
     iteration_context->set_iterators = (Pair) { set_a_iterator, set_b_iterator };
@@ -108,7 +108,7 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
     return &iteration_context->iterator;
 
     cleanup: {
-        if (iteration_context) sets_memory_free(iteration_context);
+        if (iteration_context) sets_memory_dealloc(iteration_context);
         if (set_a_iterator) iterator_destroy(&set_a_iterator);
         if (set_b_iterator) iterator_destroy(&set_b_iterator);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");

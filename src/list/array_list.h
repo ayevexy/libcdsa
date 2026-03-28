@@ -76,7 +76,7 @@ typedef struct ArrayList ArrayList;
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
  * @pre memory_realloc != nullptr
- * @pre memory_free != nullptr
+ * @pre memory_dealloc != nullptr
  */
 typedef struct {
     int initial_capacity;
@@ -89,7 +89,7 @@ typedef struct {
     struct {
         void* (*memory_alloc)(size_t);
         void* (*memory_realloc)(void*, size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
 } ArrayListOptions;
 
@@ -106,7 +106,7 @@ typedef struct {
     .to_string = pointer_to_string,                             \
     .memory_alloc = malloc,                                     \
     .memory_realloc = realloc,                                  \
-    .memory_free = free,                                        \
+    .memory_dealloc = free,                                     \
     __VA_ARGS__                                                 \
 }
 

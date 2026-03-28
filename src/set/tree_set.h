@@ -62,7 +62,7 @@ typedef struct TreeSet TreeSet;
  * @pre equals != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
- * @pre memory_free != nullptr
+ * @pre memory_dealloc != nullptr
  */
 typedef struct {
     Comparator compare;
@@ -73,7 +73,7 @@ typedef struct {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
 } TreeSetOptions;
 
@@ -88,7 +88,7 @@ typedef struct {
     .equals = pointer_equals,                               \
     .to_string = pointer_to_string,                         \
     .memory_alloc = malloc,                                 \
-    .memory_free = free,                                    \
+    .memory_dealloc = free,                                 \
     __VA_ARGS__                                             \
 }
 

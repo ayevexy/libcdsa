@@ -21,7 +21,7 @@ struct ArrayList {
     struct {
         void* (*memory_alloc)(size_t);
         void* (*memory_realloc)(void*, size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
     int modification_count;
 };
@@ -84,7 +84,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
         || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->equals || !options->to_string
-        || !options->memory_alloc || !options->memory_realloc || !options->memory_free
+        || !options->memory_alloc || !options->memory_realloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -96,7 +96,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     }
     array_list->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
     if (!array_list->elements) {
-        options->memory_free(array_list);
+        options->memory_dealloc(array_list);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array_list'");
         return nullptr;
     }
@@ -108,7 +108,7 @@ ArrayList* array_list_new(const ArrayListOptions* options) {
     array_list->to_string = options->to_string;
     array_list->memory_alloc = options->memory_alloc;
     array_list->memory_realloc = options->memory_realloc;
-    array_list->memory_free = options->memory_free;
+    array_list->memory_dealloc = options->memory_dealloc;
     array_list->modification_count = 0;
     return array_list;
 }
@@ -135,8 +135,8 @@ void array_list_destroy(ArrayList** array_list_pointer) {
     for (int i = 0; i < array_list->size; i++) {
         array_list->destruct(array_list->elements[i]);
     }
-    array_list->memory_free(array_list->elements);
-    array_list->memory_free(array_list);
+    array_list->memory_dealloc(array_list->elements);
+    array_list->memory_dealloc(array_list);
     *array_list_pointer = nullptr;
 }
 
@@ -645,7 +645,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .to_string = array_list->to_string,
         .memory_alloc = array_list->memory_alloc,
         .memory_realloc = array_list->memory_realloc,
-        .memory_free = array_list->memory_free
+        .memory_dealloc = array_list->memory_dealloc
     })))) {
         set_error(error, "%s", plain_error_message());
         return nullptr;
@@ -696,7 +696,7 @@ char* array_list_to_string(const ArrayList* array_list) {
 
         char* element_string = array_list->memory_alloc(length);
         if (!element_string) {
-            array_list->memory_free(string);
+            array_list->memory_dealloc(string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
@@ -706,7 +706,7 @@ char* array_list_to_string(const ArrayList* array_list) {
         if (i < array_list->size - 1) {
             strcat(string, ", ");
         }
-        array_list->memory_free(element_string);
+        array_list->memory_dealloc(element_string);
     }
 
     strcat(string, array_list->size == 0 ? "]" : " ]");
@@ -778,7 +778,7 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = array_list->memory_free;
+    iteration_context->iterator.memory_dealloc = array_list->memory_dealloc;
 
     iteration_context->array_list = (ArrayList*) array_list;
     iteration_context->cursor = 0;
@@ -962,8 +962,8 @@ static void merge(ArrayList* array_list, int start_index, int middle_index, int 
         right_elements_index++;
         index++;
     }
-    array_list->memory_free(left_elements);
-    array_list->memory_free(right_elements);
+    array_list->memory_dealloc(left_elements);
+    array_list->memory_dealloc(right_elements);
 }
 
 static void quick_sort(ArrayList* array_list, int start_index, int end_index, Comparator compare) {

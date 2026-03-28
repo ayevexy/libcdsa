@@ -36,7 +36,7 @@ struct TreeMap {
     };
     struct {
         void* (*memory_alloc)(size_t);
-        void (*memory_free)(void*);
+        void (*memory_dealloc)(void*);
     };
     int modification_count;
 };
@@ -107,7 +107,7 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->compare_keys || !options->key_destruct || !options->key_equals
         || !options->key_to_string || !options->value_destruct || !options->value_equals
-        || !options->value_to_string || !options->memory_alloc || !options->memory_free
+        || !options->value_to_string || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -119,7 +119,7 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
     }
     Entry* sentinel = options->memory_alloc(sizeof(Entry));
     if (!sentinel) {
-        options->memory_free(tree_map);
+        options->memory_dealloc(tree_map);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_map'");
         return nullptr;
     }
@@ -137,7 +137,7 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
     tree_map->value_equals = options->value_equals;
     tree_map->value_to_string = options->value_to_string;
     tree_map->memory_alloc = options->memory_alloc;
-    tree_map->memory_free = options->memory_free;
+    tree_map->memory_dealloc = options->memory_dealloc;
     return tree_map;
 }
 
@@ -161,8 +161,8 @@ void tree_map_destroy(TreeMap** tree_map_pointer) {
     if (require_non_null(tree_map_pointer, *tree_map_pointer)) return;
     TreeMap* tree_map = *tree_map_pointer;
     destroy_entries(tree_map, tree_map->root);
-    tree_map->memory_free(tree_map->sentinel);
-    tree_map->memory_free(tree_map);
+    tree_map->memory_dealloc(tree_map->sentinel);
+    tree_map->memory_dealloc(tree_map);
     *tree_map_pointer = nullptr;
 }
 
@@ -672,7 +672,7 @@ char* tree_map_to_string(const TreeMap* tree_map) {
 
         char* element_string = tree_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
         if (!element_string) {
-            tree_map->memory_free(string);
+            tree_map->memory_dealloc(string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }
@@ -685,7 +685,7 @@ char* tree_map_to_string(const TreeMap* tree_map) {
             strcat(string, ", ");
         }
         count++;
-        tree_map->memory_free(element_string);
+        tree_map->memory_dealloc(element_string);
         entry = get_successor_entry(tree_map, entry);
     }
 
@@ -726,7 +726,7 @@ static TreeMap* create_tree_map_like(const TreeMap* tree_map) {
        .value_equals = tree_map->value_equals,
        .value_to_string = tree_map->value_to_string,
        .memory_alloc = tree_map->memory_alloc,
-       .memory_free = tree_map->memory_free
+       .memory_dealloc = tree_map->memory_dealloc
     })))) {
         return nullptr;
     }
@@ -833,7 +833,7 @@ static void remove_entry(TreeMap* tree_map, Entry* entry) {
     if (current_color == BLACK) {
         rebalance_after_delete(tree_map, auxiliar);
     }
-    tree_map->memory_free(entry);
+    tree_map->memory_dealloc(entry);
     tree_map->size--;
     tree_map->modification_count++;
 }
@@ -857,7 +857,7 @@ static void destroy_entries(TreeMap* tree_map, Entry* entry) {
     destroy_entries(tree_map, entry->right);
     tree_map->key_destruct(entry->key);
     tree_map->value_destruct(entry->value);
-    tree_map->memory_free(entry);
+    tree_map->memory_dealloc(entry);
 }
 
 static void rebalance_after_insert(TreeMap* tree_map, Entry* entry) {
@@ -1018,7 +1018,7 @@ static Iterator* create_iterator(const TreeMap* tree_map, void* next_function(vo
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_free = tree_map->memory_free;
+    iteration_context->iterator.memory_dealloc = tree_map->memory_dealloc;
 
     iteration_context->tree_map = (TreeMap*) tree_map;
     iteration_context->entry = nullptr;

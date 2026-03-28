@@ -112,6 +112,16 @@ int priority_queue_size(const PriorityQueue* priority_queue) {
     return priority_queue->size;
 }
 
+int priority_queue_capacity(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return 0;
+    return priority_queue->capacity;
+}
+
+bool priority_queue_is_empty(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return false;
+    return priority_queue->size == 0;
+}
+
 static void heapify_after_insert(PriorityQueue* priority_queue, int index) {
     int parent_index = index > 0 ? (index - 1) / 2 : 0;
 

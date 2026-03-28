@@ -80,6 +80,29 @@ void test_get_priority_queue_size() {
     TEST_ASSERT_EQUAL(size, SIZE(values));
 }
 
+void test_get_priority_queue_capacity() {
+    // when
+    int capacity = priority_queue_capacity(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL(10, capacity);
+}
+
+void test_priority_queue_is_empty() {
+    // when
+    bool empty = priority_queue_is_empty(priority_queue);
+    // then
+    TEST_ASSERT_TRUE(empty);
+}
+
+void test_priority_queue_is_not_empty() {
+    // given
+    priority_queue_enqueue(priority_queue, new(int, 10));
+    // when
+    bool empty = priority_queue_is_empty(priority_queue);
+    // then
+    TEST_ASSERT_FALSE(empty);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_priority_queue);
@@ -92,5 +115,8 @@ int main(void) {
     RUN_TEST(test_dequeue_element_from_priority_queue);
 
     RUN_TEST(test_get_priority_queue_size);
+    RUN_TEST(test_get_priority_queue_capacity);
+    RUN_TEST(test_priority_queue_is_empty);
+    RUN_TEST(test_priority_queue_is_not_empty);
     return UNITY_END();
 }

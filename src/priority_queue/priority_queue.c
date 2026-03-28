@@ -160,7 +160,7 @@ void priority_queue_enqueue_all(PriorityQueue* priority_queue, Collection collec
 void* priority_queue_peek(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
     if (priority_queue->size == 0) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "'priority queue' is empty");
+        set_error(NO_SUCH_ELEMENT_ERROR, "'priority_queue' is empty");
         return nullptr;
     }
     return priority_queue->elements[0];
@@ -169,6 +169,10 @@ void* priority_queue_peek(const PriorityQueue* priority_queue) {
 void* priority_queue_dequeue(PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
 
+    if (priority_queue->size == 0) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "'priority_queue' is empty");
+        return nullptr;
+    }
     void* element = priority_queue->elements[0];
     priority_queue->elements[0] = priority_queue->elements[priority_queue->size - 1];
     priority_queue->elements[priority_queue->size - 1] = element;

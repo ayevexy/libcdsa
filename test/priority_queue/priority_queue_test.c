@@ -143,6 +143,14 @@ void test_dequeue_element_from_priority_queue() {
     TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
 }
 
+void test_dequeue_element_from_empty_priority_queue_fails() {
+    // when
+    int* value; Error error = attempt(value = priority_queue_dequeue(priority_queue));
+    // then
+    TEST_ASSERT_NULL(value);
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
+}
+
 void test_get_priority_queue_size() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -467,6 +475,7 @@ int main(void) {
     RUN_TEST(test_peek_element_from_empty_priority_queue_fails);
 
     RUN_TEST(test_dequeue_element_from_priority_queue);
+    RUN_TEST(test_dequeue_element_from_empty_priority_queue_fails);
 
     RUN_TEST(test_get_priority_queue_size);
     RUN_TEST(test_get_priority_queue_capacity);

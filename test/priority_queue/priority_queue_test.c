@@ -58,6 +58,18 @@ void test_enqueue_element_to_priority_queue() {
     TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
 }
 
+void test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    priority_queue_enqueue(priority_queue, new(int, 100));
+    // then
+    int new_values[] = { 100, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+    TEST_ASSERT_EQUAL(20, priority_queue_capacity(priority_queue));
+    TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
+}
+
 void test_dequeue_element_from_priority_queue() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -183,6 +195,7 @@ int main(void) {
     RUN_TEST(test_destroy_null_priority_queue_fails);
 
     RUN_TEST(test_enqueue_element_to_priority_queue);
+    RUN_TEST(test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it);
     RUN_TEST(test_dequeue_element_from_priority_queue);
 
     RUN_TEST(test_get_priority_queue_size);

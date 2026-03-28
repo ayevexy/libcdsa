@@ -26,6 +26,8 @@ struct PriorityQueue {
     int modification_count;
 };
 
+static bool ensure_capacity(PriorityQueue*);
+
 static void heapify_after_insert(PriorityQueue*, int);
 
 static void heapify_after_delete(PriorityQueue*, int);
@@ -105,11 +107,12 @@ void priority_queue_set_destructor(PriorityQueue* priority_queue, void (*destruc
 
 void priority_queue_enqueue(PriorityQueue* priority_queue, const void* element) {
     if (require_non_null(priority_queue)) return;
-    
-    // TODO: ensure capacity
 
+    if (!ensure_capacity(priority_queue)) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'priority_queue' capacity");
+        return;
+    }
     priority_queue->elements[priority_queue->size] = (void*) element;
-
     priority_queue->size++;
     priority_queue->modification_count++;
 
@@ -169,6 +172,28 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
         .iterator = collection_iterator_internal,
         .contains = collection_contains_internal
     };
+}
+
+static bool ensure_capacity(PriorityQueue* priority_queue) {
+    if (priority_queue->capacity >= priority_queue->size + 1) {
+        return true;
+    }
+    int new_capacity = priority_queue->capacity;
+    while (new_capacity < priority_queue->capacity + 1) {
+        if (priority_queue->growth_factor > MAX_CAPACITY / new_capacity) {
+            return false;
+        }
+        new_capacity *= priority_queue->growth_factor;
+    }
+    void** elements = priority_queue->memory_alloc(new_capacity * sizeof(void*));
+    if (!elements) {
+        return false;
+    }
+    memcpy(elements, priority_queue->elements, priority_queue->size * sizeof(void*));
+    priority_queue->memory_dealloc(priority_queue->elements);
+    priority_queue->elements = elements;
+    priority_queue->capacity = new_capacity;
+    return true;
 }
 
 static void heapify_after_insert(PriorityQueue* priority_queue, int index) {

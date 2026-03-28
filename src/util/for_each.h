@@ -8,6 +8,7 @@
 #include "set/hash_set.h"
 #include "set/tree_set.h"
 #include "deque/deque.h"
+#include "priority_queue/priority_queue.h"
 
 #include "util/collection.h"
 #include "util/iterator.h"
@@ -27,6 +28,7 @@
             HashSet*: hash_set_iterator,                                                        \
             TreeSet*: tree_set_iterator,                                                        \
             Deque*: deque_iterator,                                                             \
+            PriorityQueue*: priority_queue_iterator,                                            \
             Collection: collection_iterator                                                     \
         )(collection);                                                                          \
         _iter_;                                                                                 \

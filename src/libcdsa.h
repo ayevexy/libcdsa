@@ -33,11 +33,14 @@
 /** @brief Double-ended queue implemented with a resizable array. */
 #include "deque/deque.h"
 
+/** @brief LIFO stack implemented with a resizable array. */
+#include "stack/stack.h"
+
 /** @brief FIFO queue implemented with a resizable array. */
 #include "queue/queue.h"
 
-/** @brief LIFO stack implemented with a resizable array. */
-#include "stack/stack.h"
+/** @brief heap based priority queue implementation */
+#include "priority_queue/priority_queue.h"
 
 /** @brief Mathematical sets operations */
 #include "set/sets.h"

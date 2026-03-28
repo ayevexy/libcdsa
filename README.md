@@ -3,8 +3,6 @@
 > [!WARNING]
 > This library is currently a work in progress. It is experimental and may be unstable — use it at your own risk.
 
-# Data Structures and Algorithms Library in C
-
 ## Table of Contents
 
 - [Overview](#overview)
@@ -24,7 +22,7 @@
 
 ## Overview
 
-A Feature-Rich, High-Level, and Easy-to-Use Data Structures and Algorithms Library for the C programming language.
+**A Feature-Rich, High-Level, and Easy-to-Use Data Structures and Algorithms Library for the C programming language.**
 
 This project provides common data structures and algorithms with clean, expressive, and
 reusable abstractions — bringing a modern programming experience to C.

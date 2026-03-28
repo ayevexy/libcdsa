@@ -103,6 +103,77 @@ void test_priority_queue_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
+void test_priority_queue_iterator_forward_iteration() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    Iterator* iterator = priority_queue_iterator(priority_queue); // iteration order is not guaranteed
+    // then
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_FALSE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_priority_queue_iterator_detects_concurrent_modification() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    Iterator* iterator = priority_queue_iterator(priority_queue);
+    priority_queue_dequeue(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL(CONCURRENT_MODIFICATION_ERROR, attempt(iterator_next(iterator)));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_priority_queue_iterator_reset() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    Iterator* iterator = priority_queue_iterator(priority_queue);
+    iterator_advance(iterator, 3);
+    // when
+    iterator_reset(iterator);
+    // then
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
+void test_convert_priority_queue_to_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    Collection collection = priority_queue_to_collection(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL(priority_queue, collection.data_structure);
+    TEST_ASSERT_EQUAL(priority_queue_size(priority_queue), collection_size(collection));
+    // and
+    Iterator* iter_a = priority_queue_iterator(priority_queue);
+    Iterator* iter_b = collection_iterator(collection);
+    TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_priority_queue);
@@ -118,5 +189,11 @@ int main(void) {
     RUN_TEST(test_get_priority_queue_capacity);
     RUN_TEST(test_priority_queue_is_empty);
     RUN_TEST(test_priority_queue_is_not_empty);
+
+    RUN_TEST(test_priority_queue_iterator_forward_iteration);
+    RUN_TEST(test_priority_queue_iterator_detects_concurrent_modification);
+    RUN_TEST(test_priority_queue_iterator_reset);
+
+    RUN_TEST(test_convert_priority_queue_to_collection);
     return UNITY_END();
 }

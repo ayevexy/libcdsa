@@ -30,6 +30,30 @@ static void heapify_after_insert(PriorityQueue*, int);
 
 static void heapify_after_delete(PriorityQueue*, int);
 
+static Iterator* create_iterator(const PriorityQueue*);
+
+static bool iterator_has_next_internal(const void*);
+
+static void* iterator_next_internal(void*);
+
+static bool iterator_has_previous_internal(const void*);
+
+static void* iterator_previous_internal(void*);
+
+static void iterator_add_internal(void*, const void*);
+
+static void iterator_set_internal(void*, const void*);
+
+static void iterator_remove_internal(void*);
+
+static void iterator_reset_internal(void*);
+
+static int collection_size_internal(const void*);
+
+static Iterator* collection_iterator_internal(const void*);
+
+static bool collection_contains_internal(const void*, const void*);
+
 PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -122,6 +146,31 @@ bool priority_queue_is_empty(const PriorityQueue* priority_queue) {
     return priority_queue->size == 0;
 }
 
+Iterator* priority_queue_iterator(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+    Iterator* iterator = create_iterator(priority_queue);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+bool priority_queue_contains(const PriorityQueue* priority_queue, const void* element) {
+    (void) priority_queue, (void) element;
+    return false;
+}
+
+Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return (Collection) {};
+    return (Collection) {
+        .data_structure = priority_queue,
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
+    };
+}
+
 static void heapify_after_insert(PriorityQueue* priority_queue, int index) {
     int parent_index = index > 0 ? (index - 1) / 2 : 0;
 
@@ -167,4 +216,99 @@ static void heapify_after_delete(PriorityQueue* priority_queue, int index) {
 
         heapify_after_delete(priority_queue, index);
     }
+}
+
+typedef struct {
+    Iterator iterator;
+    PriorityQueue* priority_queue;
+    int cursor;
+    int modification_count;
+}  IterationContext;
+
+static Iterator* create_iterator(const PriorityQueue* priority_queue) {
+    IterationContext* iteration_context = priority_queue->memory_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator.iteration_context = iteration_context;
+    iteration_context->iterator.has_next = iterator_has_next_internal;
+    iteration_context->iterator.next = iterator_next_internal;
+    iteration_context->iterator.has_previous = iterator_has_previous_internal;
+    iteration_context->iterator.previous = iterator_previous_internal;
+
+    iteration_context->iterator.add = iterator_add_internal;
+    iteration_context->iterator.set = iterator_set_internal;
+    iteration_context->iterator.remove = iterator_remove_internal;
+    iteration_context->iterator.reset = iterator_reset_internal;
+    iteration_context->iterator.memory_dealloc = priority_queue->memory_dealloc;
+
+    iteration_context->priority_queue = (PriorityQueue*) priority_queue;
+    iteration_context->cursor = 0;
+    iteration_context->modification_count = priority_queue->modification_count;
+
+    return &iteration_context->iterator;
+}
+
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    return iteration_context->cursor < iteration_context->priority_queue->size;
+}
+
+static void* iterator_next_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->modification_count != iteration_context->priority_queue->modification_count) {
+        set_error(CONCURRENT_MODIFICATION_ERROR, "collection modified while iterator is active");
+        return nullptr;
+    }
+    if (!iterator_has_next_internal(iteration_context)) {
+        set_error(NO_SUCH_ELEMENT_ERROR, "iterator has no more elements");
+        return nullptr;
+    }
+    return iteration_context->priority_queue->elements[iteration_context->cursor++];
+}
+
+static bool iterator_has_previous_internal(const void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "priority queue iterators doesn't support backward traversal");
+    return false;
+}
+
+static void* iterator_previous_internal(void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "priority queue iterators doesn't support backward traversal");
+    return nullptr;
+}
+
+static void iterator_add_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "priority queue iterators doesn't support adding elements");
+}
+
+static void iterator_set_internal(void* raw_iteration_context, const void* element) {
+    (void) raw_iteration_context, (void) element;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "priority queue iterators doesn't support setting elements");
+}
+
+static void iterator_remove_internal(void* raw_iteration_context) {
+    (void) raw_iteration_context;
+    set_error(UNSUPPORTED_OPERATION_ERROR, "priority queue iterators doesn't support removing elements");
+}
+
+static void iterator_reset_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    iteration_context->cursor = 0;
+    iteration_context->modification_count = iteration_context->priority_queue->modification_count;
+}
+
+static int collection_size_internal(const void* priority_queue) {
+    return priority_queue_size(priority_queue);
+}
+
+static Iterator* collection_iterator_internal(const void* priority_queue) {
+    return priority_queue_iterator(priority_queue);
+}
+
+static bool collection_contains_internal(const void* priority_queue, const void* elements) {
+    return priority_queue_contains(priority_queue, elements);
 }

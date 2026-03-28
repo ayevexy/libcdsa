@@ -26,7 +26,7 @@ struct PriorityQueue {
     int modification_count;
 };
 
-static bool ensure_capacity(PriorityQueue*);
+static bool ensure_capacity(PriorityQueue*, int);
 
 static void heapify_after_insert(PriorityQueue*, int);
 
@@ -89,6 +89,22 @@ PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     return priority_queue;
 }
 
+PriorityQueue* priority_queue_from(Collection collection, const PriorityQueueOptions* options) {
+    if (require_non_null(options)) return nullptr;
+    PriorityQueue* priority_queue; Error error;
+
+    if ((error = attempt(priority_queue = priority_queue_new(options)))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    if ((error = attempt(priority_queue_enqueue_all(priority_queue, collection)))) {
+        priority_queue_destroy(&priority_queue);
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    return priority_queue;
+}
+
 void priority_queue_destroy(PriorityQueue** priority_queue_pointer) {
     if (require_non_null(priority_queue_pointer, *priority_queue_pointer)) return;
     PriorityQueue* priority_queue = *priority_queue_pointer;
@@ -108,7 +124,7 @@ void priority_queue_set_destructor(PriorityQueue* priority_queue, void (*destruc
 void priority_queue_enqueue(PriorityQueue* priority_queue, const void* element) {
     if (require_non_null(priority_queue)) return;
 
-    if (!ensure_capacity(priority_queue)) {
+    if (!ensure_capacity(priority_queue, priority_queue->size + 1)) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'priority_queue' capacity");
         return;
     }
@@ -117,6 +133,26 @@ void priority_queue_enqueue(PriorityQueue* priority_queue, const void* element) 
     priority_queue->modification_count++;
 
     heapify_after_insert(priority_queue, priority_queue->size - 1);
+}
+
+void priority_queue_enqueue_all(PriorityQueue* priority_queue, Collection collection) {
+    if (require_non_null(priority_queue)) return;
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    if (!ensure_capacity(priority_queue, priority_queue->size + collection_size(collection))) {
+        iterator_destroy(&iterator);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'priority_queue' capacity");
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        priority_queue_enqueue(priority_queue, element);
+    }
+    iterator_destroy(&iterator);
 }
 
 void* priority_queue_dequeue(PriorityQueue* priority_queue) {
@@ -174,12 +210,12 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
     };
 }
 
-static bool ensure_capacity(PriorityQueue* priority_queue) {
-    if (priority_queue->capacity >= priority_queue->size + 1) {
+static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {
+    if (priority_queue->capacity >= capacity) {
         return true;
     }
     int new_capacity = priority_queue->capacity;
-    while (new_capacity < priority_queue->capacity + 1) {
+    while (new_capacity < capacity) {
         if (priority_queue->growth_factor > MAX_CAPACITY / new_capacity) {
             return false;
         }

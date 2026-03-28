@@ -29,6 +29,31 @@ void test_do_not_create_priority_queue_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
+void test_create_priority_queue_from_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    PriorityQueue* new_priority_queue = priority_queue_from(priority_queue_to_collection(priority_queue), INT_PRIORITY_QUEUE_OPTIONS());
+    // then
+    int new_values[] = { 5, 4, 3, 2, 1 };
+    TEST_ASSERT_NOT_NULL(new_priority_queue);
+    TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, new_priority_queue);
+    // clean up
+    priority_queue_destroy(&new_priority_queue);
+}
+
+void test_do_not_create_priority_queue_with_invalid_options_from_collection() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_from(priority_queue_to_collection(priority_queue), &(PriorityQueueOptions) {}));
+    // then
+    TEST_ASSERT_NULL(new_priority_queue);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
 void test_destroy_priority_queue_set_it_to_null() {
     // given
     PriorityQueue* new_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
@@ -68,6 +93,24 @@ void test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it() {
     int new_values[] = { 100, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
     TEST_ASSERT_EQUAL(20, priority_queue_capacity(priority_queue));
     TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
+}
+
+void test_enqueue_all_elements_of_a_collection_in_priority_queue() {
+    // given
+    PriorityQueue* existing_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    int other_values[] = { 10, 20, 30 };
+    POPULATE_PRIORITY_QUEUE(existing_priority_queue, other_values);
+    // when
+    priority_queue_enqueue_all(priority_queue, priority_queue_to_collection(existing_priority_queue));
+    // then
+    int new_values[] = { 30, 20, 10, 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
+    // clean up
+    priority_queue_destroy(&existing_priority_queue);
 }
 
 void test_dequeue_element_from_priority_queue() {
@@ -190,12 +233,15 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_priority_queue);
     RUN_TEST(test_do_not_create_priority_queue_with_invalid_options);
+    RUN_TEST(test_create_priority_queue_from_collection);
+    RUN_TEST(test_do_not_create_priority_queue_with_invalid_options_from_collection);
 
     RUN_TEST(test_destroy_priority_queue_set_it_to_null);
     RUN_TEST(test_destroy_null_priority_queue_fails);
 
     RUN_TEST(test_enqueue_element_to_priority_queue);
     RUN_TEST(test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it);
+    RUN_TEST(test_enqueue_all_elements_of_a_collection_in_priority_queue);
     RUN_TEST(test_dequeue_element_from_priority_queue);
 
     RUN_TEST(test_get_priority_queue_size);

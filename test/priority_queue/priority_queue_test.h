@@ -8,16 +8,16 @@
     .equals = int_pointer_value_equals,                                 \
     .to_string = int_pointer_value_to_string                            \
 )
-/*
-#define POPULATE_ARRAY_LIST(priority_queue, array)                      \
+
+#define POPULATE_PRIORITY_QUEUE(priority_queue, array)                  \
     for (int i = 0; i < SIZE(array); i++) {                             \
-        priority_queue_add_last(priority_queue, new(int, array[i]));    \
+        priority_queue_enqueue(priority_queue, new(int, array[i]));     \
     }
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, priority_queue)                   \
-    for (int i = 0; i < SIZE(array); i++) {                                             \
-        TEST_ASSERT_EQUAL(array[i], *(int*) priority_queue_get(priority_queue, i));     \
-    }                                                                                   \
-    TEST_ASSERT_EQUAL(SIZE(array), priority_queue_size(priority_queue));
-*/
+#define TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(array, priority_queue)                   \
+    TEST_ASSERT_EQUAL(SIZE(array), priority_queue_size(priority_queue));                    \
+    for (int i = 0; i < SIZE(array); i++) {                                                 \
+        TEST_ASSERT_EQUAL(array[i], *(int*) priority_queue_dequeue(priority_queue));        \
+    }                                                                                       \
+
 #endif

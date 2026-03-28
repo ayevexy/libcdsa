@@ -26,6 +26,10 @@ struct PriorityQueue {
     int modification_count;
 };
 
+static void heapify_after_insert(PriorityQueue*, int);
+
+static void heapify_after_delete(PriorityQueue*, int);
+
 PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -73,4 +77,84 @@ void priority_queue_destroy(PriorityQueue** priority_queue_pointer) {
 void priority_queue_set_destructor(PriorityQueue* priority_queue, void (*destruct)(void*)) {
     if (require_non_null(priority_queue, destruct)) return;
     priority_queue->destruct = destruct;
+}
+
+void priority_queue_enqueue(PriorityQueue* priority_queue, const void* element) {
+    if (require_non_null(priority_queue)) return;
+    
+    // TODO: ensure capacity
+
+    priority_queue->elements[priority_queue->size] = (void*) element;
+
+    priority_queue->size++;
+    priority_queue->modification_count++;
+
+    heapify_after_insert(priority_queue, priority_queue->size - 1);
+}
+
+void* priority_queue_dequeue(PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+
+    void* element = priority_queue->elements[0];
+    priority_queue->elements[0] = priority_queue->elements[priority_queue->size - 1];
+    priority_queue->elements[priority_queue->size - 1] = element;
+    element = priority_queue->elements[priority_queue->size - 1];
+
+    priority_queue->size--;
+    priority_queue->modification_count++;
+
+    heapify_after_delete(priority_queue, 0);
+    return element;
+}
+
+int priority_queue_size(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return 0;
+    return priority_queue->size;
+}
+
+static void heapify_after_insert(PriorityQueue* priority_queue, int index) {
+    int parent_index = index > 0 ? (index - 1) / 2 : 0;
+
+    const void* parent = priority_queue->elements[parent_index];
+    const void* child = priority_queue->elements[index];
+
+    while (index != 0 && priority_queue->compare(child, parent) > 0) {
+        void* temporary = priority_queue->elements[index];
+        priority_queue->elements[index] = priority_queue->elements[parent_index];
+        priority_queue->elements[parent_index] = temporary;
+
+        index = parent_index;
+        parent_index = index > 0 ? (index - 1) / 2 : 0;
+
+        parent = priority_queue->elements[parent_index];
+        child = priority_queue->elements[index];
+    }
+}
+
+static void heapify_after_delete(PriorityQueue* priority_queue, int index) {
+    if (priority_queue->size <= 1) {
+        return;
+    }
+    const int left_index = 2 * index + 1;
+    const int right_index = 2 * index + 2;
+    const int old_index = index;
+
+    const void* left = priority_queue->elements[left_index];
+    const void* right = priority_queue->elements[right_index];
+    const void* current = priority_queue->elements[index];
+
+    if (left_index < priority_queue->size && priority_queue->compare(current, left) < 0) {
+        index = left_index;
+        current = left;
+    }
+    if (right_index < priority_queue->size && priority_queue->compare(current, right) < 0) {
+        index = right_index;
+    }
+    if (index != old_index) {
+        void* element = priority_queue->elements[old_index];
+        priority_queue->elements[old_index] = priority_queue->elements[index];
+        priority_queue->elements[index] = element;
+
+        heapify_after_delete(priority_queue, index);
+    }
 }

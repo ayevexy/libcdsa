@@ -83,8 +83,8 @@ static bool collection_contains_internal(const void*, const void*);
 ArrayList* array_list_new(const ArrayListOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->equals || !options->to_string
-        || !options->memory_alloc || !options->memory_realloc || !options->memory_dealloc
+        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->equals
+        || !options->to_string || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -745,9 +745,15 @@ static bool resize(ArrayList* array_list, int new_capacity) {
     new_capacity = new_capacity < MIN_CAPACITY ? MIN_CAPACITY : new_capacity;
     new_capacity = new_capacity > MAX_CAPACITY ? MAX_CAPACITY : new_capacity;
 
-    void** elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
-    if (!elements) {
-        return false;
+    void** elements;
+    if (array_list->memory_realloc) {
+        elements = array_list->memory_realloc(array_list->elements, new_capacity * sizeof(void*));
+        if (!elements) return false;
+    } else {
+        elements = array_list->memory_alloc(new_capacity * sizeof(void*));
+        if (!elements) return false;
+        memcpy(elements, array_list->elements, array_list->size * sizeof(void*));
+        array_list->memory_dealloc(array_list->elements);
     }
     array_list->elements = elements;
     array_list->capacity = new_capacity;

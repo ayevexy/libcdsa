@@ -27,7 +27,7 @@
  * - the equality function used to compare elements
  * - the to_string function used to convert elements to strings
  * - the memory allocation function
- * - the memory reallocation function
+ * - the memory reallocation function (optional, it will be used for resizing if non-null)
  * - the memory deallocation function
  *
  * Underlying implementation (simplified):
@@ -75,7 +75,6 @@ typedef struct ArrayList ArrayList;
  * @pre equals != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
- * @pre memory_realloc != nullptr
  * @pre memory_dealloc != nullptr
  */
 typedef struct {

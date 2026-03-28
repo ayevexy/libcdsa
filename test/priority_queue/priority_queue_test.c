@@ -387,6 +387,19 @@ void test_priority_queue_does_not_contains_all_elements() {
     priority_queue_destroy(&new_priority_queue);
 }
 
+void test_clone_priority_queue() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    PriorityQueue* copy_priority_queue = priority_queue_clone(priority_queue);
+    // then
+    int new_values[] = { 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, copy_priority_queue);
+    // clean up
+    priority_queue_destroy(&copy_priority_queue);
+}
+
 void test_convert_priority_queue_to_collection() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -400,6 +413,19 @@ void test_convert_priority_queue_to_collection() {
     Iterator* iter_a = priority_queue_iterator(priority_queue);
     Iterator* iter_b = collection_iterator(collection);
     TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
+}
+
+void test_convert_priority_queue_to_array() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    void** elements = priority_queue_to_array(priority_queue);
+    // then
+    int new_values[] = { 5, 4, 2, 1, 3 }; // order is not guaranteed
+    TEST_ASSERT_ARRAY_EQUALS(new_values, elements);
+    // clean up
+    free(elements);
 }
 
 int main(void) {
@@ -443,6 +469,8 @@ int main(void) {
     RUN_TEST(test_empty_priority_queue_contains_all_elements_of_empty_collection);
     RUN_TEST(test_priority_queue_does_not_contains_all_elements);
 
+    RUN_TEST(test_clone_priority_queue);
     RUN_TEST(test_convert_priority_queue_to_collection);
+    RUN_TEST(test_convert_priority_queue_to_array);
     return UNITY_END();
 }

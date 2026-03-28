@@ -267,6 +267,30 @@ bool priority_queue_contains_all(const PriorityQueue* priority_queue, Collection
     return contains;
 }
 
+PriorityQueue* priority_queue_clone(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+
+    PriorityQueue* new_priority_queue; Error error;
+    if ((error = attempt(new_priority_queue = priority_queue_new(&(PriorityQueueOptions) {
+        .initial_capacity = priority_queue->capacity,
+        .growth_factor = priority_queue->growth_factor,
+        .compare = priority_queue->compare,
+        .destruct = noop_destruct,
+        .equals = priority_queue->equals,
+        .to_string = priority_queue->to_string,
+        .memory_alloc = priority_queue->memory_alloc,
+        .memory_dealloc = priority_queue->memory_dealloc
+    })))) {
+        set_error(error, "%s", plain_error_message());
+        return nullptr;
+    }
+    for (int i = 0; i < priority_queue->size; i++) {
+        new_priority_queue->elements[i] = priority_queue->elements[i];
+    }
+    new_priority_queue->size = priority_queue->size;
+    return new_priority_queue;
+}
+
 Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return (Collection) {};
     return (Collection) {
@@ -275,6 +299,19 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
         .iterator = collection_iterator_internal,
         .contains = collection_contains_internal
     };
+}
+
+void** priority_queue_to_array(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+    void** elements = priority_queue->memory_alloc(priority_queue->size * sizeof(void*));
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
+        return nullptr;
+    }
+    for (int i = 0; i < priority_queue->size; i++) {
+        elements[i] = priority_queue->elements[i];
+    }
+    return elements;
 }
 
 static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {

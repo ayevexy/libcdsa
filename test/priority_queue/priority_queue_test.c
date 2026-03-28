@@ -428,6 +428,27 @@ void test_convert_priority_queue_to_array() {
     free(elements);
 }
 
+void test_get_priority_queue_string_representation() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    char* string = priority_queue_to_string(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL_STRING("| 5, 4, 2, 1, 3 |", string);
+    // clean up
+    free(string);
+}
+
+void test_get_empty_priority_queue_string_representation() {
+    // when
+    char* string = priority_queue_to_string(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL_STRING("||", string);
+    // clean up
+    free(string);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_priority_queue);
@@ -472,5 +493,7 @@ int main(void) {
     RUN_TEST(test_clone_priority_queue);
     RUN_TEST(test_convert_priority_queue_to_collection);
     RUN_TEST(test_convert_priority_queue_to_array);
+    RUN_TEST(test_get_priority_queue_string_representation);
+    RUN_TEST(test_get_empty_priority_queue_string_representation);
     return UNITY_END();
 }

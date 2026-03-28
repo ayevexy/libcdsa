@@ -14,10 +14,10 @@
         priority_queue_enqueue(priority_queue, new(int, array[i]));     \
     }
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(array, priority_queue)                   \
-    TEST_ASSERT_EQUAL(SIZE(array), priority_queue_size(priority_queue));                    \
-    for (int i = 0; i < SIZE(array); i++) {                                                 \
-        TEST_ASSERT_EQUAL(array[i], *(int*) priority_queue_dequeue(priority_queue));        \
-    }                                                                                       \
+#define TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(array, priority_queue)               \
+    TEST_ASSERT_EQUAL(SIZE(array), priority_queue_size(priority_queue));                \
+    for (int i = 0; i < SIZE(array); i++) {                                             \
+        TEST_ASSERT_EQUAL(array[i], *(int*) priority_queue_dequeue(priority_queue));    \
+    }                                                                                   \
 
 #endif

@@ -26,6 +26,8 @@ struct PriorityQueue {
     int modification_count;
 };
 
+static size_t calculate_string_size(const PriorityQueue*);
+
 static bool ensure_capacity(PriorityQueue*, int);
 
 static void heapify_after_insert(PriorityQueue*, int);
@@ -312,6 +314,54 @@ void** priority_queue_to_array(const PriorityQueue* priority_queue) {
         elements[i] = priority_queue->elements[i];
     }
     return elements;
+}
+
+char* priority_queue_to_string(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
+
+    char* string = priority_queue->memory_alloc(calculate_string_size(priority_queue));
+    if (!string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
+        return nullptr;
+    }
+    string[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string, priority_queue->size == 0 ? "|" : "| ");
+
+    for (int i = 0; i < priority_queue->size; i++) {
+        constexpr int NULL_TERMINATOR = 1;
+        const int length = priority_queue->to_string(priority_queue->elements[i], nullptr, 0) + NULL_TERMINATOR;
+
+        char* element_string = priority_queue->memory_alloc(length);
+        if (!element_string) {
+            priority_queue->memory_dealloc(string);
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
+            return nullptr;
+        }
+        priority_queue->to_string(priority_queue->elements[i], element_string, length);
+        strcat(string, element_string);
+
+        if (i < priority_queue->size - 1) {
+            strcat(string, ", ");
+        }
+        priority_queue->memory_dealloc(element_string);
+    }
+
+    strcat(string, priority_queue->size == 0 ? "|" : " |");
+    return string;
+}
+
+static size_t calculate_string_size(const PriorityQueue* priority_queue) {
+    constexpr int PIPES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
+    size_t length = 0;
+
+    for (int i = 0; i < priority_queue->size; i++) {
+        length += priority_queue->to_string(priority_queue->elements[i], nullptr, 0);
+
+        if (i == 0) length += 1; // space after opening pipe
+        if (i < priority_queue->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
+        if (i == priority_queue->size - 1) length += 1; // space before closing pipe
+    }
+    return length + PIPES + NULL_TERMINATOR;
 }
 
 static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {

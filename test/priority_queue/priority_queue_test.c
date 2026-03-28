@@ -232,6 +232,94 @@ void test_priority_queue_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_priority_queue_is_equal_to_it_self() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    bool equals = priority_queue_equals(priority_queue, priority_queue);
+    // then
+    TEST_ASSERT_TRUE(equals);
+}
+
+void test_priority_queue_is_equal_to_another_priority_queue() {
+    // given
+    PriorityQueue* other_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    POPULATE_PRIORITY_QUEUE(other_priority_queue, values);
+    // when
+    bool equals = priority_queue_equals(priority_queue, other_priority_queue);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    // clean up
+    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_destroy(&other_priority_queue);
+}
+
+void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_size() {
+    // given
+    PriorityQueue* other_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    POPULATE_PRIORITY_QUEUE(other_priority_queue, values);
+    priority_queue_enqueue(other_priority_queue, new(int, 10));
+    // when
+    bool equals = priority_queue_equals(priority_queue, other_priority_queue);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_destroy(&other_priority_queue);
+}
+
+void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_elements() {
+    // given
+    PriorityQueue* other_priority_queue = priority_queue_new(INT_PRIORITY_QUEUE_OPTIONS());
+    // and
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // and
+    int other_values[] = { 2, 3, 4, 5, 6 };
+    POPULATE_PRIORITY_QUEUE(other_priority_queue, other_values);
+    // when
+    bool equals = priority_queue_equals(priority_queue, other_priority_queue);
+    // then
+    TEST_ASSERT_FALSE(equals);
+    // clean up
+    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_destroy(&other_priority_queue);
+}
+
+static void action_add_one(void* element) {
+    *(int*) element += 1;
+}
+
+void test_perform_action_for_each_element_of_priority_queue() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    priority_queue_for_each(priority_queue, action_add_one);
+    // then
+    int new_values[] = { 6, 5, 4, 3, 2 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(new_values, priority_queue);
+}
+
+void test_clear_priority_queue() {
+    // given
+    int values[] = { 1, 2, 3 };
+    POPULATE_PRIORITY_QUEUE(priority_queue, values);
+    // when
+    priority_queue_clear(priority_queue);
+    // then
+    TEST_ASSERT_EQUAL(0, priority_queue_size(priority_queue));
+    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(priority_queue_peek(priority_queue)));
+}
+
 void test_priority_queue_contains_element() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -341,6 +429,13 @@ int main(void) {
     RUN_TEST(test_priority_queue_iterator_forward_iteration);
     RUN_TEST(test_priority_queue_iterator_detects_concurrent_modification);
     RUN_TEST(test_priority_queue_iterator_reset);
+
+    RUN_TEST(test_priority_queue_is_equal_to_it_self);
+    RUN_TEST(test_priority_queue_is_equal_to_another_priority_queue);
+    RUN_TEST(test_priority_queue_is_not_equal_to_another_priority_queue_with_different_size);
+    RUN_TEST(test_priority_queue_is_not_equal_to_another_priority_queue_with_different_elements);
+    RUN_TEST(test_perform_action_for_each_element_of_priority_queue);
+    RUN_TEST(test_clear_priority_queue);
     
     RUN_TEST(test_priority_queue_contains_element);
     RUN_TEST(test_priority_queue_does_not_contains_element);

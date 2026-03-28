@@ -204,6 +204,39 @@ Iterator* priority_queue_iterator(const PriorityQueue* priority_queue) {
     return iterator;
 }
 
+bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQueue* other_priority_queue) {
+    if (require_non_null(priority_queue, other_priority_queue)) return false;
+    if (priority_queue == other_priority_queue) {
+        return true;
+    }
+    if (priority_queue->size != other_priority_queue->size) {
+        return false;
+    }
+    for (int i = 0; i < priority_queue->size; i++) {
+        if (!priority_queue->equals(priority_queue->elements[i], other_priority_queue->elements[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void priority_queue_for_each(PriorityQueue* priority_queue, Consumer action) {
+    if (require_non_null(priority_queue, action)) return;
+    for (int i = 0; i < priority_queue->size; i++) {
+        action(priority_queue->elements[i]);
+    }
+}
+
+void priority_queue_clear(PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return;
+    for (int i = 0; i < priority_queue->size; i++) {
+        priority_queue->destruct(priority_queue->elements[i]);
+        priority_queue->elements[i] = nullptr;
+    }
+    priority_queue->size = 0;
+    priority_queue->modification_count++;
+}
+
 bool priority_queue_contains(const PriorityQueue* priority_queue, const void* element) {
     if (require_non_null(priority_queue)) return false;
     for (int i = 0; i < priority_queue->size; i++) {

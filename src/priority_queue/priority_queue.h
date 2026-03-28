@@ -14,14 +14,14 @@
  * It automatically resizes to accommodate new elements and supports storing
  * elements of any type, including null pointers.
  *
- * Internally, the implementation uses a dynamically allocated array of `void*`.
+ * Internally, the implementation uses a dynamically allocated array of `void*` (a binary heap).
  * All operations receive a pointer to the priority queue as their first argument.
  * The PriorityQueue type is opaque and can only be modified through the public API.
  *
  * A priority queue must be configured using a PriorityQueueOptions structure specifying:
  * - the initial capacity
  * - the growth factor
- * - the element comparator functino
+ * - the element comparator function
  * - the destruct function used to free element memory
  * - the equality function used to compare elements
  * - the to_string function used to convert elements to strings
@@ -237,6 +237,8 @@ bool priority_queue_is_empty(const PriorityQueue* priority_queue);
 /**
  * @brief Creates an iterator for the priority queue.
  *
+ * The iteration order is unspecified.
+ *
  * @param priority_queue pointer to a priority queue 
  *
  * @return pointer to a newly created iterator
@@ -272,6 +274,8 @@ bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQu
  * @param action function to apply
  *
  * @exception NULL_POINTER_ERROR if priority_queue or action is null
+ *
+ * @note the iteration order is unspecified
  */
 void priority_queue_for_each(PriorityQueue* priority_queue, Consumer action);
 
@@ -347,6 +351,7 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
  * @note the created array must be freed manually
+ * @note the order of elements in the returned array is unspecified
  */
 void** priority_queue_to_array(const PriorityQueue* priority_queue);
 
@@ -361,6 +366,7 @@ void** priority_queue_to_array(const PriorityQueue* priority_queue);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
  * @note the created string must be freed manually
+ * @note the order of elements in the string is unspecified
  */
 char* priority_queue_to_string(const PriorityQueue* priority_queue);
 

@@ -57,7 +57,7 @@ static Entry* get_lower_entry(const TreeMap*, Entry*);
 
 static Entry* get_higher_entry(const TreeMap*, Entry*);
 
-static void remove_entry(TreeMap*, Entry*);
+static MapEntry remove_entry(TreeMap*, Entry*);
 
 static void transplant(TreeMap*, Entry*, Entry*);
 
@@ -350,10 +350,7 @@ void* tree_map_remove(TreeMap* tree_map, const void* key) {
     if (!entry) {
         return nullptr;
     }
-    void* value = entry->value;
-    tree_map->value_destruct(value);
-    remove_entry(tree_map, entry);
-    return value;
+    return remove_entry(tree_map, entry).value;
 }
 
 bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* value) {
@@ -372,11 +369,7 @@ MapEntry tree_map_poll_first_entry(TreeMap* tree_map) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
-    const MapEntry view = entry->view;
-    tree_map->key_destruct(entry->key);
-    tree_map->value_destruct(entry->value);
-    remove_entry(tree_map, entry);
-    return view;
+    return remove_entry(tree_map, entry);
 }
 
 MapEntry tree_map_poll_last_entry(TreeMap* tree_map) {
@@ -386,11 +379,7 @@ MapEntry tree_map_poll_last_entry(TreeMap* tree_map) {
         set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
         return (MapEntry) {};
     }
-    const MapEntry view = entry->view;
-    tree_map->key_destruct(entry->key);
-    tree_map->value_destruct(entry->value);
-    remove_entry(tree_map, entry);
-    return view;
+    return remove_entry(tree_map, entry);
 }
 
 void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {
@@ -793,7 +782,7 @@ static Entry* get_higher_entry(const TreeMap* tree_map, Entry* entry) {
     return entry;
 }
 
-static void remove_entry(TreeMap* tree_map, Entry* entry) {
+static MapEntry remove_entry(TreeMap* tree_map, Entry* entry) {
     Entry* current = entry, * auxiliar;
     Color current_color = current->color;
     if (entry->left == tree_map->sentinel) {
@@ -821,9 +810,13 @@ static void remove_entry(TreeMap* tree_map, Entry* entry) {
     if (current_color == BLACK) {
         rebalance_after_delete(tree_map, auxiliar);
     }
+    const MapEntry view = entry->view;
+    tree_map->key_destruct(entry->key);
+    tree_map->value_destruct(entry->value);
     tree_map->memory_dealloc(entry);
     tree_map->size--;
     tree_map->modification_count++;
+    return view;
 }
 
 static void transplant(TreeMap* tree_map, Entry* first, Entry* second) {

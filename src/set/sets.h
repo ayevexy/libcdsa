@@ -4,6 +4,7 @@
 #include "hash_set.h"
 #include "tree_set.h"
 #include "util/iterator.h"
+#include "util/collection.h"
 #include "util/pair.h"
 
 /**
@@ -87,6 +88,19 @@ static inline Iterator* set_view_iterator(const SetView* set_view) {
 static inline bool set_view_contains(const SetView* set_view, const void* element) {
     return set_view->contains(&set_view->sets, element);
 }
+
+/**
+ * @brief Returns a Collection view of the set view.
+ *
+ * The returned collection does not own the elements.
+ *
+ * @param set_view pointer to a set view
+ *
+ * @return a collection view
+ *
+ * @exception NULL_POINTER_ERROR if set_view is null
+ */
+Collection set_view_to_collection(const SetView* set_view);
 
 /**
  * @brief Returns a set view representing the union of two sets.

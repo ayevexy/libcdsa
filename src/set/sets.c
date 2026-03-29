@@ -363,3 +363,25 @@ bool _set_view_is_superset(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return false;
     return _set_view_is_subset(set_b, set_a);
 }
+
+static int collection_size_internal(const void* set_view) {
+    return set_view_size(set_view);
+}
+
+static Iterator* collection_iterator_internal(const void* set_view) {
+    return set_view_iterator(set_view);
+}
+
+static bool collection_contains_internal(const void* set_view, const void* element) {
+    return set_view_contains(set_view, element);
+}
+
+Collection set_view_to_collection(const SetView* set_view) {
+    if (require_non_null(set_view)) return (Collection) {};
+    return (Collection) {
+        .data_structure = set_view,
+        .size = collection_size_internal,
+        .iterator = collection_iterator_internal,
+        .contains = collection_contains_internal
+    };
+}

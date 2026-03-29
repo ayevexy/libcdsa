@@ -36,111 +36,117 @@ typedef struct SetView {
 } SetView;
 
 /**
- * @brief Retrieves the size of the given SetView.
+ * @brief Retrieves the current size of the set view.
  *
- * @param set_view a SetView
+ * @param set_view pointer to a set view
  *
  * @return number of elements in the set view
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if failed to create underlying iterators while calculating
  */
-static inline int set_view_size(SetView set_view) {
-    return set_view.size(&set_view.sets);
+static inline int set_view_size(const SetView* set_view) {
+    return set_view->size(&set_view->sets);
 }
 
 /**
- * @brief Checks whether the given SetView is empty.
+ * @brief Checks whether the set view is empty.
  *
- * @param set_view a SetView
+ * @param set_view pointer to a set view
  *
  * @return true if empty, false otherwise
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if failed to create underlying iterators while calculating
  */
-static inline bool set_view_is_empty(SetView set_view) {
+static inline bool set_view_is_empty(const SetView* set_view) {
     return set_view_size(set_view) == 0;
 }
 
 /**
- * @brief Creates an iterator for the given SetView.
+ * @brief Creates an iterator for the set view.
  *
  * The implementation uses the underlying iterators of the sets the set view represents.
  *
- * @param set_view a SetView
+ * @param set_view pointer to a set view
  *
  * @return pointer to a newly created Iterator
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-static inline Iterator* set_view_iterator(SetView set_view) {
-    return set_view.iterator(&set_view.sets);
+static inline Iterator* set_view_iterator(const SetView* set_view) {
+    return set_view->iterator(&set_view->sets);
 }
 
 /**
- * @brief Checks whether an element is present in the given SetView.
+ * @brief Checks whether an element is present in the set view.
  *
- * @param set_view a SetView
+ * @param set_view pointer to a set view
  * @param element the element to check
  *
  * @return true if the element is present, false otherwise
  */
-static inline bool set_view_contains(SetView set_view, const void* element) {
-    return set_view.contains(&set_view.sets, element);
+static inline bool set_view_contains(const SetView* set_view, const void* element) {
+    return set_view->contains(&set_view->sets, element);
 }
 
 /**
- * @brief Returns a SetView representing the union of two sets.
+ * @brief Returns a set view representing the union of two sets.
  *
  * @param set_a the first set
  * @param set_b the second set
  *
- * @return a SetView containing the resulting union
+ * @return a set view containing the resulting union
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_union(set_a, set_b) _set_view_union(_set_view_of(set_a), _set_view_of(set_b))
 
 SetView _set_view_union(SetView*, SetView*);
 
 /**
- * @brief Returns a SetView representing the intersection of two sets.
+ * @brief Returns a set view representing the intersection of two sets.
  *
  * @param set_a the first set
  * @param set_b the second set
  *
- * @return a SetView containing the intersection
+ * @return a set view containing the intersection
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_intersection(set_a, set_b) _set_view_intersection(_set_view_of(set_a), _set_view_of(set_b))
 
 SetView _set_view_intersection(SetView*, SetView*);
 
 /**
- * @brief Returns a SetView representing the difference of two sets.
+ * @brief Returns a set view representing the difference of two sets.
  *
  * @param set_a the first set
  * @param set_b the second set
  *
- * @return a SetView containing the difference
+ * @return a set view containing the difference
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_difference(set_a, set_b) _set_view_difference(_set_view_of(set_a), _set_view_of(set_b))
 
 SetView _set_view_difference(SetView*, SetView*);
 
 /**
- * @brief Returns a SetView representing the symmetrical difference of two sets.
+ * @brief Returns a set view representing the symmetrical difference of two sets.
  *
  * @param set_a the first set
  * @param set_b the second set
  *
- * @return a SetView containing the symmetrical difference
+ * @return a set view containing the symmetrical difference
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_symmetric_difference(set_a, set_b) _set_view_symmetric_difference(_set_view_of(set_a), _set_view_of(set_b))
 
@@ -156,7 +162,7 @@ SetView _set_view_symmetric_difference(SetView*, SetView*);
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_is_subset(set_a, set_b) _set_view_is_subset(_set_view_of(set_a), _set_view_of(set_b))
 
@@ -172,20 +178,18 @@ bool _set_view_is_subset(SetView*, SetView*);
  *
  * @exception NULL_POINTER_ERROR if set_a or set_b are null
  *
- * @note set_a and set_b could be a HashSet or another SetView
+ * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
 #define set_is_superset(set_a, set_b) _set_view_is_superset(_set_view_of(set_a), _set_view_of(set_b))
 
 bool _set_view_is_superset(SetView*, SetView*);
 
 /**
- * @brief Returns a SetView of any set (including another SetView).
+ * @brief Returns a set view of any set (including another SetView).
  *
- * @param set a pointer to a set
+ * @param set pointer to a set
  *
- * @return a SetView representation
- *
- * @exception NULL_POINTER_ERROR if set is null
+ * @return a set view representation
  */
 #define _set_view_of(set) _Generic((set),       \
     HashSet*: _hash_set_view((HashSet*) set),   \

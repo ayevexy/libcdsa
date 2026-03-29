@@ -37,9 +37,9 @@ void test_set_union() {
     // when
     SetView new_set = set_union(hash_set_a, hash_set_b);
     // then
-    TEST_ASSERT_EQUAL(10, set_view_size(new_set));
+    TEST_ASSERT_EQUAL(10, set_view_size(&new_set));
     // and
-    Iterator* iterator = set_view_iterator(new_set);
+    Iterator* iterator = set_view_iterator(&new_set);
     TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
@@ -52,8 +52,8 @@ void test_set_union() {
     TEST_ASSERT_EQUAL(9, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){6}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){6}));
 }
 
 void test_set_intersection() {
@@ -66,16 +66,16 @@ void test_set_intersection() {
     // when
     SetView new_set = set_intersection(hash_set_a, hash_set_b);
     // then
-    TEST_ASSERT_EQUAL(3, set_view_size(new_set));
+    TEST_ASSERT_EQUAL(3, set_view_size(&new_set));
     // and
-    Iterator* iterator = set_view_iterator(new_set);
+    Iterator* iterator = set_view_iterator(&new_set);
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){2}));
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){4}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){2}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){4}));
 }
 
 void test_set_difference() {
@@ -88,15 +88,15 @@ void test_set_difference() {
     // when
     SetView new_set = set_difference(hash_set_a, hash_set_b);
     // then
-    TEST_ASSERT_EQUAL(2, set_view_size(new_set));
+    TEST_ASSERT_EQUAL(2, set_view_size(&new_set));
     // and
-    Iterator* iterator = set_view_iterator(new_set);
+    Iterator* iterator = set_view_iterator(&new_set);
     TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){5}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){5}));
 }
 
 void test_set_symmetric_difference() {
@@ -109,17 +109,17 @@ void test_set_symmetric_difference() {
     // when
     SetView new_set = set_symmetric_difference(hash_set_a, hash_set_b);
     // then
-    TEST_ASSERT_EQUAL(4, set_view_size(new_set));
+    TEST_ASSERT_EQUAL(4, set_view_size(&new_set));
     // and
-    Iterator* iterator = set_view_iterator(new_set);
+    Iterator* iterator = set_view_iterator(&new_set);
     TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(0, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(6, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){0}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){0}));
 }
 
 void test_set_is_subset() {
@@ -188,15 +188,15 @@ void test_set_chained_operations_passing_set_view_as_argument() {
     SetView union_set = set_union(hash_set_a, hash_set_b);
     SetView new_set = set_intersection(hash_set_c, &union_set);
     // then
-    TEST_ASSERT_EQUAL(2, set_view_size(new_set));
+    TEST_ASSERT_EQUAL(2, set_view_size(&new_set));
     // and
-    Iterator* iterator = set_view_iterator(new_set);
+    Iterator* iterator = set_view_iterator(&new_set);
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){2}));
-    TEST_ASSERT_TRUE(set_view_contains(new_set, &(int){3}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){2}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){3}));
 }
 
 int main(void) {

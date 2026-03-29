@@ -82,10 +82,10 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
     Iterator* set_a_iterator = nullptr, * set_b_iterator = nullptr;
 
     Error error;
-    if ((error = attempt(set_a_iterator = set_view_iterator(*set_a)))) {
+    if ((error = attempt(set_a_iterator = set_view_iterator(set_a)))) {
         goto cleanup;
     }
-    if ((error = attempt(set_b_iterator = set_view_iterator(*set_b)))) {
+    if ((error = attempt(set_b_iterator = set_view_iterator(set_b)))) {
         goto cleanup;
     }
 
@@ -118,11 +118,16 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
 
 static int union_set_size(const void* raw_sets) {
     const Pair* sets = raw_sets;
-    int size = set_view_size(*(SetView*) sets->first);
-    Iterator* iterator_b = set_view_iterator(*(SetView*) sets->second);
+    int size = set_view_size(sets->first);
+
+    Iterator* iterator_b; Error error;
+    if ((error = attempt(iterator_b = set_view_iterator(sets->second)))) {
+        set_error(error, "%s", error_message());
+        return 0;
+    }
     while (iterator_has_next(iterator_b)) {
         const void* element = iterator_next(iterator_b);
-        if (!set_view_contains(*(SetView*) sets->first, element)) {
+        if (!set_view_contains(sets->first, element)) {
             size++;
         }
     }
@@ -137,7 +142,7 @@ static void* union_set_iterator_next(void* raw_iteration_context) {
     }
     while (iterator_has_next(iteration_context->set_iterators.second)) {
         void* element = iterator_next(iteration_context->set_iterators.second);
-        if (!set_view_contains(*(SetView*) iteration_context->sets.first, element)) {
+        if (!set_view_contains(iteration_context->sets.first, element)) {
             return element;
         }
     }
@@ -151,16 +156,21 @@ static Iterator* union_set_iterator(const void* sets) {
 
 static bool union_set_contains(const void* raw_sets, const void* element) {
     const Pair* sets = raw_sets;
-    return set_view_contains(*(SetView*) sets->first, element) || set_view_contains(*(SetView*) sets->second, element);
+    return set_view_contains(sets->first, element) || set_view_contains(sets->second, element);
 }
 
 static int intersection_set_size(const void* raw_sets) {
     const Pair* sets = raw_sets;
     int size = 0;
-    Iterator* iterator = set_view_iterator(*(SetView*) sets->first);
+
+    Iterator* iterator; Error error;
+    if ((error = attempt(iterator = set_view_iterator(sets->first)))) {
+        set_error(error, "%s", error_message());
+        return 0;
+    }
     while (iterator_has_next(iterator)) {
         const void* element = iterator_next(iterator);
-        if (set_view_contains(*(SetView*) sets->second, element)) {
+        if (set_view_contains(sets->second, element)) {
             size++;
         }
     }
@@ -172,7 +182,7 @@ static void* intersection_set_iterator_next(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     while (iterator_has_next(iteration_context->set_iterators.first)) {
         void* element = iterator_next(iteration_context->set_iterators.first);
-        if (set_view_contains(*(SetView*) iteration_context->sets.second, element)) {
+        if (set_view_contains(iteration_context->sets.second, element)) {
             return element;
         }
     }
@@ -186,16 +196,21 @@ static Iterator* intersection_set_iterator(const void* sets) {
 
 static bool intersection_set_contains(const void* raw_sets, const void* element) {
     const Pair* sets = raw_sets;
-    return set_view_contains(*(SetView*) sets->first, element) && set_view_contains(*(SetView*) sets->second, element);
+    return set_view_contains(sets->first, element) && set_view_contains(sets->second, element);
 }
 
 static int difference_set_size(const void* raw_sets) {
     const Pair* sets = raw_sets;
     int size = 0;
-    Iterator* iterator_a = set_view_iterator(*(SetView*) sets->first);
+
+    Iterator* iterator_a; Error error;
+    if ((error = attempt(iterator_a = set_view_iterator(sets->first)))) {
+        set_error(error, "%s", error_message());
+        return 0;
+    }
     while (iterator_has_next(iterator_a)) {
         const void* element = iterator_next(iterator_a);
-        if (!set_view_contains(*(SetView*) sets->second, element)) {
+        if (!set_view_contains(sets->second, element)) {
             size++;
         }
     }
@@ -207,7 +222,7 @@ static void* difference_set_iterator_next(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     while (iterator_has_next(iteration_context->set_iterators.first)) {
         void* element = iterator_next(iteration_context->set_iterators.first);
-        if (!set_view_contains(*(SetView*) iteration_context->sets.second, element)) {
+        if (!set_view_contains(iteration_context->sets.second, element)) {
             return element;
         }
     }
@@ -221,27 +236,38 @@ static Iterator* difference_set_iterator(const void* sets) {
 
 static bool difference_set_contains(const void* raw_sets, const void* element) {
     const Pair* sets = raw_sets;
-    return set_view_contains(*(SetView*) sets->first, element) && !set_view_contains(*(SetView*) sets->second, element);
+    return set_view_contains(sets->first, element) && !set_view_contains(sets->second, element);
 }
 
 static int symmetric_difference_set_size(const void* raw_sets) {
     const Pair* sets = raw_sets;
     int size = 0;
-    Iterator* iterator_a = set_view_iterator(*(SetView*) sets->first);
+
+    Iterator* iterator_a, * iterator_b; Error error;
+    if ((error = attempt(iterator_a = set_view_iterator(sets->first)))) {
+        set_error(error, "%s", error_message());
+        return 0;
+    }
+    if ((error = attempt(iterator_b = set_view_iterator(sets->second)))) {
+        iterator_destroy(&iterator_a);
+        set_error(error, "%s", error_message());
+        return 0;
+    }
+
     while (iterator_has_next(iterator_a)) {
         const void* element = iterator_next(iterator_a);
-        if (!set_view_contains(*(SetView*) sets->second, element)) {
+        if (!set_view_contains(sets->second, element)) {
             size++;
         }
     }
-    iterator_destroy(&iterator_a);
-    Iterator* iterator_b = set_view_iterator(*(SetView*) sets->second);
     while (iterator_has_next(iterator_b)) {
         const void* element = iterator_next(iterator_b);
-        if (!set_view_contains(*(SetView*) sets->first, element)) {
+        if (!set_view_contains(sets->first, element)) {
             size++;
         }
     }
+
+    iterator_destroy(&iterator_a);
     iterator_destroy(&iterator_b);
     return size;
 }
@@ -250,13 +276,13 @@ static void* symmetric_difference_set_iterator_next(void* raw_iteration_context)
     IterationContext* iteration_context = raw_iteration_context;
     while (iterator_has_next(iteration_context->set_iterators.first)) {
         void* element = iterator_next(iteration_context->set_iterators.first);
-        if (!set_view_contains(*(SetView*) iteration_context->sets.second, element)) {
+        if (!set_view_contains(iteration_context->sets.second, element)) {
             return element;
         }
     }
     while (iterator_has_next(iteration_context->set_iterators.second)) {
         void* element = iterator_next(iteration_context->set_iterators.second);
-        if (!set_view_contains(*(SetView*) iteration_context->sets.first, element)) {
+        if (!set_view_contains(iteration_context->sets.first, element)) {
             return element;
         }
     }
@@ -270,7 +296,7 @@ static Iterator* symmetric_difference_set_iterator(const void* sets) {
 
 static bool symmetric_difference_set_contains(const void* raw_sets, const void* element) {
     const Pair* sets = raw_sets;
-    return set_view_contains(*(SetView*) sets->first, element) ^ set_view_contains(*(SetView*) sets->second, element);
+    return set_view_contains(sets->first, element) ^ set_view_contains(sets->second, element);
 }
 
 SetView _set_view_union(SetView* set_a, SetView* set_b) {
@@ -315,11 +341,16 @@ SetView _set_view_symmetric_difference(SetView* set_a, SetView* set_b) {
 
 bool _set_view_is_subset(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return false;
-    Iterator* iterator = set_view_iterator(*set_a);
+
+    Iterator* iterator; Error error;
+    if ((error = attempt(iterator = set_view_iterator(set_a)))) {
+        set_error(error, "%s", error_message());
+        return 0;
+    }
     bool subset = true;
     while (iterator_has_next(iterator)) {
         const void* element = iterator_next(iterator);
-        if (!set_view_contains(*set_b, element)) {
+        if (!set_view_contains(set_b, element)) {
             subset = false;
             break;
         }

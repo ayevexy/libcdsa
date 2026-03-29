@@ -214,7 +214,7 @@ To install the library system-wide in `/usr/local`, execute the following comman
 
 ## Contributing
 
-Open an issue to request a feature, report a bug, suggest some improvement or ask something.
+Open an issue to request a feature or report a bug. For questions open a discussion.
 
 ## License
 

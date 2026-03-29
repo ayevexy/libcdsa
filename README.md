@@ -112,26 +112,53 @@ target_link_libraries(your_project PRIVATE libcdsa::libcdsa)
 
 ### Usage
 
-Now just include the desired header files and start coding, for example: `array_list.h`
+Now just include the `libcdsa.h` header file and start coding, for example:
 
 ```c++
-#include "list/array_list.h" // replace with <libcdsa/list/array_list.h> if installed system-wide
+#include "libcdsa.h" // replace with <libcdsa/libcdsa.h> if installed system-wide
 #include <stdio.h>
 
-int main() {
-    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS());
-    int values[] = { 1, 2, 3, 4, 5 };
-    
-    for (int i = 0; i < 5; i++) {
-        array_list_add_last(array_list, &values[i]);
+int main(void) {
+    // Create a new ArrayList with custom options
+    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
+        .memory_alloc = malloc, // Custom allocator
+        .memory_dealloc = free,
+        .destruct = free        // Automatically free stored elements
+    ));
+
+    // Add elements (heap-allocated via `new`)
+    array_list_add_last(array_list, new(int, 1));
+    array_list_add_last(array_list, new(int, 2));
+    array_list_add_last(array_list, new(int, 3));
+
+    // Error handling:
+    int* value; Error error;
+    if (((error = attempt(value = array_list_get(array_list, -1))))) {
+
+        printf("%s\n", error_to_string(error)); // INDEX_OUT_OF_BOUNDS_ERROR
+        printf("%s\n", plain_error_message()); // index -1 out of bounds for length 3
     }
-    
-    printf("%s\n", array_list_to_string(array_list)); // [ 1, 2, 3, 4, 5 ]
+
+    // Iterator support:
+    Iterator* iterator = array_list_iterator(array_list);
+    while (iterator_has_next(iterator)) {
+        const int* element = iterator_next(iterator);
+        printf("element value: %d\n", *element); // 1, 2, 3
+    }
+    iterator_destroy(&iterator);
+
+    // Or simplified using `for_each`:
+    for_each (int* element, array_list) {
+        printf("element value: %d\n", *element); // 1, 2, 3
+    }
+
+    // Cleanup (elements are freed via `.destruct`)
+    array_list_destroy(&array_list);
     return 0;
 }
 ```
 
-The library also provides the `libcdsa.h` header file to include all functionality at once.
+It's also possible to include individually headers files of the desired functionality instead.
 
 ### Documentation
 

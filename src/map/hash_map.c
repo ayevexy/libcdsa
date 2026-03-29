@@ -730,6 +730,7 @@ static void iterator_remove_internal(void* raw_iteration_context) {
     Entry* next = iteration_context->entry->next;
     hash_map_remove(iteration_context->hash_map, iteration_context->entry->key);
     iteration_context->entry = next;
+    iteration_context->count--;
     iteration_context->last_returned = false;
     iteration_context->last_removed = true;
     iteration_context->modification_count = iteration_context->hash_map->modification_count;

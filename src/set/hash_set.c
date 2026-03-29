@@ -632,6 +632,7 @@ static void iterator_remove_internal(void* raw_iteration_context) {
     Node* next = iteration_context->node->next;
     hash_set_remove(iteration_context->hash_set, iteration_context->node->element);
     iteration_context->node = next;
+    iteration_context->count--;
     iteration_context->last_returned = false;
     iteration_context->last_removed = true;
     iteration_context->modification_count = iteration_context->hash_set->modification_count;

@@ -7,6 +7,7 @@
 #include "map/tree_map.h"
 #include "set/hash_set.h"
 #include "set/tree_set.h"
+#include "set/sets.h"
 #include "deque/deque.h"
 #include "priority_queue/priority_queue.h"
 
@@ -25,6 +26,7 @@
             LinkedList*: linked_list_iterator,                                                  \
             HashMap*: hash_map_iterator,                                                        \
             TreeMap*: tree_map_iterator,                                                        \
+            SetView*: set_view_iterator,                                                        \
             HashSet*: hash_set_iterator,                                                        \
             TreeSet*: tree_set_iterator,                                                        \
             Deque*: deque_iterator,                                                             \

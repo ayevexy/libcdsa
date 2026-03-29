@@ -320,23 +320,11 @@ MapEntry tree_map_last_entry(const TreeMap* tree_map) {
 }
 
 void* tree_map_first_key(const TreeMap* tree_map) {
-    if (require_non_null(tree_map)) return nullptr;
-    const Entry* entry = get_lower_entry(tree_map, tree_map->root);
-    if (entry == tree_map->sentinel) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
-        return nullptr;
-    }
-    return entry->key;
+    return tree_map_first_entry(tree_map).key;
 }
 
 void* tree_map_last_key(const TreeMap* tree_map) {
-    if (require_non_null(tree_map)) return nullptr;
-    const Entry* entry = get_higher_entry(tree_map, tree_map->root);
-    if (entry == tree_map->sentinel) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "'tree map' is empty");
-        return nullptr;
-    }
-    return entry->key;
+    return tree_map_last_entry(tree_map).key;
 }
 
 void* tree_map_replace(TreeMap* tree_map, const void* key, const void* value) {

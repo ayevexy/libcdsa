@@ -710,20 +710,6 @@ Collection tree_map_keys(const TreeMap* tree_map);
 Collection tree_map_values(const TreeMap* tree_map);
 
 /**
- * @brief Creates a new tree map with the ordering of entries reversed.
- *
- * The original tree map remains unchanged. The comparator is inverted, and all keys/values are shared (shallow copy).
- *
- * @param tree_map pointer to a tree map
- *
- * @return pointer to the newly created tree map
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-TreeMap* tree_map_reversed(const TreeMap* tree_map);
-
-/**
  * @brief Creates a view of the portion of the tree map whose keys are less than or equal to the given key.
  *
  * @param tree_map pointer to a tree map

@@ -71,7 +71,7 @@ static void rotate_left(TreeMap*, Entry*);
 
 static void rotate_right(TreeMap*, Entry*);
 
-static Iterator* create_iterator(const TreeMap*, void* (*)(void*), void* (*)(void*));
+static Iterator* create_iterator(const TreeMap*, int, void* (*)(void*), void* (*)(void*));
 
 static bool iterator_has_next_internal(const void*);
 
@@ -408,7 +408,21 @@ bool tree_map_is_empty(const TreeMap* tree_map) {
 
 Iterator* tree_map_iterator(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, iterator_next_internal, iterator_previous_internal);
+    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_internal, iterator_previous_internal);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+Iterator* tree_map_iterator_at(const TreeMap* tree_map, int position) {
+    if (require_non_null(tree_map)) return nullptr;
+    if (position < 0 || position > tree_map->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, tree_map->size);
+        return nullptr;
+    }
+    Iterator* iterator = create_iterator(tree_map, position, iterator_next_internal, iterator_previous_internal);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -983,7 +997,7 @@ typedef struct {
     int modification_count;
 } IterationContext;
 
-static Iterator* create_iterator(const TreeMap* tree_map, void* next_function(void*), void* previous_function(void*)) {
+static Iterator* create_iterator(const TreeMap* tree_map, int position, void* next_function(void*), void* previous_function(void*)) {
     IterationContext* iteration_context = tree_map->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -1001,9 +1015,13 @@ static Iterator* create_iterator(const TreeMap* tree_map, void* next_function(vo
     iteration_context->iterator.reset = iterator_reset_internal;
     iteration_context->iterator.memory_dealloc = tree_map->memory_dealloc;
 
+    Entry* entry = get_lower_entry(tree_map, tree_map->root);
+    for (int count = 0; count < position - 1 && entry != tree_map->sentinel; count++) {
+        entry = get_successor_entry(tree_map, entry);
+    }
     iteration_context->tree_map = (TreeMap*) tree_map;
-    iteration_context->entry = nullptr;
-    iteration_context->count = 0;
+    iteration_context->entry = position == 0 ? nullptr : entry;
+    iteration_context->count = position;
     iteration_context->last_returned = false;
     iteration_context->last_removed = false;
     iteration_context->modification_count = tree_map->modification_count;
@@ -1134,7 +1152,7 @@ static Iterator* entry_collection_iterator_internal(const void* tree_map) {
 
 static Iterator* key_collection_iterator_internal(const void* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, iterator_next_key_internal, iterator_previous_key_internal);
+    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_key_internal, iterator_previous_key_internal);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -1144,7 +1162,7 @@ static Iterator* key_collection_iterator_internal(const void* tree_map) {
 
 static Iterator* value_collection_iterator_internal(const void* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, iterator_next_value_internal, iterator_previous_value_internal);
+    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_value_internal, iterator_previous_value_internal);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;

@@ -65,7 +65,7 @@ static void rotate_left(TreeSet*, Node*);
 
 static void rotate_right(TreeSet*, Node*);
 
-static Iterator* create_iterator(const TreeSet*);
+static Iterator* create_iterator(const TreeSet*, int);
 
 static bool iterator_has_next_internal(const void*);
 
@@ -329,7 +329,21 @@ bool tree_set_is_empty(const TreeSet* tree_set) {
 
 Iterator* tree_set_iterator(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
-    Iterator* iterator = create_iterator(tree_set);
+    Iterator* iterator = create_iterator(tree_set, 0);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+Iterator* tree_set_iterator_at(const TreeSet* tree_set, int position) {
+    if (require_non_null(tree_set)) return nullptr;
+    if (position < 0 || position > tree_set->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, tree_set->size);
+        return nullptr;
+    }
+    Iterator* iterator = create_iterator(tree_set, position);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -872,7 +886,7 @@ typedef struct {
     int modification_count;
 } IterationContext;
 
-static Iterator* create_iterator(const TreeSet* tree_set) {
+static Iterator* create_iterator(const TreeSet* tree_set, int position) {
     IterationContext* iteration_context = tree_set->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -890,9 +904,13 @@ static Iterator* create_iterator(const TreeSet* tree_set) {
     iteration_context->iterator.reset = iterator_reset_internal;
     iteration_context->iterator.memory_dealloc = tree_set->memory_dealloc;
 
+    Node* node = get_lower_node(tree_set, tree_set->root);
+    for (int count = 0; count < position - 1 && node != tree_set->sentinel; count++) {
+        node = get_successor_node(tree_set, node);
+    }
     iteration_context->tree_set = (TreeSet*) tree_set;
-    iteration_context->node = nullptr;
-    iteration_context->count = 0;
+    iteration_context->node = position == 0 ? nullptr : node;
+    iteration_context->count = position;
     iteration_context->last_returned = false;
     iteration_context->last_removed = false;
     iteration_context->modification_count = tree_set->modification_count;

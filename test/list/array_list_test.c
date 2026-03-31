@@ -787,6 +787,28 @@ void test_array_list_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_array_list_iterator_at_specified_position() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    Iterator* iterator = array_list_iterator_at(array_list, 3);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL(3, *(int*) iterator_previous(iterator));
+}
+
+void test_array_list_iterator_at_invalid_position_fails() {
+    // given
+    Iterator* iterator;
+    // then
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(iterator = array_list_iterator_at(array_list, -1)));
+    TEST_ASSERT_NULL(iterator);
+    // and
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(iterator = array_list_iterator_at(array_list, 6)));
+    TEST_ASSERT_NULL(iterator);
+}
+
 void test_array_list_is_equal_to_it_self() {
     // given
     int values[] = { 1, 2, 3, 4, 5 };
@@ -1383,6 +1405,8 @@ int main(void) {
     RUN_TEST(test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_called);
     RUN_TEST(test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row);
     RUN_TEST(test_array_list_iterator_reset);
+    RUN_TEST(test_array_list_iterator_at_specified_position);
+    RUN_TEST(test_array_list_iterator_at_invalid_position_fails);
 
     RUN_TEST(test_array_list_is_equal_to_it_self);
     RUN_TEST(test_array_list_is_equal_to_another_array_list);

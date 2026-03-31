@@ -32,7 +32,7 @@ static bool ensure_capacity(ArrayList*, int);
 
 static bool resize(ArrayList*, int);
 
-static Iterator* create_iterator(const ArrayList*);
+static Iterator* create_iterator(const ArrayList*, int);
 
 static bool iterator_has_next_internal(const void*);
 
@@ -409,7 +409,21 @@ bool array_list_is_empty(const ArrayList* array_list) {
 
 Iterator* array_list_iterator(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    Iterator* iterator = create_iterator(array_list);
+    Iterator* iterator = create_iterator(array_list, 0);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+Iterator* array_list_iterator_at(const ArrayList* array_list, int position) {
+    if (require_non_null(array_list)) return nullptr;
+    if (position < 0 || position > array_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, array_list->size);
+        return nullptr;
+    }
+    Iterator* iterator = create_iterator(array_list, position);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -768,7 +782,7 @@ typedef struct {
     int modification_count;
 }  IterationContext;
 
-static Iterator* create_iterator(const ArrayList* array_list) {
+static Iterator* create_iterator(const ArrayList* array_list, int position) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -787,7 +801,7 @@ static Iterator* create_iterator(const ArrayList* array_list) {
     iteration_context->iterator.memory_dealloc = array_list->memory_dealloc;
 
     iteration_context->array_list = (ArrayList*) array_list;
-    iteration_context->cursor = 0;
+    iteration_context->cursor = position;
     iteration_context->last_returned = -1;
     iteration_context->modification_count = array_list->modification_count;
 

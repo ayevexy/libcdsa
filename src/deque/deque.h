@@ -293,6 +293,22 @@ bool deque_is_empty(const Deque* deque);
 Iterator* deque_iterator(const Deque* deque);
 
 /**
+ * @brief Creates an iterator for the deque starting at the specified position.
+ *
+ * @param deque pointer to a deque
+ * @param position start position
+ *
+ * @return pointer to a newly created iterator
+ *
+ * @exception NULL_POINTER_ERROR if deque is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if position < 0 || position > deque.size
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator does not support the following operations: add(), set(), and remove()
+ */
+Iterator* deque_iterator_at(const Deque* deque, int position);
+
+/**
  * @brief Checks whether two deques are equal.
  *
  * Two deques are equal if:

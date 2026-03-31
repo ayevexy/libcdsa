@@ -506,6 +506,25 @@ bool tree_map_is_empty(const TreeMap* tree_map);
 Iterator* tree_map_iterator(const TreeMap* tree_map);
 
 /**
+ * @brief Creates an iterator for the tree map starting at the specified position.
+ *
+ * The iterator traverses entries in key-sorted order.
+ * The iterator returns objects of type `MapEntry*`.
+ *
+ * @param tree_map pointer to a tree map
+ * @param position start position
+ *
+ * @return pointer to a newly created Iterator
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if position < 0 || position > tree_map.size
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator does not support the following operations: add() and set()
+ */
+Iterator* tree_map_iterator_at(const TreeMap* tree_map, int position);
+
+/**
  * @brief Checks whether two tree maps are equal.
  *
  * Two tree maps are equal if:

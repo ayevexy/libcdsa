@@ -32,7 +32,7 @@ static int next_power_of_two(int);
 
 static bool ensure_capacity(Deque*, int);
 
-static Iterator* create_iterator(const Deque*);
+static Iterator* create_iterator(const Deque*, int);
 
 static bool iterator_has_next_internal(const void*);
 
@@ -254,7 +254,21 @@ bool deque_is_empty(const Deque* deque) {
 
 Iterator* deque_iterator(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    Iterator* iterator = create_iterator(deque);
+    Iterator* iterator = create_iterator(deque, 0);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+Iterator* deque_iterator_at(const Deque* deque, int position) {
+    if (require_non_null(deque)) return nullptr;
+    if (position < 0 || position > deque->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, deque->size);
+        return nullptr;
+    }
+    Iterator* iterator = create_iterator(deque, position);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -482,7 +496,7 @@ typedef struct {
     int modification_count;
 }  IterationContext;
 
-static Iterator* create_iterator(const Deque* deque) {
+static Iterator* create_iterator(const Deque* deque, int position) {
     IterationContext* iteration_context = deque->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -501,7 +515,7 @@ static Iterator* create_iterator(const Deque* deque) {
     iteration_context->iterator.memory_dealloc = deque->memory_dealloc;
 
     iteration_context->deque = (Deque*) deque;
-    iteration_context->count = 0;
+    iteration_context->count = position;
     iteration_context->modification_count = deque->modification_count;
 
     return &iteration_context->iterator;

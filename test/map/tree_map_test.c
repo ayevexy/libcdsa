@@ -5,7 +5,6 @@
 #include "util/errors.h"
 
 #include "unity.h"
-#include "list/array_list.h"
 
 static TreeMap* tree_map;
 
@@ -702,6 +701,28 @@ void test_tree_map_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
+void test_tree_map_iterator_at_specified_position() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_TREE_MAP(tree_map, entries);
+    // when
+    Iterator* iterator = tree_map_iterator_at(tree_map, 3);
+    // then
+    TEST_ASSERT_TRUE(iterator_has_previous(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_previous(iterator));
+}
+
+void test_tree_map_iterator_at_invalid_position_fails() {
+    // given
+    Iterator* iterator;
+    // then
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(iterator = tree_map_iterator_at(tree_map, -1)));
+    TEST_ASSERT_NULL(iterator);
+    // and
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(iterator = tree_map_iterator_at(tree_map, 6)));
+    TEST_ASSERT_NULL(iterator);
+}
+
 void test_tree_map_is_equal_to_it_self() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -1138,7 +1159,7 @@ int main(void) {
     RUN_TEST(test_get_tree_map_size);
     RUN_TEST(test_tree_map_is_empty);
     RUN_TEST(test_tree_map_is_not_empty);
-    
+
     RUN_TEST(test_tree_map_iterator_forward_iteration);
     RUN_TEST(test_tree_map_iterator_backward_iteration);
     RUN_TEST(test_tree_map_iterator_detects_concurrent_modification);
@@ -1147,6 +1168,8 @@ int main(void) {
     RUN_TEST(test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called);
     RUN_TEST(test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row);
     RUN_TEST(test_tree_map_iterator_reset);
+    RUN_TEST(test_tree_map_iterator_at_specified_position);
+    RUN_TEST(test_tree_map_iterator_at_invalid_position_fails);
 
     RUN_TEST(test_tree_map_is_equal_to_it_self);
     RUN_TEST(test_tree_map_is_equal_to_another_tree_map);

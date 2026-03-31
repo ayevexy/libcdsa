@@ -319,6 +319,24 @@ bool tree_set_is_empty(const TreeSet* tree_set);
 Iterator* tree_set_iterator(const TreeSet* tree_set);
 
 /**
+ * @brief Creates an iterator for the tree set starting at the specified position.
+ *
+ * The iterator traverses elements in sorted order.
+ *
+ * @param tree_set pointer to a tree set
+ * @param position start position
+ *
+ * @return pointer to a newly created Iterator
+ *
+ * @exception NULL_POINTER_ERROR if tree_set is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if position < 0 || position > tree_set.size
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator does not support the following operations: add() and set()
+ */
+Iterator* tree_set_iterator_at(const TreeSet* tree_set, int position);
+
+/**
  * @brief Checks whether two tree sets are equal.
  *
  * Two tree sets are equal if:

@@ -1,10 +1,9 @@
-#include "util/for_each.h"
-
 #include "../list/array_list_test.h"
+
 #include "list/array_list.h"
+#include "util/for_each.h" // should be included after all data structures
 #include "util/memory.h"
 
-#include "../test_utilities.h"
 #include "unity.h"
 
 static ArrayList* array_list;

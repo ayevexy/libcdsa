@@ -492,6 +492,22 @@ bool array_list_is_empty(const ArrayList* array_list);
 Iterator* array_list_iterator(const ArrayList* array_list);
 
 /**
+ * @brief Creates an iterator for the array list starting at the specified position.
+ *
+ * @param array_list pointer to an array list
+ * @param position start position
+ *
+ * @return pointer to a newly created iterator
+ *
+ * @exception NULL_POINTER_ERROR if array_list is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if position < 0 || position > array_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator supports all operations
+ */
+Iterator* array_list_iterator_at(const ArrayList* array_list, int position);
+
+/**
  * @brief Checks whether two array lists are equal.
  *
  * Two array lists are equal if:

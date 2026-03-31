@@ -1,8 +1,6 @@
 #ifndef SETS_H
 #define SETS_H
 
-#include "set/hash_set.h"
-#include "set/tree_set.h"
 #include "iterator.h"
 #include "collection.h"
 #include "pair.h"
@@ -205,14 +203,24 @@ bool _set_view_is_superset(SetView*, SetView*);
  *
  * @return a set view representation
  */
-#define _set_view_of(set) _Generic((set),       \
-    HashSet*: _hash_set_view((HashSet*) set),   \
-    TreeSet*: _tree_set_view((TreeSet*) set),   \
-    SetView*: set                               \
+#define _set_view_of(set) _Generic((set),   \
+    _set_view_case_hash_set(set)            \
+    _set_view_case_tree_set(set)            \
+    SetView*: set                           \
 )
 
-extern SetView* _hash_set_view(const HashSet*);
+#endif
 
-extern SetView* _tree_set_view(const TreeSet*);
+#ifdef HASH_SET_H
+    extern SetView* _hash_set_view(const HashSet*);
+#   define _set_view_case_hash_set(set) HashSet*: _hash_set_view((HashSet*) set),
+#else
+#   define _set_view_case_hash_set(set)
+#endif
 
+#ifdef TREE_SET_H
+    extern SetView* _tree_set_view(const TreeSet*);
+#   define _set_view_case_tree_set(set) TreeSet*: _tree_set_view((TreeSet*) set),
+#else
+#   define _set_view_case_tree_set(set)
 #endif

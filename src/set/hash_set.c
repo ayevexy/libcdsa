@@ -1,8 +1,8 @@
 #include "hash_set.h"
 
-#include "sets.h"
 #include "util/errors.h"
 #include "util/constraints.h"
+#include "util/sets.h"
 #include <string.h>
 
 constexpr int MIN_CAPACITY = 8;

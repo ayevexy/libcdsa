@@ -1,11 +1,11 @@
 #ifndef SETS_H
 #define SETS_H
 
-#include "hash_set.h"
-#include "tree_set.h"
-#include "util/iterator.h"
-#include "util/collection.h"
-#include "util/pair.h"
+#include "set/hash_set.h"
+#include "set/tree_set.h"
+#include "iterator.h"
+#include "collection.h"
+#include "pair.h"
 
 /**
  * @file sets.h

@@ -42,9 +42,6 @@
 /** @brief heap based priority queue implementation */
 #include "priority_queue/priority_queue.h"
 
-/** @brief Mathematical sets operations */
-#include "set/sets.h"
-
 /** @brief Algorithm-related enumerations */
 #include "util/algorithms.h"
 
@@ -74,5 +71,8 @@
 
 /** @brief Pair (two-value tuple) container */
 #include "util/pair.h"
+
+/** @brief Mathematical set operations */
+#include "util/sets.h"
 
 #endif

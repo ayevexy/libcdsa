@@ -1,9 +1,7 @@
 #include "sets.h"
 
-#include "util/pair.h"
-#include "util/constraints.h"
-#include "util/errors.h"
-
+#include "errors.h"
+#include "constraints.h"
 #include <stdlib.h>
 #include <assert.h>
 

@@ -47,7 +47,6 @@ The library currently provides the following data structures:
 
 Also, there is some other utilities which may be useful:
 
-- [Sets](src/set/sets.h): Common mathematical set operations and set view abstraction.
 - [Algorithms](src/util/algorithms.h): Algorithms related enumerations.
 - [Collection](src/util/collection.h): Collection view abstraction.
 - [Constraints](src/util/constraints.h): Pre-condition checks.
@@ -58,6 +57,7 @@ Also, there is some other utilities which may be useful:
 - [Memory](src/util/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
+- [Sets](src/util/sets.h): Common mathematical set operations and set view abstraction.
 
 ### Limitations
 

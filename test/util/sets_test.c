@@ -1,7 +1,6 @@
-#include "hash_set_test.h"
+#include "../set/hash_set_test.h"
 
-#include "set/sets.h"
-#include "set/hash_set.h"
+#include "util/sets.h"
 #include "util/memory.h"
 #include "util/errors.h"
 

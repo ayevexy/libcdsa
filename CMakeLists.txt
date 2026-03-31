@@ -30,7 +30,7 @@ add_library(${PROJECT_NAME}
         src/map/tree_map.c
         src/set/hash_set.c
         src/set/tree_set.c
-        src/set/sets.c
+        src/util/sets.c
         src/util/errors.c
 )
 

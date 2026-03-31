@@ -320,6 +320,15 @@ bool deque_equals(const Deque* deque, const Deque* other_deque);
 void deque_for_each(Deque* deque, Consumer action);
 
 /**
+ * @brief Reverses the elements of the deque.
+ *
+ * @param deque pointer to a deque
+ *
+ * @exception NULL_POINTER_ERROR if deque is null
+ */
+void deque_reverse(Deque* deque);
+
+/**
  * @brief Removes all elements of the deque.
  *
  * @param deque pointer to a deque

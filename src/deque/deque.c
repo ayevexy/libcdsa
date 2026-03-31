@@ -288,6 +288,18 @@ void deque_for_each(Deque* deque, Consumer action) {
     }
 }
 
+void deque_reverse(Deque* deque) {
+    if (require_non_null(deque)) return;
+    for (int i = 0; i < deque->size / 2; i++) {
+        const int index_a = (deque->first + i) & (deque->capacity - 1);
+        const int index_b = (deque->first + deque->size - 1 - i) & (deque->capacity - 1);
+
+        void* temporary = deque->elements[index_a];
+        deque->elements[index_a] = deque->elements[index_b];
+        deque->elements[index_b] = temporary;
+    }
+}
+
 void deque_clear(Deque* deque) {
     if (require_non_null(deque)) return;
     for (int i = 0; i < deque->size; i++) {

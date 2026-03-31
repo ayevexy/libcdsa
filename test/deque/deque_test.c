@@ -417,6 +417,17 @@ void test_perform_action_for_each_element_of_deque() {
     TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(new_values, deque);
 }
 
+void test_reverse_deque() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_DEQUE(deque, values);
+    // when
+    deque_reverse(deque);
+    // then
+    int reversed_values[] = { 5, 4, 3, 2, 1 };
+    TEST_ASSERT_ARRAY_EQUALS_TO_DEQUE(reversed_values, deque);
+}
+
 void test_clear_deque() {
     // given
     int values[] = { 1, 2, 3 };
@@ -597,6 +608,7 @@ int main(void) {
     RUN_TEST(test_deque_is_not_equal_to_another_deque_with_different_size);
     RUN_TEST(test_deque_is_not_equal_to_another_deque_with_different_elements);
     RUN_TEST(test_perform_action_for_each_element_of_deque);
+    RUN_TEST(test_reverse_deque);
     RUN_TEST(test_clear_deque);
 
     RUN_TEST(test_deque_contains_element);

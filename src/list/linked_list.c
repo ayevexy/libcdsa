@@ -38,7 +38,7 @@ static void* remove_node(LinkedList*, Node*);
 
 static void destroy_nodes(LinkedList*);
 
-static Iterator* create_iterator(const LinkedList*);
+static Iterator* create_iterator(const LinkedList*, int);
 
 static bool iterator_has_next_internal(const void*);
 
@@ -417,7 +417,21 @@ bool linked_list_is_empty(const LinkedList* linked_list) {
 
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    Iterator* iterator = create_iterator(linked_list);
+    Iterator* iterator = create_iterator(linked_list, 0);
+    if (!iterator) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
+        return nullptr;
+    }
+    return iterator;
+}
+
+Iterator* linked_list_iterator_at(const LinkedList* linked_list, int position) {
+    if (require_non_null(linked_list)) return nullptr;
+    if (position < 0 || position > linked_list->size) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, linked_list->size);
+        return nullptr;
+    }
+    Iterator* iterator = create_iterator(linked_list, position);
     if (!iterator) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
@@ -812,7 +826,7 @@ typedef struct {
     int modification_count;
 } IterationContext;
 
-static Iterator* create_iterator(const LinkedList* linked_list) {
+static Iterator* create_iterator(const LinkedList* linked_list, int position) {
     IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
@@ -831,9 +845,9 @@ static Iterator* create_iterator(const LinkedList* linked_list) {
     iteration_context->iterator.memory_dealloc = linked_list->memory_dealloc;
 
     iteration_context->linked_list = (LinkedList*) linked_list;
-    iteration_context->current = linked_list->head;
+    iteration_context->current = position == linked_list->size ? nullptr : get_node(linked_list, position);
     iteration_context->last_returned = nullptr;
-    iteration_context->cursor = 0;
+    iteration_context->cursor = position;
     iteration_context->modification_count = linked_list->modification_count;
 
     return &iteration_context->iterator;

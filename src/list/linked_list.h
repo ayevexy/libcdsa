@@ -447,6 +447,22 @@ bool linked_list_is_empty(const LinkedList* linked_list);
 Iterator* linked_list_iterator(const LinkedList* linked_list);
 
 /**
+ * @brief Creates an iterator for the linked list starting at the specified position.
+ *
+ * @param linked_list pointer to a linked list
+ * @param position start position
+ *
+ * @return pointer to a newly created iterator
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if position < 0 || position > linked_list.size
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the iterator supports all operations
+ */
+Iterator* linked_list_iterator_at(const LinkedList* linked_list, int position);
+
+/**
  * @brief Checks whether two linked lists are equal.
  *
  * Two linked lists are equal if:

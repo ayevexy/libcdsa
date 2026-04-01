@@ -1091,6 +1091,20 @@ void test_linked_list_does_not_contains_all_elements() {
     linked_list_destroy(&new_linked_list);
 }
 
+static void sum(void* result, void* next) {
+    *(int*) result += *(int*) next;
+}
+
+void test_reduce_linked_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_LINKED_LIST(linked_list, values);
+    // when
+    int* result = linked_list_reduce(linked_list, &(int){0}, sum);
+    // then
+    TEST_ASSERT_EQUAL(15, *result);
+}
+
 void test_get_occurrences_of_element_in_linked_list() {
     // given
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
@@ -1362,7 +1376,9 @@ int main(void) {
     RUN_TEST(test_empty_linked_list_contains_all_elements_of_empty_collection);
     RUN_TEST(test_linked_list_does_not_contains_all_elements);
 
+    RUN_TEST(test_reduce_linked_list);
     RUN_TEST(test_get_occurrences_of_element_in_linked_list);
+
     RUN_TEST(test_get_index_of_element_from_linked_list);
     RUN_TEST(test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one);
     RUN_TEST(test_get_last_index_of_element_from_linked_list);

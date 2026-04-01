@@ -616,6 +616,21 @@ bool linked_list_contains(const LinkedList* linked_list, const void* element);
 bool linked_list_contains_all(const LinkedList* linked_list, Collection collection);
 
 /**
+ * @brief Applies an accumulator to the elements of the linked list and returns the reduced value.
+ *
+ * @param linked_list pointer to a linked list
+ * @param identity initial value
+ * @param accumulator accumulator function
+ *
+ * @return the result
+ *
+ * @exception NULL_POINTER_ERROR if linked_list or accumulator is null
+ *
+ * @note the returned pointer points to the identity argument, which may be modified.
+ */
+void* linked_list_reduce(const LinkedList* linked_list, void* identity, BiConsumer accumulator);
+
+/**
  * @brief Counts the number of occurrences of an element in the linked list.
  *
  * @param linked_list pointer to a linked list

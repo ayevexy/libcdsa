@@ -608,6 +608,15 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
     return contains;
 }
 
+void* linked_list_reduce(const LinkedList* linked_list, void* identity, BiConsumer accumulator) {
+    if (require_non_null(linked_list, accumulator)) return nullptr;
+    void* result = identity;
+    for (const Node* node = linked_list->head; node; node = node->next) {
+        accumulator(result, node->element);
+    }
+    return result;
+}
+
 int linked_list_occurrences_of(const LinkedList* linked_list, const void* element) {
     if (require_non_null(linked_list)) return 0;
     int count = 0;

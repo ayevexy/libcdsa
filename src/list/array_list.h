@@ -661,6 +661,21 @@ bool array_list_contains(const ArrayList* array_list, const void* element);
 bool array_list_contains_all(const ArrayList* array_list, Collection collection);
 
 /**
+ * @brief Applies an accumulator to the elements of the array list and returns the reduced value.
+ *
+ * @param array_list pointer to an array list
+ * @param identity initial value
+ * @param accumulator accumulator function
+ *
+ * @return the result
+ *
+ * @exception NULL_POINTER_ERROR if array_list or accumulator is null
+ *
+ * @note the returned pointer points to the identity argument, which may be modified.
+ */
+void* array_list_reduce(const ArrayList* array_list, void* identity, BiConsumer accumulator);
+
+/**
  * @brief Counts the number of occurrences of an element in the array list.
  *
  * @param array_list pointer to an array list

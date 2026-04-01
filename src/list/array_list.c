@@ -578,6 +578,15 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     return contains;
 }
 
+void* array_list_reduce(const ArrayList* array_list, void* identity, BiConsumer accumulator) {
+    if (require_non_null(array_list, accumulator)) return nullptr;
+    void* result = identity;
+    for (int i = 0; i < array_list->size; i++) {
+        accumulator(result, array_list->elements[i]);
+    }
+    return result;
+}
+
 int array_list_occurrences_of(const ArrayList* array_list, const void* element) {
     if (require_non_null(array_list)) return 0;
     int count = 0;

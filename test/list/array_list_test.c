@@ -1150,6 +1150,20 @@ void test_array_list_does_not_contains_all_elements() {
     array_list_destroy(&new_array_list);
 }
 
+static void sum(void* result, void* next) {
+    *(int*) result += *(int*) next;
+}
+
+void test_reduce_array_list() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    int* result = array_list_reduce(array_list, &(int){0}, sum);
+    // then
+    TEST_ASSERT_EQUAL(15, *result);
+}
+
 void test_get_occurrences_of_element_in_array_list() {
     // given
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
@@ -1446,6 +1460,7 @@ int main(void) {
     RUN_TEST(test_empty_array_list_contains_all_elements_of_empty_collection);
     RUN_TEST(test_array_list_does_not_contains_all_elements);
 
+    RUN_TEST(test_reduce_array_list);
     RUN_TEST(test_get_occurrences_of_element_in_array_list);
 
     RUN_TEST(test_get_index_of_element_from_array_list);

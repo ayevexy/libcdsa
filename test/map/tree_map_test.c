@@ -302,14 +302,14 @@ void test_get_first_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_first_entry(tree_map);
+    MapEntry entry = tree_map_get_first(tree_map);
     // then
     TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
 }
 
 void test_get_first_entry_from_empty_tree_map_fails() {
     // when
-    MapEntry entry; Error error = attempt(entry = tree_map_first_entry(tree_map));
+    MapEntry entry; Error error = attempt(entry = tree_map_get_first(tree_map));
     // then
     TEST_ASSERT_NULL(entry.key);
     TEST_ASSERT_NULL(entry.value);
@@ -321,53 +321,17 @@ void test_get_last_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_last_entry(tree_map);
+    MapEntry entry = tree_map_get_last(tree_map);
     // then
     TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
 }
 
 void test_get_last_entry_from_empty_tree_map_fails() {
     // when
-    MapEntry entry; Error error = attempt(entry = tree_map_last_entry(tree_map));
+    MapEntry entry; Error error = attempt(entry = tree_map_get_last(tree_map));
     // then
     TEST_ASSERT_NULL(entry.key);
     TEST_ASSERT_NULL(entry.value);
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
-}
-
-void test_get_first_key_from_tree_map() {
-    // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
-    POPULATE_TREE_MAP(tree_map, entries);
-    // when
-    char* key = tree_map_first_key(tree_map);
-    // then
-    TEST_ASSERT_EQUAL('a', *key);
-}
-
-void test_get_first_key_from_empty_tree_map_fails() {
-    // when
-    char* key; Error error = attempt(key = tree_map_first_key(tree_map));
-    // then
-    TEST_ASSERT_NULL(key);
-    TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
-}
-
-void test_get_last_key_from_tree_map() {
-    // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
-    POPULATE_TREE_MAP(tree_map, entries);
-    // when
-    char* key = tree_map_last_key(tree_map);
-    // then
-    TEST_ASSERT_EQUAL('e', *key);
-}
-
-void test_get_last_key_from_empty_tree_map_fails() {
-    // when
-    char* key; Error error = attempt(key = tree_map_last_key(tree_map));
-    // then
-    TEST_ASSERT_NULL(key);
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
@@ -469,7 +433,7 @@ void test_remove_first_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_poll_first_entry(tree_map);
+    MapEntry entry = tree_map_remove_first(tree_map);
     // then
     CharIntEntry new_entries[] = { { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
@@ -478,7 +442,7 @@ void test_remove_first_entry_from_tree_map() {
 
 void test_remove_first_entry_from_empty_tree_map_fails() {
     // when
-    MapEntry entry; Error error = attempt(entry = tree_map_poll_first_entry(tree_map));
+    MapEntry entry; Error error = attempt(entry = tree_map_remove_first(tree_map));
     // then
     TEST_ASSERT_NULL(entry.key);
     TEST_ASSERT_NULL(entry.value);
@@ -490,7 +454,7 @@ void test_remove_last_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_poll_last_entry(tree_map);
+    MapEntry entry = tree_map_remove_last(tree_map);
     // then
     CharIntEntry new_entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 } };
     TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
@@ -499,7 +463,7 @@ void test_remove_last_entry_from_tree_map() {
 
 void test_remove_last_entry_from_empty_tree_map_fails() {
     // when
-    MapEntry entry; Error error = attempt(entry = tree_map_poll_last_entry(tree_map));
+    MapEntry entry; Error error = attempt(entry = tree_map_remove_last(tree_map));
     // then
     TEST_ASSERT_NULL(entry.key);
     TEST_ASSERT_NULL(entry.value);
@@ -813,8 +777,8 @@ void test_get_higher_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_higher_entry(tree_map, &(char){'c'});
-    MapEntry not_found = tree_map_higher_entry(tree_map, &(char){'f'});
+    MapEntry entry = tree_map_higher(tree_map, &(char){'c'});
+    MapEntry not_found = tree_map_higher(tree_map, &(char){'f'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('d', 4, &entry);
     TEST_ASSERT_NULL(not_found.key);
@@ -826,8 +790,8 @@ void test_get_ceiling_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_ceiling_entry(tree_map, &(char){'e'});
-    MapEntry not_found = tree_map_ceiling_entry(tree_map, &(char){'f'});
+    MapEntry entry = tree_map_ceiling(tree_map, &(char){'e'});
+    MapEntry not_found = tree_map_ceiling(tree_map, &(char){'f'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
     TEST_ASSERT_NULL(not_found.key);
@@ -839,8 +803,8 @@ void test_get_floor_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_floor_entry(tree_map, &(char){'a'});
-    MapEntry not_found = tree_map_floor_entry(tree_map, &(char){'`'}); // backtick is below 'a' in ASCII
+    MapEntry entry = tree_map_floor(tree_map, &(char){'a'});
+    MapEntry not_found = tree_map_floor(tree_map, &(char){'`'}); // backtick is below 'a' in ASCII
     // then
     TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
     TEST_ASSERT_NULL(not_found.key);
@@ -852,8 +816,8 @@ void test_get_lower_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_lower_entry(tree_map, &(char){'c'});
-    MapEntry not_found = tree_map_lower_entry(tree_map, &(char){'`'});
+    MapEntry entry = tree_map_lower(tree_map, &(char){'c'});
+    MapEntry not_found = tree_map_lower(tree_map, &(char){'`'});
     // then
     TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
     TEST_ASSERT_NULL(not_found.key);
@@ -1136,11 +1100,7 @@ int main(void) {
     RUN_TEST(test_get_first_entry_from_empty_tree_map_fails);
     RUN_TEST(test_get_last_entry_from_tree_map);
     RUN_TEST(test_get_last_entry_from_empty_tree_map_fails);
-    RUN_TEST(test_get_first_key_from_tree_map);
-    RUN_TEST(test_get_first_key_from_empty_tree_map_fails);
-    RUN_TEST(test_get_last_key_from_tree_map);
-    RUN_TEST(test_get_last_key_from_empty_tree_map_fails);
-    
+
     RUN_TEST(test_replace_value_from_tree_map);
     RUN_TEST(test_replace_value_from_tree_map_no_mapping_fails);
     RUN_TEST(test_replace_entry_from_tree_map_matching_value);

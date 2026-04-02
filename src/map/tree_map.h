@@ -326,7 +326,7 @@ void* tree_map_get_or_default(const TreeMap* tree_map, const void* key, const vo
  * @exception NULL_POINTER_ERROR if tree_map is null
  * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-MapEntry tree_map_first_entry(const TreeMap* tree_map);
+MapEntry tree_map_get_first(const TreeMap* tree_map);
 
 /**
  * @brief Retrieves the last entry of the tree map.
@@ -338,31 +338,7 @@ MapEntry tree_map_first_entry(const TreeMap* tree_map);
  * @exception NULL_POINTER_ERROR if tree_map is null
  * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
  */
-MapEntry tree_map_last_entry(const TreeMap* tree_map);
-
-/**
- * @brief Retrieves the first entry's key of the tree map.
- *
- * @param tree_map pointer to a tree map
- *
- * @return the entry's key
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
- */
-void* tree_map_first_key(const TreeMap* tree_map);
-
-/**
- * @brief Retrieves the last entry's key of the tree map.
- *
- * @param tree_map pointer to a tree map
- *
- * @return the entry's key
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- * @exception NO_SUCH_ELEMENT_ERROR if tree_map is empty
- */
-void* tree_map_last_key(const TreeMap* tree_map);
+MapEntry tree_map_get_last(const TreeMap* tree_map);
 
 /**
  * @brief Replaces the value associated with the specified key, if present, in the tree map,
@@ -438,7 +414,7 @@ bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* v
  *
  * @note this function calls both key destruct and value destruct before returning.
  */
-MapEntry tree_map_poll_first_entry(TreeMap* tree_map);
+MapEntry tree_map_remove_first(TreeMap* tree_map);
 
 /**
  * @brief Removes the last entry of the tree map.
@@ -452,7 +428,7 @@ MapEntry tree_map_poll_first_entry(TreeMap* tree_map);
  *
  * @note this function calls both key destruct and value destruct before returning.
  */
-MapEntry tree_map_poll_last_entry(TreeMap* tree_map);
+MapEntry tree_map_remove_last(TreeMap* tree_map);
 
 /**
  * @brief Replaces all entry values using a bi-operator function.
@@ -572,7 +548,7 @@ void tree_map_clear(TreeMap* tree_map);
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
-MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key);
+MapEntry tree_map_higher(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Retrieves the least entry greater than or equal to the specified key.
@@ -584,7 +560,7 @@ MapEntry tree_map_higher_entry(const TreeMap* tree_map, const void* key);
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
-MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key);
+MapEntry tree_map_ceiling(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Retrieves the greatest entry less than or equal to the specified key.
@@ -596,7 +572,7 @@ MapEntry tree_map_ceiling_entry(const TreeMap* tree_map, const void* key);
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
-MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key);
+MapEntry tree_map_floor(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Retrieves the greatest entry strictly less than the specified key.
@@ -608,55 +584,7 @@ MapEntry tree_map_floor_entry(const TreeMap* tree_map, const void* key);
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
-MapEntry tree_map_lower_entry(const TreeMap* tree_map, const void* key);
-
-/**
- * @brief Retrieves the least key strictly greater than the specified key.
- *
- * @param tree_map pointer to a tree map
- * @param key pointer to the key
- *
- * @return the key pointer
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_higher_key(const TreeMap* tree_map, const void* key);
-
-/**
- * @brief Retrieves the least key greater than or equal to the specified key.
- *
- * @param tree_map pointer to a tree map
- * @param key pointer to the key
- *
- * @return the key pointer
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_ceiling_key(const TreeMap* tree_map, const void* key);
-
-/**
- * @brief Retrieves the greatest key less than or equal to the specified key.
- *
- * @param tree_map pointer to a tree map
- * @param key pointer to the key
- *
- * @return the key pointer
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_floor_key(const TreeMap* tree_map, const void* key);
-
-/**
- * @brief Retrieves the greatest key strictly less than the specified key.
- *
- * @param tree_map pointer to a tree map
- * @param key pointer to the key
- *
- * @return the key pointer
- *
- * @exception NULL_POINTER_ERROR if tree_map is null
- */
-void* tree_map_lower_key(const TreeMap* tree_map, const void* key);
+MapEntry tree_map_lower(const TreeMap* tree_map, const void* key);
 
 /**
  * @brief Checks whether the tree map contains the specified entry.

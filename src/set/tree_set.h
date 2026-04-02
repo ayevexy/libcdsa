@@ -133,14 +133,14 @@ TreeSet* tree_set_from(Collection collection, const TreeSetOptions* options);
 void tree_set_destroy(TreeSet** tree_set_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param tree_set pointer to a tree set
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if tree_set or destruct is null
  */
-void tree_set_set_destructor(TreeSet* tree_set, void (*destruct)(void*));
+void tree_set_change_destructor(TreeSet* tree_set, void (*destruct)(void*));
 
 /**
  * @brief Inserts an element in the tree set.

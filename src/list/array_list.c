@@ -140,7 +140,7 @@ void array_list_destroy(ArrayList** array_list_pointer) {
     *array_list_pointer = nullptr;
 }
 
-void array_list_set_destructor(ArrayList* array_list, void (*destruct)(void*)) {
+void array_list_change_destructor(ArrayList* array_list, void (*destruct)(void*)) {
     if (require_non_null(array_list, destruct)) return;
     array_list->destruct = destruct;
 }

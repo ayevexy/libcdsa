@@ -137,14 +137,14 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param linked_list pointer to a linked list
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if linked_list or destruct is null
  */
-void linked_list_set_destructor(LinkedList* linked_list, void (*destruct)(void*));
+void linked_list_change_destructor(LinkedList* linked_list, void (*destruct)(void*));
 
 /**
  * @brief Inserts an element at the specified position of the linked list.

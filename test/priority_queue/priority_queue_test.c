@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    priority_queue_set_destructor(priority_queue, free);
+    priority_queue_change_destructor(priority_queue, free);
     priority_queue_destroy(&priority_queue);
 }
 
@@ -262,7 +262,7 @@ void test_priority_queue_is_equal_to_another_priority_queue() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_change_destructor(other_priority_queue, free);
     priority_queue_destroy(&other_priority_queue);
 }
 
@@ -280,7 +280,7 @@ void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_s
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_change_destructor(other_priority_queue, free);
     priority_queue_destroy(&other_priority_queue);
 }
 
@@ -298,7 +298,7 @@ void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_e
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    priority_queue_set_destructor(other_priority_queue, free);
+    priority_queue_change_destructor(other_priority_queue, free);
     priority_queue_destroy(&other_priority_queue);
 }
 
@@ -362,7 +362,7 @@ void test_priority_queue_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    priority_queue_set_destructor(new_priority_queue, free);
+    priority_queue_change_destructor(new_priority_queue, free);
     priority_queue_destroy(&new_priority_queue);
 }
 
@@ -391,7 +391,7 @@ void test_priority_queue_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    priority_queue_set_destructor(new_priority_queue, free);
+    priority_queue_change_destructor(new_priority_queue, free);
     priority_queue_destroy(&new_priority_queue);
 }
 

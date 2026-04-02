@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    hash_set_set_destructor(hash_set, free);
+    hash_set_change_destructor(hash_set, free);
     hash_set_destroy(&hash_set);
 }
 
@@ -180,7 +180,7 @@ void test_remove_all_elements_from_hash_set_matching_collection() {
     TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    hash_set_set_destructor(new_hash_set, free);
+    hash_set_change_destructor(new_hash_set, free);
     hash_set_destroy(&new_hash_set);
 }
 
@@ -220,7 +220,7 @@ void test_retain_all_elements_from_collection_in_hash_set() {
     int removed_elements[] = { 1, 3, 5 };
     TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS(hash_set, removed_elements);
     // clean up
-    hash_set_set_destructor(new_hash_set, free);
+    hash_set_change_destructor(new_hash_set, free);
     hash_set_destroy(&new_hash_set);
 }
 
@@ -404,7 +404,7 @@ void test_hash_set_is_equal_to_another_hash_set() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    hash_set_set_destructor(other_hash_set, free);
+    hash_set_change_destructor(other_hash_set, free);
     hash_set_destroy(&other_hash_set);
 }
 
@@ -422,7 +422,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    hash_set_set_destructor(other_hash_set, free);
+    hash_set_change_destructor(other_hash_set, free);
     hash_set_destroy(&other_hash_set);
 }
 
@@ -440,7 +440,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    hash_set_set_destructor(other_hash_set, free);
+    hash_set_change_destructor(other_hash_set, free);
     hash_set_destroy(&other_hash_set);
 }
 
@@ -505,7 +505,7 @@ void test_hash_set_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    hash_set_set_destructor(new_hash_set, free);
+    hash_set_change_destructor(new_hash_set, free);
     hash_set_destroy(&new_hash_set);
 }
 
@@ -534,7 +534,7 @@ void test_hash_set_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    hash_set_set_destructor(new_hash_set, free);
+    hash_set_change_destructor(new_hash_set, free);
     hash_set_destroy(&new_hash_set);
 }
 

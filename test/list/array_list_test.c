@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    array_list_set_destructor(array_list, free);
+    array_list_change_destructor(array_list, free);
     array_list_destroy(&array_list);
 }
 
@@ -434,7 +434,7 @@ void test_remove_all_elements_from_array_list_matching_collection() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    array_list_set_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, free);
     array_list_destroy(&new_array_list);
 }
 
@@ -522,7 +522,7 @@ void test_retain_all_elements_from_collection_in_array_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    array_list_set_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, free);
     array_list_destroy(&new_array_list);
 }
 
@@ -831,7 +831,7 @@ void test_array_list_is_equal_to_another_array_list() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    array_list_set_destructor(other_array_list, free);
+    array_list_change_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
 }
 
@@ -849,7 +849,7 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    array_list_set_destructor(other_array_list, free);
+    array_list_change_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
 }
 
@@ -867,7 +867,7 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_elements(
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    array_list_set_destructor(other_array_list, free);
+    array_list_change_destructor(other_array_list, free);
     array_list_destroy(&other_array_list);
 }
 
@@ -1117,7 +1117,7 @@ void test_array_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_set_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, free);
     array_list_destroy(&new_array_list);
 }
 
@@ -1146,7 +1146,7 @@ void test_array_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    array_list_set_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, free);
     array_list_destroy(&new_array_list);
 }
 

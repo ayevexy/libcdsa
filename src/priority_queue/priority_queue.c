@@ -118,7 +118,7 @@ void priority_queue_destroy(PriorityQueue** priority_queue_pointer) {
     *priority_queue_pointer = nullptr;
 }
 
-void priority_queue_set_destructor(PriorityQueue* priority_queue, void (*destruct)(void*)) {
+void priority_queue_change_destructor(PriorityQueue* priority_queue, void (*destruct)(void*)) {
     if (require_non_null(priority_queue, destruct)) return;
     priority_queue->destruct = destruct;
 }

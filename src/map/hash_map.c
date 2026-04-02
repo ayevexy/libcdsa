@@ -150,12 +150,12 @@ void hash_map_destroy(HashMap** hash_map_pointer) {
     *hash_map_pointer = nullptr;
 }
 
-void hash_map_set_key_destructor(HashMap* hash_map, void(*destruct)(void*)) {
+void hash_map_change_key_destructor(HashMap* hash_map, void(*destruct)(void*)) {
     if (require_non_null(hash_map, destruct)) return;
     hash_map->key_destruct = destruct;
 }
 
-void hash_map_set_value_destructor(HashMap* hash_map, void(*destruct)(void*)) {
+void hash_map_change_value_destructor(HashMap* hash_map, void(*destruct)(void*)) {
     if (require_non_null(hash_map, destruct)) return;
     hash_map->value_destruct = destruct;
 }

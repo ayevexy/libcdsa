@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    deque_set_destructor(deque, free);
+    deque_change_destructor(deque, free);
     deque_destroy(&deque);
 }
 
@@ -384,7 +384,7 @@ void test_deque_is_equal_to_another_deque() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    deque_set_destructor(other_deque, free);
+    deque_change_destructor(other_deque, free);
     deque_destroy(&other_deque);
 }
 
@@ -402,7 +402,7 @@ void test_deque_is_not_equal_to_another_deque_with_different_size() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    deque_set_destructor(other_deque, free);
+    deque_change_destructor(other_deque, free);
     deque_destroy(&other_deque);
 }
 
@@ -420,7 +420,7 @@ void test_deque_is_not_equal_to_another_deque_with_different_elements() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    deque_set_destructor(other_deque, free);
+    deque_change_destructor(other_deque, free);
     deque_destroy(&other_deque);
 }
 
@@ -496,7 +496,7 @@ void test_deque_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    deque_set_destructor(new_deque, free);
+    deque_change_destructor(new_deque, free);
     deque_destroy(&new_deque);
 }
 
@@ -525,7 +525,7 @@ void test_deque_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    deque_set_destructor(new_deque, free);
+    deque_change_destructor(new_deque, free);
     deque_destroy(&new_deque);
 }
 

@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    tree_set_set_destructor(tree_set, free);
+    tree_set_change_destructor(tree_set, free);
     tree_set_destroy(&tree_set);
 }
 
@@ -247,7 +247,7 @@ void test_remove_all_elements_from_tree_set_matching_collection() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, sub_elements);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    tree_set_set_destructor(new_tree_set, free);
+    tree_set_change_destructor(new_tree_set, free);
     tree_set_destroy(&new_tree_set);
 }
 
@@ -287,7 +287,7 @@ void test_retain_all_elements_from_collection_in_tree_set() {
     int removed_elements[] = { 1, 3, 5 };
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, removed_elements);
     // clean up
-    tree_set_set_destructor(new_tree_set, free);
+    tree_set_change_destructor(new_tree_set, free);
     tree_set_destroy(&new_tree_set);
 }
 
@@ -517,7 +517,7 @@ void test_tree_set_is_equal_to_another_tree_set() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    tree_set_set_destructor(other_tree_set, free);
+    tree_set_change_destructor(other_tree_set, free);
     tree_set_destroy(&other_tree_set);
 }
 
@@ -535,7 +535,7 @@ void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    tree_set_set_destructor(other_tree_set, free);
+    tree_set_change_destructor(other_tree_set, free);
     tree_set_destroy(&other_tree_set);
 }
 
@@ -553,7 +553,7 @@ void test_tree_set_is_not_equal_to_another_tree_set_with_different_elements() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    tree_set_set_destructor(other_tree_set, free);
+    tree_set_change_destructor(other_tree_set, free);
     tree_set_destroy(&other_tree_set);
 }
 
@@ -666,7 +666,7 @@ void test_tree_set_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    tree_set_set_destructor(new_tree_set, free);
+    tree_set_change_destructor(new_tree_set, free);
     tree_set_destroy(&new_tree_set);
 }
 

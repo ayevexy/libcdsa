@@ -76,15 +76,15 @@ static inline void stack_destroy(Stack** stack_pointer) {
 }
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param stack pointer to a stack
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if stack or destruct is null
  */
-static inline void stack_set_destructor(Stack* stack, void (*destruct)(void*)) {
-    deque_set_destructor(stack, destruct);
+static inline void stack_change_destructor(Stack* stack, void (*destruct)(void*)) {
+    deque_change_destructor(stack, destruct);
 }
 
 /**

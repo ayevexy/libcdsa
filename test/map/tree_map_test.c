@@ -13,8 +13,8 @@ void setUp() {
 }
 
 void tearDown() {
-    tree_map_set_key_destructor(tree_map, free);
-    tree_map_set_value_destructor(tree_map, free);
+    tree_map_change_key_destructor(tree_map, free);
+    tree_map_change_value_destructor(tree_map, free);
 
     tree_map_destroy(&tree_map);
 }
@@ -709,8 +709,8 @@ void test_tree_map_is_equal_to_another_tree_map() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    tree_map_set_key_destructor(tree_map, free);
-    tree_map_set_value_destructor(tree_map, free);
+    tree_map_change_key_destructor(tree_map, free);
+    tree_map_change_value_destructor(tree_map, free);
     tree_map_destroy(&other_tree_map);
 }
 
@@ -728,8 +728,8 @@ void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    tree_map_set_key_destructor(tree_map, free);
-    tree_map_set_value_destructor(tree_map, free);
+    tree_map_change_key_destructor(tree_map, free);
+    tree_map_change_value_destructor(tree_map, free);
     tree_map_destroy(&other_tree_map);
 }
 
@@ -747,8 +747,8 @@ void test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings() {
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    tree_map_set_key_destructor(tree_map, free);
-    tree_map_set_value_destructor(tree_map, free);
+    tree_map_change_key_destructor(tree_map, free);
+    tree_map_change_value_destructor(tree_map, free);
     tree_map_destroy(&other_tree_map);
 }
 

@@ -143,14 +143,14 @@ PriorityQueue* priority_queue_from(Collection collection, const PriorityQueueOpt
 void priority_queue_destroy(PriorityQueue** priority_queue_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param priority_queue pointer to a priority queue 
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if priority_queue or destruct is null
  */
-void priority_queue_set_destructor(PriorityQueue* priority_queue, void (*destruct)(void*));
+void priority_queue_change_destructor(PriorityQueue* priority_queue, void (*destruct)(void*));
 
 /**
  * @brief Adds an element to the priority queue.

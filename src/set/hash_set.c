@@ -142,7 +142,7 @@ void hash_set_destroy(HashSet** hash_set_pointer) {
     *hash_set_pointer = nullptr;
 }
 
-void hash_set_set_destructor(HashSet* hash_set, void (*destruct)(void*)) {
+void hash_set_change_destructor(HashSet* hash_set, void (*destruct)(void*)) {
     if (require_non_null(hash_set, destruct)) return;
     hash_set->destruct = destruct;
 }

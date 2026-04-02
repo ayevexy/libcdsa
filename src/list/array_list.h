@@ -148,14 +148,14 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_destroy(ArrayList** array_list_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param array_list pointer to an array list
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if array_list or destruct is null
  */
-void array_list_set_destructor(ArrayList* array_list, void (*destruct)(void*));
+void array_list_change_destructor(ArrayList* array_list, void (*destruct)(void*));
 
 /**
  * @brief Inserts an element at the specified position of the array list.

@@ -116,7 +116,7 @@ void deque_destroy(Deque** deque_pointer) {
     *deque_pointer = nullptr;
 }
 
-void deque_set_destructor(Deque* deque, void (*destruct)(void*)) {
+void deque_change_destructor(Deque* deque, void (*destruct)(void*)) {
     if (require_non_null(deque, destruct)) return;
     deque->destruct = destruct;
 }

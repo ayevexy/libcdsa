@@ -149,14 +149,14 @@ HashSet* hash_set_from(Collection collection, const HashSetOptions* options);
 void hash_set_destroy(HashSet** hash_set_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param hash_set pointer to a hash set
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if hash_set or destruct is null
  */
-void hash_set_set_destructor(HashSet* hash_set, void (*destruct)(void*));
+void hash_set_change_destructor(HashSet* hash_set, void (*destruct)(void*));
 
 /**
  * @brief Inserts an element in the hash set.

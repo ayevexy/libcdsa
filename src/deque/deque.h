@@ -138,14 +138,14 @@ Deque* deque_from(Collection collection, const DequeOptions* options);
 void deque_destroy(Deque** deque_pointer);
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param deque pointer to a deque
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if deque or destruct is null
  */
-void deque_set_destructor(Deque* deque, void (*destruct)(void*));
+void deque_change_destructor(Deque* deque, void (*destruct)(void*));
 
 /**
  * @brief Inserts an element at the front of the deque.

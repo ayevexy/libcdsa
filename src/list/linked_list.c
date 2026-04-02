@@ -139,7 +139,7 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     *linked_list_pointer = nullptr;
 }
 
-void linked_list_set_destructor(LinkedList* linked_list, void (*destruct)(void*)) {
+void linked_list_change_destructor(LinkedList* linked_list, void (*destruct)(void*)) {
     if (require_non_null(linked_list, destruct)) return;
     linked_list->destruct = destruct;
 }

@@ -76,15 +76,15 @@ static inline void queue_destroy(Queue** queue_pointer) {
 }
 
 /**
- * @brief Sets the element destruct function.
+ * @brief Changes the element destruct function.
  *
  * @param queue pointer to a queue
  * @param destruct new destruct function
  *
  * @exception NULL_POINTER_ERROR if queue or destruct is null
  */
-static inline void queue_set_destructor(Queue* queue, void (*destruct)(void*)) {
-    deque_set_destructor(queue, destruct);
+static inline void queue_change_destructor(Queue* queue, void (*destruct)(void*)) {
+    deque_change_destructor(queue, destruct);
 }
 
 /**

@@ -166,12 +166,12 @@ void tree_map_destroy(TreeMap** tree_map_pointer) {
     *tree_map_pointer = nullptr;
 }
 
-void tree_map_set_key_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
+void tree_map_change_key_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
     if (require_non_null(tree_map, destruct)) return;
     tree_map->key_destruct = destruct;
 }
 
-void tree_map_set_value_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
+void tree_map_change_value_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
     if (require_non_null(tree_map, destruct)) return;
     tree_map->value_destruct = destruct;
 }

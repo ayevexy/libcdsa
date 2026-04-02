@@ -18,9 +18,9 @@ void setUp() {
 }
 
 void tearDown() {
-    hash_set_set_destructor(hash_set_a, free);
-    hash_set_set_destructor(hash_set_b, free);
-    hash_set_set_destructor(hash_set_c, free);
+    hash_set_change_destructor(hash_set_a, free);
+    hash_set_change_destructor(hash_set_b, free);
+    hash_set_change_destructor(hash_set_c, free);
 
     hash_set_destroy(&hash_set_a);
     hash_set_destroy(&hash_set_b);

@@ -728,6 +728,23 @@ void test_hash_map_does_not_contains_value() {
     TEST_ASSERT_FALSE(contains);
 }
 
+void test_get_hash_map_entries() {
+    // given
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    POPULATE_HASH_MAP(hash_map, entries);
+    // when
+    Collection entries_2 = hash_map_entries(hash_map);
+    // then
+    Iterator* iterator = collection_iterator(entries_2); // iteration order is not guaranteed
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
+    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
+    // clean up
+    iterator_destroy(&iterator);
+}
+
 void test_get_hash_map_keys() {
     // given
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
@@ -758,23 +775,6 @@ void test_get_hash_map_values() {
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
-    // clean up
-    iterator_destroy(&iterator);
-}
-
-void test_get_hash_map_entries() {
-    // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
-    POPULATE_HASH_MAP(hash_map, entries);
-    // when
-    Collection entries_2 = hash_map_entries(hash_map);
-    // then
-    Iterator* iterator = collection_iterator(entries_2); // iteration order is not guaranteed
-    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -883,9 +883,9 @@ int main(void) {
     RUN_TEST(test_hash_map_contains_value);
     RUN_TEST(test_hash_map_does_not_contains_value);
 
+    RUN_TEST(test_get_hash_map_entries);
     RUN_TEST(test_get_hash_map_keys);
     RUN_TEST(test_get_hash_map_values);
-    RUN_TEST(test_get_hash_map_entries);
 
     RUN_TEST(test_clone_hash_map);
     RUN_TEST(test_get_hash_map_string_representation);

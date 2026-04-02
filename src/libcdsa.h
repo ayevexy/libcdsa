@@ -13,7 +13,7 @@
  */
 
 /** @brief Version information macros */
-#include "version.h"
+#include "util/version.h"
 
 /** @brief Dynamic array-based list implementation */
 #include "list/array_list.h"

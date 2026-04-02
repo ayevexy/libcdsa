@@ -597,7 +597,7 @@ MapEntry tree_map_lower(const TreeMap* tree_map, const void* key);
  *
  * @exception NULL_POINTER_ERROR if tree_map is null
  */
-bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value);
+bool tree_map_contains(const TreeMap* tree_map, const void* key, const void* value);
 
 /**
  * @brief Checks whether the tree map contains the specified key.

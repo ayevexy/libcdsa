@@ -329,7 +329,7 @@ void* tree_map_replace(TreeMap* tree_map, const void* key, const void* value) {
 
 bool tree_map_replace_if_equals(TreeMap* tree_map, const void* key, const void* old_value, const void* value) {
     if (require_non_null(tree_map)) return false;
-    if (tree_map_contains_entry(tree_map, key, old_value)) {
+    if (tree_map_contains(tree_map, key, old_value)) {
         tree_map_put(tree_map, key, value);
         return true;
     }
@@ -347,7 +347,7 @@ void* tree_map_remove(TreeMap* tree_map, const void* key) {
 
 bool tree_map_remove_if_equals(TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return false;
-    if (tree_map_contains_entry(tree_map, key, value)) {
+    if (tree_map_contains(tree_map, key, value)) {
         tree_map_remove(tree_map, key);
         return true;
     }
@@ -502,7 +502,7 @@ MapEntry tree_map_lower(const TreeMap* tree_map, const void* key) {
     return entry != tree_map->sentinel ? entry->view : (MapEntry) {};
 }
 
-bool tree_map_contains_entry(const TreeMap* tree_map, const void* key, const void* value) {
+bool tree_map_contains(const TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return false;
     const Entry* entry = get_entry(tree_map, key);
     return entry ? tree_map->value_equals(entry->value, value) : false;
@@ -1147,7 +1147,7 @@ static Iterator* value_collection_iterator_internal(const void* tree_map) {
 }
 
 static bool entry_collection_contains_internal(const void* tree_map, const void* entry) {
-    return tree_map_contains_entry(tree_map, ((MapEntry*) entry)->key, ((MapEntry*) entry)->value);
+    return tree_map_contains(tree_map, ((MapEntry*) entry)->key, ((MapEntry*) entry)->value);
 }
 
 static bool key_collection_contains_internal(const void* tree_map, const void* key) {

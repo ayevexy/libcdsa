@@ -842,7 +842,7 @@ void test_tree_map_contains_entry() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    bool contains = tree_map_contains_entry(tree_map, &(char){'c'}, &(int){3});
+    bool contains = tree_map_contains(tree_map, &(char){'c'}, &(int){3});
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -852,7 +852,7 @@ void test_tree_map_does_not_contains_entry() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    bool contains = tree_map_contains_entry(tree_map, &(char){'c'}, &(int){10});
+    bool contains = tree_map_contains(tree_map, &(char){'c'}, &(int){10});
     // then
     TEST_ASSERT_FALSE(contains);
 }

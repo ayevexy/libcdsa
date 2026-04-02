@@ -504,7 +504,7 @@ void hash_map_clear(HashMap* hash_map);
  *
  * @exception NULL_POINTER_ERROR if hash_map is null
  */
-bool hash_map_contains_entry(const HashMap* hash_map, const void* key, const void* value);
+bool hash_map_contains(const HashMap* hash_map, const void* key, const void* value);
 
 /**
  * @brief Checks whether the hash map contains the specified key.

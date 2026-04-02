@@ -112,27 +112,36 @@ target_link_libraries(your_project PRIVATE libcdsa::libcdsa)
 
 ### Usage
 
-Now just include the `libcdsa.h` header file and start coding, for example:
+Now just include the `libcdsa.h` header file and start coding:
 
 ```c++
 #include "libcdsa.h" // replace with <libcdsa/libcdsa.h> if installed system-wide
+#include <stdlib.h>
 #include <stdio.h>
 
 int main(void) {
-    // Create a new ArrayList with custom options
+    // Create a new ArrayList with custom options. Except for `destruct`, these are the default values,
+    // so this could be replaced with just `DEFAULT_ARRAY_LIST_OPTIONS(.destruct = free)`
     ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .memory_alloc = malloc, // Custom allocator
+        .initial_capacity = 10,
+        .growth_factor = 2.0f,
+        .destruct = free,          // By default elements aren't freed, so let's overwrite it
+        .equals = pointer_equals,
+        .to_string = pointer_to_string,
+        .memory_alloc = malloc,
+        .memory_realloc = realloc, // Optional for resizing, can use memory_alloc and memory_dealloc instead
         .memory_dealloc = free,
-        .destruct = free        // Automatically free stored elements
     ));
 
-    // Add elements (heap-allocated via `new`)
+    // Add elements (heap-allocated via `new`, so it can be freed later)
     array_list_add_last(array_list, new(int, 1));
     array_list_add_last(array_list, new(int, 2));
     array_list_add_last(array_list, new(int, 3));
 
     // Error handling:
     int* value; Error error;
+    // Without the `attempt` macro, the program would crash and print the error message
+    // in the form of: INDEX_OUT_OF_BOUNDS_ERROR: index -1 out of bounds for length 3
     if (((error = attempt(value = array_list_get(array_list, -1))))) {
 
         printf("%s\n", error_to_string(error)); // INDEX_OUT_OF_BOUNDS_ERROR
@@ -152,13 +161,90 @@ int main(void) {
         printf("element value: %d\n", *element); // 1, 2, 3
     }
 
+    // Any data structure can be converted to a collection view, achieving some polymorphism
+    Collection collection = array_list_to_collection(array_list);
+    
+    // Converting the ArrayList to a string representation via `.to_string`
+    // by default prints the memory addresses of the elements
+    char* string = array_list_to_string(array_list);
+    printf("%s", string); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
+    
+    // It must be freed later
+    free(string);
+    
     // Cleanup (elements are freed via `.destruct`)
     array_list_destroy(&array_list);
     return 0;
 }
 ```
+```c++
+// including only the necessary headers instead:
+// replace all with <libcdsa/MODULE_NAME> if installed system-wide
+#include "map/hash_map.h"
+#include "util/for_each.h" // `for_each.h` should be placed last, after all data structure includes
+#include "util/errors.h"
 
-It's also possible to include individually headers files of the desired functionality instead.
+#include <stdlib.h>
+#include <stdio.h>
+
+int main(void) {
+    // Create a new HashMap with default options, could be replaced with just `DEFAULT_HASH_MAP_OPTIONS()`
+    HashMap* hash_map = hash_map_new(DEFAULT_HASH_MAP_OPTIONS(
+        .initial_capacity = 16,
+        .load_factor = 0.75f,
+        .hash = pointer_hash,           // hash function
+        .key_destruct = noop_destruct,
+        .key_equals = pointer_equals,
+        .key_to_string = pointer_to_string,
+        .value_destruct = noop_destruct,
+        .value_equals = pointer_equals,
+        .value_to_string = pointer_to_string,
+        .memory_alloc = malloc, 
+        .memory_dealloc = free
+    ));
+
+    // Put entries (stack-allocated via compound expression, no need to free)
+    hash_map_put(hash_map, "Rock", &(int){10});
+    hash_map_put(hash_map, "Paper", &(int){20}); // Keys are `void*` too, using string literals just for convenience
+    hash_map_put(hash_map, "Scissors", &(int){30}); 
+
+    // Error handling, different approach:
+    int* value; Error error = attempt(value = hash_map_get(nullptr, "Rock"));
+    
+    if (error == NULL_POINTER_ERROR) {
+        printf("%s\n", error_to_string(error)); // NULL_POINTER_ERROR
+        printf("%s\n", plain_error_message()); // 'hash_map' argument must not be null
+    }
+
+    // Iterator support:
+    Iterator* iterator = hash_map_iterator(hash_map);
+    while (iterator_has_next(iterator)) {
+        const MapEntry* entry = iterator_next(iterator);
+        printf("key: %s, value: %d\n", (char*) entry->key, *(int*) entry->value); // "Rock" 10, "Paper" 20...
+    }
+    iterator_destroy(&iterator);
+
+    // Or simplified using `for_each`:
+    for_each (MapEntry* entry, hash_map) {
+        printf("key: %s, value: %d\n", (char*) entry->key, *(int*) entry->value); // "Rock" 10, "Paper" 20...
+    }
+
+    // The HashMap can also be converted to a collection view
+    Collection entries = hash_map_entries(hash_map);
+    
+    // Converting the HashMap to a string representation via `.key_to_string` and `,value_to_string`
+    // by default prints the memory addresses of the mapping key-value
+    char* string = hash_map_to_string(hash_map);
+    printf("%s", string); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
+    
+    // it must be freed later
+    free(string);
+
+    // Cleanup (no elements are freed since no destruct functions were provided)
+    hash_map_destroy(&hash_map);
+    return 0;
+}
+```
 
 ### Documentation
 

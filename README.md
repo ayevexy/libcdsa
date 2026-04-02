@@ -311,7 +311,7 @@ and interesting design approach from most implementations.
 Most implementations focus on simplicity and performance, at the cost of limited scope and heavy use of macros. **libcdsa** is  
 the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/list/array_list.h)  
 module has 50+ functions! The library also provides some flexibility regarding memory management by making it available but optional.  
-You can check the documentation to learn more about what this projects can offer.
+You can check the documentation to learn more about what this project can offer.
 
 - **Isn't it a reimplementation of the Java Collections Framework, but in C?**
 

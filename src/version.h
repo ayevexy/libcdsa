@@ -1,0 +1,17 @@
+#ifndef LIBCDSA_VERSION_H
+#define LIBCDSA_VERSION_H
+
+/**
+ * @brief Version information macros.
+ */
+
+#define LIBCDSA_VERSION_MAJOR 1
+#define LIBCDSA_VERSION_MINOR 0
+#define LIBCDSA_VERSION_PATCH 0
+#define LIBCDSA_VERSION_IS_RELEASE false
+#define LIBCDSA_VERSION_SUFFIX "beta"
+
+#define LIBCDSA_VERSION_HEX \
+    ((LIBCDSA_VERSION_MAJOR << 16) | (LIBCDSA_VERSION_MINOR <<  8) | (LIBCDSA_VERSION_PATCH))
+
+#endif

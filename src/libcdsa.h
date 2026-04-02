@@ -12,6 +12,9 @@
  * This file also serves as a documentation index. Check each module below for more information.
  */
 
+/** @brief Version information macros */
+#include "version.h"
+
 /** @brief Dynamic array-based list implementation */
 #include "list/array_list.h"
 

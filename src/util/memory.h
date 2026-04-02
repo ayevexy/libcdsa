@@ -1,5 +1,5 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef LIBCDSA_MEMORY_H
+#define LIBCDSA_MEMORY_H
 
 #include "util/errors.h"
 #include <stdlib.h>

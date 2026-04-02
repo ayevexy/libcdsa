@@ -1,5 +1,5 @@
-#ifndef STACK_H
-#define STACK_H
+#ifndef LIBCDSA_STACK_H
+#define LIBCDSA_STACK_H
 
 #include "deque/deque.h"
 

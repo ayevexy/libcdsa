@@ -1,5 +1,5 @@
-#ifndef PAIR_H
-#define PAIR_H
+#ifndef LIBCDSA_PAIR_H
+#define LIBCDSA_PAIR_H
 
 /**
  * @brief A container object which contains two independently values.

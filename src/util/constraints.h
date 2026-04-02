@@ -1,5 +1,5 @@
-#ifndef CONSTRAINTS_H
-#define CONSTRAINTS_H
+#ifndef LIBCDSA_CONSTRAINTS_H
+#define LIBCDSA_CONSTRAINTS_H
 
 #include "errors.h"
 

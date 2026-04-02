@@ -1,5 +1,5 @@
-#ifndef ALGORITHMS_H
-#define ALGORITHMS_H
+#ifndef LIBCDSA_ALGORITHMS_H
+#define LIBCDSA_ALGORITHMS_H
 
 /**
  * @brief Enumeration of supported sorting algorithms.

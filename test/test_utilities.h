@@ -1,5 +1,5 @@
-#ifndef TEST_FUNCTIONS_H
-#define TEST_FUNCTIONS_H
+#ifndef LIBCDSA_TEST_UTILITIES_H
+#define LIBCDSA_TEST_UTILITIES_H
 
 #include <stddef.h>
 #include <stdint.h>

@@ -1,5 +1,5 @@
-#ifndef ARRAY_LIST_TEST_H
-#define ARRAY_LIST_TEST_H
+#ifndef LIBCDSA_ARRAY_LIST_TEST_H
+#define LIBCDSA_ARRAY_LIST_TEST_H
 
 #include "../test_utilities.h"
 

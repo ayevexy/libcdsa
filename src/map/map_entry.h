@@ -1,5 +1,5 @@
-#ifndef MAP_ENTRY_H
-#define MAP_ENTRY_H
+#ifndef LIBCDSA_MAP_ENTRY_H
+#define LIBCDSA_MAP_ENTRY_H
 
 /**
  * An entry of a map, containing the key-value pair.

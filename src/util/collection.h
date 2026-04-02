@@ -1,5 +1,5 @@
-#ifndef COLLECTION_H
-#define COLLECTION_H
+#ifndef LIBCDSA_COLLECTION_H
+#define LIBCDSA_COLLECTION_H
 
 #include "iterator.h"
 

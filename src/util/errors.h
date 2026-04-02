@@ -1,5 +1,5 @@
-#ifndef ERRORS_H
-#define ERRORS_H
+#ifndef LIBCDSA_ERRORS_H
+#define LIBCDSA_ERRORS_H
 
 /**
  * @brief Enumeration of possible runtime errors.

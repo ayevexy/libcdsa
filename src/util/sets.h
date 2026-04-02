@@ -1,5 +1,5 @@
-#ifndef SETS_H
-#define SETS_H
+#ifndef LIBCDSA_SETS_H
+#define LIBCDSA_SETS_H
 
 #include "iterator.h"
 #include "collection.h"
@@ -211,14 +211,14 @@ bool _set_view_is_superset(SetView*, SetView*);
 
 #endif
 
-#ifdef HASH_SET_H
+#ifdef LIBCDSA_HASH_SET_H
     extern SetView* _hash_set_view(const HashSet*);
 #   define _set_view_case_hash_set(set) HashSet*: _hash_set_view((HashSet*) set),
 #else
 #   define _set_view_case_hash_set(set)
 #endif
 
-#ifdef TREE_SET_H
+#ifdef LIBCDSA_TREE_SET_H
     extern SetView* _tree_set_view(const TreeSet*);
 #   define _set_view_case_tree_set(set) TreeSet*: _tree_set_view((TreeSet*) set),
 #else

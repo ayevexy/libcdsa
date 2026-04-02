@@ -1,5 +1,5 @@
-#ifndef OPTIONAL_H
-#define OPTIONAL_H
+#ifndef LIBCDSA_OPTIONAL_H
+#define LIBCDSA_OPTIONAL_H
 
 /**
  * @brief A container object which may or may not contain a value.

@@ -1,5 +1,5 @@
-#ifndef ITERATOR_H
-#define ITERATOR_H
+#ifndef LIBCDSA_ITERATOR_H
+#define LIBCDSA_ITERATOR_H
 
 #include "functions.h"
 

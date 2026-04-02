@@ -1,5 +1,5 @@
-#ifndef LINKED_LIST_H
-#define LINKED_LIST_H
+#ifndef LIBCDSA_LINKED_LIST_H
+#define LIBCDSA_LINKED_LIST_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

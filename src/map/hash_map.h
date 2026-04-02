@@ -1,5 +1,5 @@
-#ifndef HASH_MAP_H
-#define HASH_MAP_H
+#ifndef LIBCDSA_HASH_MAP_H
+#define LIBCDSA_HASH_MAP_H
 
 #include "map_entry.h"
 #include "util/iterator.h"

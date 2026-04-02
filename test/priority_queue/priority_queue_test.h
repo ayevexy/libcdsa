@@ -1,5 +1,5 @@
-#ifndef PRIORITY_QUEUE_TEST_H
-#define PRIORITY_QUEUE_TEST_H
+#ifndef LIBCDSA_PRIORITY_QUEUE_TEST_H
+#define LIBCDSA_PRIORITY_QUEUE_TEST_H
 
 #include "../test_utilities.h"
 

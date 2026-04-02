@@ -1,5 +1,5 @@
-#ifndef HASH_SET_H
-#define HASH_SET_H
+#ifndef LIBCDSA_HASH_SET_H
+#define LIBCDSA_HASH_SET_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

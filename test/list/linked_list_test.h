@@ -1,5 +1,5 @@
-#ifndef LINKED_LIST_TEST_H
-#define LINKED_LIST_TEST_H
+#ifndef LIBCDSA_LINKED_LIST_TEST_H
+#define LIBCDSA_LINKED_LIST_TEST_H
 
 #include "../test_utilities.h"
 

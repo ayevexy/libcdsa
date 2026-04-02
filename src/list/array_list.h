@@ -1,5 +1,5 @@
-#ifndef ARRAY_LIST_H
-#define ARRAY_LIST_H
+#ifndef LIBCDSA_ARRAY_LIST_H
+#define LIBCDSA_ARRAY_LIST_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

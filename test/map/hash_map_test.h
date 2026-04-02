@@ -1,5 +1,5 @@
-#ifndef HASH_MAP_TEST_H
-#define HASH_MAP_TEST_H
+#ifndef LIBCDSA_HASH_MAP_TEST_H
+#define LIBCDSA_HASH_MAP_TEST_H
 
 #include "../test_utilities.h"
 

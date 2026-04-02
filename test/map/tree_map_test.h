@@ -1,5 +1,5 @@
-#ifndef TREE_MAP_TEST_H
-#define TREE_MAP_TEST_H
+#ifndef LIBCDSA_TREE_MAP_TEST_H
+#define LIBCDSA_TREE_MAP_TEST_H
 
 #include "../test_utilities.h"
 

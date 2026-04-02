@@ -1,5 +1,5 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef LIBCDSA_QUEUE_H
+#define LIBCDSA_QUEUE_H
 
 #include "deque/deque.h"
 

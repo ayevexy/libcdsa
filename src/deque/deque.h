@@ -1,5 +1,5 @@
-#ifndef DEQUE_H
-#define DEQUE_H
+#ifndef LIBCDSA_DEQUE_H
+#define LIBCDSA_DEQUE_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

@@ -1,5 +1,5 @@
-#ifndef HASH_SET_TEST_H
-#define HASH_SET_TEST_H
+#ifndef LIBCDSA_HASH_SET_TEST_H
+#define LIBCDSA_HASH_SET_TEST_H
 
 #include "../test_utilities.h"
 

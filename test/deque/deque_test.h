@@ -1,5 +1,5 @@
-#ifndef DEQUE_TEST_H
-#define DEQUE_TEST_H
+#ifndef LIBCDSA_DEQUE_TEST_H
+#define LIBCDSA_DEQUE_TEST_H
 
 #include "../test_utilities.h"
 

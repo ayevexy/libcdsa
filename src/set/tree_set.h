@@ -1,5 +1,5 @@
-#ifndef TREE_SET_H
-#define TREE_SET_H
+#ifndef LIBCDSA_TREE_SET_H
+#define LIBCDSA_TREE_SET_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

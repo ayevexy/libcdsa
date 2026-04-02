@@ -1,5 +1,5 @@
-#ifndef TREE_MAP_H
-#define TREE_MAP_H
+#ifndef LIBCDSA_TREE_MAP_H
+#define LIBCDSA_TREE_MAP_H
 
 #include "map_entry.h"
 #include "util/iterator.h"

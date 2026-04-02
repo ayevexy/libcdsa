@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef LIBCDSA_FUNCTIONS_H
+#define LIBCDSA_FUNCTIONS_H
 
 #include <stdint.h>
 #include <stdio.h>

@@ -1,5 +1,5 @@
-#ifndef PRIORITY_QUEUE_H
-#define PRIORITY_QUEUE_H
+#ifndef LIBCDSA_PRIORITY_QUEUE_H
+#define LIBCDSA_PRIORITY_QUEUE_H
 
 #include "util/iterator.h"
 #include "util/functions.h"

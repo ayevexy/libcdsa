@@ -45,6 +45,7 @@ static inline bool collection_is_empty(Collection collection) {
 static inline Iterator* collection_iterator(Collection collection) {
     return collection.iterator(collection.data_structure);
 }
+
 /**
  * @brief Checks whether an element is present in the collection.
  *

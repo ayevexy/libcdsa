@@ -79,7 +79,7 @@
 #   define _collection_case_priority_queue
 #endif
 
-#ifdef LIBCDSA_SET_VIEW_H
+#ifdef LIBCDSA_SETS_H
 #   define _collection_case_set_view SetView*: set_view_iterator,
 #else
 #   define _collection_case_set_view

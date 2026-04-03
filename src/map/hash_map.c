@@ -46,6 +46,8 @@ static size_t calculate_string_size(const HashMap*);
 
 static int next_power_of_two(int);
 
+static int compute_threshold(int, float);
+
 static bool ensure_capacity(HashMap*);
 
 static Entry* create_entry(HashMap*, const void*, const void*);
@@ -110,7 +112,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
     }
     memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
-    hash_map->threshold = hash_map->capacity * options->load_factor;
+    hash_map->threshold = compute_threshold(hash_map->capacity, options->load_factor);
     hash_map->load_factor = options->load_factor;
     hash_map->hash = options->hash;
     hash_map->key_destruct = options->key_destruct;
@@ -546,6 +548,12 @@ static int next_power_of_two(int x) {
     return power;
 }
 
+static int compute_threshold(int capacity, float load_factor) {
+    return load_factor > MAX_CAPACITY / capacity
+        ? MAX_CAPACITY
+        : load_factor * capacity;
+}
+
 static bool ensure_capacity(HashMap* hash_map) {
     if (hash_map->size < hash_map->threshold) {
         return true;
@@ -575,7 +583,7 @@ static bool ensure_capacity(HashMap* hash_map) {
     hash_map->memory_dealloc(hash_map->buckets);
     hash_map->buckets = buckets;
     hash_map->capacity = new_capacity;
-    hash_map->threshold = hash_map->capacity * hash_map->load_factor;
+    hash_map->threshold = compute_threshold(hash_map->capacity, hash_map->load_factor);
     return true;
 }
 

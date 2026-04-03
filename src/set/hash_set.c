@@ -39,6 +39,8 @@ static size_t calculate_string_size(const HashSet*);
 
 static int next_power_of_two(int x);
 
+static int compute_threshold(int, float);
+
 static bool ensure_capacity(HashSet*);
 
 static Node* create_node(const HashSet*, const void*);
@@ -100,7 +102,7 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     }
     memset(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
     hash_set->size = 0;
-    hash_set->threshold = hash_set->capacity * options->load_factor;
+    hash_set->threshold = compute_threshold(hash_set->capacity, options->load_factor);
     hash_set->load_factor = options->load_factor;
     hash_set->hash = options->hash;
     hash_set->destruct = options->destruct;
@@ -457,6 +459,12 @@ static int next_power_of_two(int x) {
     return power;
 }
 
+static int compute_threshold(int capacity, float load_factor) {
+    return load_factor > MAX_CAPACITY / capacity
+        ? MAX_CAPACITY
+        : load_factor * capacity;
+}
+
 static bool ensure_capacity(HashSet* hash_set) {
     if (hash_set->size < hash_set->threshold) {
         return true;
@@ -486,7 +494,7 @@ static bool ensure_capacity(HashSet* hash_set) {
     hash_set->memory_dealloc(hash_set->buckets);
     hash_set->buckets = buckets;
     hash_set->capacity = new_capacity;
-    hash_set->threshold = hash_set->capacity * hash_set->load_factor;
+    hash_set->threshold = compute_threshold(hash_set->capacity, hash_set->load_factor);
     return true;
 }
 

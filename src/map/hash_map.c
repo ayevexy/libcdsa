@@ -687,7 +687,7 @@ static void* iterator_next_internal(void* raw_iteration_context) {
 
 static void* iterator_next_key_internal(void* raw_iteration_context) {
     const MapEntry* entry = iterator_next_internal(raw_iteration_context);
-    return entry ? entry->key : nullptr;
+    return entry ? (void*) entry->key : nullptr;
 }
 
 static void* iterator_next_value_internal(void* raw_iteration_context) {

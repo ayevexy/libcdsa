@@ -298,6 +298,12 @@ To install the library system-wide in `/usr/local`, execute the following comman
   sudo cmake --install build
 ```
 
+Instead, to install to a custom directory in the home folder:
+
+```bash
+  cmake --install build --prefix $HOME/my-libraries
+```
+
 ## Frequently Asked Questions
 
 - **Isn't it just another data structures library? Why does this exist?**

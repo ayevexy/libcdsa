@@ -302,45 +302,45 @@ To install the library system-wide in `/usr/local`, execute the following comman
 
 - **Isn't it just another data structures library? Why does this exist?**
 
-I made **libcdsa** as a hobby project to learn and practice the C programming language and data structures  
-and algorithms. But the project grew while developing it and became a powerful library with a different  
+I made **libcdsa** as a hobby project to learn and practice the C programming language and data structures
+and algorithms. But the project grew while developing it and became a powerful library with a different
 and interesting design approach from most implementations.
 
 - **What makes libcdsa different?**
 
-Most implementations focus on simplicity and performance, at the cost of limited scope and heavy use of macros. **libcdsa** is  
-the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/list/array_list.h)  
-module has 50+ functions! The library also provides some flexibility regarding memory management by making it available but optional.  
+Most implementations focus on simplicity and performance, at the cost of limited scope and heavy use of macros. **libcdsa** is
+the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/list/array_list.h)
+module has 50+ functions! The library also provides some flexibility regarding memory management by making it available but optional.
 You can check the documentation to learn more about what this project can offer.
 
 - **Isn't it a reimplementation of the Java Collections Framework, but in C?**
 
-Even though **libcdsa** is heavily inspired by Java Collections, it's not a reimplementation.  
-The API is based on Java because I personally like it, but there are many differences, both in the API and in the implementation. For example, Java  
-makes heavy use of exceptions; however, in **libcdsa**, exceptions don’t exist—there’s an entirely new built-in error handling mechanism.  
+Even though **libcdsa** is heavily inspired by Java Collections, it's not a reimplementation.
+The API is based on Java because I personally like it, but there are many differences, both in the API and in the implementation.
+For example, Java makes heavy use of exceptions; however, in **libcdsa**, exceptions don’t exist—there’s an entirely new built-in error handling mechanism.
 If you look at the source code and the API, the differences will become clear.
 
 - **Is it easy to use?**
 
-Absolutely. If you’ve used Java before, the API will feel familiar.  
-Even if you haven’t, the design is straightforward and consistent across all data structures.  
+Absolutely. If you’ve used Java before, the API will feel familiar.
+Even if you haven’t, the design is straightforward and consistent across all data structures.
 The only tough part would be installing it, which requires CMake and some steps—unless you write a simple installation script yourself.
 
 - **Is it ready for production?**
 
-If the mentioned [limitations](#limitations) aren’t an obstacle for your project, it might be used in production,  
-but it's better to wait until the first stable version is released. The project is currently in beta, and breaking changes may occur  
+If the mentioned [limitations](#limitations) aren’t an obstacle for your project, it might be used in production,
+but it's better to wait until the first stable version is released. The project is currently in beta, and breaking changes may occur
 before the definitive version `v1.0.0`.
 
 - **Is it suitable for learning?**
 
-One thing I tried to achieve and maintain while developing this project is the clarity and readability of the code.  
-But it can be difficult due to the size of the project, the topics it addresses, and some design decisions made.  
+One thing I tried to achieve and maintain while developing this project is the clarity and readability of the code.
+But it can be difficult due to the size of the project, the topics it addresses, and some design decisions made.
 Still, I think it could be a good source for learning.
 
 - **Can I contribute with the project?**
 
-Yes! If you have any feedback, feature requests, bug reports, or questions, you can start a discussion,  
+Yes! If you have any feedback, feature requests, bug reports, or questions, you can start a discussion,
 open an issue, or email me at `ayevexy@proton.me`. If you’ve used **libcdsa** anywhere, I’d love to know too!
 
 ## License

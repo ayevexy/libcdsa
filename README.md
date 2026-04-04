@@ -275,11 +275,11 @@ Build the project with CMake:
   cmake --build build
 ```
 
-It will compile the library as a shared library by default.
-To compile it as a static library instead, add the following flag:
+It will compile the library as a static library by default.
+To compile it as a shared library instead, add the following flag:
 
 ```bash
-  cmake -S . -B build -DBUILD_SHARED_LIBS=OFF
+  cmake -S . -B build -DBUILD_SHARED_LIBS=ON
 ```
 
 ### Tests

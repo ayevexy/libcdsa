@@ -19,7 +19,7 @@ include(FetchContent)
 
 # ---- Library ----
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_library(${PROJECT_NAME}
         src/deque/deque.c

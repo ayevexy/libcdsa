@@ -43,13 +43,13 @@ static Node* create_node(const TreeSet*, const void*);
 
 static Node* get_node(const TreeSet*, const void*);
 
-static Node* get_successor_node(const TreeSet*, Node*);
-
 static Node* get_predecessor_node(const TreeSet*, Node*);
 
-static Node* get_higher_node(const TreeSet*, Node*);
+static Node* get_successor_node(const TreeSet*, Node*);
 
 static Node* get_lower_node(const TreeSet*, Node*);
+
+static Node* get_higher_node(const TreeSet*, Node*);
 
 static void* remove_node(TreeSet*, Node*);
 
@@ -643,18 +643,6 @@ static Node* get_node(const TreeSet* tree_set, const void* element) {
     return nullptr;
 }
 
-static Node* get_successor_node(const TreeSet* tree_set, Node* node) {
-    if (node->right != tree_set->sentinel) {
-        return get_lower_node(tree_set, node->right);
-    }
-    Node* parent = node->parent;
-    while (parent != tree_set->sentinel && node == parent->right) {
-        node = parent;
-        parent = parent->parent;
-    }
-    return parent;
-}
-
 static Node* get_predecessor_node(const TreeSet* tree_set, Node* node) {
     if (node->left != tree_set->sentinel) {
         return get_higher_node(tree_set, node->left);
@@ -667,14 +655,16 @@ static Node* get_predecessor_node(const TreeSet* tree_set, Node* node) {
     return parent;
 }
 
-static Node* get_higher_node(const TreeSet* tree_set, Node* node) {
-    if (node == tree_set->sentinel) {
-        return node;
+static Node* get_successor_node(const TreeSet* tree_set, Node* node) {
+    if (node->right != tree_set->sentinel) {
+        return get_lower_node(tree_set, node->right);
     }
-    while (node->right != tree_set->sentinel) {
-        node = node->right;
+    Node* parent = node->parent;
+    while (parent != tree_set->sentinel && node == parent->right) {
+        node = parent;
+        parent = parent->parent;
     }
-    return node;
+    return parent;
 }
 
 static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
@@ -683,6 +673,16 @@ static Node* get_lower_node(const TreeSet* tree_set, Node* node) {
     }
     while (node->left != tree_set->sentinel) {
         node = node->left;
+    }
+    return node;
+}
+
+static Node* get_higher_node(const TreeSet* tree_set, Node* node) {
+    if (node == tree_set->sentinel) {
+        return node;
+    }
+    while (node->right != tree_set->sentinel) {
+        node = node->right;
     }
     return node;
 }

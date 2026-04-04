@@ -49,9 +49,9 @@ static Entry* create_entry(const TreeMap*, const void*, const void*);
 
 static Entry* get_entry(const TreeMap*, const void*);
 
-static Entry* get_successor_entry(const TreeMap*, Entry*);
-
 static Entry* get_predecessor_entry(const TreeMap*, Entry*);
+
+static Entry* get_successor_entry(const TreeMap*, Entry*);
 
 static Entry* get_lower_entry(const TreeMap*, Entry*);
 
@@ -728,24 +728,24 @@ static Entry* get_entry(const TreeMap* tree_map, const void* key) {
     return nullptr;
 }
 
-static Entry* get_successor_entry(const TreeMap* tree_map, Entry* entry) {
-    if (entry->right != tree_map->sentinel) {
-        return get_lower_entry(tree_map, entry->right);
-    }
-    Entry* parent = entry->parent;
-    while (parent != tree_map->sentinel && entry == parent->right) {
-        entry = parent;
-        parent = parent->parent;
-    }
-    return parent;
-}
-
 static Entry* get_predecessor_entry(const TreeMap* tree_map, Entry* entry) {
     if (entry->left != tree_map->sentinel) {
         return get_higher_entry(tree_map, entry->left);
     }
     Entry* parent = entry->parent;
     while (parent != tree_map->sentinel && entry == parent->left) {
+        entry = parent;
+        parent = parent->parent;
+    }
+    return parent;
+}
+
+static Entry* get_successor_entry(const TreeMap* tree_map, Entry* entry) {
+    if (entry->right != tree_map->sentinel) {
+        return get_lower_entry(tree_map, entry->right);
+    }
+    Entry* parent = entry->parent;
+    while (parent != tree_map->sentinel && entry == parent->right) {
         entry = parent;
         parent = parent->parent;
     }

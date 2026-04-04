@@ -16,7 +16,7 @@ typedef enum {
     FAILED,
 } IterationState;
 
-typedef struct IterationContext {
+typedef struct {
     Iterator iterator;
     Pair sets;
     Pair set_iterators;

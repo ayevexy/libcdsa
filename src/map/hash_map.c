@@ -12,7 +12,7 @@ constexpr int GROWN_FACTOR = 2;
 typedef struct Entry {
     union {
         MapEntry view;
-        struct { void* key; void* value; };
+        struct { const void* key; void* value; };
     };
     uint64_t hash;
     struct Entry* next;
@@ -306,7 +306,7 @@ void* hash_map_remove(HashMap* hash_map, const void* key) {
     } else {
         hash_map->buckets[index] = entry->next;
     }
-    hash_map->key_destruct(entry->key);
+    hash_map->key_destruct((void*) entry->key);
     hash_map->value_destruct(entry->value);
     void* value = entry->value;
     hash_map->size--;
@@ -329,7 +329,7 @@ void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
     for (int i = 0; i < hash_map->capacity; i++) {
         for (Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             void* old_value = entry->value;
-            void* new_value = bi_operator(entry->key, entry->value);
+            void* new_value = bi_operator((void*) entry->key, entry->value);
             if (old_value != new_value) {
                 hash_map->value_destruct(old_value);
             }
@@ -385,7 +385,7 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
     if (require_non_null(hash_map)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
-            action(entry->key, entry->value);
+            action((void*) entry->key, entry->value);
         }
     }
 }
@@ -612,7 +612,7 @@ static Entry* get_entry(const HashMap* hash_map, const void* key) {
 static void destroy_entries(HashMap* hash_map) {
     for (int i = 0; i < hash_map->capacity; i++) {
         for (Entry* current = hash_map->buckets[i], * next; current; current = next) {
-            hash_map->key_destruct(current->key);
+            hash_map->key_destruct((void*) current->key);
             hash_map->value_destruct(current->value);
 
             next = current->next;

@@ -11,7 +11,7 @@ typedef enum {
 typedef struct Entry {
     union {
         MapEntry view;
-        struct { void* key; void* value; };
+        struct { const void* key; void* value; };
     };
     Color color;
     struct Entry* parent;
@@ -379,7 +379,7 @@ void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
     while (entry != tree_map->sentinel) {
         void* old_value = entry->value;
-        void* new_value = bi_operator(entry->key, entry->value);
+        void* new_value = bi_operator((void*) entry->key, entry->value);
         if (old_value != new_value) {
             tree_map->value_destruct(old_value);
         }
@@ -449,7 +449,7 @@ void tree_map_for_each(TreeMap* tree_map, BiConsumer action) {
     if (require_non_null(tree_map, action)) return;
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
     while (entry != tree_map->sentinel) {
-        action(entry->key, entry->value);
+        action((void*) entry->key, entry->value);
         entry = get_successor_entry(tree_map, entry);
     }
 }
@@ -801,7 +801,7 @@ static MapEntry remove_entry(TreeMap* tree_map, Entry* entry) {
         rebalance_after_delete(tree_map, auxiliar);
     }
     const MapEntry view = entry->view;
-    tree_map->key_destruct(entry->key);
+    tree_map->key_destruct((void*) entry->key);
     tree_map->value_destruct(entry->value);
     tree_map->memory_dealloc(entry);
     tree_map->size--;
@@ -826,7 +826,7 @@ static void destroy_entries(TreeMap* tree_map, Entry* entry) {
     }
     destroy_entries(tree_map, entry->left);
     destroy_entries(tree_map, entry->right);
-    tree_map->key_destruct(entry->key);
+    tree_map->key_destruct((void*) entry->key);
     tree_map->value_destruct(entry->value);
     tree_map->memory_dealloc(entry);
 }

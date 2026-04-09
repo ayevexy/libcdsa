@@ -671,9 +671,9 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
  *
  * @exception NULL_POINTER_ERROR if array_list or accumulator is null
  *
- * @note the returned pointer points to the identity argument, which may be modified.
+ * @note the returned pointer may point to the identity argument, which may be modified.
  */
-void* array_list_reduce(const ArrayList* array_list, void* identity, BiConsumer accumulator);
+void* array_list_reduce(const ArrayList* array_list, void* identity, BiOperator accumulator);
 
 /**
  * @brief Counts the number of occurrences of an element in the array list.

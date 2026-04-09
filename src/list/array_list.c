@@ -578,11 +578,11 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     return contains;
 }
 
-void* array_list_reduce(const ArrayList* array_list, void* identity, BiConsumer accumulator) {
+void* array_list_reduce(const ArrayList* array_list, void* identity, BiOperator accumulator) {
     if (require_non_null(array_list, accumulator)) return nullptr;
     void* result = identity;
     for (int i = 0; i < array_list->size; i++) {
-        accumulator(result, array_list->elements[i]);
+        result = accumulator(result, array_list->elements[i]);
     }
     return result;
 }

@@ -1150,8 +1150,9 @@ void test_array_list_does_not_contains_all_elements() {
     array_list_destroy(&new_array_list);
 }
 
-static void sum(void* result, void* next) {
+static void* sum(void* result, void* next) {
     *(int*) result += *(int*) next;
+    return result;
 }
 
 void test_reduce_array_list() {

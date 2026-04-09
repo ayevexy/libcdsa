@@ -598,14 +598,16 @@ void test_get_higher_element_from_tree_set() {
 
 void test_get_ceiling_element_from_tree_set() {
     // given
-    int elements[] = { 1, 2, 3, 4, 5 };
+    int elements[] = { 1, 2, 3, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* element = tree_set_ceiling(tree_set, &(int){4});
-    int* not_found = tree_set_ceiling(tree_set, &(int){6});
+    int* exact_match = tree_set_ceiling(tree_set, &(int){5});
+    int* next_greater = tree_set_ceiling(tree_set, &(int){4});
+    int* no_successor = tree_set_ceiling(tree_set, &(int){6});
     // then
-    TEST_ASSERT_EQUAL(5, *element);
-    TEST_ASSERT_NULL(not_found);
+    TEST_ASSERT_EQUAL(5, *exact_match);
+    TEST_ASSERT_EQUAL(5, *next_greater);
+    TEST_ASSERT_NULL(no_successor);
 }
 
 void test_get_floor_element_from_tree_set() {

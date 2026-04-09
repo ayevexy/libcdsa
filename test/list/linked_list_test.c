@@ -1091,8 +1091,9 @@ void test_linked_list_does_not_contains_all_elements() {
     linked_list_destroy(&new_linked_list);
 }
 
-static void sum(void* result, void* next) {
+static void* sum(void* result, void* next) {
     *(int*) result += *(int*) next;
+    return result;
 }
 
 void test_reduce_linked_list() {

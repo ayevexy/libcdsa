@@ -626,9 +626,9 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
  *
  * @exception NULL_POINTER_ERROR if linked_list or accumulator is null
  *
- * @note the returned pointer points to the identity argument, which may be modified.
+ * @note the returned pointer may point to the identity argument, which may be modified.
  */
-void* linked_list_reduce(const LinkedList* linked_list, void* identity, BiConsumer accumulator);
+void* linked_list_reduce(const LinkedList* linked_list, void* identity, BiOperator accumulator);
 
 /**
  * @brief Counts the number of occurrences of an element in the linked list.

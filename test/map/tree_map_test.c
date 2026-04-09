@@ -777,38 +777,39 @@ void test_get_higher_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_higher(tree_map, &(char){'c'});
-    MapEntry not_found = tree_map_higher(tree_map, &(char){'f'});
+    MapEntry next_greater = tree_map_higher(tree_map, &(char){'c'});
+    MapEntry no_successor = tree_map_higher(tree_map, &(char){'e'});
     // then
-    TEST_ASSERT_EQUAL_ENTRY('d', 4, &entry);
-    TEST_ASSERT_NULL(not_found.key);
-    TEST_ASSERT_NULL(not_found.value);
+    TEST_ASSERT_EQUAL_ENTRY('d', 4, &next_greater);
+    TEST_ASSERT(!no_successor.key && !no_successor.value);
 }
 
 void test_get_ceiling_entry_from_tree_map() {
     // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_ceiling(tree_map, &(char){'e'});
-    MapEntry not_found = tree_map_ceiling(tree_map, &(char){'f'});
+    MapEntry exact_match = tree_map_ceiling(tree_map, &(char){'e'});
+    MapEntry next_greater = tree_map_ceiling(tree_map, &(char){'d'});
+    MapEntry no_successor = tree_map_ceiling(tree_map, &(char){'f'});
     // then
-    TEST_ASSERT_EQUAL_ENTRY('e', 5, &entry);
-    TEST_ASSERT_NULL(not_found.key);
-    TEST_ASSERT_NULL(not_found.value);
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, &exact_match);
+    TEST_ASSERT_EQUAL_ENTRY('e', 5, &next_greater);
+    TEST_ASSERT(!no_successor.key && !no_successor.value);
 }
 
 void test_get_floor_entry_from_tree_map() {
     // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    CharIntEntry entries[] = { { 'a', 1 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_floor(tree_map, &(char){'a'});
-    MapEntry not_found = tree_map_floor(tree_map, &(char){'`'}); // backtick is below 'a' in ASCII
+    MapEntry exact_match = tree_map_floor(tree_map, &(char){'a'});
+    MapEntry next_least = tree_map_floor(tree_map, &(char){'b'});
+    MapEntry no_predecessor = tree_map_floor(tree_map, &(char){'`'}); // backtick is below 'a' in ASCII
     // then
-    TEST_ASSERT_EQUAL_ENTRY('a', 1, &entry);
-    TEST_ASSERT_NULL(not_found.key);
-    TEST_ASSERT_NULL(not_found.value);
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &exact_match);
+    TEST_ASSERT_EQUAL_ENTRY('a', 1, &next_least);
+    TEST_ASSERT(!no_predecessor.key && !no_predecessor.value);
 }
 
 void test_get_lower_entry_from_tree_map() {
@@ -816,12 +817,11 @@ void test_get_lower_entry_from_tree_map() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    MapEntry entry = tree_map_lower(tree_map, &(char){'c'});
-    MapEntry not_found = tree_map_lower(tree_map, &(char){'`'});
+    MapEntry next_least = tree_map_lower(tree_map, &(char){'c'});
+    MapEntry no_predecessor = tree_map_lower(tree_map, &(char){'a'});
     // then
-    TEST_ASSERT_EQUAL_ENTRY('b', 2, &entry);
-    TEST_ASSERT_NULL(not_found.key);
-    TEST_ASSERT_NULL(not_found.value);
+    TEST_ASSERT_EQUAL_ENTRY('b', 2, &next_least);
+    TEST_ASSERT(!no_predecessor.key && !no_predecessor.value);
 }
 
 void test_clear_tree_map() {

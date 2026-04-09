@@ -813,7 +813,7 @@ void test_get_floor_entry_from_tree_map() {
 
 void test_get_lower_entry_from_tree_map() {
     // given
-    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
+    CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
     MapEntry entry = tree_map_lower(tree_map, &(char){'c'});

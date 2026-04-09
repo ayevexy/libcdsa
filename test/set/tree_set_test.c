@@ -626,14 +626,14 @@ void test_get_floor_element_from_tree_set() {
 
 void test_get_lower_element_from_tree_set() {
     // given
-    int elements[] = { 1, 2, 3, 4, 5 };
+    int elements[] = { 1, 2, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* element = tree_set_lower(tree_set, &(int){3});
-    int* not_found = tree_set_lower(tree_set, &(int){0});
+    int* next_least = tree_set_lower(tree_set, &(int){3});
+    int* no_predecessor = tree_set_lower(tree_set, &(int){1});
     // then
-    TEST_ASSERT_EQUAL(2, *element);
-    TEST_ASSERT_NULL(not_found);
+    TEST_ASSERT_EQUAL(2, *next_least);
+    TEST_ASSERT_NULL(no_predecessor);
 }
 
 void test_tree_set_contains_element() {

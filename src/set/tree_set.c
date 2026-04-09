@@ -439,12 +439,18 @@ void* tree_set_floor(const TreeSet* tree_set, const void* element) {
 
 void* tree_set_lower(const TreeSet* tree_set, const void* element) {
     if (require_non_null(tree_set)) return nullptr;
-    Node* current = get_node(tree_set, element);
-    if (!current) {
-        return nullptr;
+    Node* current = tree_set->root, * candidate = tree_set->sentinel;
+
+    while (current != tree_set->sentinel) {
+        const int result = tree_set->compare(element, current->element);
+        if (result > 0) {
+            candidate = current;
+            current = current->right;
+        } else {
+            current = current->left;
+        }
     }
-    const Node* node = get_predecessor_node(tree_set, current);
-    return node != tree_set->sentinel ? node->element : nullptr;
+    return candidate->element;
 }
 
 bool tree_set_contains(const TreeSet* tree_set, const void* element) {

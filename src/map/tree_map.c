@@ -480,22 +480,34 @@ MapEntry tree_map_higher(const TreeMap* tree_map, const void* key) {
 
 MapEntry tree_map_ceiling(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    const MapEntry entry = tree_map_higher(tree_map, key);
-    if (!entry.key && !entry.value) {
-        const Entry* current = get_entry(tree_map, key);
-        return current ? current->view : (MapEntry) {};
+    Entry* current = tree_map->root, * candidate = tree_map->sentinel;
+
+    while (current != tree_map->sentinel) {
+        const int result = tree_map->compare_keys(key, current->key);
+        if (result <= 0) {
+            candidate = current;
+            current = current->left;
+        } else {
+            current = current->right;
+        }
     }
-    return entry;
+    return candidate->view;
 }
 
 MapEntry tree_map_floor(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    const MapEntry entry = tree_map_lower(tree_map, key);
-    if (!entry.key && !entry.value) {
-        const Entry* current = get_entry(tree_map, key);
-        return current ? current->view : (MapEntry) {};
+    Entry* current = tree_map->root, * candidate = tree_map->sentinel;
+
+    while (current != tree_map->sentinel) {
+        const int result = tree_map->compare_keys(key, current->key);
+        if (result >= 0) {
+            candidate = current;
+            current = current->right;
+        } else {
+            current = current->left;
+        }
     }
-    return entry;
+    return candidate->view;
 }
 
 MapEntry tree_map_lower(const TreeMap* tree_map, const void* key) {

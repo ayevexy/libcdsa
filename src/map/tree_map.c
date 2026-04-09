@@ -480,12 +480,12 @@ MapEntry tree_map_higher(const TreeMap* tree_map, const void* key) {
 
 MapEntry tree_map_ceiling(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    Entry* current = get_entry(tree_map, key);
-    if (!current) {
-        return (MapEntry) {};
+    const MapEntry entry = tree_map_higher(tree_map, key);
+    if (!entry.key && !entry.value) {
+        const Entry* current = get_entry(tree_map, key);
+        return current ? current->view : (MapEntry) {};
     }
-    const Entry* entry = get_successor_entry(tree_map, current);
-    return entry != tree_map->sentinel ? entry->view : current->view;
+    return entry;
 }
 
 MapEntry tree_map_floor(const TreeMap* tree_map, const void* key) {

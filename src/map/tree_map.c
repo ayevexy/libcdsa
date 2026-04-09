@@ -464,12 +464,18 @@ void tree_map_clear(TreeMap* tree_map) {
 
 MapEntry tree_map_higher(const TreeMap* tree_map, const void* key) {
     if (require_non_null(tree_map)) return (MapEntry) {};
-    Entry* current = get_entry(tree_map, key);
-    if (!current) {
-        return (MapEntry) {};
+    Entry* current = tree_map->root, * candidate = tree_map->sentinel;
+
+    while (current != tree_map->sentinel) {
+        const int result = tree_map->compare_keys(key, current->key);
+        if (result < 0) {
+            candidate = current;
+            current = current->left;
+        } else {
+            current = current->right;
+        }
     }
-    const Entry* entry = get_successor_entry(tree_map, current);
-    return entry != tree_map->sentinel ? entry->view : (MapEntry) {};
+    return candidate->view;
 }
 
 MapEntry tree_map_ceiling(const TreeMap* tree_map, const void* key) {

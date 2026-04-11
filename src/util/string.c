@@ -80,3 +80,25 @@ bool string_is_blank(String string) {
     }
     return true;
 }
+
+int string_compare(String string, String other_string) {
+    if(string.length > other_string.length) return 1;
+    if(string.length < other_string.length) return -1;
+
+    return strncmp(string.data, other_string.data, string.length);
+}
+
+int string_compare_ignore_case(String string, String other_string) {
+    if(string.length > other_string.length) return 1;
+    if(string.length < other_string.length) return -1;
+
+    return strncasecmp(string.data, other_string.data, string.length);
+}
+
+bool string_equals(String string, String other_string) {
+    return string_compare(string, other_string) == 0;
+}
+
+bool string_equals_ignore_case(String string, String other_string) {
+    return string_compare_ignore_case(string, other_string) == 0;
+}

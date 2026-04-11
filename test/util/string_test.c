@@ -115,6 +115,72 @@ void test_string_is_not_blank() {
     TEST_ASSERT_FALSE(blank);
 }
 
+void test_compare_strings_with_same_length() {
+    // given
+    StringView string = string_view("aaaaa"); // 'a' is greater than 'A' in ASCII
+    StringView other_string = string_view("AAAAA");
+    // when
+    int greater = string_compare(string, other_string);
+    int equals = string_compare(string, string);
+    int lesser = string_compare(other_string, string);
+    // then
+    TEST_ASSERT(greater > 0);
+    TEST_ASSERT(equals == 0);
+    TEST_ASSERT(lesser < 0);
+}
+
+void test_compare_strings_with_different_lengths() {
+    // given
+    StringView string = string_view("aAaAA");
+    StringView other_string = string_view("AaA");
+    // when
+    int greater = string_compare(string, other_string);
+    int lesser = string_compare(other_string, string);
+    // then
+    TEST_ASSERT(greater > 0);
+    TEST_ASSERT(lesser < 0);
+}
+
+void test_compare_strings_with_same_length_ignore_case() {
+    // given
+    StringView string = string_view("aAaAa"); // 'a' is greater than 'A' in ASCII
+    StringView other_string = string_view("AAaAA");
+    // when
+    int equals = string_compare_ignore_case(string, other_string);
+    // then
+    TEST_ASSERT(equals == 0);
+}
+
+void test_compare_strings_with_different_lengths_ignore_case() {
+    // given
+    StringView string = string_view("aAaAA");
+    StringView other_string = string_view("AaA");
+    // when
+    int greater = string_compare_ignore_case(string, other_string);
+    int lesser = string_compare_ignore_case(other_string, string);
+    // then
+    TEST_ASSERT(greater > 0);
+    TEST_ASSERT(lesser < 0);
+}
+
+void test_string_equals() {
+    // given
+    StringView string = string_view("Hello World!");
+    StringView other_string = string_view("HELLO WORLD!");
+    // then
+    TEST_ASSERT_TRUE(string_equals(string, string));
+    TEST_ASSERT_FALSE(string_equals(string, other_string));
+}
+
+void test_string_equals_ignore_case() {
+    // given
+    StringView string = string_view("Hello World!");
+    StringView other_string = string_view("HELLO WORLD!");
+    // then
+    TEST_ASSERT_TRUE(string_equals(string, string));
+    TEST_ASSERT_TRUE(string_equals_ignore_case(string, other_string));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -128,5 +194,11 @@ int main(void) {
     RUN_TEST(test_string_is_not_empty);
     RUN_TEST(test_string_is_blank);
     RUN_TEST(test_string_is_not_blank);
+    RUN_TEST(test_compare_strings_with_same_length);
+    RUN_TEST(test_compare_strings_with_different_lengths);
+    RUN_TEST(test_compare_strings_with_same_length_ignore_case);
+    RUN_TEST(test_compare_strings_with_different_lengths_ignore_case);
+    RUN_TEST(test_string_equals);
+    RUN_TEST(test_string_equals_ignore_case);
     return UNITY_END();
 }

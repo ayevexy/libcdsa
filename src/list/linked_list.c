@@ -548,15 +548,12 @@ Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
 
 Optional linked_list_find_last(const LinkedList* linked_list, Predicate condition) {
     if (require_non_null(linked_list, condition)) return optional_empty();
-    void* element = nullptr;
-    bool found = false;
-    for (const Node* node = linked_list->head; node; node = node->next) {
+    for (const Node* node = linked_list->tail; node; node = node->prev) {
         if (condition(node->element)) {
-            found = true;
-            element = node->element;
+            return optional_of(node->element);
         }
     }
-    return found ? optional_of(element) : optional_empty();
+    return optional_empty();
 }
 
 int linked_list_index_where(const LinkedList* linked_list, Predicate condition) {
@@ -573,14 +570,14 @@ int linked_list_index_where(const LinkedList* linked_list, Predicate condition) 
 
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition) {
     if (require_non_null(linked_list, condition)) return 0;
-    int index = 0, last_index = -1;
-    for (const Node* node = linked_list->head; node; node = node->next) {
+    int index = linked_list->size - 1;
+    for (const Node* node = linked_list->tail; node; node = node->prev) {
         if (condition(node->element)) {
-            last_index = index;
+            return index;
         }
-        index++;
+        index--;
     }
-    return last_index;
+    return -1;
 }
 
 bool linked_list_contains(const LinkedList* linked_list, const void* element) {
@@ -642,14 +639,14 @@ int linked_list_index_of(const LinkedList* linked_list, const void* element) {
 
 int linked_list_last_index_of(const LinkedList* linked_list, const void* element) {
     if (require_non_null(linked_list)) return 0;
-    int index = 0, last_index = -1;
-    for (const Node* node = linked_list->head; node; node = node->next) {
+    int index = linked_list->size - 1;
+    for (const Node* node = linked_list->tail; node; node = node->prev) {
         if (linked_list->equals(node->element, element)) {
-            last_index = index;
+            return index;
         }
-        index++;
+        index--;
     }
-    return last_index;
+    return -1;
 }
 
 LinkedList* linked_list_clone(const LinkedList* linked_list) {

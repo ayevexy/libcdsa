@@ -520,16 +520,13 @@ Optional array_list_find(const ArrayList* array_list, Predicate condition) {
 
 Optional array_list_find_last(const ArrayList* array_list, Predicate condition) {
     if (require_non_null(array_list, condition)) return optional_empty();
-    void* element = nullptr;
-    bool found = false;
-    for (int i = 0; i < array_list->size; i++) {
-        void* current = array_list->elements[i];
-        if (condition(current)) {
-            found = true;
-            element = current;
+    for (int i = array_list->size - 1; i >= 0; i--) {
+        void* element = array_list->elements[i];
+        if (condition(element)) {
+            return optional_of(element);
         }
     }
-    return found ? optional_of(element) : optional_empty();
+    return optional_empty();
 }
 
 int array_list_index_where(const ArrayList* array_list, Predicate condition) {
@@ -544,13 +541,12 @@ int array_list_index_where(const ArrayList* array_list, Predicate condition) {
 
 int array_list_last_index_where(const ArrayList* array_list, Predicate condition) {
     if (require_non_null(array_list, condition)) return 0;
-    int last_index = -1;
-    for (int i = 0; i < array_list->size; i++) {
+    for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
-            last_index = i;
+            return i;
         }
     }
-    return last_index;
+    return -1;
 }
 
 bool array_list_contains(const ArrayList* array_list, const void* element) {
@@ -610,13 +606,12 @@ int array_list_index_of(const ArrayList* array_list, const void* element) {
 
 int array_list_last_index_of(const ArrayList* array_list, const void* element) {
     if (require_non_null(array_list)) return 0;
-    int last_index = -1;
-    for (int i = 0; i < array_list->size; i++) {
+    for (int i = array_list->size - 1; i >= 0; i--) {
         if (array_list->equals(array_list->elements[i], element)) {
-            last_index = i;
+            return i;
         }
     }
-    return last_index;
+    return -1;
 }
 
 int array_list_binary_search(const ArrayList* array_list, const void* element, Comparator compare) {

@@ -102,3 +102,41 @@ bool string_equals(String string, String other_string) {
 bool string_equals_ignore_case(String string, String other_string) {
     return string_compare_ignore_case(string, other_string) == 0;
 }
+
+int string_index_of_char(String string, char character) {
+    for (int i = 0; i < string.length; i++) {
+        if (string.data[i] == character) return i;
+    }
+    return -1;
+}
+
+int string_last_index_of_char(String string, char character) {
+    for (int i = string.length - 1; i >= 0; i--) {
+        if (string.data[i] == character) return i;
+    }
+    return -1;
+}
+
+int string_index_of_substring(String string, String substring) {
+    if (substring.length == 0) return 0;
+    if (substring.length > string.length) return -1;
+
+    for (int i = 0; i <= string.length - substring.length; i++) {
+        if (memcmp(string.data + i, substring.data, (size_t) substring.length) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int string_last_index_of_substring(String string, String substring) {
+    if (substring.length == 0) return 0;
+    if (substring.length > string.length) return -1;
+
+    for (int i = string.length - substring.length; i >= 0; i--) {
+        if (memcmp(string.data + i, substring.data, (size_t) substring.length) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}

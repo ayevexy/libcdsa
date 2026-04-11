@@ -181,6 +181,50 @@ void test_string_equals_ignore_case() {
     TEST_ASSERT_TRUE(string_equals_ignore_case(string, other_string));
 }
 
+void test_string_index_of_char() {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    int index = string_index_of_char(string, 'l');
+    int not_found = string_index_of_char(string, '9');
+    // then
+    TEST_ASSERT_EQUAL(2, index);
+    TEST_ASSERT_EQUAL(-1, not_found);
+}
+
+void test_string_last_index_of_char() {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    int index = string_last_index_of_char(string, 'l');
+    int not_found = string_last_index_of_char(string, '9');
+    // then
+    TEST_ASSERT_EQUAL(9, index);
+    TEST_ASSERT_EQUAL(-1, not_found);
+}
+
+void test_string_index_of_substring() {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    int index = string_index_of_substring(string, string_view("ll"));
+    int not_found = string_index_of_substring(string, string_view("aaa"));
+    // then
+    TEST_ASSERT_EQUAL(2, index);
+    TEST_ASSERT_EQUAL(-1, not_found);
+}
+
+void test_string_last_index_of_substring() {
+    // given
+    StringView string = string_view("Hello Worlld!");
+    // when
+    int index = string_last_index_of_substring(string, string_view("ll"));
+    int not_found = string_last_index_of_substring(string, string_view("aaa"));
+    // then
+    TEST_ASSERT_EQUAL(9, index);
+    TEST_ASSERT_EQUAL(-1, not_found);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -200,5 +244,9 @@ int main(void) {
     RUN_TEST(test_compare_strings_with_different_lengths_ignore_case);
     RUN_TEST(test_string_equals);
     RUN_TEST(test_string_equals_ignore_case);
+    RUN_TEST(test_string_index_of_char);
+    RUN_TEST(test_string_last_index_of_char);
+    RUN_TEST(test_string_index_of_substring);
+    RUN_TEST(test_string_last_index_of_substring);
     return UNITY_END();
 }

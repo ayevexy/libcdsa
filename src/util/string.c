@@ -183,5 +183,22 @@ StringView string_substring(String string, int start, int length) {
     const int max_length = string.length - start;
     const int new_length = length > max_length ? max_length : length;
 
-    return (String) { .data = string.data + start, .length = new_length };
+    return (StringView) { .data = string.data + start, .length = new_length };
+}
+
+StringView string_clone(String string) {
+    return (StringView) { .data = string.data, .length = string.length };
+}
+
+StringOwned string_concat(String string, String other_string) {
+    const int length = string.length + other_string.length;
+
+    char* data = strings_memory_alloc(length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    memcpy(data, string.data, string.length);
+    memcpy(data + string.length, other_string.data, other_string.length + NULL_TERMINATOR);
+    return (StringOwned) { .data = data, .length = length };
 }

@@ -231,3 +231,31 @@ StringOwned string_concat(String string, String other_string) {
     memcpy(data + string.length, other_string.data, other_string.length + NULL_TERMINATOR);
     return (StringOwned) { .data = data, .length = length };
 }
+
+StringOwned string_to_uppercase(String string) {
+    if (require_non_null(string.data)) return string_null();
+
+    char* data = strings_memory_alloc(string.length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+        data[i] = toupper(string.data[i]);
+    }
+    return (StringOwned) { .data = data, .length = string.length };
+}
+
+StringOwned string_to_lowercase(String string) {
+    if (require_non_null(string.data)) return string_null();
+
+    char* data = strings_memory_alloc(string.length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+        data[i] = tolower(string.data[i]);
+    }
+    return (StringOwned) { .data = data, .length = string.length };
+}

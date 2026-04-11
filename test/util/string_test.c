@@ -333,6 +333,29 @@ void test_string_concat() {
     string_destroy(&hello_world);
 }
 
+void test_string_to_uppercase() {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    StringOwned uppercase = string_to_uppercase(string);
+    // then
+    TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase.data);
+    // clean up
+    string_destroy(&uppercase);
+}
+
+void test_string_to_lowercase() {
+    // given
+    StringView string = string_view("Hello World!");
+    printf("%s\n", string.data);
+    // when
+    StringOwned lowercase = string_to_lowercase(string);
+    // then
+    TEST_ASSERT_EQUAL_STRING("hello world!", lowercase.data);
+    // clean up
+    string_destroy(&lowercase);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -368,5 +391,7 @@ int main(void) {
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
+    RUN_TEST(test_string_to_uppercase);
+    RUN_TEST(test_string_to_lowercase);
     return UNITY_END();
 }

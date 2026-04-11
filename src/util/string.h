@@ -46,12 +46,6 @@ bool string_equals(String string, String other_string);
 
 bool string_equals_ignore_case(String string, String other_string);
 
-#define string_index_of(value) \
-    _Generic((value), char: string_index_of_char, String: string_index_of_substring)(value)
-
-#define string_last_index_of(value) \
-    _Generic((value), char: string_last_index_of_char, String: string_last_index_of_substring)(value)
-
 int string_index_of_char(String string, char character);
 
 int string_last_index_of_char(String string, char character);
@@ -81,9 +75,6 @@ StringView string_clone(String string);
 StringOwned string_concat(String string, String other_string);
 
 StringOwned string_indent(String string, int indent);
-
-#define string_replace(string, target, replacement) \
-    _Generic((target), char: string_replace_char, String: string_replace_substring)(string, target, replacement)
 
 StringOwned string_replace_char(String string, char character, char replacement);
 

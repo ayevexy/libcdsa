@@ -68,8 +68,6 @@ StringView string_trim_end(String string);
 
 StringView string_substring(String string, int start, int length);
 
-StringView string_subsequence(String string, int start, int end);
-
 StringView string_clone(String string);
 
 StringOwned string_concat(String string, String other_string);

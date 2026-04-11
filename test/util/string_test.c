@@ -279,6 +279,38 @@ void test_string_trim_end() {
     TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed.length);
 }
 
+void test_string_substring() {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    StringView substring = string_substring(string, 1, 4);
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("ello", substring.data, substring.length);
+    TEST_ASSERT_EQUAL(strlen("ello"), substring.length);
+}
+
+static void substring_index_out_of_bounds_test_helper(int start, int length) {
+    // given
+    StringView string = string_view("Hello World!");
+    // when
+    StringView substring; Error error = attempt(substring = string_substring(string, start, length));
+    // then
+    TEST_ASSERT_NULL(substring.data);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+}
+
+void test_string_substring_length_less_than_zero_fails() {
+    substring_index_out_of_bounds_test_helper(0, -1);
+}
+
+void test_string_substring_negative_start_index_fails() {
+    substring_index_out_of_bounds_test_helper(-1, 3);
+}
+
+void test_string_substring_start_index_greater_than_length_fails() {
+    substring_index_out_of_bounds_test_helper(30, 3);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -308,5 +340,9 @@ int main(void) {
     RUN_TEST(test_string_trim);
     RUN_TEST(test_string_trim_start);
     RUN_TEST(test_string_trim_end);
+    RUN_TEST(test_string_substring);
+    RUN_TEST(test_string_substring_length_less_than_zero_fails);
+    RUN_TEST(test_string_substring_negative_start_index_fails);
+    RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     return UNITY_END();
 }

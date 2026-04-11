@@ -172,4 +172,16 @@ StringView string_trim_end(String string) {
         end--;
     }
     return (StringView) { .data = string.data, .length = end };
+
+}
+
+StringView string_substring(String string, int start, int length) {
+    if (start < 0 || length < 0 || start > string.length) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, length = %d", start, length);
+        return string_null();
+    }
+    const int max_length = string.length - start;
+    const int new_length = length > max_length ? max_length : length;
+
+    return (String) { .data = string.data + start, .length = new_length };
 }

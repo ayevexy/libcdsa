@@ -9,7 +9,7 @@ extern void (*strings_memory_dealloc)(void*);
 
 typedef struct {
     const char* data;
-    const int length;
+    int length;
 } String;
 
 typedef String StringView;

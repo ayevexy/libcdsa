@@ -28,7 +28,7 @@ StringOwned string_new(const char* raw_string) {
 }
 
 void string_destroy(StringOwned* string) {
-    if (require_non_null(string)) return;
+    if (require_non_null(string, string->data)) return;
 
     strings_memory_dealloc((char*) string->data);
     string->data = nullptr;
@@ -62,6 +62,7 @@ StringOwned string_format(const char* format, ...) {
 }
 
 char string_char_at(String string, int index) {
+    if (require_non_null(string.data)) return '\0';
     if (index < 0 || index >= string.length) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, string.length);
         return '\0';
@@ -70,10 +71,12 @@ char string_char_at(String string, int index) {
 }
 
 bool string_is_empty(String string) {
+    if (require_non_null(string.data)) return false;
     return string.length == 0;
 }
 
 bool string_is_blank(String string) {
+    if (require_non_null(string.data)) return false;
     for (int i = 0; i < string.length; i++) {
         if (!isspace((unsigned char) string.data[i]))
             return false;
@@ -82,6 +85,8 @@ bool string_is_blank(String string) {
 }
 
 int string_compare(String string, String other_string) {
+    if (require_non_null(string.data, other_string.data)) return 0;
+
     if(string.length > other_string.length) return 1;
     if(string.length < other_string.length) return -1;
 
@@ -89,6 +94,8 @@ int string_compare(String string, String other_string) {
 }
 
 int string_compare_ignore_case(String string, String other_string) {
+    if (require_non_null(string.data, other_string.data)) return 0;
+
     if(string.length > other_string.length) return 1;
     if(string.length < other_string.length) return -1;
 
@@ -104,6 +111,8 @@ bool string_equals_ignore_case(String string, String other_string) {
 }
 
 int string_index_of_char(String string, char character) {
+    if (require_non_null(string.data)) return 0;
+
     for (int i = 0; i < string.length; i++) {
         if (string.data[i] == character) return i;
     }
@@ -111,6 +120,8 @@ int string_index_of_char(String string, char character) {
 }
 
 int string_last_index_of_char(String string, char character) {
+    if (require_non_null(string.data)) return 0;
+
     for (int i = string.length - 1; i >= 0; i--) {
         if (string.data[i] == character) return i;
     }
@@ -118,6 +129,8 @@ int string_last_index_of_char(String string, char character) {
 }
 
 int string_index_of_substring(String string, String substring) {
+    if (require_non_null(string.data, substring.data)) return 0;
+
     if (substring.length == 0) return 0;
     if (substring.length > string.length) return -1;
 
@@ -130,6 +143,8 @@ int string_index_of_substring(String string, String substring) {
 }
 
 int string_last_index_of_substring(String string, String substring) {
+    if (require_non_null(string.data, substring.data)) return 0;
+
     if (substring.length == 0) return 0;
     if (substring.length > string.length) return -1;
 
@@ -146,10 +161,14 @@ bool string_contains(String string, String substring) {
 }
 
 bool string_starts_with(String string, String prefix) {
+    if (require_non_null(string.data, prefix.data)) return false;
+
     return string.length >= prefix.length && memcmp(string.data, prefix.data, (size_t) prefix.length) == 0;
 }
 
 bool string_ends_with(String string, String suffix) {
+    if (require_non_null(string.data, suffix.data)) return false;
+
     return string.length >= suffix.length
         && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
 }
@@ -159,6 +178,8 @@ StringView string_trim(String string) {
 }
 
 StringView string_trim_start(String string) {
+    if (require_non_null(string.data)) return string_null();
+
     int start = 0;
     while (start < string.length && isspace(string.data[start])) {
         start++;
@@ -167,6 +188,8 @@ StringView string_trim_start(String string) {
 }
 
 StringView string_trim_end(String string) {
+    if (require_non_null(string.data)) return string_null();
+
     int end = string.length;
     while (end > 0 && isspace(string.data[end - 1])) {
         end--;
@@ -176,6 +199,8 @@ StringView string_trim_end(String string) {
 }
 
 StringView string_substring(String string, int start, int length) {
+    if (require_non_null(string.data)) return string_null();
+
     if (start < 0 || length < 0 || start > string.length) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, length = %d", start, length);
         return string_null();
@@ -187,10 +212,14 @@ StringView string_substring(String string, int start, int length) {
 }
 
 StringView string_clone(String string) {
+    if (require_non_null(string.data)) return string_null();
+
     return (StringView) { .data = string.data, .length = string.length };
 }
 
 StringOwned string_concat(String string, String other_string) {
+    if (require_non_null(string.data, other_string.data)) return string_null();
+
     const int length = string.length + other_string.length;
 
     char* data = strings_memory_alloc(length + NULL_TERMINATOR);

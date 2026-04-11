@@ -249,6 +249,36 @@ void test_string_ends_with_prefix() {
     TEST_ASSERT_FALSE(string_ends_with(string, string_view("Hello")));
 }
 
+void test_string_trim() {
+    // given
+    StringView string = string_view("  Hello World!  ");
+    // when
+    String trimmed = string_trim(string);
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("Hello World!", trimmed.data, trimmed.length);
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed.length);
+}
+
+void test_string_trim_start() {
+    // given
+    StringView string = string_view("  Hello World!  ");
+    // when
+    String trimmed = string_trim_start(string);
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("Hello World!  ", trimmed.data, trimmed.length);
+    TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed.length);
+}
+
+void test_string_trim_end() {
+    // given
+    StringView string = string_view("  Hello World!  ");
+    // when
+    String trimmed = string_trim_end(string);
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("  Hello World!", trimmed.data, trimmed.length);
+    TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed.length);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -275,5 +305,8 @@ int main(void) {
     RUN_TEST(test_string_contains_substring);
     RUN_TEST(test_string_starts_with_prefix);
     RUN_TEST(test_string_ends_with_prefix);
+    RUN_TEST(test_string_trim);
+    RUN_TEST(test_string_trim_start);
+    RUN_TEST(test_string_trim_end);
     return UNITY_END();
 }

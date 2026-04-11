@@ -153,3 +153,23 @@ bool string_ends_with(String string, String suffix) {
     return string.length >= suffix.length
         && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
 }
+
+StringView string_trim(String string) {
+    return string_trim_start(string_trim_end(string));
+}
+
+StringView string_trim_start(String string) {
+    int start = 0;
+    while (start < string.length && isspace(string.data[start])) {
+        start++;
+    }
+    return (StringView) { .data = string.data + start, .length = string.length - start };
+}
+
+StringView string_trim_end(String string) {
+    int end = string.length;
+    while (end > 0 && isspace(string.data[end - 1])) {
+        end--;
+    }
+    return (StringView) { .data = string.data, .length = end };
+}

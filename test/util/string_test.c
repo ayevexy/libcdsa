@@ -225,6 +225,30 @@ void test_string_last_index_of_substring() {
     TEST_ASSERT_EQUAL(-1, not_found);
 }
 
+void test_string_contains_substring() {
+    // given
+    StringView string = string_view("Hello World!");
+    // then
+    TEST_ASSERT_TRUE(string_contains(string, string_view("llo Wor")));
+    TEST_ASSERT_FALSE(string_contains(string, string_view("Mars")));
+}
+
+void test_string_starts_with_prefix() {
+    // given
+    StringView string = string_view("Hello World!");
+    // then
+    TEST_ASSERT_TRUE(string_starts_with(string, string_view("Hello")));
+    TEST_ASSERT_FALSE(string_starts_with(string, string_view("World!")));
+}
+
+void test_string_ends_with_prefix() {
+    // given
+    StringView string = string_view("Hello World!");
+    // then
+    TEST_ASSERT_TRUE(string_ends_with(string, string_view("World!")));
+    TEST_ASSERT_FALSE(string_ends_with(string, string_view("Hello")));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -248,5 +272,8 @@ int main(void) {
     RUN_TEST(test_string_last_index_of_char);
     RUN_TEST(test_string_index_of_substring);
     RUN_TEST(test_string_last_index_of_substring);
+    RUN_TEST(test_string_contains_substring);
+    RUN_TEST(test_string_starts_with_prefix);
+    RUN_TEST(test_string_ends_with_prefix);
     return UNITY_END();
 }

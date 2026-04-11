@@ -140,3 +140,16 @@ int string_last_index_of_substring(String string, String substring) {
     }
     return -1;
 }
+
+bool string_contains(String string, String substring) {
+    return string_index_of_substring(string, substring) >= 0;
+}
+
+bool string_starts_with(String string, String prefix) {
+    return string.length >= prefix.length && memcmp(string.data, prefix.data, (size_t) prefix.length) == 0;
+}
+
+bool string_ends_with(String string, String suffix) {
+    return string.length >= suffix.length
+        && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
+}

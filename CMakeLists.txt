@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME}
         src/set/tree_set.c
         src/util/sets.c
         src/util/errors.c
+        src/util/string.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

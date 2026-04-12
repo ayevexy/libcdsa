@@ -349,20 +349,6 @@ StringView string_clone(String string);
 StringOwned string_concat(String string, String other_string);
 
 /**
- * @brief Creates a newly allocated string with each line indented from the specified string.
- *
- * @param string the string
- * @param indent how many indentations
- *
- * @return a new allocated string
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- * @exception ILLEGAL_ARGUMENT_ERROR if indent is negative
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-StringOwned string_indent(String string, int indent);
-
-/**
  * Replaces all occurrences of a character in the string with a new one.
  *
  * @param string the string

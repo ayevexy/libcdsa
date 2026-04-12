@@ -333,6 +333,26 @@ void test_string_concat() {
     string_destroy(&hello_world);
 }
 
+void test_string_repeat() {
+    // given
+    StringView hello = string_view("Hello");
+    // when
+    StringOwned hello_n_times = string_repeat(hello, 3);
+    // then
+    TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times.data);
+    TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times.length);
+}
+
+void test_string_repeat_fails_if_times_is_negative() {
+    // given
+    StringView hello = string_view("Hello");
+    // when
+    StringOwned hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
+    // then
+    TEST_ASSERT_NULL(hello_n_times.data);
+    TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
+}
+
 void test_string_join() {
     // given
     StringView hello = string_view("Hello");
@@ -448,6 +468,8 @@ int main(void) {
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
+    RUN_TEST(test_string_repeat);
+    RUN_TEST(test_string_repeat_fails_if_times_is_negative);
     RUN_TEST(test_string_join);
     RUN_TEST(test_string_split);
     RUN_TEST(test_string_split_single_word);

@@ -232,6 +232,28 @@ StringOwned string_concat(String string, String other_string) {
     return (StringOwned) { .data = data, .length = length };
 }
 
+StringOwned string_repeat(String string, int times) {
+    if (require_non_null(string.data)) return string_null();
+
+    if (times < 0) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "'times' parameter can't be negative");
+        return string_null();
+    }
+    const int length = string.length * times;
+
+    char* data = strings_memory_alloc(length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    for (int i = 0, offset = 0; i < times; i++) {
+        memcpy(data + offset, string.data, string.length);
+        offset += string.length;
+    }
+    data[length] = '\0';
+    return (StringOwned) { .data = data, .length = length };
+}
+
 StringOwned string_join(String separator, ...) {
     if (require_non_null(separator.data)) return string_null();
 

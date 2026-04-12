@@ -333,6 +333,25 @@ void test_string_concat() {
     string_destroy(&hello_world);
 }
 
+void test_string_replace_char() {
+    // given
+    StringView hello = string_view("Hello World!");
+    // when
+    StringOwned replaced = string_replace_char(hello, 'o', '0');
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced.data);
+}
+
+void test_string_replace_substring() {
+    // given
+    StringView hello = string_view("Hello Worlld!");
+    // when
+    StringOwned replaced = string_replace_substring(hello, string_view("ll"), string_view("123"));
+    // then
+    TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced.data);
+    TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced.length);
+}
+
 void test_string_repeat() {
     // given
     StringView hello = string_view("Hello");
@@ -468,6 +487,8 @@ int main(void) {
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
+    RUN_TEST(test_string_replace_char);
+    RUN_TEST(test_string_replace_substring);
     RUN_TEST(test_string_repeat);
     RUN_TEST(test_string_repeat_fails_if_times_is_negative);
     RUN_TEST(test_string_join);

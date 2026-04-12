@@ -232,6 +232,58 @@ StringOwned string_concat(String string, String other_string) {
     return (StringOwned) { .data = data, .length = length };
 }
 
+StringOwned string_replace_char(String string, char character, char replacement) {
+    if (require_non_null(string.data)) return string_null();
+
+    char* data = strings_memory_alloc(string.length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+        if (string.data[i] == character) {
+            data[i] = replacement;
+        } else {
+            data[i] = string.data[i];
+        }
+    }
+    return (StringOwned) { .data = data, .length = string.length };
+}
+
+StringOwned string_replace_substring(String string, String target, String replacement) {
+    if (require_non_null(string.data, target.data, replacement.data)) return string_null();
+    if (target.length == 0) return string_null();
+
+    int count = 0;
+    for (int i = 0; i <= string.length - target.length; i++) {
+        if (memcmp(string.data + i, target.data, target.length) == 0) {
+            count++;
+            i += target.length - 1;
+        }
+    }
+    const int new_length = string.length + count * (replacement.length - target.length);
+
+    char* data = strings_memory_alloc(new_length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+    int input_index = 0;
+    int output_index = 0;
+
+    while (input_index < string.length) {
+        if (input_index <= string.length - target.length && memcmp(string.data + input_index, target.data, target.length) == 0) {
+            memcpy(data + output_index, replacement.data, replacement.length);
+            output_index += replacement.length;
+            input_index += target.length;
+        } else {
+            data[output_index++] = string.data[input_index++];
+        }
+    }
+    data[output_index] = '\0';
+    return (StringOwned) { .data = data, .length = new_length };
+}
+
 StringOwned string_repeat(String string, int times) {
     if (require_non_null(string.data)) return string_null();
 

@@ -479,16 +479,16 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
     return new_hash_map;
 }
 
-char* hash_map_to_string(const HashMap* hash_map) {
-    if (require_non_null(hash_map)) return nullptr;
+StringOwned hash_map_to_string(const HashMap* hash_map) {
+    if (require_non_null(hash_map)) return string_null();
 
-    char* string = hash_map->memory_alloc(calculate_string_size(hash_map));
-    if (!string) {
+    char* raw_string = hash_map->memory_alloc(calculate_string_size(hash_map));
+    if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return nullptr;
+        return string_null();
     }
-    string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string, hash_map->size == 0 ? "[" : "[ ");
+    raw_string[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(raw_string, hash_map->size == 0 ? "[" : "[ ");
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
         for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
@@ -497,27 +497,27 @@ char* hash_map_to_string(const HashMap* hash_map) {
             const int key_length = hash_map->key_to_string(entry->key, nullptr, 0);
             const int value_length = hash_map->value_to_string(entry->value, nullptr, 0);
 
-            char* element_string = hash_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
-            if (!element_string) {
-                hash_map->memory_dealloc(string);
+            char* raw_element_string = hash_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
+            if (!raw_element_string) {
+                hash_map->memory_dealloc(raw_string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-                return nullptr;
+                return string_null();
             }
-            hash_map->key_to_string(entry->key, element_string, key_length + NULL_TERMINATOR);
-            strcat(element_string, " = ");
-            hash_map->value_to_string(entry->value, element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
+            hash_map->key_to_string(entry->key, raw_element_string, key_length + NULL_TERMINATOR);
+            strcat(raw_element_string, " = ");
+            hash_map->value_to_string(entry->value, raw_element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
 
-            strcat(string, element_string);
+            strcat(raw_string, raw_element_string);
             if (count < hash_map->size - 1) {
-                strcat(string, ", ");
+                strcat(raw_string, ", ");
             }
             count++;
-            hash_map->memory_dealloc(element_string);
+            hash_map->memory_dealloc(raw_element_string);
         }
     }
 
-    strcat(string, hash_map->size == 0 ? "]" : " ]");
-    return string;
+    strcat(raw_string, hash_map->size == 0 ? "]" : " ]");
+    return string_view(raw_string);
 }
 
 static size_t calculate_string_size(const HashMap* hash_map) {

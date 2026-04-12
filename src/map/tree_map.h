@@ -5,6 +5,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -725,6 +726,6 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
  *
  * @note the created string must be freed manually
  */
-char* tree_map_to_string(const TreeMap* tree_map);
+StringOwned tree_map_to_string(const TreeMap* tree_map);
 
 #endif

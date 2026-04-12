@@ -4,6 +4,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -368,6 +369,6 @@ void** priority_queue_to_array(const PriorityQueue* priority_queue);
  * @note the created string must be freed manually
  * @note the order of elements in the string is unspecified
  */
-char* priority_queue_to_string(const PriorityQueue* priority_queue);
+StringOwned priority_queue_to_string(const PriorityQueue* priority_queue);
 
 #endif

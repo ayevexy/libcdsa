@@ -441,20 +441,20 @@ void test_get_priority_queue_string_representation() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    char* string = priority_queue_to_string(priority_queue);
+    StringOwned string = priority_queue_to_string(priority_queue);
     // then
-    TEST_ASSERT_EQUAL_STRING("| 5, 4, 2, 1, 3 |", string);
+    TEST_ASSERT_EQUAL_STRING("| 5, 4, 2, 1, 3 |", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 void test_get_empty_priority_queue_string_representation() {
     // when
-    char* string = priority_queue_to_string(priority_queue);
+    StringOwned string = priority_queue_to_string(priority_queue);
     // then
-    TEST_ASSERT_EQUAL_STRING("||", string);
+    TEST_ASSERT_EQUAL_STRING("||", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 int main(void) {

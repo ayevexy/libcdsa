@@ -329,7 +329,7 @@ static inline void** queue_to_array(const Queue* queue) {
  *
  * @note the created string must be freed manually
  */
-static inline char* queue_to_string(const Queue* queue) {
+static inline StringOwned queue_to_string(const Queue* queue) {
     return deque_to_string(queue);
 }
 

@@ -58,6 +58,7 @@ Also, there is some other utilities which may be useful:
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
 - [Sets](src/util/sets.h): Common mathematical set operations and set view abstraction.
+- [String](src/util/string.h): Built-in custom string implementation.
 
 ### Limitations
 
@@ -166,11 +167,11 @@ int main(void) {
     
     // Converting the ArrayList to a string representation via `.to_string`
     // by default prints the memory addresses of the elements
-    char* string = array_list_to_string(array_list);
-    printf("%s", string); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
+    StringOwned string = array_list_to_string(array_list);
+    printf("%s", string.data); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
     
     // It must be freed later
-    free(string);
+    free((char*) string.data);
     
     // Cleanup (elements are freed via `.destruct`)
     array_list_destroy(&array_list);
@@ -234,11 +235,11 @@ int main(void) {
     
     // Converting the HashMap to a string representation via `.key_to_string` and `,value_to_string`
     // by default prints the memory addresses of the mapping key-value
-    char* string = hash_map_to_string(hash_map);
-    printf("%s", string); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
+    StringOwned string = hash_map_to_string(hash_map);
+    printf("%s", string.data); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
     
     // it must be freed later
-    free(string);
+    free((char*) string.data);
 
     // Cleanup (no elements are freed since no destruct functions were provided)
     hash_map_destroy(&hash_map);

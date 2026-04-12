@@ -573,20 +573,20 @@ void test_get_deque_string_representation() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_DEQUE(deque, values);
     // when
-    char* string = deque_to_string(deque);
+    StringOwned string = deque_to_string(deque);
     // then
-    TEST_ASSERT_EQUAL_STRING("| 1, 2, 3, 4, 5 |", string);
+    TEST_ASSERT_EQUAL_STRING("| 1, 2, 3, 4, 5 |", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 void test_get_empty_deque_string_representation() {
     // when
-    char* string = deque_to_string(deque);
+    StringOwned string = deque_to_string(deque);
     // then
-    TEST_ASSERT_EQUAL_STRING("||", string);
+    TEST_ASSERT_EQUAL_STRING("||", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 int main(void) {

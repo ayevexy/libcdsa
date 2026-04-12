@@ -4,6 +4,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -409,6 +410,6 @@ void** hash_set_to_array(const HashSet* hash_set);
  *
  * @note the created string must be freed manually
  */
-char* hash_set_to_string(const HashSet* hash_set);
+StringOwned hash_set_to_string(const HashSet* hash_set);
 
 #endif

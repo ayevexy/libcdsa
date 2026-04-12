@@ -798,20 +798,20 @@ void test_get_tree_set_string_representation() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    char* string = tree_set_to_string(tree_set);
+    StringOwned string = tree_set_to_string(tree_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string);
+    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 void test_get_empty_tree_set_string_representation() {
     // when
-    char* string = tree_set_to_string(tree_set);
+    StringOwned string = tree_set_to_string(tree_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("()", string);
+    TEST_ASSERT_EQUAL_STRING("()", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 int main(void) {

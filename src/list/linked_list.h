@@ -6,6 +6,7 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 #include "util/optional.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -734,6 +735,6 @@ void** linked_list_to_array(const LinkedList* linked_list);
  *
  * @note the created string must be freed manually
  */
-char* linked_list_to_string(const LinkedList* linked_list);
+StringOwned linked_list_to_string(const LinkedList* linked_list);
 
 #endif

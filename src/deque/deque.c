@@ -404,39 +404,39 @@ void** deque_to_array(const Deque* deque) {
     return elements;
 }
 
-char* deque_to_string(const Deque* deque) {
-    if (require_non_null(deque)) return nullptr;
+StringOwned deque_to_string(const Deque* deque) {
+    if (require_non_null(deque)) return string_null();
 
-    char* string = deque->memory_alloc(calculate_string_size(deque));
-    if (!string) {
+    char* raw_string = deque->memory_alloc(calculate_string_size(deque));
+    if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return nullptr;
+        return string_null();
     }
-    string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string, deque->size == 0 ? "|" : "| ");
+    raw_string[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(raw_string, deque->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < deque->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
         const int index = (deque->first + i) & (deque->capacity - 1);
         const int length = deque->to_string(deque->elements[index], nullptr, 0) + NULL_TERMINATOR;
 
-        char* element_string = deque->memory_alloc(length);
-        if (!element_string) {
-            deque->memory_dealloc(string);
+        char* raw_element_string = deque->memory_alloc(length);
+        if (!raw_element_string) {
+            deque->memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
+            return string_null();
         }
-        deque->to_string(deque->elements[index], element_string, length);
-        strcat(string, element_string);
+        deque->to_string(deque->elements[index], raw_element_string, length);
+        strcat(raw_string, raw_element_string);
 
         if (i < deque->size - 1) {
-            strcat(string, ", ");
+            strcat(raw_string, ", ");
         }
-        deque->memory_dealloc(element_string);
+        deque->memory_dealloc(raw_element_string);
     }
 
-    strcat(string, deque->size == 0 ? "|" : " |");
-    return string;
+    strcat(raw_string, deque->size == 0 ? "|" : " |");
+    return string_view(raw_string);
 }
 
 static size_t calculate_string_size(const Deque* deque) {

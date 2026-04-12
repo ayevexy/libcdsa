@@ -710,38 +710,38 @@ void** linked_list_to_array(const LinkedList* linked_list) {
     return elements;
 }
 
-char* linked_list_to_string(const LinkedList* linked_list) {
-    if (require_non_null(linked_list)) return nullptr;
+StringOwned linked_list_to_string(const LinkedList* linked_list) {
+    if (require_non_null(linked_list)) return string_null();
 
-    char* string = linked_list->memory_alloc(calculate_string_size(linked_list));
-    if (!string) {
+    char* raw_string = linked_list->memory_alloc(calculate_string_size(linked_list));
+    if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return nullptr;
+        return string_null();
     }
-    string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string, linked_list->size == 0 ? "[" : "[ ");
+    raw_string[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(raw_string, linked_list->size == 0 ? "[" : "[ ");
 
     for (const Node* node = linked_list->head; node; node = node->next) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = linked_list->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-        char* element_string = linked_list->memory_alloc(length);
-        if (!element_string) {
-            linked_list->memory_dealloc(string);
+        char* raw_element_string = linked_list->memory_alloc(length);
+        if (!raw_element_string) {
+            linked_list->memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
+            return string_null();
         }
-        linked_list->to_string(node->element, element_string, length);
-        strcat(string, element_string);
+        linked_list->to_string(node->element, raw_element_string, length);
+        strcat(raw_string, raw_element_string);
 
         if (node->next) {
-            strcat(string, ", ");
+            strcat(raw_string, ", ");
         }
-        linked_list->memory_dealloc(element_string);
+        linked_list->memory_dealloc(raw_element_string);
     }
 
-    strcat(string, linked_list->size == 0 ? "]" : " ]");
-    return string;
+    strcat(raw_string, linked_list->size == 0 ? "]" : " ]");
+    return string_view(raw_string);
 }
 
 static size_t calculate_string_size(const LinkedList* linked_list) {

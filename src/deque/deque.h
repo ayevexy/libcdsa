@@ -4,6 +4,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -433,6 +434,6 @@ void** deque_to_array(const Deque* deque);
  *
  * @note the created string must be freed manually
  */
-char* deque_to_string(const Deque* deque);
+StringOwned deque_to_string(const Deque* deque);
 
 #endif

@@ -5,6 +5,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -589,6 +590,6 @@ HashMap* hash_map_clone(const HashMap* hash_map);
  *
  * @note the created string must be freed manually
  */
-char* hash_map_to_string(const HashMap* hash_map);
+StringOwned hash_map_to_string(const HashMap* hash_map);
 
 #endif

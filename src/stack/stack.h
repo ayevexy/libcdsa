@@ -329,7 +329,7 @@ static inline void** stack_to_array(const Stack* stack) {
  *
  * @note the created string must be freed manually
  */
-static inline char* stack_to_string(const Stack* stack) {
+static inline StringOwned stack_to_string(const Stack* stack) {
     return deque_to_string(stack);
 }
 

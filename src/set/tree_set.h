@@ -4,6 +4,7 @@
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -545,6 +546,6 @@ void** tree_set_to_array(const TreeSet* tree_set);
  *
  * @note the created string must be freed manually
  */
-char* tree_set_to_string(const TreeSet* tree_set);
+StringOwned tree_set_to_string(const TreeSet* tree_set);
 
 #endif

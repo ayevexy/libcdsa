@@ -697,38 +697,38 @@ void** array_list_to_array(const ArrayList* array_list) {
     return elements;
 }
 
-char* array_list_to_string(const ArrayList* array_list) {
-    if (require_non_null(array_list)) return nullptr;
+StringOwned array_list_to_string(const ArrayList* array_list) {
+    if (require_non_null(array_list)) return string_null();
 
-    char* string = array_list->memory_alloc(calculate_string_size(array_list));
-    if (!string) {
+    char* raw_string = array_list->memory_alloc(calculate_string_size(array_list));
+    if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return nullptr;
+        return string_null();
     }
-    string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string, array_list->size == 0 ? "[" : "[ ");
+    raw_string[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(raw_string, array_list->size == 0 ? "[" : "[ ");
 
     for (int i = 0; i < array_list->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = array_list->to_string(array_list->elements[i], nullptr, 0) + NULL_TERMINATOR;
 
-        char* element_string = array_list->memory_alloc(length);
-        if (!element_string) {
-            array_list->memory_dealloc(string);
+        char* raw_element_string = array_list->memory_alloc(length);
+        if (!raw_element_string) {
+            array_list->memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
+            return string_null();
         }
-        array_list->to_string(array_list->elements[i], element_string, length);
-        strcat(string, element_string);
+        array_list->to_string(array_list->elements[i], raw_element_string, length);
+        strcat(raw_string, raw_element_string);
 
         if (i < array_list->size - 1) {
-            strcat(string, ", ");
+            strcat(raw_string, ", ");
         }
-        array_list->memory_dealloc(element_string);
+        array_list->memory_dealloc(raw_element_string);
     }
 
-    strcat(string, array_list->size == 0 ? "]" : " ]");
-    return string;
+    strcat(raw_string, array_list->size == 0 ? "]" : " ]");
+    return string_view(raw_string);
 }
 
 static size_t calculate_string_size(const ArrayList* array_list) {

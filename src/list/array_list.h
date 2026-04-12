@@ -6,6 +6,7 @@
 #include "util/algorithms.h"
 #include "util/collection.h"
 #include "util/optional.h"
+#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -794,6 +795,6 @@ void** array_list_to_array(const ArrayList* array_list);
  *
  * @note the created string must be freed manually
  */
-char* array_list_to_string(const ArrayList* array_list);
+StringOwned array_list_to_string(const ArrayList* array_list);
 
 #endif

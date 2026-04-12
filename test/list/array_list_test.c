@@ -1324,20 +1324,20 @@ void test_get_array_list_string_representation() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    char* string = array_list_to_string(array_list);
+    StringOwned string = array_list_to_string(array_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string);
+    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 void test_get_empty_array_list_string_representation() {
     // when
-    char* string = array_list_to_string(array_list);
+    StringOwned string = array_list_to_string(array_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("[]", string);
+    TEST_ASSERT_EQUAL_STRING("[]", string.data);
     // clean up
-    free(string);
+    free((char*) string.data);
 }
 
 int main(void) {

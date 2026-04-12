@@ -333,6 +333,18 @@ void test_string_concat() {
     string_destroy(&hello_world);
 }
 
+void test_string_join() {
+    // given
+    StringView hello = string_view("Hello");
+    StringView world = string_view("World");
+    StringView exclamation = string_view("!!!");
+    // when
+    StringOwned full_hello_world = string_join(string_view(" "), hello, world, exclamation, string_null());
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world.data);
+    TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world.length);
+}
+
 void test_string_split() {
     // given
     StringView string = string_view("Hello World !!!");
@@ -436,6 +448,7 @@ int main(void) {
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
+    RUN_TEST(test_string_join);
     RUN_TEST(test_string_split);
     RUN_TEST(test_string_split_single_word);
     RUN_TEST(test_string_split_empty);

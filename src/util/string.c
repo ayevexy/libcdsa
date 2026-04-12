@@ -232,6 +232,46 @@ StringOwned string_concat(String string, String other_string) {
     return (StringOwned) { .data = data, .length = length };
 }
 
+StringOwned string_join(String separator, ...) {
+    if (require_non_null(separator.data)) return string_null();
+
+    va_list parameters = {};
+    int total_length = 0;
+
+    va_start(parameters, separator);
+    while (true) {
+        const String string = va_arg(parameters, String);
+        if (!string.data) break;
+        total_length += string.length + separator.length;
+    }
+    total_length -= separator.length;
+    va_end(parameters);
+
+    char* data = strings_memory_alloc(total_length + NULL_TERMINATOR);
+    if (!data) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return string_null();
+    }
+
+    va_start(parameters, separator);
+    int offset = 0;
+    while (true) {
+        const String string = va_arg(parameters, String);
+        if (!string.data) break;
+
+        memcpy(data + offset, string.data, string.length);
+
+        if (offset + string.length + separator.length != total_length) {
+            memcpy(data + offset + string.length, separator.data, separator.length);
+        }
+        offset += string.length + separator.length;
+    }
+    va_end(parameters);
+
+    data[total_length] = '\0';
+    return (StringOwned) { .data = data, .length = total_length };
+}
+
 StringView* string_split(String string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;

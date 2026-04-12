@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.2]() — 2026-04-12
+
+This update introduces the new String API alongside with some bug fixes. Enjoy!
+
+### ✨ Features
+- Introduce the new `String` API (`util/string.h`) with owned and view semantics.
+- Added `StringOwned` as heap-allocated, mutable string type.
+- Added `StringView` as lightweight non-owning string view.
+- Core operations: concat, substring, replace, strip, join, and more.
+
+### ✏️ Changes
+- Replace `BiConsumer` with `BiOperator` in `reduce()` operation of `array_list.h` and `linked_list.h` to match the intended API.
+- Improve performance of `find_last()`, `last_index_where()` and `last_index_of()` in `array_list.h` and `linked_list.h`
+  by replacing iteration direction from forward to backward.
+- Replace all `to_string()` operations return type from `char*` to `StringOwned` of the new String API.
+
+### 🪲 Bug Fixes
+- Aligned internal key-value pair layout with `MapEntry` to avoid undefined behavior in `hash_map.h` and `tree_map.h`.
+- Correct `higher()`, `ceiling()`, `floor()` and `lower()` behavior for missing keys in `tree_map.h`.
+- Correct `higher()`, `ceiling()`, `floor()` and `lower()` behavior for nonexistent elements in `tree_set.h`.
+
+### 📚 Documentation
+- Update usage examples to match the new String API in README, check it [here](README.md#usage).
+
+---
+
 ## 🎉 [v1.0.0-beta.1]() — 2026-04-05
 
 Another incremental change to the beta, this release brings a few new features and more modularity to the library.

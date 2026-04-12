@@ -232,6 +232,37 @@ StringOwned string_concat(String string, String other_string) {
     return (StringOwned) { .data = data, .length = length };
 }
 
+StringView* string_split(String string, char delimiter) {
+    if (require_non_null(string.data)) return nullptr;
+    int count = 1;
+    for (int i = 0; i < string.length; i++) {
+        if (string.data[i] == delimiter || i == string.length - 1) {
+            count++;
+        }
+    }
+    StringView* strings = strings_memory_alloc(count * sizeof(StringView));
+    if (!strings) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
+        return nullptr;
+    }
+    int index = 0;
+    for (int i = 0, start = 0; i <= string.length; i++) {
+        if (string.data[i] == delimiter || i == string.length) {
+            strings[index++] = (StringView) {
+                .data = string.data + start,
+                .length = i - start
+            };
+            start = i + 1;
+        }
+    }
+    strings[index] = string_null();
+    return strings;
+}
+
+StringView* string_lines(String string) {
+    return string_split(string, '\n');
+}
+
 StringOwned string_to_uppercase(String string) {
     if (require_non_null(string.data)) return string_null();
 

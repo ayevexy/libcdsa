@@ -333,6 +333,52 @@ void test_string_concat() {
     string_destroy(&hello_world);
 }
 
+void test_string_split() {
+    // given
+    StringView string = string_view("Hello World !!!");
+    // when
+    StringView* strings = string_split(string, ' ');
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
+    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
+    // and
+    TEST_ASSERT_EQUAL_STRING_LEN("World", strings[1].data, strings[1].length);
+    TEST_ASSERT_EQUAL(strlen("World"), strings[1].length);
+    // and
+    TEST_ASSERT_EQUAL_STRING_LEN("!!!", strings[2].data, strings[2].length);
+    TEST_ASSERT_EQUAL(strlen("!!!"), strings[2].length);
+    // and
+    TEST_ASSERT_NULL(strings[3].data);
+    // clean up
+    strings_memory_dealloc(strings);
+}
+
+void test_string_split_single_word() {
+    // given
+    StringView string = string_view("Hello");
+    // when
+    StringView* strings = string_split(string, ' ');
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
+    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
+    // and
+    TEST_ASSERT_NULL(strings[1].data);
+    // clean up
+    strings_memory_dealloc(strings);
+}
+
+void test_string_split_empty() {
+    // given
+    StringView string = string_view("");
+    // when
+    StringView* strings = string_split(string, ' ');
+    // then
+    TEST_ASSERT_EQUAL_STRING_LEN("", strings[0].data, strings[0].length);
+    TEST_ASSERT_NULL(strings[1].data);
+    // clean up
+    strings_memory_dealloc(strings);
+}
+
 void test_string_to_uppercase() {
     // given
     StringView string = string_view("Hello World!");
@@ -347,7 +393,6 @@ void test_string_to_uppercase() {
 void test_string_to_lowercase() {
     // given
     StringView string = string_view("Hello World!");
-    printf("%s\n", string.data);
     // when
     StringOwned lowercase = string_to_lowercase(string);
     // then
@@ -391,6 +436,9 @@ int main(void) {
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
     RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
+    RUN_TEST(test_string_split);
+    RUN_TEST(test_string_split_single_word);
+    RUN_TEST(test_string_split_empty);
     RUN_TEST(test_string_to_uppercase);
     RUN_TEST(test_string_to_lowercase);
     return UNITY_END();

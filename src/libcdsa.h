@@ -78,4 +78,7 @@
 /** @brief Mathematical set operations */
 #include "util/sets.h"
 
+/** @brief String implementation */
+#include "util/string.h"
+
 #endif

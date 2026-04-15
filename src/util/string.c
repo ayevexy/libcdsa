@@ -222,7 +222,8 @@ StringOwned string_concat(String string, String other_string) {
         return string_null();
     }
     memcpy(data, string.data, string.length);
-    memcpy(data + string.length, other_string.data, other_string.length + NULL_TERMINATOR);
+    memcpy(data + string.length, other_string.data, other_string.length);
+    data[length + NULL_TERMINATOR] = '\0';
     return (StringOwned) { .data = data, .length = length };
 }
 

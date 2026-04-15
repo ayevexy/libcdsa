@@ -311,15 +311,6 @@ void test_string_substring_start_index_greater_than_length_fails() {
     substring_index_out_of_bounds_test_helper(30, 3);
 }
 
-void test_string_clone() {
-    // given
-    StringView string = string_view("Hello World!");
-    // when
-    StringView copy_string = string_clone(string);
-    // then
-    TEST_ASSERT_TRUE(string_equals(string, copy_string));
-}
-
 void test_string_concat() {
     // given
     StringView hello = string_view("Hello ");
@@ -485,7 +476,6 @@ int main(void) {
     RUN_TEST(test_string_substring_length_less_than_zero_fails);
     RUN_TEST(test_string_substring_negative_start_index_fails);
     RUN_TEST(test_string_substring_start_index_greater_than_length_fails);
-    RUN_TEST(test_string_clone);
     RUN_TEST(test_string_concat);
     RUN_TEST(test_string_replace_char);
     RUN_TEST(test_string_replace_substring);

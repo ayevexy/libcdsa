@@ -211,12 +211,6 @@ StringView string_substring(String string, int start, int length) {
     return (StringView) { .data = string.data + start, .length = new_length };
 }
 
-StringView string_clone(String string) {
-    if (require_non_null(string.data)) return string_null();
-
-    return (StringView) { .data = string.data, .length = string.length };
-}
-
 StringOwned string_concat(String string, String other_string) {
     if (require_non_null(string.data, other_string.data)) return string_null();
 

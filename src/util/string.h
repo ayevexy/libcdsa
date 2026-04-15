@@ -325,17 +325,6 @@ StringView string_trim_end(String string);
 StringView string_substring(String string, int start, int length);
 
 /**
- * @brief Creates a shallow copy of the string.
- *
- * @param string the string
- *
- * @return a string view
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- */
-StringView string_clone(String string);
-
-/**
  * @brief Concatenates two strings into a new allocated string.
  *
  * @param string first string

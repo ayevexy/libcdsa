@@ -23,10 +23,9 @@ struct TreeMap {
     Entry* root;
     Entry* sentinel;
     int size;
-    Comparator compare_keys;
     struct {
         void (*key_destruct)(void*);
-        bool (*key_equals)(const void*, const void*);
+        int (*key_compare)(const void*, const void*);
         int (*key_to_string)(const void*, char*, size_t);
     };
     struct {
@@ -105,9 +104,9 @@ static bool value_collection_contains_internal(const void*, const void*);
 
 TreeMap* tree_map_new(const TreeMapOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (!options->compare_keys || !options->key_destruct || !options->key_equals
-        || !options->key_to_string || !options->value_destruct || !options->value_equals
-        || !options->value_to_string || !options->memory_alloc || !options->memory_dealloc
+    if (!options->key_destruct || !options->key_compare || !options->key_to_string
+        || !options->value_destruct || !options->value_equals || !options->value_to_string
+        || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -129,9 +128,8 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
     tree_map->root = sentinel;
     tree_map->sentinel = sentinel;
     tree_map->size = 0;
-    tree_map->compare_keys = options->compare_keys;
     tree_map->key_destruct = options->key_destruct;
-    tree_map->key_equals = options->key_equals;
+    tree_map->key_compare = options->key_compare;
     tree_map->key_to_string = options->key_to_string;
     tree_map->value_destruct = options->value_destruct;
     tree_map->value_equals = options->value_equals;
@@ -224,7 +222,7 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
     if (require_non_null(tree_map)) return nullptr;
     Entry* current = tree_map->root, * previous = tree_map->sentinel;
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         previous = current;
         if (result < 0) {
             current = current->left;
@@ -251,7 +249,7 @@ void* tree_map_put(TreeMap* tree_map, const void* key, const void* value) {
         tree_map->root = entry;
     } else {
         entry->color = RED;
-        if (tree_map->compare_keys(key, current->key) < 0) {
+        if (tree_map->key_compare(key, current->key) < 0) {
             current->left = entry;
         } else {
             current->right = entry;
@@ -434,8 +432,8 @@ bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
     Entry* other_entry = get_lower_entry(other_tree_map, other_tree_map->root);
 
     while (entry != tree_map->sentinel && other_entry != tree_map->sentinel) {
-        if (!(tree_map->key_equals(other_entry->key, entry->key)
-            && tree_map->value_equals(entry->value, other_entry->value))
+        if (tree_map->key_compare(other_entry->key, entry->key) != 0
+            && !tree_map->value_equals(entry->value, other_entry->value)
         ) {
             return false;
         }
@@ -467,7 +465,7 @@ MapEntry tree_map_higher(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root, * candidate = tree_map->sentinel;
 
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         if (result < 0) {
             candidate = current;
             current = current->left;
@@ -483,7 +481,7 @@ MapEntry tree_map_ceiling(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root, * candidate = tree_map->sentinel;
 
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         if (result <= 0) {
             candidate = current;
             current = current->left;
@@ -499,7 +497,7 @@ MapEntry tree_map_floor(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root, * candidate = tree_map->sentinel;
 
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         if (result >= 0) {
             candidate = current;
             current = current->right;
@@ -515,7 +513,7 @@ MapEntry tree_map_lower(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root, * candidate = tree_map->sentinel;
 
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         if (result > 0) {
             candidate = current;
             current = current->right;
@@ -624,7 +622,7 @@ TreeMap* tree_map_clone(const TreeMap* tree_map) {
 TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const void* end_key) {
     if (require_non_null(tree_map)) return nullptr;
     if (!tree_map_contains_key(tree_map, start_key) || !tree_map_contains_key(tree_map, end_key)
-        || tree_map->compare_keys(start_key, end_key) > 0
+        || tree_map->key_compare(start_key, end_key) > 0
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'start_key' or 'end_key' are inexistent or 'start_key' is greater than 'end_key'");
         return nullptr;
@@ -635,7 +633,7 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
         return nullptr;
     }
     Entry* entry = get_entry(tree_map, start_key);
-    while (entry != tree_map->sentinel && !tree_map->key_equals(entry->key, end_key)) {
+    while (entry != tree_map->sentinel && tree_map->key_compare(entry->key, end_key) != 0) {
         tree_map_put(new_tree_map, entry->key, entry->value);
         entry = get_successor_entry(tree_map, entry);
     }
@@ -709,9 +707,8 @@ static TreeMap* create_tree_map_like(const TreeMap* tree_map) {
     TreeMap* new_tree_map; Error error;
 
     if ((error = attempt(new_tree_map = tree_map_new(&(TreeMapOptions) {
-       .compare_keys = tree_map->compare_keys,
        .key_destruct = noop_destruct,
-       .key_equals = tree_map->key_equals,
+       .key_compare = tree_map->key_compare,
        .key_to_string = tree_map->key_to_string,
        .value_destruct = noop_destruct,
        .value_equals = tree_map->value_equals,
@@ -740,7 +737,7 @@ static Entry* create_entry(const TreeMap* tree_map, const void* key, const void*
 static Entry* get_entry(const TreeMap* tree_map, const void* key) {
     Entry* current = tree_map->root;
     while (current != tree_map->sentinel) {
-        const int result = tree_map->compare_keys(key, current->key);
+        const int result = tree_map->key_compare(key, current->key);
         if (result < 0) {
             current = current->left;
         } else if (result > 0) {

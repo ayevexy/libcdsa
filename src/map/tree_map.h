@@ -20,9 +20,8 @@
  * The TreeMap type is opaque and can only be modified through the public API.
  *
  * A tree map must be configured using a TreeMapOptions structure specifying:
- * - the key comparator function
  * - the destruct function used to free key memory
- * - the equality function used to compare keys
+ * - the comparator function used to compare keys
  * - the to_string function used to convert keys to strings
  * - the destruct function used to free value memory
  * - the equality function used to compare values
@@ -66,9 +65,8 @@ typedef struct TreeMap TreeMap;
 /**
  * TreeMap configuration structure. Defines the behavior and attributes of a tree map.
  *
- * @pre compare_keys != nullptr
  * @pre key_destruct != nullptr
- * @pre key_equals != nullptr
+ * @pre key_compare != nullptr
  * @pre key_to_string != nullptr
  * @pre value_destruct != nullptr
  * @pre value_equals != nullptr
@@ -77,10 +75,9 @@ typedef struct TreeMap TreeMap;
  * @pre memory_dealloc != nullptr
  */
 typedef struct {
-    Comparator compare_keys;
     struct {
         void (*key_destruct)(void*);
-        bool (*key_equals)(const void*, const void*);
+        int (*key_compare)(const void*, const void*);
         int (*key_to_string)(const void*, char*, size_t);
     };
     struct {
@@ -100,9 +97,8 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_TREE_MAP_OPTIONS(...) &(TreeMapOptions) {   \
-    .compare_keys = pointer_compare,                        \
     .key_destruct = noop_destruct,                          \
-    .key_equals = pointer_equals,                           \
+    .key_compare = pointer_compare,                         \
     .key_to_string = pointer_to_string,                     \
     .value_destruct = noop_destruct,                        \
     .value_equals = pointer_equals,                         \

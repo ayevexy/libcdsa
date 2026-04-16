@@ -185,8 +185,8 @@ void test_string_index_of_char() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    int index = string_index_of_char(string, 'l');
-    int not_found = string_index_of_char(string, '9');
+    int index = string_index_of(string, 'l');
+    int not_found = string_index_of(string, '9');
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -196,8 +196,8 @@ void test_string_last_index_of_char() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    int index = string_last_index_of_char(string, 'l');
-    int not_found = string_last_index_of_char(string, '9');
+    int index = string_last_index_of(string, 'l');
+    int not_found = string_last_index_of(string, '9');
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -207,8 +207,8 @@ void test_string_index_of_substring() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    int index = string_index_of_substring(string, string_view("ll"));
-    int not_found = string_index_of_substring(string, string_view("aaa"));
+    int index = string_index_of(string, string_view("ll"));
+    int not_found = string_index_of(string, string_view("aaa"));
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -218,8 +218,8 @@ void test_string_last_index_of_substring() {
     // given
     StringView string = string_view("Hello Worlld!");
     // when
-    int index = string_last_index_of_substring(string, string_view("ll"));
-    int not_found = string_last_index_of_substring(string, string_view("aaa"));
+    int index = string_last_index_of(string, string_view("ll"));
+    int not_found = string_last_index_of(string, string_view("aaa"));
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -328,7 +328,7 @@ void test_string_replace_char() {
     // given
     StringView hello = string_view("Hello World!");
     // when
-    StringOwned replaced = string_replace_char(hello, 'o', '0');
+    StringOwned replaced = string_replace(hello, 'o', '0');
     // then
     TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced.data);
 }
@@ -337,7 +337,7 @@ void test_string_replace_substring() {
     // given
     StringView hello = string_view("Hello Worlld!");
     // when
-    StringOwned replaced = string_replace_substring(hello, string_view("ll"), string_view("123"));
+    StringOwned replaced = string_replace(hello, string_view("ll"), string_view("123"));
     // then
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced.data);
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced.length);

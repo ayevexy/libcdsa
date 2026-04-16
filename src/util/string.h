@@ -194,6 +194,32 @@ bool string_equals(String string, String other_string);
 bool string_equals_ignore_case(String string, String other_string);
 
 /**
+ * @brief Retrieves the index of the first occurrence of the specified character or substring in the string.
+ *
+ * @param string the string
+ * @param needle a character or substring to search
+ *
+ * @return the character or substring first index, or -1 if not present
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ */
+#define string_index_of(string, needle) \
+    _Generic((needle), String: string_index_of_substring, default: string_index_of_char)(string, needle)
+
+/**
+ * @brief Retrieves the index of the last occurrence of the specified character or substring in the string.
+ *
+ * @param string the string
+ * @param needle a character or substring to search
+ *
+ * @return the character or substring last index, or -1 if not present
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ */
+#define string_last_index_of(string, needle) \
+    _Generic((needle), String: string_last_index_of_substring, default: string_last_index_of_char)(string, needle)
+
+/**
  * @brief Retrieves the index of the first occurrence of the specified character in the string.
  *
  * @param string the string
@@ -336,6 +362,21 @@ StringView string_substring(String string, int start, int length);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 StringOwned string_concat(String string, String other_string);
+
+/**
+ * Replaces all occurrences of a character or substring in the string with a new one.
+ *
+ * @param string the string
+ * @param target the target character or substring
+ * @param replacement the replacement character or substring
+ *
+ * @return a new allocated string
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+#define string_replace(string, target, replacement)  \
+    _Generic((target), String: string_replace_substring, default: string_replace_char)(string, target, replacement)
 
 /**
  * Replaces all occurrences of a character in the string with a new one.

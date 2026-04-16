@@ -96,7 +96,7 @@ typedef struct {
 #define DEFAULT_PRIORITY_QUEUE_OPTIONS(...) &(PriorityQueueOptions) {   \
     .initial_capacity = 10,                                             \
     .growth_factor = 2.0f,                                              \
-    .compare = compare_pointers,                                        \
+    .compare = pointer_compare,                                         \
     .destruct = noop_destruct,                                          \
     .equals = pointer_equals,                                           \
     .to_string = pointer_to_string,                                     \

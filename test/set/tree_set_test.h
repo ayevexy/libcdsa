@@ -4,7 +4,7 @@
 #include "../test_utilities.h"
 
 #define INT_TREE_SET_OPTIONS() DEFAULT_TREE_SET_OPTIONS(    \
-    .compare = compare_int_pointers_value,                  \
+    .compare = int_pointer_value_compare,                   \
     .equals = int_pointer_value_equals,                     \
     .to_string = int_pointer_value_to_string                \
 )

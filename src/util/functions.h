@@ -82,7 +82,7 @@ static inline bool pointer_equals(const void* a, const void* b) {
  *
  * @return negative if a < b, 0 if a == b, positive if a > b
  */
-static inline int compare_pointers(const void* a, const void* b) {
+static inline int pointer_compare(const void* a, const void* b) {
     return ((uintptr_t) a > (uintptr_t) b) - ((uintptr_t) a < (uintptr_t) b);
 }
 

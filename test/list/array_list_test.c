@@ -891,7 +891,7 @@ static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
     int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    array_list_sort(array_list, compare_int_pointers_value, sorting_algorithm);
+    array_list_sort(array_list, int_pointer_value_compare, sorting_algorithm);
     // then
     int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sorted_values, array_list);
@@ -1220,7 +1220,7 @@ void test_binary_search_element_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){9}, compare_int_pointers_value);
+    int index = array_list_binary_search(array_list, &(int){9}, int_pointer_value_compare);
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
@@ -1230,7 +1230,7 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){42}, compare_int_pointers_value);
+    int index = array_list_binary_search(array_list, &(int){42}, int_pointer_value_compare);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

@@ -4,7 +4,7 @@
 #include "../test_utilities.h"
 
 #define CHAR_INT_TREE_MAP_OPTIONS() DEFAULT_TREE_MAP_OPTIONS(   \
-    .compare_keys = compare_char_pointers_value,                \
+    .compare_keys = char_pointer_value_compare,                 \
     .key_equals = char_pointer_value_equals,                    \
     .key_to_string = char_pointer_value_to_string,              \
     .value_equals = int_pointer_value_equals,                   \

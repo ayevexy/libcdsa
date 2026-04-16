@@ -832,7 +832,7 @@ static void sort_linked_list_test_helper(SortingAlgorithm sorting_algorithm) {
     int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    linked_list_sort(linked_list, compare_int_pointers_value, sorting_algorithm);
+    linked_list_sort(linked_list, int_pointer_value_compare, sorting_algorithm);
     // then
     int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(sorted_values, linked_list);

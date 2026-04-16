@@ -100,7 +100,7 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_TREE_MAP_OPTIONS(...) &(TreeMapOptions) {   \
-    .compare_keys = compare_pointers,                       \
+    .compare_keys = pointer_compare,                        \
     .key_destruct = noop_destruct,                          \
     .key_equals = pointer_equals,                           \
     .key_to_string = pointer_to_string,                     \

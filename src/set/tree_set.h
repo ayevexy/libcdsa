@@ -84,7 +84,7 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_TREE_SET_OPTIONS(...) &(TreeSetOptions) {   \
-    .compare = compare_pointers,                            \
+    .compare = pointer_compare,                             \
     .destruct = noop_destruct,                              \
     .equals = pointer_equals,                               \
     .to_string = pointer_to_string,                         \

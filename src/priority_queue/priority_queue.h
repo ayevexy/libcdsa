@@ -22,9 +22,8 @@
  * A priority queue must be configured using a PriorityQueueOptions structure specifying:
  * - the initial capacity
  * - the growth factor
- * - the element comparator function
  * - the destruct function used to free element memory
- * - the equality function used to compare elements
+ * - the comparator function used to compare elements
  * - the to_string function used to convert elements to strings
  * - the memory allocation function
  * - the memory deallocation function
@@ -66,9 +65,8 @@ typedef struct PriorityQueue PriorityQueue;
  * @pre initial_capacity >= 10
  * @pre initial_capacity <= 1'073'741'824
  * @pre growth_factor >= 1.10
- * @pre compare != nullptr
  * @pre destruct != nullptr
- * @pre equals != nullptr
+ * @pre compare != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
  * @pre memory_dealloc != nullptr
@@ -76,10 +74,9 @@ typedef struct PriorityQueue PriorityQueue;
 typedef struct {
     int initial_capacity;
     float growth_factor;
-    Comparator compare;
     struct {
         void (*destruct)(void*);
-        bool (*equals)(const void*, const void*);
+        int (*compare)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
     };
     struct {
@@ -96,9 +93,8 @@ typedef struct {
 #define DEFAULT_PRIORITY_QUEUE_OPTIONS(...) &(PriorityQueueOptions) {   \
     .initial_capacity = 10,                                             \
     .growth_factor = 2.0f,                                              \
-    .compare = pointer_compare,                                         \
     .destruct = noop_destruct,                                          \
-    .equals = pointer_equals,                                           \
+    .compare = pointer_compare,                                         \
     .to_string = pointer_to_string,                                     \
     .memory_alloc = malloc,                                             \
     .memory_dealloc = free,                                             \

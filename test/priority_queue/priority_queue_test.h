@@ -5,7 +5,6 @@
 
 #define INT_PRIORITY_QUEUE_OPTIONS() DEFAULT_PRIORITY_QUEUE_OPTIONS(    \
     .compare = int_pointer_value_compare,                               \
-    .equals = int_pointer_value_equals,                                 \
     .to_string = int_pointer_value_to_string                            \
 )
 

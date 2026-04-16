@@ -13,10 +13,9 @@ struct PriorityQueue {
     int size;
     int capacity;
     float growth_factor;
-    Comparator compare;
     struct {
         void (*destruct)(void*);
-        bool (*equals)(const void*, const void*);
+        int (*compare)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
     };
     struct {
@@ -61,7 +60,7 @@ static bool collection_contains_internal(const void*, const void*);
 PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->equals
+        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->compare
         || !options->to_string || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
@@ -81,9 +80,8 @@ PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     priority_queue->size = 0;
     priority_queue->capacity = options->initial_capacity;
     priority_queue->growth_factor = options->growth_factor;
-    priority_queue->compare = options->compare;
     priority_queue->destruct = options->destruct;
-    priority_queue->equals = options->equals;
+    priority_queue->compare = options->compare;
     priority_queue->to_string = options->to_string;
     priority_queue->memory_alloc = options->memory_alloc;
     priority_queue->memory_dealloc = options->memory_dealloc;
@@ -219,7 +217,7 @@ bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQu
         return false;
     }
     for (int i = 0; i < priority_queue->size; i++) {
-        if (!priority_queue->equals(priority_queue->elements[i], other_priority_queue->elements[i])) {
+        if (priority_queue->compare(priority_queue->elements[i], other_priority_queue->elements[i]) != 0) {
             return false;
         }
     }
@@ -246,7 +244,7 @@ void priority_queue_clear(PriorityQueue* priority_queue) {
 bool priority_queue_contains(const PriorityQueue* priority_queue, const void* element) {
     if (require_non_null(priority_queue)) return false;
     for (int i = 0; i < priority_queue->size; i++) {
-        if (priority_queue->equals(priority_queue->elements[i], element)) {
+        if (priority_queue->compare(priority_queue->elements[i], element) == 0) {
             return true;
         }
     }
@@ -280,9 +278,8 @@ PriorityQueue* priority_queue_clone(const PriorityQueue* priority_queue) {
     if ((error = attempt(new_priority_queue = priority_queue_new(&(PriorityQueueOptions) {
         .initial_capacity = priority_queue->capacity,
         .growth_factor = priority_queue->growth_factor,
-        .compare = priority_queue->compare,
         .destruct = noop_destruct,
-        .equals = priority_queue->equals,
+        .compare = priority_queue->compare,
         .to_string = priority_queue->to_string,
         .memory_alloc = priority_queue->memory_alloc,
         .memory_dealloc = priority_queue->memory_dealloc

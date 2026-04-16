@@ -18,9 +18,8 @@
  * The TreeSet type is opaque and can only be modified through the public API.
  *
  * A tree set must be configured using a TreeSetOptions structure specifying:
- * - the element comparator function
  * - the destruct function used to free element memory
- * - the equality function used to compare elements
+ * - the comparator function used to compare elements
  * - the to_string function used to convert elements to strings
  * - the memory allocation function
  * - the memory deallocation function
@@ -58,18 +57,16 @@ typedef struct TreeSet TreeSet;
 /**
  * TreeSet configuration structure. Defines the behavior and attributes of a tree set.
  *
- * @pre compare != nullptr
  * @pre destruct != nullptr
- * @pre equals != nullptr
+ * @pre compare != nullptr
  * @pre to_string != nullptr
  * @pre memory_alloc != nullptr
  * @pre memory_dealloc != nullptr
  */
 typedef struct {
-    Comparator compare;
     struct {
         void (*destruct)(void*);
-        bool (*equals)(const void*, const void*);
+        int (*compare)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
     };
     struct {
@@ -84,9 +81,8 @@ typedef struct {
  * @param ... optional field overrides
  */
 #define DEFAULT_TREE_SET_OPTIONS(...) &(TreeSetOptions) {   \
-    .compare = pointer_compare,                             \
     .destruct = noop_destruct,                              \
-    .equals = pointer_equals,                               \
+    .compare = pointer_compare,                             \
     .to_string = pointer_to_string,                         \
     .memory_alloc = malloc,                                 \
     .memory_dealloc = free,                                 \

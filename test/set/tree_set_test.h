@@ -5,7 +5,6 @@
 
 #define INT_TREE_SET_OPTIONS() DEFAULT_TREE_SET_OPTIONS(    \
     .compare = int_pointer_value_compare,                   \
-    .equals = int_pointer_value_equals,                     \
     .to_string = int_pointer_value_to_string                \
 )
 

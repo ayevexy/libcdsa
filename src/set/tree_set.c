@@ -21,10 +21,9 @@ struct TreeSet {
     Node* root;
     Node* sentinel;
     int size;
-    Comparator compare;
     struct {
         void (*destruct)(void*);
-        bool (*equals)(const void*, const void*);
+        int (*compare)(const void*, const void*);
         int (*to_string)(const void*, char*, size_t);
     };
     struct {
@@ -97,8 +96,8 @@ static bool set_view_contains_internal(const void*, const void*);
 
 TreeSet* tree_set_new(const TreeSetOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (!options->compare || !options->destruct || !options->equals
-        || !options->to_string || !options->memory_alloc || !options->memory_dealloc
+    if (!options->destruct || !options->compare || !options->to_string
+        || !options->memory_alloc || !options->memory_dealloc
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
@@ -120,9 +119,8 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
     tree_set->root = sentinel;
     tree_set->sentinel = sentinel;
     tree_set->size = 0;
-    tree_set->compare = options->compare;
     tree_set->destruct = options->destruct;
-    tree_set->equals = options->equals;
+    tree_set->compare = options->compare;
     tree_set->to_string = options->to_string;
     tree_set->memory_alloc = options->memory_alloc;
     tree_set->memory_dealloc = options->memory_dealloc;
@@ -363,7 +361,7 @@ bool tree_set_equals(const TreeSet* tree_set, const TreeSet* other_tree_set) {
     Node* other_node = get_lower_node(other_tree_set, other_tree_set->root);
 
     while (node != tree_set->sentinel && other_node != tree_set->sentinel) {
-        if (!(tree_set->equals(other_node->element, node->element))) {
+        if (tree_set->compare(other_node->element, node->element) != 0) {
             return false;
         }
         node = get_successor_node(tree_set, node);
@@ -534,7 +532,7 @@ TreeSet* tree_set_sub_set(const TreeSet* tree_set, const void* start_element, co
         return nullptr;
     }
     Node* node = get_node(tree_set, start_element);
-    while (node != tree_set->sentinel && !tree_set->equals(end_element, node->element)) {
+    while (node != tree_set->sentinel && tree_set->compare(end_element, node->element) != 0) {
         tree_set_add(new_tree_set, node->element);
         node = get_successor_node(tree_set, node);
     }
@@ -628,9 +626,8 @@ static TreeSet* create_tree_set_like(const TreeSet* tree_set) {
     TreeSet* new_tree_set; Error error;
 
     if ((error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
-       .compare = tree_set->compare,
        .destruct = noop_destruct,
-       .equals = tree_set->equals,
+       .compare = tree_set->compare,
        .to_string = tree_set->to_string,
        .memory_alloc = tree_set->memory_alloc,
        .memory_dealloc = tree_set->memory_dealloc

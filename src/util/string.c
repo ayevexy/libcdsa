@@ -84,6 +84,15 @@ bool string_is_blank(String string) {
     return true;
 }
 
+uint64_t string_hash(const void* raw_string) {
+    const char* string = raw_string;
+    uint64_t hash = 5381;
+    for (int c = *string; c != '\0'; c = *++string) {
+        hash = hash * 33 + c;
+    }
+    return hash;
+}
+
 int string_compare(String string, String other_string) {
     if (require_non_null(string.data, other_string.data)) return 0;
 

@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_STRING_H
 #define LIBCDSA_STRING_H
 
+#include <stdint.h>
 #include <stddef.h>
 
 /**
@@ -144,6 +145,15 @@ bool string_is_empty(String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  */
 bool string_is_blank(String string);
+
+/**
+ * @brief Calculate a hash value of a string.
+ *
+ * @param raw_string the string
+ *
+ * @return the hashed value
+ */
+uint64_t string_hash(const void* raw_string);
 
 /**
  * @brief Compares two strings lexicographically.

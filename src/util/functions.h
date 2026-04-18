@@ -38,31 +38,6 @@ static inline uint64_t pointer_hash(const void* pointer) {
 }
 
 /**
- * @brief Calculate a hash value of a string.
- *
- * @param raw_string the string
- *
- * @return the hashed value
- */
-static inline uint64_t string_hash(const void* raw_string) {
-    const char* string = raw_string;
-    uint64_t hash = 5381;
-    for (int c = *string; c != '\0'; c = *++string) {
-        hash = hash * 33 + c;
-    }
-    return hash;
-}
-
-/**
- * @brief No Operation destruct function.
- *
- * @param element the element to be ignored
- */
-static inline void noop_destruct(void* element) {
-    (void) element;
-}
-
-/**
  * @brief Check if two pointers are equal.
  *
  * @param a first pointer
@@ -97,6 +72,15 @@ static inline int pointer_compare(const void* a, const void* b) {
  */
 static inline int pointer_to_string(const void* value, char* buffer, size_t size) {
     return snprintf(buffer, size, "%p", value);
+}
+
+/**
+ * @brief No Operation destruct function.
+ *
+ * @param element the element to be ignored
+ */
+static inline void noop_destruct(void* element) {
+    (void) element;
 }
 
 #endif

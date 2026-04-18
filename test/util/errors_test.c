@@ -68,7 +68,7 @@ static int arithmetic_mean(int values[], int count) {
 
 void test_nested_attempt_on_fail_catch_error() {
     // given
-    int result; Error error = attempt(result = arithmetic_mean((int[]){}, 0));
+    int result; Error error = attempt(result = arithmetic_mean((int[]){1}, 0));
     // then
     TEST_ASSERT_EQUAL(result, -1);
     TEST_ASSERT_EQUAL(error, ARITHMETIC_ERROR);

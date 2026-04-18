@@ -234,7 +234,7 @@ StringOwned string_concat(String string, String other_string) {
     }
     memcpy(data, string.data, string.length);
     memcpy(data + string.length, other_string.data, other_string.length);
-    data[length + NULL_TERMINATOR] = '\0';
+    data[length] = '\0';
     return (StringOwned) { .data = data, .length = length };
 }
 
@@ -246,13 +246,14 @@ StringOwned string_replace_char(String string, char character, char replacement)
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return string_null();
     }
-    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+    for (int i = 0; i < string.length; i++) {
         if (string.data[i] == character) {
             data[i] = replacement;
         } else {
             data[i] = string.data[i];
         }
     }
+    data[string.length] = '\0';
     return (StringOwned) { .data = data, .length = string.length };
 }
 
@@ -356,11 +357,11 @@ StringView* string_split(String string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;
     for (int i = 0; i < string.length; i++) {
-        if (string.data[i] == delimiter || i == string.length - 1) {
+        if (string.data[i] == delimiter) {
             count++;
         }
     }
-    StringView* strings = strings_memory_alloc(count * sizeof(StringView));
+    StringView* strings = strings_memory_alloc((count + 1) * sizeof(StringView));
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;
@@ -391,7 +392,7 @@ StringOwned string_to_uppercase(String string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return string_null();
     }
-    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+    for (int i = 0; i < string.length; i++) {
         data[i] = toupper(string.data[i]);
     }
     return (StringOwned) { .data = data, .length = string.length };
@@ -405,7 +406,7 @@ StringOwned string_to_lowercase(String string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return string_null();
     }
-    for (int i = 0; i < string.length + NULL_TERMINATOR; i++) {
+    for (int i = 0; i < string.length; i++) {
         data[i] = tolower(string.data[i]);
     }
     return (StringOwned) { .data = data, .length = string.length };

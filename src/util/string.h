@@ -498,4 +498,41 @@ StringOwned string_to_uppercase(String string);
  */
 StringOwned string_to_lowercase(String string);
 
+/**
+ * @brief Converts a primitive value to its string representation.
+ *
+ * @param value the value
+ *
+ * @return a new allocated string
+ */
+#define string_value_of(value) _Generic((value),        \
+    bool: _string_value_of_bool,                        \
+    char: _string_value_of_char,                        \
+    signed char: _string_value_of_int,                  \
+    unsigned char: _string_value_of_uint,               \
+    short: _string_value_of_int,                        \
+    unsigned short: _string_value_of_uint,              \
+    int: _string_value_of_int,                          \
+    unsigned int: _string_value_of_uint,                \
+    long: _string_value_of_long,                        \
+    unsigned long: _string_value_of_ulong,              \
+    long long: _string_value_of_long_long,              \
+    unsigned long long: _string_value_of_ulong_long,    \
+    float: _string_value_of_float,                      \
+    double: _string_value_of_double,                    \
+    long double: _string_value_of_long_double           \
+)(value)
+
+StringOwned _string_value_of_bool(bool value);
+StringOwned _string_value_of_char(char value);
+StringOwned _string_value_of_int(int value);
+StringOwned _string_value_of_uint(unsigned int value);
+StringOwned _string_value_of_long(long value);
+StringOwned _string_value_of_ulong(unsigned long value);
+StringOwned _string_value_of_long_long(long long value);
+StringOwned _string_value_of_ulong_long(unsigned long long value);
+StringOwned _string_value_of_float(float value);
+StringOwned _string_value_of_double(double value);
+StringOwned _string_value_of_long_double(long double value);
+
 #endif

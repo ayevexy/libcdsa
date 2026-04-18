@@ -411,3 +411,37 @@ StringOwned string_to_lowercase(String string) {
     }
     return (StringOwned) { .data = data, .length = string.length };
 }
+
+#define DEFINE_STRING_VALUE_OF(func_name, type, format)                             \
+    StringOwned func_name(type value) {                                             \
+        const int length = snprintf(nullptr, 0, format, value) + NULL_TERMINATOR;   \
+        char data[length];                                                          \
+        snprintf(data, length, format, value);                                      \
+        return string_new(data);                                                    \
+    }
+
+StringOwned _string_value_of_bool(bool value) {
+    return string_new(value ? "true" : "false");
+}
+
+DEFINE_STRING_VALUE_OF(_string_value_of_char, char, "%c")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_int, int, "%d")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_uint, unsigned int, "%u")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_long, long, "%ld")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_ulong, unsigned long, "%lu")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_long_long, long long, "%lld")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_ulong_long, unsigned long long, "%llu")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_float, float, "%f")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_double, double, "%f")
+
+DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
+
+#undef DEFINE_STRING_VALUE_OF

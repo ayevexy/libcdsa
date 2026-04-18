@@ -443,6 +443,22 @@ void test_string_to_lowercase() {
     string_destroy(&lowercase);
 }
 
+void test_string_value_of() {
+    TEST_ASSERT_EQUAL_STRING("true", string_value_of(true).data);
+    TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((short) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned short) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((int) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned int) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long long) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long long) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((float) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((double) 10).data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10).data);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -487,5 +503,6 @@ int main(void) {
     RUN_TEST(test_string_split_empty);
     RUN_TEST(test_string_to_uppercase);
     RUN_TEST(test_string_to_lowercase);
+    RUN_TEST(test_string_value_of);
     return UNITY_END();
 }

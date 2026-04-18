@@ -214,7 +214,11 @@ bool string_equals_ignore_case(String string, String other_string);
  * @exception NULL_POINTER_ERROR if string.data is null
  */
 #define string_index_of(string, needle) \
-    _Generic((needle), String: string_index_of_substring, default: string_index_of_char)(string, needle)
+    _Generic((needle), String: _string_index_of_substring, default: _string_index_of_char)(string, needle)
+
+int _string_index_of_char(String string, char character);
+
+int _string_index_of_substring(String string, String substring);
 
 /**
  * @brief Retrieves the index of the last occurrence of the specified character or substring in the string.
@@ -227,55 +231,11 @@ bool string_equals_ignore_case(String string, String other_string);
  * @exception NULL_POINTER_ERROR if string.data is null
  */
 #define string_last_index_of(string, needle) \
-    _Generic((needle), String: string_last_index_of_substring, default: string_last_index_of_char)(string, needle)
+    _Generic((needle), String: _string_last_index_of_substring, default: _string_last_index_of_char)(string, needle)
 
-/**
- * @brief Retrieves the index of the first occurrence of the specified character in the string.
- *
- * @param string the string
- * @param character character to search
- *
- * @return the character first index, or -1 if not present
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- */
-int string_index_of_char(String string, char character);
+int _string_last_index_of_char(String string, char character);
 
-/**
- * @brief Retrieves the index of the last occurrence of the specified character in the string.
- *
- * @param string the string
- * @param character character to search
- *
- * @return the character last index, or -1 if not present
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- */
-int string_last_index_of_char(String string, char character);
-
-/**
- * @brief Retrieves the index of the first occurrence of the specified substring in the string.
- *
- * @param string the string
- * @param substring substring to search
- *
- * @return the substring first index, or -1 if not present
- *
- * @exception NULL_POINTER_ERROR if string.data || substring.data is null
- */
-int string_index_of_substring(String string, String substring);
-
-/**
- * @brief Retrieves the index of the last occurrence of the specified substring in the string.
- *
- * @param string the string
- * @param substring substring to search
- *
- * @return the substring last index, or -1 if not present
- *
- * @exception NULL_POINTER_ERROR if string.data || substring.data is null
- */
-int string_last_index_of_substring(String string, String substring);
+int _string_last_index_of_substring(String string, String substring);
 
 /**
  * @brief Checks whether a substring is present in the string.
@@ -386,35 +346,11 @@ StringOwned string_concat(String string, String other_string);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_replace(string, target, replacement)  \
-    _Generic((target), String: string_replace_substring, default: string_replace_char)(string, target, replacement)
+    _Generic((target), String: _string_replace_substring, default: _string_replace_char)(string, target, replacement)
 
-/**
- * Replaces all occurrences of a character in the string with a new one.
- *
- * @param string the string
- * @param character the target character
- * @param replacement the replacement character
- *
- * @return a new allocated string
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-StringOwned string_replace_char(String string, char character, char replacement);
+StringOwned _string_replace_char(String string, char character, char replacement);
 
-/**
- * Replaces all occurrences of a substring in the string with a new one.
- *
- * @param string the string
- * @param target the target substring
- * @param replacement the replacement substring
- *
- * @return a new allocated string
- *
- * @exception NULL_POINTER_ERROR if string.data || target.data || replacement.data is null
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-StringOwned string_replace_substring(String string, String target, String replacement);
+StringOwned _string_replace_substring(String string, String target, String replacement);
 
 /**
  * @brief Concatenates the same string n times.

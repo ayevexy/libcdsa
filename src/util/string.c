@@ -121,7 +121,7 @@ bool string_equals_ignore_case(String string, String other_string) {
     return string_compare_ignore_case(string, other_string) == 0;
 }
 
-int string_index_of_char(String string, char character) {
+int _string_index_of_char(String string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = 0; i < string.length; i++) {
@@ -130,7 +130,7 @@ int string_index_of_char(String string, char character) {
     return -1;
 }
 
-int string_last_index_of_char(String string, char character) {
+int _string_last_index_of_char(String string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = string.length - 1; i >= 0; i--) {
@@ -139,7 +139,7 @@ int string_last_index_of_char(String string, char character) {
     return -1;
 }
 
-int string_index_of_substring(String string, String substring) {
+int _string_index_of_substring(String string, String substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -153,7 +153,7 @@ int string_index_of_substring(String string, String substring) {
     return -1;
 }
 
-int string_last_index_of_substring(String string, String substring) {
+int _string_last_index_of_substring(String string, String substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -168,7 +168,7 @@ int string_last_index_of_substring(String string, String substring) {
 }
 
 bool string_contains(String string, String substring) {
-    return string_index_of_substring(string, substring) >= 0;
+    return _string_index_of_substring(string, substring) >= 0;
 }
 
 bool string_starts_with(String string, String prefix) {
@@ -238,7 +238,7 @@ StringOwned string_concat(String string, String other_string) {
     return (StringOwned) { .data = data, .length = length };
 }
 
-StringOwned string_replace_char(String string, char character, char replacement) {
+StringOwned _string_replace_char(String string, char character, char replacement) {
     if (require_non_null(string.data)) return string_null();
 
     char* data = strings_memory_alloc(string.length + NULL_TERMINATOR);
@@ -257,7 +257,7 @@ StringOwned string_replace_char(String string, char character, char replacement)
     return (StringOwned) { .data = data, .length = string.length };
 }
 
-StringOwned string_replace_substring(String string, String target, String replacement) {
+StringOwned _string_replace_substring(String string, String target, String replacement) {
     if (require_non_null(string.data, target.data, replacement.data)) return string_null();
     if (target.length == 0) return string_null();
 

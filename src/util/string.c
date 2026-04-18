@@ -56,7 +56,9 @@ StringOwned string_format(const char* format, ...) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return string_null();
     }
+    va_start(parameters, format);
     vsnprintf(data, length + NULL_TERMINATOR, format, parameters);
+    va_end(parameters);
 
     return (StringOwned) { .data = data, .length = length };
 }

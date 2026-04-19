@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.3]() — 2026-04-19
+
+A small update that refines the String API and brings other small changes.
+
+### ✨ Features
+- Added `index_of()`, `last_index_of()` and `replace()` operations to `util/string.h`.
+- Added `value_of()` operation to `util/string.h`.
+
+### ✏️ Changes
+- Removed redundant `clone()` operation from `util/string.h`.
+- Renamed `compare_pointers()` to `pointer_compare()` in `util/functions.h`.
+- Removed `key_equals` construct and renamed `compare_keys` to `key_compare` in `tree_map.h`.
+- Remove `equals` construct in favor of `compare` in `tree_set.h` and `priority_queue.h`.
+- Moved `string_hash()` operation from `util/functions.h` to `util/string.h`.
+- Prefix `index_of()`, `last_index_of()`, and `replace()` implementations with underscores and remove documentation.
+
+### 🪲 Bug Fixes
+- Add missing `util/string.h` include in `libcdsa.h` header file.
+- Ensure null-terminator is placed in result string from `concat()` operation of `util/string.h`.
+- Prevent heap corruption in `format()` of `util/string.h`.
+- Prevent buffer overflow and correct off-by-one errors in `concat()`, `replace_char()`, `split()`, `to_uppercase()` and `to_lower_case()` operations of `util/string.h`.
+
+---
+
 ## 🎉 [v1.0.0-beta.2]() — 2026-04-12
 
 This update introduces the new String API alongside with some bug fixes. Enjoy!

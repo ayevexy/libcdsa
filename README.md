@@ -81,7 +81,7 @@ This project is being built using the following technologies:
 
 ## Getting Started
 
-There are several ways of adding the library to your project, following is one recommended way:
+There are several ways of adding the library to your project:
 
 ### Prerequisites
 
@@ -109,6 +109,15 @@ Instead, if installed system-wide:
 find_package(libcdsa REQUIRED)
 
 target_link_libraries(your_project PRIVATE libcdsa::libcdsa)
+```
+
+The library is also distributed as a header/source pair files in [Releases](https://github.com/ayevexy/libcdsa/releases/latest). Just grab them:
+
+```
+your-project/
+  libcdsa.h
+  libcdsa.c
+  main.c
 ```
 
 ### Usage

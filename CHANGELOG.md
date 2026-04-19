@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.3.1]() — 2026-04-19
+
+A very tiny update that distributes the library as a header/source pair files.
+
+### 📚 Documentation
+- Document header/source pair installation in README.
+
+---
+
 ## 🎉 [v1.0.0-beta.3]() — 2026-04-19
 
 A small update that refines the String API and brings other small changes.

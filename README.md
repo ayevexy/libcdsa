@@ -340,7 +340,7 @@ If you look at the source code and the API, the differences will become clear.
 
 Absolutely. If you’ve used Java before, the API will feel familiar.
 Even if you haven’t, the design is straightforward and consistent across all data structures.
-The only tough part would be installing it, which requires CMake and some steps—unless you write a simple installation script yourself.
+The only tough part would be installing it, which requires CMake and some steps—unless you grab the header/source pair files instead.
 
 - **Is it ready for production?**
 

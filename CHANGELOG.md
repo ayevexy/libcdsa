@@ -78,9 +78,9 @@ Another incremental change to the beta, this release brings a few new features a
 
 ### ✏️ Changes
 - Removed all data structures includes from `for_each.h`. Now to work, it should be placed last,
-  after all data structures includes in the client code unless the `libcda.h` header is being used instead.
+  after all data structures includes in the client code unless the `libcdsa.h` header is being used instead.
 - Removed both `hash_set.h` and `tree_map.h` includes from `sets.h`. Now to work, it should be placed last,
-  after both `hash_set.h` or `tree_map.h` includes in the client code unless the `libcda.h` header is being used instead.
+  after both `hash_set.h` or `tree_map.h` includes in the client code unless the `libcdsa.h` header is being used instead.
 - Moved `sets.h` from `set/` to `util/` module since it is a utility and not a core data structure.
 - Prefixed all include guards with `LIBCDSA_` to prevent possible name collisions with client code.
 - Simplified `tree_map.h` by removing redundant shortcut functions while renaming others, check it [here](https://github.com/ayevexy/libcdsa/commit/1743eb32).

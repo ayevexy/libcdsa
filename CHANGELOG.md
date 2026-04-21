@@ -30,7 +30,7 @@ A small update that refines the String API and brings other small changes.
 - Removed `key_equals` construct and renamed `compare_keys` to `key_compare` in `tree_map.h`.
 - Remove `equals` construct in favor of `compare` in `tree_set.h` and `priority_queue.h`.
 - Moved `string_hash()` operation from `util/functions.h` to `util/string.h`.
-- Prefix `index_of()`, `last_index_of()`, and `replace()` implementations with underscores and remove documentation.
+- Prefix `index_of()`, `last_index_of()`, and `replace()` implementations with underscores and remove documentation in `util/string.h`.
 
 ### 🪲 Bug Fixes
 - Add missing `util/string.h` include in `libcdsa.h` header file.

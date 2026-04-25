@@ -47,6 +47,18 @@ static inline Iterator* collection_iterator(Collection collection) {
 }
 
 /**
+ * @brief Checks whether two collections are equals.
+ *
+ * @param collection first collection
+ * @param other_collection second collection
+ *
+ * @return true if equals, false otherwise
+ */
+static inline bool collection_equals(Collection collection, Collection other_collection) {
+    return collection.data_structure == other_collection.data_structure;
+}
+
+/**
  * @brief Checks whether an element is present in the collection.
  *
  * @param collection the collection

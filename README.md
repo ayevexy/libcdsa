@@ -179,7 +179,7 @@ int main(void) {
     printf("%s", string.data); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
     
     // It must be freed later
-    free((char*) string.data);
+    string_destroy(&string);
     
     // Cleanup (elements are freed via `.destruct`)
     array_list_destroy(&array_list);
@@ -248,7 +248,7 @@ int main(void) {
     printf("%s", string.data); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
     
     // it must be freed later
-    free((char*) string.data);
+    string_destroy(&string);
 
     // Cleanup (no elements are freed since no destruct functions were provided)
     hash_map_destroy(&hash_map);

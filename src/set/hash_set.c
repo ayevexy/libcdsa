@@ -402,7 +402,7 @@ void** hash_set_to_array(const HashSet* hash_set) {
 StringOwned hash_set_to_string(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return string_null();
 
-    char* raw_string = hash_set->memory_alloc(calculate_string_size(hash_set));
+    char* raw_string = strings_memory_alloc(calculate_string_size(hash_set));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -415,9 +415,9 @@ StringOwned hash_set_to_string(const HashSet* hash_set) {
             constexpr int NULL_TERMINATOR = 1;
             const int length = hash_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-            char* raw_element_string = hash_set->memory_alloc(length);
+            char* raw_element_string = strings_memory_alloc(length);
             if (!raw_element_string) {
-                hash_set->memory_dealloc(raw_string);
+                strings_memory_dealloc(raw_string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return string_null();
             }
@@ -427,7 +427,7 @@ StringOwned hash_set_to_string(const HashSet* hash_set) {
             if (i < hash_set->size - 1) {
                 strcat(raw_string, ", ");
             }
-            hash_set->memory_dealloc(raw_element_string);
+            strings_memory_dealloc(raw_element_string);
         }
     }
 

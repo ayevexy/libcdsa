@@ -568,7 +568,7 @@ void** tree_set_to_array(const TreeSet* tree_set) {
 StringOwned tree_set_to_string(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return string_null();
 
-    char* raw_string = tree_set->memory_alloc(calculate_string_size(tree_set));
+    char* raw_string = strings_memory_alloc(calculate_string_size(tree_set));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -582,9 +582,9 @@ StringOwned tree_set_to_string(const TreeSet* tree_set) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = tree_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = tree_set->memory_alloc(length);
+        char* raw_element_string = strings_memory_alloc(length);
         if (!raw_element_string) {
-            tree_set->memory_dealloc(raw_string);
+            strings_memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return string_null();
         }
@@ -595,7 +595,7 @@ StringOwned tree_set_to_string(const TreeSet* tree_set) {
             strcat(raw_string, ", ");
         }
         count++;
-        tree_set->memory_dealloc(raw_element_string);
+        strings_memory_dealloc(raw_element_string);
         node = get_successor_node(tree_set, node);
     }
 

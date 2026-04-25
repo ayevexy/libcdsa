@@ -320,7 +320,7 @@ void** priority_queue_to_array(const PriorityQueue* priority_queue) {
 StringOwned priority_queue_to_string(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return string_null();
 
-    char* raw_string = priority_queue->memory_alloc(calculate_string_size(priority_queue));
+    char* raw_string = strings_memory_alloc(calculate_string_size(priority_queue));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -332,9 +332,9 @@ StringOwned priority_queue_to_string(const PriorityQueue* priority_queue) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = priority_queue->to_string(priority_queue->elements[i], nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = priority_queue->memory_alloc(length);
+        char* raw_element_string = strings_memory_alloc(length);
         if (!raw_element_string) {
-            priority_queue->memory_dealloc(raw_string);
+            strings_memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return string_null();
         }
@@ -344,7 +344,7 @@ StringOwned priority_queue_to_string(const PriorityQueue* priority_queue) {
         if (i < priority_queue->size - 1) {
             strcat(raw_string, ", ");
         }
-        priority_queue->memory_dealloc(raw_element_string);
+        strings_memory_dealloc(raw_element_string);
     }
 
     strcat(raw_string, priority_queue->size == 0 ? "|" : " |");

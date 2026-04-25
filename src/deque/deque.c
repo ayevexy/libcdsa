@@ -407,7 +407,7 @@ void** deque_to_array(const Deque* deque) {
 StringOwned deque_to_string(const Deque* deque) {
     if (require_non_null(deque)) return string_null();
 
-    char* raw_string = deque->memory_alloc(calculate_string_size(deque));
+    char* raw_string = strings_memory_alloc(calculate_string_size(deque));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -420,9 +420,9 @@ StringOwned deque_to_string(const Deque* deque) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         const int length = deque->to_string(deque->elements[index], nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = deque->memory_alloc(length);
+        char* raw_element_string = strings_memory_alloc(length);
         if (!raw_element_string) {
-            deque->memory_dealloc(raw_string);
+            strings_memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return string_null();
         }
@@ -432,7 +432,7 @@ StringOwned deque_to_string(const Deque* deque) {
         if (i < deque->size - 1) {
             strcat(raw_string, ", ");
         }
-        deque->memory_dealloc(raw_element_string);
+        strings_memory_dealloc(raw_element_string);
     }
 
     strcat(raw_string, deque->size == 0 ? "|" : " |");

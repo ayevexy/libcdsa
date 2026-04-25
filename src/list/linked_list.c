@@ -713,7 +713,7 @@ void** linked_list_to_array(const LinkedList* linked_list) {
 StringOwned linked_list_to_string(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return string_null();
 
-    char* raw_string = linked_list->memory_alloc(calculate_string_size(linked_list));
+    char* raw_string = strings_memory_alloc(calculate_string_size(linked_list));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -725,9 +725,9 @@ StringOwned linked_list_to_string(const LinkedList* linked_list) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = linked_list->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = linked_list->memory_alloc(length);
+        char* raw_element_string = strings_memory_alloc(length);
         if (!raw_element_string) {
-            linked_list->memory_dealloc(raw_string);
+            strings_memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return string_null();
         }
@@ -737,7 +737,7 @@ StringOwned linked_list_to_string(const LinkedList* linked_list) {
         if (node->next) {
             strcat(raw_string, ", ");
         }
-        linked_list->memory_dealloc(raw_element_string);
+        strings_memory_dealloc(raw_element_string);
     }
 
     strcat(raw_string, linked_list->size == 0 ? "]" : " ]");

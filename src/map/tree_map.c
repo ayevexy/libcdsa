@@ -643,7 +643,7 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
 StringOwned tree_map_to_string(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return string_null();
 
-    char* raw_string = tree_map->memory_alloc(calculate_string_size(tree_map));
+    char* raw_string = strings_memory_alloc(calculate_string_size(tree_map));
     if (!raw_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return string_null();
@@ -659,9 +659,9 @@ StringOwned tree_map_to_string(const TreeMap* tree_map) {
         const int key_length = tree_map->key_to_string(entry->key, nullptr, 0);
         const int value_length = tree_map->value_to_string(entry->value, nullptr, 0);
 
-        char* raw_element_string = tree_map->memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
+        char* raw_element_string = strings_memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
         if (!raw_element_string) {
-            tree_map->memory_dealloc(raw_string);
+            strings_memory_dealloc(raw_string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return string_null();
         }
@@ -674,7 +674,7 @@ StringOwned tree_map_to_string(const TreeMap* tree_map) {
             strcat(raw_string, ", ");
         }
         count++;
-        tree_map->memory_dealloc(raw_element_string);
+        strings_memory_dealloc(raw_element_string);
         entry = get_successor_entry(tree_map, entry);
     }
 

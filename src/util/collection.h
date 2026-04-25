@@ -2,6 +2,7 @@
 #define LIBCDSA_COLLECTION_H
 
 #include "iterator.h"
+#include "errors.h"
 
 /**
  * @brief A generic collection view abstraction that provides a common interface over data structures.
@@ -68,6 +69,35 @@ static inline bool collection_equals(Collection collection, Collection other_col
  */
 static inline bool collection_contains(Collection collection, const void* element) {
     return collection.contains(collection.data_structure, element);
+}
+
+/**
+ * @brief Checks whether all elements of another collection are present in the collection.
+ *
+ * @param collection the collection
+ * @param other_collection source collection
+ *
+ * @return true if all elements are present, false otherwise
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if creation of other_collection iterator fails
+ */
+static inline bool collection_contains_all(Collection collection, Collection other_collection) {
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(other_collection)))) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return false;
+    }
+    bool contains = true;
+    while (iterator_has_next(iterator)) {
+        const void* element = iterator_next(iterator);
+        if (!collection_contains(collection, element)) {
+            contains = false;
+            break;
+        }
+    }
+    iterator_destroy(&iterator);
+    return contains;
 }
 
 #endif

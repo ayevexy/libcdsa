@@ -149,11 +149,10 @@ int main(void) {
     array_list_add_last(array_list, new(int, 3));
 
     // Error handling:
-    int* value; Error error;
-    // Without the `attempt` macro, the program would crash and print the error message
+    int* value; Error error = attempt(value = array_list_get(array_list, -1));
+    // Without the `attempt()` macro, the program would crash and print the error message
     // in the form of: INDEX_OUT_OF_BOUNDS_ERROR: index -1 out of bounds for length 3
-    if (((error = attempt(value = array_list_get(array_list, -1))))) {
-
+    if (error == NULL_POINTER_ERROR) {
         printf("%s\n", error_to_string(error)); // INDEX_OUT_OF_BOUNDS_ERROR
         printf("%s\n", plain_error_message()); // index -1 out of bounds for length 3
     }
@@ -219,10 +218,11 @@ int main(void) {
     hash_map_put(hash_map, "Scissors", &(int){30}); 
 
     // Error handling, different approach:
-    int* value; Error error = attempt(value = hash_map_get(nullptr, "Rock"));
-    
-    if (error == NULL_POINTER_ERROR) {
-        printf("%s\n", error_to_string(error)); // NULL_POINTER_ERROR
+    Result(void*) result = try(hash_map_get(nullptr, "Rock"));
+    // Same behavior as `attempt()`, but the expression result and the error are wrapped in the Result struct
+    if (result.error == NULL_POINTER_ERROR) {
+        printf("%p\n", result.value); // (nil)
+        printf("%s\n", error_to_string(result.error)); // NULL_POINTER_ERROR
         printf("%s\n", plain_error_message()); // 'hash_map' argument must not be null
     }
 

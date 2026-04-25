@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_COLLECTION_H
 #define LIBCDSA_COLLECTION_H
 
+#include "functions.h"
 #include "iterator.h"
 #include "errors.h"
 
@@ -57,6 +58,27 @@ static inline Iterator* collection_iterator(Collection collection) {
  */
 static inline bool collection_equals(Collection collection, Collection other_collection) {
     return collection.data_structure == other_collection.data_structure;
+}
+
+/**
+ * @brief Applies an action to each element of the collection.
+ *
+ * @param collection the collection
+ * @param action function to apply
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
+ */
+static inline void collection_for_each(Collection collection, Consumer action) {
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return;
+    }
+    while (iterator_has_next(iterator)) {
+        action(iterator_next(iterator));
+    }
+    iterator_destroy(&iterator);
 }
 
 /**

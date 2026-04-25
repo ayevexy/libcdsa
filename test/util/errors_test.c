@@ -92,6 +92,14 @@ void test_get_plain_error_message() {
     TEST_ASSERT_EQUAL_STRING("Cannot divide by zero: 10 / 0", plain_error_message());
 }
 
+void test_try_result() {
+    // given
+    Result(int) result = try(divide(10, 0));
+    // then
+    TEST_ASSERT_EQUAL(result.value, -1);
+    TEST_ASSERT_EQUAL(result.error, ARITHMETIC_ERROR);
+}
+
 int main(void) {
     UNITY_BEGIN();
     if (TEST_PROTECT()) RUN_TEST(test_set_error_aborts_program);
@@ -100,5 +108,6 @@ int main(void) {
     RUN_TEST(test_nested_attempt_on_fail_catch_error);
     RUN_TEST(test_nested_attempt_on_success_catch_no_error);
     RUN_TEST(test_get_plain_error_message);
+    RUN_TEST(test_try_result);
     return UNITY_END();
 }

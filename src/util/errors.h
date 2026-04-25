@@ -68,6 +68,23 @@ const char* plain_error_message(void);
 #define attempt(expression) (isolate_error(), (expression), capture_error())
 
 /**
+ * @brief Declares a struct variable containing an arbitrary type value and an Error.
+ *
+ * @param T value type
+ */
+#define Result(T) struct { T value; Error error; }
+
+/**
+ * @brief Executes an expression while isolating and capturing any raised error
+ * then returns the expression value alongside the captured error in a tuple.
+ *
+ * @param expression expression to be evaluated, must be a single function call
+ *
+ * @return the expression value and the captured error in a tuple
+ */
+#define try(expression) { (isolate_error(), (expression)), capture_error() }
+
+/**
  * @brief Clears the current error state.
  *
  * After calling this function, the error state is reset to NO_ERROR.

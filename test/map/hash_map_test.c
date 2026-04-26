@@ -800,7 +800,7 @@ void test_get_hash_map_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("[ d = 4, e = 5, a = 1, b = 2, c = 3 ]", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 void test_get_empty_hash_map_string_representation() {
@@ -809,7 +809,7 @@ void test_get_empty_hash_map_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("[]", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 int main(void) {

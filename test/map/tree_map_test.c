@@ -1053,7 +1053,7 @@ void test_get_tree_map_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("[ a = 1, b = 2, c = 3, d = 4, e = 5 ]", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 void test_get_empty_tree_map_string_representation() {
@@ -1062,7 +1062,7 @@ void test_get_empty_tree_map_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("[]", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 int main(void) {

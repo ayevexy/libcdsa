@@ -802,7 +802,7 @@ void test_get_tree_set_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 void test_get_empty_tree_set_string_representation() {
@@ -811,7 +811,7 @@ void test_get_empty_tree_set_string_representation() {
     // then
     TEST_ASSERT_EQUAL_STRING("()", string.data);
     // clean up
-    free((char*) string.data);
+    string_destroy(&string);
 }
 
 int main(void) {

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.3.2]() — 2026-04-26
+
+It’s a small update this time as I’m short on time. Hope you enjoy it!
+
+### ✨ Features
+- Added `equals()`, `contains_all()` and `for_each()` operations to `util/collection.h`.
+- Added `try-result` construct to `util/errors.h`.
+
+### 🪲 Bug Fixes
+- Use the string allocator in `to_string()` operation for all data structures; previously, the data structure allocator was used instead.
+
+### 📚 Documentation
+- Added missing information and fixed typos in CHANGELOG.
+- Aligned FAQ with pair header/source installation in README.
+- Update usage examples in README to include the new `try-result` construct from `util/errors.h`.
+
+---
+
 ## 🎉 [v1.0.0-beta.3.1]() — 2026-04-19
 
 A very tiny update that distributes the library as a header/source pair files.

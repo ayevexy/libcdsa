@@ -6,97 +6,92 @@
 
 /**
  * @brief Internal memory allocation function used internally
- * to allocate StringOwned instances. Defaults to malloc.
+ * to allocate String instances. Defaults to malloc.
  */
-extern void* (*strings_memory_alloc)(size_t);
+extern void* (*string_memory_alloc)(size_t);
 
 /**
  * @brief Internal memory deallocation function used internally
- * to deallocate StringOwned instances. Defaults to free.
+ * to deallocate String instances. Defaults to free.
  */
-extern void (*strings_memory_dealloc)(void*);
+extern void (*string_memory_dealloc)(void*);
 
 /**
- * @brief String type abstraction over c-strings. The String type is conceptually immutable
+ * @brief String types abstraction over c-strings. The String types are conceptually immutable
  * and all operations that would modify a string return a new modified version instead.
  *
- * They are divided into two distinct subtypes: StringView and StringOwned. String views
- * are just references to other strings while string owned are a distinct objects with their
+ * They are divided into two distinct types: StringView and String. StringView
+ * are just references to other strings while String are a distinct objects with their
  * own internal buffer that must be freed manually.
  *
  * Memory ownership:
  * - StringView does NOT own memory and must not be freed.
- * - StringOwned owns its buffer and must be freed using string_destroy().
+ * - String owns its buffer and must be freed using string_destroy().
  * - Functions returning StringView reference existing memory.
- * - Functions returning StringOwned allocate new memory.
+ * - Functions returning String allocate new memory.
  */
+
+/** @brief Owned String type, must be freed manually */
+typedef struct {
+    int length;
+    char data[];
+} String;
+
+/** @brief Non-Owning String type that references some other string */
 typedef struct {
     const char* data;
     int length;
-} String;
-
-/** @brief Non-Owning String type that references some raw string */
-typedef String StringView;
-
-/** @brief Owned String type, must be freed manually */
-typedef String StringOwned;
+} StringView;
 
 /**
- * @brief Creates an invalid/null string.
+ * @brief Creates a new allocated string copying another string.
  *
- * This value represents the absence of a string. Most functions do not accept
- * this value and will report NULL_POINTER_ERROR if used.
- *
- * It is also used as a sentinel value in some APIs (e.g., string_join, string_split).
- *
- * @return a null/invalid string (data == nullptr)
- */
-static inline String string_null() {
-    return (String) { .data = nullptr, .length = 0 };
-}
-
-/**
- * @brief Creates an empty string. Unlike string_null(), this represents a valid string.
- *
- * @return an empty string
- */
-static inline String string_empty() {
-    return (String) { .data = "", .length = 0 };
-}
-
-/**
- * @brief Creates a new allocated string copying the raw_string.
- *
- * @param raw_string the raw string
+ * @param string source string
  *
  * @return a new allocated string
  *
- * @exception NULL_POINTER_ERROR if raw_string is null
+ * @exception NULL_POINTER_ERROR if string is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_new(const char* raw_string);
+#define string_new(string) _string_new(string_view(string))
+
+String* _string_new(StringView string);
 
 /**
  * @brief Destroys a previously allocated string.
  *
- * @param string pointer to a string
+ * @param string_pointer pointer to a string pointer
  *
- * @post string.data == nullptr
+ * @post *string_pointer == nullptr
  *
- * @exception NULL_POINTER_ERROR if string || string.data is null
+ * @exception NULL_POINTER_ERROR if string_pointer || *string_pointer is null
  */
-void string_destroy(StringOwned* string);
+void string_destroy(String** string_pointer);
 
 /**
- * @brief Creates a view over an existing raw string, referencing it.
+ * @brief Creates a view over an existing string, referencing it.
  *
- * @param raw_string the raw string
+ * @param string the string
  *
  * @return a string view
  *
- * @exception NULL_POINTER_ERROR if raw_string is null
+ * @exception NULL_POINTER_ERROR if string is null
  */
-StringView string_view(const char* raw_string);
+#define string_view(string) (_Generic((string), \
+    String*: _string_as_view,                   \
+    StringView: _string_view_self,              \
+    const char*: _string_view,                  \
+    char*: _string_view,                        \
+    default: _string_view_null                  \
+)(string))
+
+StringView _string_as_view(String* string);
+
+StringView _string_view_self(StringView string_view);
+
+StringView _string_view(const char* raw_string);
+
+StringView _string_view_null(char character);
 
 /**
  * @brief Creates a newly allocated formatted string.
@@ -109,7 +104,7 @@ StringView string_view(const char* raw_string);
  * @exception NULL_POINTER_ERROR if format is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_format(const char* format, ...);
+String* string_format(const char* format, ...);
 
 /**
  * @brief Retrieves the character at the specified position of the string.
@@ -122,7 +117,9 @@ StringOwned string_format(const char* format, ...);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= string.length
  */
-char string_char_at(String string, int index);
+#define string_char_at(string, index) _string_char_at(string_view(string), index)
+
+char _string_char_at(StringView string, int index);
 
 /**
  * @brief Checks whether the string is empty.
@@ -133,7 +130,9 @@ char string_char_at(String string, int index);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-bool string_is_empty(String string);
+#define string_is_empty(string) _string_is_empty(string_view(string))
+
+bool _string_is_empty(StringView string);
 
 /**
  * @brief Checks whether the string is blank.
@@ -144,7 +143,9 @@ bool string_is_empty(String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-bool string_is_blank(String string);
+#define string_is_blank(string) _string_is_blank(string_view(string))
+
+bool _string_is_blank(StringView string);
 
 /**
  * @brief Calculate a hash value of a string.
@@ -165,7 +166,9 @@ uint64_t string_hash(const void* raw_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-int string_compare(String string, String other_string);
+#define string_compare(string, other_string) _string_compare(string_view(string), string_view(other_string))
+
+int _string_compare(StringView string, StringView other_string);
 
 /**
  * @brief Compares two strings lexicographically ignoring case.
@@ -177,7 +180,9 @@ int string_compare(String string, String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-int string_compare_ignore_case(String string, String other_string);
+#define string_compare_ignore_case(string, other_string) _string_compare_ignore_case(string_view(string), string_view(other_string))
+
+int _string_compare_ignore_case(StringView string, StringView other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals.
@@ -189,7 +194,9 @@ int string_compare_ignore_case(String string, String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-bool string_equals(String string, String other_string);
+#define string_equals(string, other_string) _string_equals(string_view(string), string_view(other_string))
+
+bool _string_equals(StringView string, StringView other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals ignoring case.
@@ -201,7 +208,9 @@ bool string_equals(String string, String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-bool string_equals_ignore_case(String string, String other_string);
+#define string_equals_ignore_case(string, other_string) _string_equals_ignore_case(string_view(string), string_view(other_string))
+
+bool _string_equals_ignore_case(StringView string, StringView other_string);
 
 /**
  * @brief Retrieves the index of the first occurrence of the specified character or substring in the string.
@@ -213,12 +222,21 @@ bool string_equals_ignore_case(String string, String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_index_of(string, needle) \
-    _Generic((needle), String: _string_index_of_substring, default: _string_index_of_char)(string, needle)
+#define string_index_of(string, needle) _Generic((needle),  \
+    char: _string_index_of_char,                            \
+    int:  _string_index_of_char,                            \
+    default: _string_index_of_substring                     \
+)(                                                          \
+    string_view(string), _Generic((needle),                 \
+        char: (needle),                                     \
+        int: (needle),                                      \
+        default: string_view(needle)                        \
+    )                                                       \
+)
 
-int _string_index_of_char(String string, char character);
+int _string_index_of_char(StringView string, char character);
 
-int _string_index_of_substring(String string, String substring);
+int _string_index_of_substring(StringView string, StringView substring);
 
 /**
  * @brief Retrieves the index of the last occurrence of the specified character or substring in the string.
@@ -230,12 +248,21 @@ int _string_index_of_substring(String string, String substring);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_last_index_of(string, needle) \
-    _Generic((needle), String: _string_last_index_of_substring, default: _string_last_index_of_char)(string, needle)
+#define string_last_index_of(string, needle) _Generic((needle), \
+    char: _string_last_index_of_char,                           \
+    int:  _string_last_index_of_char,                           \
+    default: _string_last_index_of_substring                    \
+)(                                                              \
+    string_view(string), _Generic((needle),                     \
+        char: (needle),                                         \
+        int: (needle),                                          \
+        default: string_view(needle)                            \
+    )                                                           \
+)
 
-int _string_last_index_of_char(String string, char character);
+int _string_last_index_of_char(StringView string, char character);
 
-int _string_last_index_of_substring(String string, String substring);
+int _string_last_index_of_substring(StringView string, StringView substring);
 
 /**
  * @brief Checks whether a substring is present in the string.
@@ -247,7 +274,9 @@ int _string_last_index_of_substring(String string, String substring);
  *
  * @exception NULL_POINTER_ERROR if string.data || substring.data is null
  */
-bool string_contains(String string, String substring);
+#define string_contains(string, substring) _string_contains(string_view(string), string_view(substring))
+
+bool _string_contains(StringView string, StringView substring);
 
 /**
  * @brief Checks whether a string starts with the specified prefix.
@@ -259,7 +288,9 @@ bool string_contains(String string, String substring);
  *
  * @exception NULL_POINTER_ERROR if string.data || prefix.data is null
  */
-bool string_starts_with(String string, String prefix);
+#define string_starts_with(string, prefix) _string_starts_with(string_view(string), string_view(prefix))
+
+bool _string_starts_with(StringView string, StringView prefix);
 
 /**
  * @brief Checks whether a string ends with the specified suffix.
@@ -271,7 +302,9 @@ bool string_starts_with(String string, String prefix);
  *
  * @exception NULL_POINTER_ERROR if string.data || suffix.data is null
  */
-bool string_ends_with(String string, String suffix);
+#define string_ends_with(string, prefix) _string_ends_with(string_view(string), string_view(prefix))
+
+bool _string_ends_with(StringView string, StringView suffix);
 
 /**
  * @brief Removes all white spaces from both the beginning and the end of the string.
@@ -282,7 +315,9 @@ bool string_ends_with(String string, String suffix);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-StringView string_trim(String string);
+#define string_trim(string) _string_trim(string_view(string))
+
+StringView _string_trim(StringView string);
 
 /**
  * @brief Removes all white spaces from the beginning of the string.
@@ -293,7 +328,9 @@ StringView string_trim(String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-StringView string_trim_start(String string);
+#define string_trim_start(string) _string_trim_start(string_view(string))
+
+StringView _string_trim_start(StringView string);
 
 /**
  * @brief Removes all white spaces from the end of the string.
@@ -304,7 +341,9 @@ StringView string_trim_start(String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-StringView string_trim_end(String string);
+#define string_trim_end(string) _string_trim_end(string_view(string))
+
+StringView _string_trim_end(StringView string);
 
 /**
  * @brief Creates a substring of the string with the specified position and length.
@@ -318,7 +357,9 @@ StringView string_trim_end(String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start < 0 || length < 0 || start > string.length
  */
-StringView string_substring(String string, int start, int length);
+#define string_substring(string, start, length) _string_substring(string_view(string), start, length)
+
+StringView _string_substring(StringView string, int start, int length);
 
 /**
  * @brief Concatenates two strings into a new allocated string.
@@ -331,7 +372,9 @@ StringView string_substring(String string, int start, int length);
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_concat(String string, String other_string);
+#define string_concat(string, other_string) _string_concat(string_view(string), string_view(other_string))
+
+String* _string_concat(StringView string, StringView other_string);
 
 /**
  * Replaces all occurrences of a character or substring in the string with a new one.
@@ -345,12 +388,25 @@ StringOwned string_concat(String string, String other_string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_replace(string, target, replacement)  \
-    _Generic((target), String: _string_replace_substring, default: _string_replace_char)(string, target, replacement)
+#define string_replace(string, target, replacement) _Generic((target),          \
+    char: _string_replace_char,                                                 \
+    int: _string_replace_char,                                                  \
+    default: _string_replace_substring                                          \
+)(                                                                              \
+    string_view(string), _Generic((target),                                     \
+        char: (target),                                                         \
+        int: (target),                                                          \
+        default: string_view(target)                                            \
+    ), _Generic((replacement),                                                  \
+        char: (replacement),                                                    \
+        int: (replacement),                                                     \
+        default: string_view(replacement)                                       \
+    )                                                                           \
+)
 
-StringOwned _string_replace_char(String string, char character, char replacement);
+String* _string_replace_char(StringView string, char character, char replacement);
 
-StringOwned _string_replace_substring(String string, String target, String replacement);
+String* _string_replace_substring(StringView string, StringView target, StringView replacement);
 
 /**
  * @brief Concatenates the same string n times.
@@ -364,22 +420,51 @@ StringOwned _string_replace_substring(String string, String target, String repla
  * @exception ILLEGAL_ARGUMENT_ERROR if times is negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_repeat(String string, int times);
+#define string_repeat(string, times) _string_repeat(string_view(string), times)
+
+String* _string_repeat(StringView string, int times);
 
 /**
  * @brief Concatenates n strings repeatedly inserting the specified separator between them.
  *
  * @param separator the separator
- * @param ... a string list (terminated by `string_null()`)
+ * @param ... a string list (terminated by a null string view `(StringView) {}`)
  *
  * @return a new allocated string
  *
  * @exception NULL_POINTER_ERROR if separator.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @warning the string list MUST be terminated by a `string_null()` element, otherwise, it's undefined behavior
+ * @warning the string list MUST be terminated by a `(StringView) {}` element, otherwise, it's undefined behavior
+ *  this macro automatically inserts the null string.
  */
-StringOwned string_join(String separator, ...);
+#define string_join(separator, ...) _string_join(string_view(separator), _dispatch_string_join(__VA_ARGS__, \
+    _string_join_10,                                                                                        \
+    _string_join_9,                                                                                         \
+    _string_join_8,                                                                                         \
+    _string_join_7,                                                                                         \
+    _string_join_6,                                                                                         \
+    _string_join_5,                                                                                         \
+    _string_join_4,                                                                                         \
+    _string_join_3,                                                                                         \
+    _string_join_2,                                                                                         \
+    _string_join_1                                                                                          \
+)(__VA_ARGS__))
+
+#define _dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
+
+#define _string_join_10(s, ...) string_view(s), _string_join_9(__VA_ARGS__)
+#define _string_join_9(s, ...) string_view(s), _string_join_8(__VA_ARGS__)
+#define _string_join_8(s, ...) string_view(s), _string_join_7(__VA_ARGS__)
+#define _string_join_7(s, ...) string_view(s), _string_join_6(__VA_ARGS__)
+#define _string_join_6(s, ...) string_view(s), _string_join_5(__VA_ARGS__)
+#define _string_join_5(s, ...) string_view(s), _string_join_4(__VA_ARGS__)
+#define _string_join_4(s, ...) string_view(s), _string_join_3(__VA_ARGS__)
+#define _string_join_3(s, ...) string_view(s), _string_join_2(__VA_ARGS__)
+#define _string_join_2(s, ...) string_view(s), _string_join_1(__VA_ARGS__)
+#define _string_join_1(s) string_view(s), (StringView) {} // sentinel
+
+String* _string_join(StringView separator, ...);
 
 /**
  * @brief Split a string into n strings by the specified delimiter.
@@ -387,28 +472,32 @@ StringOwned string_join(String separator, ...);
  * @param string the string
  * @param delimiter delimiter character
  *
- * @return an array of string views over the original string (terminated by `string_null()`)
+ * @return an array of string views over the original string (terminated by `(StringView) {}`)
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
  * @note the returned array must be freed manually. Its elements must not be freed
  */
-StringView* string_split(String string, char delimiter);
+#define string_split(string, delimiter) _string_split(string_view(string), delimiter)
+
+StringView* _string_split(StringView string, char delimiter);
 
 /**
  * @brief Split a string into multiple lines.
  *
  * @param string the string
  *
- * @return an array of string views over the original string (terminated by `string_null()`)
+ * @return an array of string views over the original string (terminated by `(StringView) {}`)
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
  * @note the returned array must be freed manually. Its elements must not be freed
  */
-StringView* string_lines(String string);
+#define string_lines(string) _string_lines(string_view(string))
+
+StringView* _string_lines(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters uppercased.
@@ -420,7 +509,9 @@ StringView* string_lines(String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_to_uppercase(String string);
+#define string_to_uppercase(string) _string_to_uppercase(string_view(string))
+
+String* _string_to_uppercase(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters lowercased.
@@ -432,7 +523,9 @@ StringOwned string_to_uppercase(String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-StringOwned string_to_lowercase(String string);
+#define string_to_lowercase(string) _string_to_lowercase(string_view(string))
+
+String* _string_to_lowercase(StringView string);
 
 /**
  * @brief Converts a primitive value to its string representation.
@@ -459,16 +552,16 @@ StringOwned string_to_lowercase(String string);
     long double: _string_value_of_long_double           \
 )(value)
 
-StringOwned _string_value_of_bool(bool value);
-StringOwned _string_value_of_char(char value);
-StringOwned _string_value_of_int(int value);
-StringOwned _string_value_of_uint(unsigned int value);
-StringOwned _string_value_of_long(long value);
-StringOwned _string_value_of_ulong(unsigned long value);
-StringOwned _string_value_of_long_long(long long value);
-StringOwned _string_value_of_ulong_long(unsigned long long value);
-StringOwned _string_value_of_float(float value);
-StringOwned _string_value_of_double(double value);
-StringOwned _string_value_of_long_double(long double value);
+String* _string_value_of_bool(bool value);
+String* _string_value_of_char(char value);
+String* _string_value_of_int(int value);
+String* _string_value_of_uint(unsigned int value);
+String* _string_value_of_long(long value);
+String* _string_value_of_ulong(unsigned long value);
+String* _string_value_of_long_long(long long value);
+String* _string_value_of_ulong_long(unsigned long long value);
+String* _string_value_of_float(float value);
+String* _string_value_of_double(double value);
+String* _string_value_of_long_double(long double value);
 
 #endif

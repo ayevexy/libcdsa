@@ -16,29 +16,41 @@ void test_create_string() {
     // given
     const char* raw_string = "Hello World!";
     // when
-    StringOwned string = string_new(raw_string);
+    String* string = string_new(raw_string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string.data);
-    TEST_ASSERT_EQUAL(strlen(raw_string), string.length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
+    TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
+    // clean up
+    string_destroy(&string);
 }
 
 void test_destroy_string() {
     // given
-    StringOwned string = string_new("Hello World!");
+    String* string = string_new("Hello World!");
     // when
     string_destroy(&string);
     // then
-    TEST_ASSERT_NULL(string.data);
+    TEST_ASSERT_NULL(string);
 }
 
 void test_create_string_view() {
-    // given
-    const char* raw_string = "Hello World!";
     // when
-    StringView string = string_view(raw_string);
+    StringView s0 = string_view("string literal");
+    StringView s1 = string_view(string_new("string owned"));
+    StringView s2 = string_view((char[]){"raw string"});
+    StringView s3 = string_view(string_view("self string"));
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string.data);
-    TEST_ASSERT_EQUAL(strlen(raw_string), string.length);
+    TEST_ASSERT_EQUAL_STRING("string literal", s0.data);
+    TEST_ASSERT_EQUAL(strlen("string literal"), s0.length);
+    // and
+    TEST_ASSERT_EQUAL_STRING("string owned", s1.data);
+    TEST_ASSERT_EQUAL(strlen("string owned"), s1.length);
+    // and
+    TEST_ASSERT_EQUAL_STRING("raw string", s2.data);
+    TEST_ASSERT_EQUAL(strlen("raw string"), s2.length);
+    // and
+    TEST_ASSERT_EQUAL_STRING("self string", s3.data);
+    TEST_ASSERT_EQUAL(strlen("self string"), s3.length);
 }
 
 void test_create_formatted_string() {
@@ -46,10 +58,12 @@ void test_create_formatted_string() {
     const char* format = "H%dllo W%drld!";
     int e = 3, o = 0;
     // when
-    StringOwned string = string_format(format, e, o);
+    String* string = string_format(format, e, o);
     // then
-    TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string.data);
-    TEST_ASSERT_EQUAL(strlen(format) - 2, string.length);
+    TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string->data);
+    TEST_ASSERT_EQUAL(strlen(format) - 2, string->length);
+    // clean up
+    string_destroy(&string);
 }
 
 void test_get_char_at_index_from_string() {
@@ -253,7 +267,7 @@ void test_string_trim() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    String trimmed = string_trim(string);
+    StringView trimmed = string_trim(string);
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("Hello World!", trimmed.data, trimmed.length);
     TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed.length);
@@ -263,7 +277,7 @@ void test_string_trim_start() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    String trimmed = string_trim_start(string);
+    StringView trimmed = string_trim_start(string);
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("Hello World!  ", trimmed.data, trimmed.length);
     TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed.length);
@@ -273,7 +287,7 @@ void test_string_trim_end() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    String trimmed = string_trim_end(string);
+    StringView trimmed = string_trim_end(string);
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("  Hello World!", trimmed.data, trimmed.length);
     TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed.length);
@@ -316,10 +330,10 @@ void test_string_concat() {
     StringView hello = string_view("Hello ");
     StringView world = string_view("World!");
     // when
-    StringOwned hello_world = string_concat(hello, world);
+    String* hello_world = string_concat(hello, world);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world.data);
-    TEST_ASSERT_EQUAL(hello.length + world.length, hello_world.length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world->data);
+    TEST_ASSERT_EQUAL(hello.length + world.length, hello_world->length);
     // clean up
     string_destroy(&hello_world);
 }
@@ -328,38 +342,44 @@ void test_string_replace_char() {
     // given
     StringView hello = string_view("Hello World!");
     // when
-    StringOwned replaced = string_replace(hello, 'o', '0');
+    String* replaced = string_replace(hello, 'o', '0');
     // then
-    TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced.data);
+    TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced->data);
+    // clean up
+    string_destroy(&replaced);
 }
 
 void test_string_replace_substring() {
     // given
     StringView hello = string_view("Hello Worlld!");
     // when
-    StringOwned replaced = string_replace(hello, string_view("ll"), string_view("123"));
+    String* replaced = string_replace(hello, string_view("ll"), string_view("123"));
     // then
-    TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced.data);
-    TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced.length);
+    TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
+    TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
+    // clean up
+    string_destroy(&replaced);
 }
 
 void test_string_repeat() {
     // given
     StringView hello = string_view("Hello");
     // when
-    StringOwned hello_n_times = string_repeat(hello, 3);
+    String* hello_n_times = string_repeat(hello, 3);
     // then
-    TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times.data);
-    TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times.length);
+    TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times->data);
+    TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times->length);
+    // clean up
+    string_destroy(&hello_n_times);
 }
 
 void test_string_repeat_fails_if_times_is_negative() {
     // given
     StringView hello = string_view("Hello");
     // when
-    StringOwned hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
+    String* hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
     // then
-    TEST_ASSERT_NULL(hello_n_times.data);
+    TEST_ASSERT_NULL(hello_n_times);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
@@ -369,10 +389,12 @@ void test_string_join() {
     StringView world = string_view("World");
     StringView exclamation = string_view("!!!");
     // when
-    StringOwned full_hello_world = string_join(string_view(" "), hello, world, exclamation, string_null());
+    String* full_hello_world = string_join(string_view(" "), hello, world, exclamation);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world.data);
-    TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world.length);
+    TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
+    TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);
+    // clean up
+    string_destroy(&full_hello_world);
 }
 
 void test_string_split() {
@@ -392,7 +414,7 @@ void test_string_split() {
     // and
     TEST_ASSERT_NULL(strings[3].data);
     // clean up
-    strings_memory_dealloc(strings);
+    string_memory_dealloc(strings);
 }
 
 void test_string_split_single_word() {
@@ -406,7 +428,7 @@ void test_string_split_single_word() {
     // and
     TEST_ASSERT_NULL(strings[1].data);
     // clean up
-    strings_memory_dealloc(strings);
+    string_memory_dealloc(strings);
 }
 
 void test_string_split_empty() {
@@ -418,16 +440,16 @@ void test_string_split_empty() {
     TEST_ASSERT_EQUAL_STRING_LEN("", strings[0].data, strings[0].length);
     TEST_ASSERT_NULL(strings[1].data);
     // clean up
-    strings_memory_dealloc(strings);
+    string_memory_dealloc(strings);
 }
 
 void test_string_to_uppercase() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    StringOwned uppercase = string_to_uppercase(string);
+    String* uppercase = string_to_uppercase(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase.data);
+    TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase->data);
     // clean up
     string_destroy(&uppercase);
 }
@@ -436,27 +458,27 @@ void test_string_to_lowercase() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    StringOwned lowercase = string_to_lowercase(string);
+    String* lowercase = string_to_lowercase(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("hello world!", lowercase.data);
+    TEST_ASSERT_EQUAL_STRING("hello world!", lowercase->data);
     // clean up
     string_destroy(&lowercase);
 }
 
 void test_string_value_of() {
-    TEST_ASSERT_EQUAL_STRING("true", string_value_of(true).data);
-    TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((short) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned short) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((int) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned int) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long long) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long long) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((float) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((double) 10).data);
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10).data);
+    TEST_ASSERT_EQUAL_STRING("true", string_value_of(true)->data);
+    TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((short) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned short) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((int) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned int) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((float) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((double) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10)->data);
 }
 
 int main(void) {

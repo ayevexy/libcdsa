@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.4]() — 2026-05-10
+
+### ✨ Features
+- Introduce an abstraction layer through the String API allowing interoperability with any type of string.
+- Introduce the new Array API in `util/array.h`.
+- Core operations: `array_new()`, `array_length()`, `array_destroy()`, read-write like normal c-arrays.
+
+### ✏️ Changes
+- The String API was redesigned again, now it has only two distinct types: `String` and `StringView`.
+- Most string operations now can take any type of string (literals, arrays, `String` and `StringView`) as argument through a macro dispatch system.
+- `string_join()` macro automatically inserts the null string.
+- `string_split()` and `string_lines()` no longer appends a null string at the end of the array.
+- Replace all `StringOwned` return type from `<collection>_to_string()` by the new `String` type.
+- Use the new Array API in the operations that previously returned simple c arrays, i.e.: `<collection>_to_array()` and `string_split()`.
+- Removed `string_null()` and `string_empty()` functions.
+- Renamed `strings_memory_alloc()` and `strings_memory_dealloc()` to drop the extra `s`
+
+### 📚 Documentation
+- Update usage examples and the Feature section in README to reflect the new Array API and the String API changes.
+- Added github issues templates, code of conduct, contributing guidelines and security policy.
+
+---
+
 ## 🎉 [v1.0.0-beta.3.2]() — 2026-04-26
 
 It’s a small update this time as I’m short on time. Hope you enjoy it!

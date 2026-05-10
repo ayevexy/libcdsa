@@ -790,7 +790,7 @@ void test_convert_tree_set_to_array() {
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
     // clean up
-    array_destroy(element_array);
+    array_destroy(&element_array);
 }
 
 void test_get_tree_set_string_representation() {

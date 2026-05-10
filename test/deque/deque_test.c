@@ -565,7 +565,7 @@ void test_convert_deque_to_array() {
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
     // clean up
-    array_destroy(elements);
+    array_destroy(&elements);
 }
 
 void test_get_deque_string_representation() {

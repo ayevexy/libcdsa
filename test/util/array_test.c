@@ -22,7 +22,7 @@ void test_create_and_destroy_array() {
     TEST_ASSERT_EQUAL_INT(4, ints[3]);
     TEST_ASSERT_EQUAL_INT(5, ints[4]);
     // clean up
-    array_destroy(ints);
+    array_destroy(&ints);
     TEST_ASSERT_NULL(ints);
 }
 

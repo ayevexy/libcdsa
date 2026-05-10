@@ -433,7 +433,7 @@ void test_convert_priority_queue_to_array() {
     int new_values[] = { 5, 4, 2, 1, 3 }; // order is not guaranteed
     TEST_ASSERT_ARRAY_EQUALS(new_values, elements);
     // clean up
-    array_destroy(elements);
+    array_destroy(&elements);
 }
 
 void test_get_priority_queue_string_representation() {

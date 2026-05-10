@@ -70,7 +70,7 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
 /**
  * @brief Destroys a previously created array.
  *
- * @param array the array
+ * @param array pointer to the array
  *
  * @post array == nullptr
  *
@@ -78,8 +78,8 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
  */
 #define array_destroy(array)                                                \
     do {                                                                    \
-        free((RealArray*)((char*)(array) - offsetof(RealArray, data)));     \
-        array = nullptr;                                                    \
+        free((RealArray*)((char*)(*array) - offsetof(RealArray, data)));    \
+        *array = nullptr;                                                   \
     } while (false)
 
 #endif

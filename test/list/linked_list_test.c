@@ -1237,7 +1237,7 @@ void test_convert_linked_list_to_array() {
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
     // clean up
-    array_destroy(elements);
+    array_destroy(&elements);
 }
 
 void test_get_linked_list_string_representation() {

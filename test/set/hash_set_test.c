@@ -577,7 +577,7 @@ void test_convert_hash_set_to_array() {
     int new_elements[] = { 5, 1, 2, 3, 4 };
     TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
     // clean up
-    array_destroy(element_array);
+    array_destroy(&element_array);
 }
 
 void test_get_hash_set_string_representation() {

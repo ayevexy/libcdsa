@@ -81,4 +81,7 @@
 /** @brief String implementation */
 #include "util/string.h"
 
+/** @brief Array implementation */
+#include "util/array.h"
+
 #endif

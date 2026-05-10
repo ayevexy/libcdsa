@@ -561,11 +561,11 @@ void test_convert_deque_to_array() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_DEQUE(deque, values);
     // when
-    void** elements = deque_to_array(deque);
+    Array(void*) elements = deque_to_array(deque);
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
     // clean up
-    free(elements);
+    array_destroy(elements);
 }
 
 void test_get_deque_string_representation() {

@@ -549,9 +549,9 @@ Collection tree_set_to_collection(const TreeSet* tree_set) {
     };
 }
 
-void** tree_set_to_array(const TreeSet* tree_set) {
+Array(void*) tree_set_to_array(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
-    void** elements = tree_set->memory_alloc(tree_set->size * sizeof(void*));
+    Array(void*) elements = _array_new(tree_set->size, sizeof(void*), nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

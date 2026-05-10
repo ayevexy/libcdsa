@@ -367,7 +367,7 @@ String* _string_join(StringView separator, ...) {
     return new_string;
 }
 
-StringView* _string_split(StringView string, char delimiter) {
+Array(StringView) _string_split(StringView string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;
     for (int i = 0; i < string.length; i++) {
@@ -375,7 +375,7 @@ StringView* _string_split(StringView string, char delimiter) {
             count++;
         }
     }
-    StringView* strings = string_memory_alloc((count + 1) * sizeof(StringView));
+    Array(StringView) strings = _array_new(count, sizeof(StringView), nullptr);
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;
@@ -390,11 +390,10 @@ StringView* _string_split(StringView string, char delimiter) {
             start = i + 1;
         }
     }
-    strings[index] = (StringView) {};
     return strings;
 }
 
-StringView* _string_lines(StringView string) {
+Array(StringView) _string_lines(StringView string) {
     return _string_split(string, '\n');
 }
 

@@ -1312,11 +1312,11 @@ void test_convert_array_list_to_array() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    void** elements = array_list_to_array(array_list);
+    Array(void*) elements = array_list_to_array(array_list);
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
     // clean up
-    free(elements);
+    array_destroy(elements);
 }
 
 void test_get_array_list_string_representation() {

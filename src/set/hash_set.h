@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/collection.h"
 #include "util/string.h"
+#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -394,9 +395,9 @@ Collection hash_set_to_collection(const HashSet* hash_set);
  * @exception NULL_POINTER_ERROR if hash_set is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  */
-void** hash_set_to_array(const HashSet* hash_set);
+Array(void*) hash_set_to_array(const HashSet* hash_set);
 
 /**
  * @brief Converts the hash set to a string representation.

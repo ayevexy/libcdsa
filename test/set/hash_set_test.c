@@ -572,12 +572,12 @@ void test_convert_hash_set_to_array() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    void** element_array = hash_set_to_array(hash_set);
+    Array(void*) element_array = hash_set_to_array(hash_set);
     // then
     int new_elements[] = { 5, 1, 2, 3, 4 };
     TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
     // clean up
-    free(element_array);
+    array_destroy(element_array);
 }
 
 void test_get_hash_set_string_representation() {

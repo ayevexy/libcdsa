@@ -311,9 +311,9 @@ static inline Collection stack_to_collection(const Stack* stack) {
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  */
-static inline void** stack_to_array(const Stack* stack) {
+static inline Array(void*) stack_to_array(const Stack* stack) {
     return deque_to_array(stack);
 }
 

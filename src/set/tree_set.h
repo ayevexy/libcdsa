@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/collection.h"
 #include "util/string.h"
+#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -526,9 +527,9 @@ Collection tree_set_to_collection(const TreeSet* tree_set);
  * @exception NULL_POINTER_ERROR if tree_set is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  */
-void** tree_set_to_array(const TreeSet* tree_set);
+Array(void*) tree_set_to_array(const TreeSet* tree_set);
 
 /**
  * @brief Converts the tree set to a string representation.

@@ -401,7 +401,7 @@ void test_string_split() {
     // given
     StringView string = string_view("Hello World !!!");
     // when
-    StringView* strings = string_split(string, ' ');
+    Array(StringView) strings = string_split(string, ' ');
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
     TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
@@ -411,36 +411,32 @@ void test_string_split() {
     // and
     TEST_ASSERT_EQUAL_STRING_LEN("!!!", strings[2].data, strings[2].length);
     TEST_ASSERT_EQUAL(strlen("!!!"), strings[2].length);
-    // and
-    TEST_ASSERT_NULL(strings[3].data);
     // clean up
-    string_memory_dealloc(strings);
+    array_destroy(strings);
 }
 
 void test_string_split_single_word() {
     // given
     StringView string = string_view("Hello");
     // when
-    StringView* strings = string_split(string, ' ');
+    Array(StringView) strings = string_split(string, ' ');
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
     TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
-    // and
-    TEST_ASSERT_NULL(strings[1].data);
     // clean up
-    string_memory_dealloc(strings);
+    array_destroy(strings);
 }
 
 void test_string_split_empty() {
     // given
     StringView string = string_view("");
     // when
-    StringView* strings = string_split(string, ' ');
+    Array(StringView) strings = string_split(string, ' ');
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("", strings[0].data, strings[0].length);
     TEST_ASSERT_NULL(strings[1].data);
     // clean up
-    string_memory_dealloc(strings);
+    array_destroy(strings);
 }
 
 void test_string_to_uppercase() {

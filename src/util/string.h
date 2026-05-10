@@ -1,6 +1,8 @@
 #ifndef LIBCDSA_STRING_H
 #define LIBCDSA_STRING_H
 
+#include "array.h"
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -472,32 +474,32 @@ String* _string_join(StringView separator, ...);
  * @param string the string
  * @param delimiter delimiter character
  *
- * @return an array of string views over the original string (terminated by `(StringView) {}`)
+ * @return an array of string views over the original string
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the returned array must be freed manually. Its elements must not be freed
+ * @note the returned array must be freed manually (by `array_destroy()`).
  */
 #define string_split(string, delimiter) _string_split(string_view(string), delimiter)
 
-StringView* _string_split(StringView string, char delimiter);
+Array(StringView) _string_split(StringView string, char delimiter);
 
 /**
  * @brief Split a string into multiple lines.
  *
  * @param string the string
  *
- * @return an array of string views over the original string (terminated by `(StringView) {}`)
+ * @return an array of string views over the original string
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the returned array must be freed manually. Its elements must not be freed
+ * @note the returned array must be freed manually (by `array_destroy()`).
  */
 #define string_lines(string) _string_lines(string_view(string))
 
-StringView* _string_lines(StringView string);
+Array(StringView) _string_lines(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters uppercased.

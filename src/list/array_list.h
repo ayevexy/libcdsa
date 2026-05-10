@@ -7,6 +7,7 @@
 #include "util/collection.h"
 #include "util/optional.h"
 #include "util/string.h"
+#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -779,9 +780,9 @@ Collection array_list_to_collection(const ArrayList* array_list);
  * @exception NULL_POINTER_ERROR if array_list is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()´)
  */
-void** array_list_to_array(const ArrayList* array_list);
+Array(void*) array_list_to_array(const ArrayList* array_list);
 
 /**
  * @brief Converts the array list to a string representation.

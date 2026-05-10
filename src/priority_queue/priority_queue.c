@@ -304,9 +304,9 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
     };
 }
 
-void** priority_queue_to_array(const PriorityQueue* priority_queue) {
+Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
-    void** elements = priority_queue->memory_alloc(priority_queue->size * sizeof(void*));
+    Array(void*) elements = _array_new(priority_queue->size, sizeof(void*), nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

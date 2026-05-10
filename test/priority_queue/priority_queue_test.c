@@ -428,12 +428,12 @@ void test_convert_priority_queue_to_array() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    void** elements = priority_queue_to_array(priority_queue);
+    Array(void*) elements = priority_queue_to_array(priority_queue);
     // then
     int new_values[] = { 5, 4, 2, 1, 3 }; // order is not guaranteed
     TEST_ASSERT_ARRAY_EQUALS(new_values, elements);
     // clean up
-    free(elements);
+    array_destroy(elements);
 }
 
 void test_get_priority_queue_string_representation() {

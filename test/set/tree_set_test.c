@@ -785,12 +785,12 @@ void test_convert_tree_set_to_array() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    void** element_array = tree_set_to_array(tree_set);
+    Array(void*) element_array = tree_set_to_array(tree_set);
     // then
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
     // clean up
-    free(element_array);
+    array_destroy(element_array);
 }
 
 void test_get_tree_set_string_representation() {

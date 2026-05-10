@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/collection.h"
 #include "util/string.h"
+#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -347,10 +348,10 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue);
  * @exception NULL_POINTER_ERROR if priority_queue is null 
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  * @note the order of elements in the returned array is unspecified
  */
-void** priority_queue_to_array(const PriorityQueue* priority_queue);
+Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue);
 
 /**
  * @brief Converts the priority queue to a string representation.

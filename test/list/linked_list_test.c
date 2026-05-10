@@ -1233,11 +1233,11 @@ void test_convert_linked_list_to_array() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    void** elements = linked_list_to_array(linked_list);
+    Array(void*) elements = linked_list_to_array(linked_list);
     // then
     TEST_ASSERT_ARRAY_EQUALS(values, elements);
     // clean up
-    free(elements);
+    array_destroy(elements);
 }
 
 void test_get_linked_list_string_representation() {

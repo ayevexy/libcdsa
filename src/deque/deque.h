@@ -5,6 +5,7 @@
 #include "util/functions.h"
 #include "util/collection.h"
 #include "util/string.h"
+#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -418,9 +419,9 @@ Collection deque_to_collection(const Deque* deque);
  * @exception NULL_POINTER_ERROR if deque is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  */
-void** deque_to_array(const Deque* deque);
+Array(void*) deque_to_array(const Deque* deque);
 
 /**
  * @brief Converts the deque to a string representation.

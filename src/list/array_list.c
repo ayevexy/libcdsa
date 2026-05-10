@@ -684,9 +684,9 @@ Collection array_list_to_collection(const ArrayList* array_list) {
     };
 }
 
-void** array_list_to_array(const ArrayList* array_list) {
+Array(void*) array_list_to_array(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    void** elements = array_list->memory_alloc(array_list->size * sizeof(void*));
+    Array(void*) elements = _array_new(array_list->size, sizeof(void*), nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

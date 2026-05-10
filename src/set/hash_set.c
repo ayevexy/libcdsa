@@ -384,9 +384,9 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
     return new_hash_set;
 }
 
-void** hash_set_to_array(const HashSet* hash_set) {
+Array(void*) hash_set_to_array(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
-    void** elements = hash_set->memory_alloc(hash_set->size * sizeof(void*));
+    Array(void*) elements = _array_new(hash_set->size, sizeof(void*), nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

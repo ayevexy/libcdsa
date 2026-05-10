@@ -311,9 +311,9 @@ static inline Collection queue_to_collection(const Queue* queue) {
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @note the created array must be freed manually
+ * @note the created array must be freed manually (by `array_destroy()`)
  */
-static inline void** queue_to_array(const Queue* queue) {
+static inline Array(void*) queue_to_array(const Queue* queue) {
     return deque_to_array(queue);
 }
 

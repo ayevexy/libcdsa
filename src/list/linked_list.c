@@ -1118,7 +1118,7 @@ static Node* partition(Node* low, Node* high, Comparator compare) {
 }
 
 static bool durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
-    void** elements = linked_list_to_array(linked_list);
+    Array(void*) elements = linked_list_to_array(linked_list);
     if (!elements) {
         return false;
     }
@@ -1127,12 +1127,12 @@ static bool durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_dealloc(elements);
+    array_destroy(&elements);
     return true;
 }
 
 static bool sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
-    void** elements = linked_list_to_array(linked_list);
+    Array(void*) elements = linked_list_to_array(linked_list);
     if (!elements) {
         return false;
     }
@@ -1141,12 +1141,12 @@ static bool sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_dealloc(elements);
+    array_destroy(&elements);
     return true;
 }
 
 static bool naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
-    void** elements = linked_list_to_array(linked_list);
+    Array(void*) elements = linked_list_to_array(linked_list);
     if (!elements) {
         return false;
     }
@@ -1155,7 +1155,7 @@ static bool naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
         swap(&elements[i], &elements[j]);
     }
     array_to_linked_list(elements, linked_list);
-    linked_list->memory_dealloc(elements);
+    array_destroy(&elements);
     return true;
 }
 

@@ -399,40 +399,42 @@ void** hash_set_to_array(const HashSet* hash_set) {
     return elements;
 }
 
-StringOwned hash_set_to_string(const HashSet* hash_set) {
-    if (require_non_null(hash_set)) return string_null();
+String* hash_set_to_string(const HashSet* hash_set) {
+    if (require_non_null(hash_set)) return nullptr;
 
-    char* raw_string = strings_memory_alloc(calculate_string_size(hash_set));
-    if (!raw_string) {
+    const size_t total_length = calculate_string_size(hash_set);
+    String* string = string_memory_alloc(sizeof(String) + total_length);
+    if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return string_null();
+        return nullptr;
     }
-    raw_string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(raw_string, hash_set->size == 0 ? "(" : "( ");
+    string->length = total_length - 1;
+    string->data[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->data, hash_set->size == 0 ? "(" : "( ");
 
     for (int i = 0; i < hash_set->capacity; i++) {
         for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             constexpr int NULL_TERMINATOR = 1;
             const int length = hash_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-            char* raw_element_string = strings_memory_alloc(length);
+            char* raw_element_string = string_memory_alloc(length);
             if (!raw_element_string) {
-                strings_memory_dealloc(raw_string);
+                string_destroy(&string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-                return string_null();
+                return nullptr;
             }
             hash_set->to_string(node->element, raw_element_string, length);
-            strcat(raw_string, raw_element_string);
+            strcat(string->data, raw_element_string);
 
             if (i < hash_set->size - 1) {
-                strcat(raw_string, ", ");
+                strcat(string->data, ", ");
             }
-            strings_memory_dealloc(raw_element_string);
+            string_memory_dealloc(raw_element_string);
         }
     }
 
-    strcat(raw_string, hash_set->size == 0 ? ")" : " )");
-    return string_view(raw_string);
+    strcat(string->data, hash_set->size == 0 ? ")" : " )");
+    return string;
 }
 
 static size_t calculate_string_size(const HashSet* hash_set) {

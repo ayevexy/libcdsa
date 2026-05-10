@@ -640,16 +640,18 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
     return new_tree_map;
 }
 
-StringOwned tree_map_to_string(const TreeMap* tree_map) {
-    if (require_non_null(tree_map)) return string_null();
+String* tree_map_to_string(const TreeMap* tree_map) {
+    if (require_non_null(tree_map)) return nullptr;
 
-    char* raw_string = strings_memory_alloc(calculate_string_size(tree_map));
-    if (!raw_string) {
+    const size_t total_length = calculate_string_size(tree_map);
+    String* string = string_memory_alloc(sizeof(String) + total_length);
+    if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return string_null();
+        return nullptr;
     }
-    raw_string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(raw_string, tree_map->size == 0 ? "[" : "[ ");
+    string->length = total_length - 1;
+    string->data[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->data, tree_map->size == 0 ? "[" : "[ ");
 
     int count = 0;
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
@@ -659,27 +661,27 @@ StringOwned tree_map_to_string(const TreeMap* tree_map) {
         const int key_length = tree_map->key_to_string(entry->key, nullptr, 0);
         const int value_length = tree_map->value_to_string(entry->value, nullptr, 0);
 
-        char* raw_element_string = strings_memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
+        char* raw_element_string = string_memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
         if (!raw_element_string) {
-            strings_memory_dealloc(raw_string);
+            string_destroy(&string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return string_null();
+            return nullptr;
         }
         tree_map->key_to_string(entry->key, raw_element_string, key_length + NULL_TERMINATOR);
         strcat(raw_element_string, " = ");
         tree_map->value_to_string(entry->value, raw_element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
 
-        strcat(raw_string, raw_element_string);
+        strcat(string->data, raw_element_string);
         if (count < tree_map->size - 1) {
-            strcat(raw_string, ", ");
+            strcat(string->data, ", ");
         }
         count++;
-        strings_memory_dealloc(raw_element_string);
+        string_memory_dealloc(raw_element_string);
         entry = get_successor_entry(tree_map, entry);
     }
 
-    strcat(raw_string, tree_map->size == 0 ? "]" : " ]");
-    return string_view(raw_string);
+    strcat(string->data, tree_map->size == 0 ? "]" : " ]");
+    return string;
 }
 
 static size_t calculate_string_size(const TreeMap* tree_map) {

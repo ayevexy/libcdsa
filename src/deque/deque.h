@@ -434,6 +434,6 @@ void** deque_to_array(const Deque* deque);
  *
  * @note the created string must be freed manually
  */
-StringOwned deque_to_string(const Deque* deque);
+String* deque_to_string(const Deque* deque);
 
 #endif

@@ -317,38 +317,40 @@ void** priority_queue_to_array(const PriorityQueue* priority_queue) {
     return elements;
 }
 
-StringOwned priority_queue_to_string(const PriorityQueue* priority_queue) {
-    if (require_non_null(priority_queue)) return string_null();
+String* priority_queue_to_string(const PriorityQueue* priority_queue) {
+    if (require_non_null(priority_queue)) return nullptr;
 
-    char* raw_string = strings_memory_alloc(calculate_string_size(priority_queue));
-    if (!raw_string) {
+    const size_t total_length = calculate_string_size(priority_queue);
+    String* string = string_memory_alloc(sizeof(String) + total_length);
+    if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return string_null();
+        return nullptr;
     }
-    raw_string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(raw_string, priority_queue->size == 0 ? "|" : "| ");
+    string->length = total_length - 1;
+    string->data[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->data, priority_queue->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < priority_queue->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = priority_queue->to_string(priority_queue->elements[i], nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = strings_memory_alloc(length);
+        char* raw_element_string = string_memory_alloc(length);
         if (!raw_element_string) {
-            strings_memory_dealloc(raw_string);
+            string_destroy(&string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return string_null();
+            return nullptr;
         }
         priority_queue->to_string(priority_queue->elements[i], raw_element_string, length);
-        strcat(raw_string, raw_element_string);
+        strcat(string->data, raw_element_string);
 
         if (i < priority_queue->size - 1) {
-            strcat(raw_string, ", ");
+            strcat(string->data, ", ");
         }
-        strings_memory_dealloc(raw_element_string);
+        string_memory_dealloc(raw_element_string);
     }
 
-    strcat(raw_string, priority_queue->size == 0 ? "|" : " |");
-    return string_view(raw_string);
+    strcat(string->data, priority_queue->size == 0 ? "|" : " |");
+    return string;
 }
 
 static size_t calculate_string_size(const PriorityQueue* priority_queue) {

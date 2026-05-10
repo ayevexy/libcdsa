@@ -410,6 +410,6 @@ void** hash_set_to_array(const HashSet* hash_set);
  *
  * @note the created string must be freed manually
  */
-StringOwned hash_set_to_string(const HashSet* hash_set);
+String* hash_set_to_string(const HashSet* hash_set);
 
 #endif

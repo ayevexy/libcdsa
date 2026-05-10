@@ -796,18 +796,18 @@ void test_get_hash_map_string_representation() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_HASH_MAP(hash_map, entries);
     // when
-    StringOwned string = hash_map_to_string(hash_map);
+    String* string = hash_map_to_string(hash_map);
     // then
-    TEST_ASSERT_EQUAL_STRING("[ d = 4, e = 5, a = 1, b = 2, c = 3 ]", string.data);
+    TEST_ASSERT_EQUAL_STRING("[ d = 4, e = 5, a = 1, b = 2, c = 3 ]", string->data);
     // clean up
     string_destroy(&string);
 }
 
 void test_get_empty_hash_map_string_representation() {
     // when
-    StringOwned string = hash_map_to_string(hash_map);
+    String* string = hash_map_to_string(hash_map);
     // then
-    TEST_ASSERT_EQUAL_STRING("[]", string.data);
+    TEST_ASSERT_EQUAL_STRING("[]", string->data);
     // clean up
     string_destroy(&string);
 }

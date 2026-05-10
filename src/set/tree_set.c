@@ -565,16 +565,18 @@ void** tree_set_to_array(const TreeSet* tree_set) {
     return elements;
 }
 
-StringOwned tree_set_to_string(const TreeSet* tree_set) {
-    if (require_non_null(tree_set)) return string_null();
+String* tree_set_to_string(const TreeSet* tree_set) {
+    if (require_non_null(tree_set)) return nullptr;
 
-    char* raw_string = strings_memory_alloc(calculate_string_size(tree_set));
-    if (!raw_string) {
+    const size_t total_length = calculate_string_size(tree_set);
+    String* string = string_memory_alloc(sizeof(String) + total_length);
+    if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-        return string_null();
+        return nullptr;
     }
-    raw_string[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(raw_string, tree_set->size == 0 ? "(" : "( ");
+    string->length = total_length - 1;
+    string->data[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->data, tree_set->size == 0 ? "(" : "( ");
 
     int count = 0;
     Node* node = get_lower_node(tree_set, tree_set->root);
@@ -582,25 +584,25 @@ StringOwned tree_set_to_string(const TreeSet* tree_set) {
         constexpr int NULL_TERMINATOR = 1;
         const int length = tree_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
 
-        char* raw_element_string = strings_memory_alloc(length);
+        char* raw_element_string = string_memory_alloc(length);
         if (!raw_element_string) {
-            strings_memory_dealloc(raw_string);
+            string_destroy(&string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return string_null();
+            return nullptr;
         }
         tree_set->to_string(node->element, raw_element_string, length);
-        strcat(raw_string, raw_element_string);
+        strcat(string->data, raw_element_string);
 
         if (count < tree_set->size - 1) {
-            strcat(raw_string, ", ");
+            strcat(string->data, ", ");
         }
         count++;
-        strings_memory_dealloc(raw_element_string);
+        string_memory_dealloc(raw_element_string);
         node = get_successor_node(tree_set, node);
     }
 
-    strcat(raw_string, tree_set->size == 0 ? ")" : " )");
-    return string_view(raw_string);
+    strcat(string->data, tree_set->size == 0 ? ")" : " )");
+    return string;
 }
 
 static size_t calculate_string_size(const TreeSet* tree_set) {

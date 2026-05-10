@@ -441,18 +441,18 @@ void test_get_priority_queue_string_representation() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    StringOwned string = priority_queue_to_string(priority_queue);
+    String* string = priority_queue_to_string(priority_queue);
     // then
-    TEST_ASSERT_EQUAL_STRING("| 5, 4, 2, 1, 3 |", string.data);
+    TEST_ASSERT_EQUAL_STRING("| 5, 4, 2, 1, 3 |", string->data);
     // clean up
     string_destroy(&string);
 }
 
 void test_get_empty_priority_queue_string_representation() {
     // when
-    StringOwned string = priority_queue_to_string(priority_queue);
+    String* string = priority_queue_to_string(priority_queue);
     // then
-    TEST_ASSERT_EQUAL_STRING("||", string.data);
+    TEST_ASSERT_EQUAL_STRING("||", string->data);
     // clean up
     string_destroy(&string);
 }

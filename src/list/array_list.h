@@ -795,6 +795,6 @@ void** array_list_to_array(const ArrayList* array_list);
  *
  * @note the created string must be freed manually
  */
-StringOwned array_list_to_string(const ArrayList* array_list);
+String* array_list_to_string(const ArrayList* array_list);
 
 #endif

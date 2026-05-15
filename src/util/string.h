@@ -80,20 +80,21 @@ void string_destroy(String** string_pointer);
  * @exception NULL_POINTER_ERROR if string is null
  */
 #define string_view(string) (_Generic((string), \
-    String*: _string_as_view,                   \
-    StringView: _string_view_self,              \
-    const char*: _string_view,                  \
-    char*: _string_view,                        \
-    default: _string_view_null                  \
+    String*:  _string_view_of_string,           \
+    StringView: _string_view_of_string_view,    \
+    const char*: _string_view_of_raw_string,    \
+    char*: _string_view_of_raw_string,          \
+    int: _string_view_of_character,             \
+    char: _string_view_of_character             \
 )(string))
 
-StringView _string_as_view(String* string);
+StringView _string_view_of_string(String* string);
 
-StringView _string_view_self(StringView string_view);
+StringView _string_view_of_string_view(StringView string_view);
 
-StringView _string_view(const char* raw_string);
+StringView _string_view_of_raw_string(const char* raw_string);
 
-StringView _string_view_null(char character);
+StringView _string_view_of_character(char character);
 
 /**
  * @brief Creates a newly allocated formatted string.

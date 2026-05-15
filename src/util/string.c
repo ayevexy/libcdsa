@@ -35,21 +35,20 @@ void string_destroy(String** string_pointer) {
     *string_pointer = nullptr;
 }
 
-StringView _string_as_view(String* string) {
+StringView _string_view_of_string(String* string) {
     return string ? (StringView) { string->data, string->length } : (StringView) {};
 }
 
-StringView _string_view_self(StringView string_view) {
+StringView _string_view_of_string_view(StringView string_view) {
     return string_view;
 }
 
-StringView _string_view(const char* raw_string) {
+StringView _string_view_of_raw_string(const char* raw_string) {
     return (StringView) { raw_string, strlen(raw_string) };
 }
 
-StringView _string_view_null(char character) {
-    (void) character;
-    return (StringView) { nullptr, 0 };
+StringView _string_view_of_character(char character) {
+    return (StringView) { &character, 1 };
 }
 
 String* string_format(const char* format, ...) {

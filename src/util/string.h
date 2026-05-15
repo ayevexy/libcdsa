@@ -125,6 +125,19 @@ String* string_format(const char* format, ...);
 char _string_char_at(StringView string, int index);
 
 /**
+ * @brief Retrieves the length of a string.
+ *
+ * @param string the string
+ *
+ * @return the length
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ */
+#define string_length(string) _string_length(string_view(string))
+
+int _string_length(StringView string);
+
+/**
  * @brief Checks whether the string is empty.
  *
  * @param string the string

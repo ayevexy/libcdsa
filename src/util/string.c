@@ -81,6 +81,10 @@ char _string_char_at(StringView string, int index) {
     return string.data[index];
 }
 
+int _string_length(StringView string) {
+    return string.length;
+}
+
 bool _string_is_empty(StringView string) {
     if (require_non_null(string.data)) return false;
     return string.length == 0;

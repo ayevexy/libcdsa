@@ -442,6 +442,16 @@ String* _string_repeat(StringView string, int times);
  *  this macro automatically inserts the null string.
  */
 #define string_join(separator, ...) _string_join(string_view(separator), _dispatch_string_join(__VA_ARGS__, \
+    _string_join_20,                                                                                        \
+    _string_join_19,                                                                                        \
+    _string_join_18,                                                                                        \
+    _string_join_17,                                                                                        \
+    _string_join_16,                                                                                        \
+    _string_join_15,                                                                                        \
+    _string_join_14,                                                                                        \
+    _string_join_13,                                                                                        \
+    _string_join_12,                                                                                        \
+    _string_join_11,                                                                                        \
     _string_join_10,                                                                                        \
     _string_join_9,                                                                                         \
     _string_join_8,                                                                                         \
@@ -454,8 +464,18 @@ String* _string_repeat(StringView string, int times);
     _string_join_1                                                                                          \
 )(__VA_ARGS__))
 
-#define _dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
+#define _dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, NAME, ...) NAME
 
+#define _string_join_20(s, ...) string_view(s), _string_join_19(__VA_ARGS__)
+#define _string_join_19(s, ...) string_view(s), _string_join_18(__VA_ARGS__)
+#define _string_join_18(s, ...) string_view(s), _string_join_17(__VA_ARGS__)
+#define _string_join_17(s, ...) string_view(s), _string_join_16(__VA_ARGS__)
+#define _string_join_16(s, ...) string_view(s), _string_join_15(__VA_ARGS__)
+#define _string_join_15(s, ...) string_view(s), _string_join_14(__VA_ARGS__)
+#define _string_join_14(s, ...) string_view(s), _string_join_13(__VA_ARGS__)
+#define _string_join_13(s, ...) string_view(s), _string_join_12(__VA_ARGS__)
+#define _string_join_12(s, ...) string_view(s), _string_join_11(__VA_ARGS__)
+#define _string_join_11(s, ...) string_view(s), _string_join_10(__VA_ARGS__)
 #define _string_join_10(s, ...) string_view(s), _string_join_9(__VA_ARGS__)
 #define _string_join_9(s, ...) string_view(s), _string_join_8(__VA_ARGS__)
 #define _string_join_8(s, ...) string_view(s), _string_join_7(__VA_ARGS__)

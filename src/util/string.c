@@ -47,10 +47,6 @@ StringView _string_view_of_raw_string(const char* raw_string) {
     return (StringView) { raw_string, strlen(raw_string) };
 }
 
-StringView _string_view_of_character(char character) {
-    return (StringView) { &character, 1 };
-}
-
 String* string_format(const char* format, ...) {
     if (require_non_null(format)) return nullptr;
 

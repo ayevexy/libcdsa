@@ -83,9 +83,7 @@ void string_destroy(String** string_pointer);
     String*:  _string_view_of_string,           \
     StringView: _string_view_of_string_view,    \
     const char*: _string_view_of_raw_string,    \
-    char*: _string_view_of_raw_string,          \
-    int: _string_view_of_character,             \
-    char: _string_view_of_character             \
+    char*: _string_view_of_raw_string           \
 )(string))
 
 StringView _string_view_of_string(String* string);
@@ -93,8 +91,6 @@ StringView _string_view_of_string(String* string);
 StringView _string_view_of_string_view(StringView string_view);
 
 StringView _string_view_of_raw_string(const char* raw_string);
-
-StringView _string_view_of_character(char character);
 
 /**
  * @brief Creates a newly allocated formatted string.
@@ -242,13 +238,7 @@ bool _string_equals_ignore_case(StringView string, StringView other_string);
     char: _string_index_of_char,                            \
     int:  _string_index_of_char,                            \
     default: _string_index_of_substring                     \
-)(                                                          \
-    string_view(string), _Generic((needle),                 \
-        char: (needle),                                     \
-        int: (needle),                                      \
-        default: string_view(needle)                        \
-    )                                                       \
-)
+)(string_view(string), _dispatch_string_type(needle))
 
 int _string_index_of_char(StringView string, char character);
 
@@ -268,13 +258,7 @@ int _string_index_of_substring(StringView string, StringView substring);
     char: _string_last_index_of_char,                           \
     int:  _string_last_index_of_char,                           \
     default: _string_last_index_of_substring                    \
-)(                                                              \
-    string_view(string), _Generic((needle),                     \
-        char: (needle),                                         \
-        int: (needle),                                          \
-        default: string_view(needle)                            \
-    )                                                           \
-)
+)(string_view(string), _dispatch_string_type(needle))
 
 int _string_last_index_of_char(StringView string, char character);
 
@@ -404,21 +388,11 @@ String* _string_concat(StringView string, StringView other_string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_replace(string, target, replacement) _Generic((target),          \
-    char: _string_replace_char,                                                 \
-    int: _string_replace_char,                                                  \
-    default: _string_replace_substring                                          \
-)(                                                                              \
-    string_view(string), _Generic((target),                                     \
-        char: (target),                                                         \
-        int: (target),                                                          \
-        default: string_view(target)                                            \
-    ), _Generic((replacement),                                                  \
-        char: (replacement),                                                    \
-        int: (replacement),                                                     \
-        default: string_view(replacement)                                       \
-    )                                                                           \
-)
+#define string_replace(string, target, replacement) _Generic((target),                     \
+    char: _string_replace_char,                                                            \
+    int: _string_replace_char,                                                             \
+    default: _string_replace_substring                                                     \
+)(string_view(string), _dispatch_string_type(target), _dispatch_string_type(replacement))
 
 String* _string_replace_char(StringView string, char character, char replacement);
 
@@ -599,5 +573,16 @@ String* _string_value_of_ulong_long(unsigned long long value);
 String* _string_value_of_float(float value);
 String* _string_value_of_double(double value);
 String* _string_value_of_long_double(long double value);
+
+#define _dispatch_string_type(string) (_Generic((string),   \
+    String*:  _string_view_of_string,                       \
+    StringView: _string_view_of_string_view,                \
+    const char*: _string_view_of_raw_string,                \
+    char*: _string_view_of_raw_string,                      \
+    int: _char_self,                                        \
+    char: _char_self                                        \
+)(string))
+
+static inline char _char_self(char c) { return c; }
 
 #endif

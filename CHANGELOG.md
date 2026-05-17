@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.4.1]() — 2026-05-17
+
+### ✨ Features
+- Added `collection_to_array()` operation to `util/collection.h`.
+- Added `string_length()` operation to `util/string.h`.
+
+### ✏️ Changes
+- `string_join()` macro now can take up to 20 arguments, previously it was 10.
+- Renamed `sets_memory_alloc()` and `sets_memory_dealloc` dropping the extra `(s)`.
+- `string_view()` macro no longer accepts arguments of type `char`.
+
+---
+
 ## 🎉 [v1.0.0-beta.4]() — 2026-05-10
 
 ### ✨ Features

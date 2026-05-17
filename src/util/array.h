@@ -1,9 +1,9 @@
 #ifndef LIBCDSA_ARRAY_H
 #define LIBCDSA_ARRAY_H
 
-#include <stddef.h>
-
 #include "util/errors.h"
+
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 

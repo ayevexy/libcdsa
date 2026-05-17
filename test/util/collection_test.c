@@ -89,11 +89,24 @@ void test_collection_does_not_contains_all_elements() {
     array_list_destroy(&new_array_list);
 }
 
+void test_collection_to_array() {
+    // given
+    int values[] = { 1, 2, 3, 4, 5 };
+    POPULATE_ARRAY_LIST(array_list, values);
+    // when
+    Array(void*) elements = collection_to_array(array_list_to_collection(array_list));
+    // then
+    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    // clean up
+    array_destroy(&elements);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_collection_for_each);
     RUN_TEST(test_collection_contains_all_elements);
     RUN_TEST(test_empty_collection_contains_all_elements_of_empty_collection);
     RUN_TEST(test_collection_does_not_contains_all_elements);
+    RUN_TEST(test_collection_to_array);
     return UNITY_END();
 }

@@ -4,6 +4,7 @@
 #include "functions.h"
 #include "iterator.h"
 #include "errors.h"
+#include "array.h"
 
 /**
  * @brief A generic collection view abstraction that provides a common interface over data structures.
@@ -120,6 +121,36 @@ static inline bool collection_contains_all(Collection collection, Collection oth
     }
     iterator_destroy(&iterator);
     return contains;
+}
+
+/**
+ * @brief Returns a newly allocated array containing all elements of the collection.
+ *
+ * @param collection the collection
+ *
+ * @return an array of elements
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created array must be freed manually (by `array_destroy()`)
+ */
+static inline Array(void*) collection_to_array(Collection collection) {
+    Array(void*) elements = _array_new(collection_size(collection), sizeof(void*), nullptr);
+    if (!elements) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
+        return nullptr;
+    }
+    Iterator* iterator; Error error;
+
+    if ((error = attempt(iterator = collection_iterator(collection)))) {
+        array_destroy(&elements);
+        set_error(error, "%s of 'collection'", plain_error_message());
+        return nullptr;
+    }
+    for (int i = 0; iterator_has_next(iterator); i++) {
+        elements[i] = iterator_next(iterator);
+    }
+    return elements;
 }
 
 #endif

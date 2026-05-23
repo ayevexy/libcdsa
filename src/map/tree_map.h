@@ -722,6 +722,6 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
  *
  * @note the created string must be freed manually
  */
-String* tree_map_to_string(const TreeMap* tree_map);
+String tree_map_to_string(const TreeMap* tree_map);
 
 #endif

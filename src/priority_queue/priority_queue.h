@@ -366,6 +366,6 @@ Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue);
  * @note the created string must be freed manually
  * @note the order of elements in the string is unspecified
  */
-String* priority_queue_to_string(const PriorityQueue* priority_queue);
+String priority_queue_to_string(const PriorityQueue* priority_queue);
 
 #endif

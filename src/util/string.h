@@ -34,10 +34,10 @@ extern void (*string_memory_dealloc)(void*);
  */
 
 /** @brief Owned String type, must be freed manually */
-typedef struct {
+typedef struct String {
     int length;
     char data[];
-} String;
+} * String;
 
 /** @brief Non-Owning String type that references some other string */
 typedef struct {
@@ -57,7 +57,7 @@ typedef struct {
  */
 #define string_new(string) _string_new(string_view(string))
 
-String* _string_new(StringView string);
+String _string_new(StringView string);
 
 /**
  * @brief Destroys a previously allocated string.
@@ -68,7 +68,7 @@ String* _string_new(StringView string);
  *
  * @exception NULL_POINTER_ERROR if string_pointer || *string_pointer is null
  */
-void string_destroy(String** string_pointer);
+void string_destroy(String* string_pointer);
 
 /**
  * @brief Creates a view over an existing string, referencing it.
@@ -80,13 +80,13 @@ void string_destroy(String** string_pointer);
  * @exception NULL_POINTER_ERROR if string is null
  */
 #define string_view(string) (_Generic((string), \
-    String*:  _string_view_of_string,           \
+    String:  _string_view_of_string,            \
     StringView: _string_view_of_string_view,    \
     const char*: _string_view_of_raw_string,    \
     char*: _string_view_of_raw_string           \
 )(string))
 
-StringView _string_view_of_string(String* string);
+StringView _string_view_of_string(String string);
 
 StringView _string_view_of_string_view(StringView string_view);
 
@@ -103,7 +103,7 @@ StringView _string_view_of_raw_string(const char* raw_string);
  * @exception NULL_POINTER_ERROR if format is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-String* string_format(const char* format, ...);
+String string_format(const char* format, ...);
 
 /**
  * @brief Retrieves the character at the specified position of the string.
@@ -374,7 +374,7 @@ StringView _string_substring(StringView string, int start, int length);
  */
 #define string_concat(string, other_string) _string_concat(string_view(string), string_view(other_string))
 
-String* _string_concat(StringView string, StringView other_string);
+String _string_concat(StringView string, StringView other_string);
 
 /**
  * Replaces all occurrences of a character or substring in the string with a new one.
@@ -394,9 +394,9 @@ String* _string_concat(StringView string, StringView other_string);
     default: _string_replace_substring                                                     \
 )(string_view(string), _dispatch_string_type(target), _dispatch_string_type(replacement))
 
-String* _string_replace_char(StringView string, char character, char replacement);
+String _string_replace_char(StringView string, char character, char replacement);
 
-String* _string_replace_substring(StringView string, StringView target, StringView replacement);
+String _string_replace_substring(StringView string, StringView target, StringView replacement);
 
 /**
  * @brief Concatenates the same string n times.
@@ -412,7 +412,7 @@ String* _string_replace_substring(StringView string, StringView target, StringVi
  */
 #define string_repeat(string, times) _string_repeat(string_view(string), times)
 
-String* _string_repeat(StringView string, int times);
+String _string_repeat(StringView string, int times);
 
 /**
  * @brief Concatenates n strings repeatedly inserting the specified separator between them.
@@ -474,7 +474,7 @@ String* _string_repeat(StringView string, int times);
 #define _string_join_2(s, ...) string_view(s), _string_join_1(__VA_ARGS__)
 #define _string_join_1(s) string_view(s), (StringView) {} // sentinel
 
-String* _string_join(StringView separator, ...);
+String _string_join(StringView separator, ...);
 
 /**
  * @brief Split a string into n strings by the specified delimiter.
@@ -521,7 +521,7 @@ Array(StringView) _string_lines(StringView string);
  */
 #define string_to_uppercase(string) _string_to_uppercase(string_view(string))
 
-String* _string_to_uppercase(StringView string);
+String _string_to_uppercase(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters lowercased.
@@ -535,7 +535,7 @@ String* _string_to_uppercase(StringView string);
  */
 #define string_to_lowercase(string) _string_to_lowercase(string_view(string))
 
-String* _string_to_lowercase(StringView string);
+String _string_to_lowercase(StringView string);
 
 /**
  * @brief Converts a primitive value to its string representation.
@@ -562,20 +562,20 @@ String* _string_to_lowercase(StringView string);
     long double: _string_value_of_long_double           \
 )(value)
 
-String* _string_value_of_bool(bool value);
-String* _string_value_of_char(char value);
-String* _string_value_of_int(int value);
-String* _string_value_of_uint(unsigned int value);
-String* _string_value_of_long(long value);
-String* _string_value_of_ulong(unsigned long value);
-String* _string_value_of_long_long(long long value);
-String* _string_value_of_ulong_long(unsigned long long value);
-String* _string_value_of_float(float value);
-String* _string_value_of_double(double value);
-String* _string_value_of_long_double(long double value);
+String _string_value_of_bool(bool value);
+String _string_value_of_char(char value);
+String _string_value_of_int(int value);
+String _string_value_of_uint(unsigned int value);
+String _string_value_of_long(long value);
+String _string_value_of_ulong(unsigned long value);
+String _string_value_of_long_long(long long value);
+String _string_value_of_ulong_long(unsigned long long value);
+String _string_value_of_float(float value);
+String _string_value_of_double(double value);
+String _string_value_of_long_double(long double value);
 
 #define _dispatch_string_type(string) (_Generic((string),   \
-    String*:  _string_view_of_string,                       \
+    String:  _string_view_of_string,                       \
     StringView: _string_view_of_string_view,                \
     const char*: _string_view_of_raw_string,                \
     char*: _string_view_of_raw_string,                      \

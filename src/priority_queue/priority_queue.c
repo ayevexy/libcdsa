@@ -317,11 +317,11 @@ Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue) {
     return elements;
 }
 
-String* priority_queue_to_string(const PriorityQueue* priority_queue) {
+String priority_queue_to_string(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
 
     const size_t total_length = calculate_string_size(priority_queue);
-    String* string = string_memory_alloc(sizeof(String) + total_length);
+    String string = string_memory_alloc(sizeof(String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;

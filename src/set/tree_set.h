@@ -543,6 +543,6 @@ Array(void*) tree_set_to_array(const TreeSet* tree_set);
  *
  * @note the created string must be freed manually
  */
-String* tree_set_to_string(const TreeSet* tree_set);
+String tree_set_to_string(const TreeSet* tree_set);
 
 #endif

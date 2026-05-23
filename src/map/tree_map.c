@@ -640,11 +640,11 @@ TreeMap* tree_map_sub_map(const TreeMap* tree_map, const void* start_key, const 
     return new_tree_map;
 }
 
-String* tree_map_to_string(const TreeMap* tree_map) {
+String tree_map_to_string(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
 
     const size_t total_length = calculate_string_size(tree_map);
-    String* string = string_memory_alloc(sizeof(String) + total_length);
+    String string = string_memory_alloc(sizeof(String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;

@@ -736,6 +736,6 @@ Array(void*) linked_list_to_array(const LinkedList* linked_list);
  *
  * @note the created string must be freed manually
  */
-String* linked_list_to_string(const LinkedList* linked_list);
+String linked_list_to_string(const LinkedList* linked_list);
 
 #endif

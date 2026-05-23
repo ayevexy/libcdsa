@@ -590,6 +590,6 @@ HashMap* hash_map_clone(const HashMap* hash_map);
  *
  * @note the created string must be freed manually
  */
-String* hash_map_to_string(const HashMap* hash_map);
+String hash_map_to_string(const HashMap* hash_map);
 
 #endif

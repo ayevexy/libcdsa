@@ -697,11 +697,11 @@ Array(void*) array_list_to_array(const ArrayList* array_list) {
     return elements;
 }
 
-String* array_list_to_string(const ArrayList* array_list) {
+String array_list_to_string(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
 
     const size_t total_length = calculate_string_size(array_list);
-    String* string = string_memory_alloc(sizeof(String) + total_length);
+    String string = string_memory_alloc(sizeof(String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;

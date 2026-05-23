@@ -16,7 +16,7 @@ void test_create_string() {
     // given
     const char* raw_string = "Hello World!";
     // when
-    String* string = string_new(raw_string);
+    String string = string_new(raw_string);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
     TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
@@ -26,7 +26,7 @@ void test_create_string() {
 
 void test_destroy_string() {
     // given
-    String* string = string_new("Hello World!");
+    String string = string_new("Hello World!");
     // when
     string_destroy(&string);
     // then
@@ -58,7 +58,7 @@ void test_create_formatted_string() {
     const char* format = "H%dllo W%drld!";
     int e = 3, o = 0;
     // when
-    String* string = string_format(format, e, o);
+    String string = string_format(format, e, o);
     // then
     TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string->data);
     TEST_ASSERT_EQUAL(strlen(format) - 2, string->length);
@@ -330,7 +330,7 @@ void test_string_concat() {
     StringView hello = string_view("Hello ");
     StringView world = string_view("World!");
     // when
-    String* hello_world = string_concat(hello, world);
+    String hello_world = string_concat(hello, world);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world->data);
     TEST_ASSERT_EQUAL(hello.length + world.length, hello_world->length);
@@ -342,7 +342,7 @@ void test_string_replace_char() {
     // given
     StringView hello = string_view("Hello World!");
     // when
-    String* replaced = string_replace(hello, 'o', '0');
+    String replaced = string_replace(hello, 'o', '0');
     // then
     TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced->data);
     // clean up
@@ -353,7 +353,7 @@ void test_string_replace_substring() {
     // given
     StringView hello = string_view("Hello Worlld!");
     // when
-    String* replaced = string_replace(hello, string_view("ll"), string_view("123"));
+    String replaced = string_replace(hello, string_view("ll"), string_view("123"));
     // then
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
@@ -365,7 +365,7 @@ void test_string_repeat() {
     // given
     StringView hello = string_view("Hello");
     // when
-    String* hello_n_times = string_repeat(hello, 3);
+    String hello_n_times = string_repeat(hello, 3);
     // then
     TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times->data);
     TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times->length);
@@ -377,7 +377,7 @@ void test_string_repeat_fails_if_times_is_negative() {
     // given
     StringView hello = string_view("Hello");
     // when
-    String* hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
+    String hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
     // then
     TEST_ASSERT_NULL(hello_n_times);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -389,7 +389,7 @@ void test_string_join() {
     StringView world = string_view("World");
     StringView exclamation = string_view("!!!");
     // when
-    String* full_hello_world = string_join(string_view(" "), hello, world, exclamation);
+    String full_hello_world = string_join(string_view(" "), hello, world, exclamation);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
     TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);
@@ -443,7 +443,7 @@ void test_string_to_uppercase() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    String* uppercase = string_to_uppercase(string);
+    String uppercase = string_to_uppercase(string);
     // then
     TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase->data);
     // clean up
@@ -454,7 +454,7 @@ void test_string_to_lowercase() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    String* lowercase = string_to_lowercase(string);
+    String lowercase = string_to_lowercase(string);
     // then
     TEST_ASSERT_EQUAL_STRING("hello world!", lowercase->data);
     // clean up

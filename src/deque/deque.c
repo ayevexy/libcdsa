@@ -404,11 +404,11 @@ Array(void*) deque_to_array(const Deque* deque) {
     return elements;
 }
 
-String* deque_to_string(const Deque* deque) {
+String deque_to_string(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
 
     const size_t total_length = calculate_string_size(deque);
-    String* string = string_memory_alloc(sizeof(String) + total_length);
+    String string = string_memory_alloc(sizeof(String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;

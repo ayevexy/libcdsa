@@ -35,18 +35,6 @@ void string_destroy(String* string_pointer) {
     *string_pointer = nullptr;
 }
 
-StringView _string_view_of_string(String string) {
-    return string ? (StringView) { string->data, string->length } : (StringView) {};
-}
-
-StringView _string_view_of_string_view(StringView string_view) {
-    return string_view;
-}
-
-StringView _string_view_of_raw_string(const char* raw_string) {
-    return (StringView) { raw_string, strlen(raw_string) };
-}
-
 String string_format(const char* format, ...) {
     if (require_non_null(format)) return nullptr;
 
@@ -195,7 +183,7 @@ bool _string_ends_with(StringView string, StringView suffix) {
 
 String _string_trim(StringView string) {
     String half = _string_trim_end(string);
-    String full = _string_trim_start(string_view(half));
+    String full = _string_trim_start(_string_view(half));
     string_memory_dealloc(half);
     return full;
 }
@@ -497,6 +485,22 @@ DEFINE_STRING_VALUE_OF(_string_value_of_double, double, "%f")
 DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
+
+StringView _string_view_of_string(String string) {
+    return string ? (StringView) { string->data, string->length } : (StringView) {};
+}
+
+StringView _string_view_of_string_view(StringView string_view) {
+    return string_view;
+}
+
+StringView _string_view_of_raw_string(const char* raw_string) {
+    return (StringView) { raw_string, strlen(raw_string) };
+}
+
+char _char_self(char c) {
+    return c;
+}
 
 void _cleanup(Array(struct String*) strings) {
     for (int i = 0; i < (int) array_length(strings); i++) {

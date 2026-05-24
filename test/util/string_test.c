@@ -35,26 +35,6 @@ void test_destroy_string() {
     TEST_ASSERT_NULL(string);
 }
 
-void test_create_string_view() {
-    // when
-    StringView s0 = string_view("string literal");
-    StringView s1 = string_view(string_new("string owned"));
-    StringView s2 = string_view((char[]){"raw string"});
-    StringView s3 = string_view(string_view("self string"));
-    // then
-    TEST_ASSERT_EQUAL_STRING("string literal", s0.data);
-    TEST_ASSERT_EQUAL(strlen("string literal"), s0.length);
-    // and
-    TEST_ASSERT_EQUAL_STRING("string owned", s1.data);
-    TEST_ASSERT_EQUAL(strlen("string owned"), s1.length);
-    // and
-    TEST_ASSERT_EQUAL_STRING("raw string", s2.data);
-    TEST_ASSERT_EQUAL(strlen("raw string"), s2.length);
-    // and
-    TEST_ASSERT_EQUAL_STRING("self string", s3.data);
-    TEST_ASSERT_EQUAL(strlen("self string"), s3.length);
-}
-
 void test_create_formatted_string() {
     // given
     const char* format = "H%dllo W%drld!";
@@ -70,7 +50,7 @@ void test_create_formatted_string() {
 
 void test_get_char_at_index_from_string() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     char c = string_char_at(string, 3);
     // then
@@ -79,7 +59,7 @@ void test_get_char_at_index_from_string() {
 
 static void get_chat_at_index_out_of_bounds_test_helper(int index) {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     char c; Error error = attempt(c = string_char_at(string, index));
     // then
@@ -97,7 +77,7 @@ void test_get_char_from_string_negative_index_fails() {
 
 void test_string_is_empty() {
     // given
-    StringView string = string_view("");
+    String string = string_new("");
     // when
     bool empty = string_is_empty(string);
     // then
@@ -106,7 +86,7 @@ void test_string_is_empty() {
 
 void test_string_is_not_empty() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     bool empty = string_is_empty(string);
     // then
@@ -115,7 +95,7 @@ void test_string_is_not_empty() {
 
 void test_string_is_blank() {
     // given
-    StringView string = string_view("    ");
+    String string = string_new("    ");
     // when
     bool blank = string_is_blank(string);
     // then
@@ -124,7 +104,7 @@ void test_string_is_blank() {
 
 void test_string_is_not_blank() {
     // given
-    StringView string = string_view("    Hello World!    ");
+    String string = string_new("    Hello World!    ");
     // when
     bool blank = string_is_blank(string);
     // then
@@ -133,8 +113,8 @@ void test_string_is_not_blank() {
 
 void test_compare_strings_with_same_length() {
     // given
-    StringView string = string_view("aaaaa"); // 'a' is greater than 'A' in ASCII
-    StringView other_string = string_view("AAAAA");
+    String string = string_new("aaaaa"); // 'a' is greater than 'A' in ASCII
+    String other_string = string_new("AAAAA");
     // when
     int greater = string_compare(string, other_string);
     int equals = string_compare(string, string);
@@ -147,8 +127,8 @@ void test_compare_strings_with_same_length() {
 
 void test_compare_strings_with_different_lengths() {
     // given
-    StringView string = string_view("aAaAA");
-    StringView other_string = string_view("AaA");
+    String string = string_new("aAaAA");
+    String other_string = string_new("AaA");
     // when
     int greater = string_compare(string, other_string);
     int lesser = string_compare(other_string, string);
@@ -159,8 +139,8 @@ void test_compare_strings_with_different_lengths() {
 
 void test_compare_strings_with_same_length_ignore_case() {
     // given
-    StringView string = string_view("aAaAa"); // 'a' is greater than 'A' in ASCII
-    StringView other_string = string_view("AAaAA");
+    String string = string_new("aAaAa"); // 'a' is greater than 'A' in ASCII
+    String other_string = string_new("AAaAA");
     // when
     int equals = string_compare_ignore_case(string, other_string);
     // then
@@ -169,8 +149,8 @@ void test_compare_strings_with_same_length_ignore_case() {
 
 void test_compare_strings_with_different_lengths_ignore_case() {
     // given
-    StringView string = string_view("aAaAA");
-    StringView other_string = string_view("AaA");
+    String string = string_new("aAaAA");
+    String other_string = string_new("AaA");
     // when
     int greater = string_compare_ignore_case(string, other_string);
     int lesser = string_compare_ignore_case(other_string, string);
@@ -181,8 +161,8 @@ void test_compare_strings_with_different_lengths_ignore_case() {
 
 void test_string_equals() {
     // given
-    StringView string = string_view("Hello World!");
-    StringView other_string = string_view("HELLO WORLD!");
+    String string = string_new("Hello World!");
+    String other_string = string_new("HELLO WORLD!");
     // then
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_FALSE(string_equals(string, other_string));
@@ -190,8 +170,8 @@ void test_string_equals() {
 
 void test_string_equals_ignore_case() {
     // given
-    StringView string = string_view("Hello World!");
-    StringView other_string = string_view("HELLO WORLD!");
+    String string = string_new("Hello World!");
+    String other_string = string_new("HELLO WORLD!");
     // then
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_TRUE(string_equals_ignore_case(string, other_string));
@@ -199,7 +179,7 @@ void test_string_equals_ignore_case() {
 
 void test_string_index_of_char() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     int index = string_index_of(string, 'l');
     int not_found = string_index_of(string, '9');
@@ -210,7 +190,7 @@ void test_string_index_of_char() {
 
 void test_string_last_index_of_char() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     int index = string_last_index_of(string, 'l');
     int not_found = string_last_index_of(string, '9');
@@ -221,10 +201,10 @@ void test_string_last_index_of_char() {
 
 void test_string_index_of_substring() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
-    int index = string_index_of(string, string_view("ll"));
-    int not_found = string_index_of(string, string_view("aaa"));
+    int index = string_index_of(string, string_new("ll"));
+    int not_found = string_index_of(string, string_new("aaa"));
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -232,10 +212,10 @@ void test_string_index_of_substring() {
 
 void test_string_last_index_of_substring() {
     // given
-    StringView string = string_view("Hello Worlld!");
+    String string = string_new("Hello Worlld!");
     // when
-    int index = string_last_index_of(string, string_view("ll"));
-    int not_found = string_last_index_of(string, string_view("aaa"));
+    int index = string_last_index_of(string, string_new("ll"));
+    int not_found = string_last_index_of(string, string_new("aaa"));
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -243,31 +223,31 @@ void test_string_last_index_of_substring() {
 
 void test_string_contains_substring() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_contains(string, string_view("llo Wor")));
-    TEST_ASSERT_FALSE(string_contains(string, string_view("Mars")));
+    TEST_ASSERT_TRUE(string_contains(string, string_new("llo Wor")));
+    TEST_ASSERT_FALSE(string_contains(string, string_new("Mars")));
 }
 
 void test_string_starts_with_prefix() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_starts_with(string, string_view("Hello")));
-    TEST_ASSERT_FALSE(string_starts_with(string, string_view("World!")));
+    TEST_ASSERT_TRUE(string_starts_with(string, string_new("Hello")));
+    TEST_ASSERT_FALSE(string_starts_with(string, string_new("World!")));
 }
 
 void test_string_ends_with_prefix() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_ends_with(string, string_view("World!")));
-    TEST_ASSERT_FALSE(string_ends_with(string, string_view("Hello")));
+    TEST_ASSERT_TRUE(string_ends_with(string, string_new("World!")));
+    TEST_ASSERT_FALSE(string_ends_with(string, string_new("Hello")));
 }
 
 void test_string_trim() {
     // given
-    StringView string = string_view("  Hello World!  ");
+    String string = string_new("  Hello World!  ");
     // when
     String trimmed = string_trim(string);
     // then
@@ -279,7 +259,7 @@ void test_string_trim() {
 
 void test_string_trim_start() {
     // given
-    StringView string = string_view("  Hello World!  ");
+    String string = string_new("  Hello World!  ");
     // when
     String trimmed = string_trim_start(string);
     // then
@@ -291,7 +271,7 @@ void test_string_trim_start() {
 
 void test_string_trim_end() {
     // given
-    StringView string = string_view("  Hello World!  ");
+    String string = string_new("  Hello World!  ");
     // when
     String trimmed = string_trim_end(string);
     // then
@@ -303,7 +283,7 @@ void test_string_trim_end() {
 
 void test_string_substring() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     String substring = string_substring(string, 1, 4);
     // then
@@ -315,7 +295,7 @@ void test_string_substring() {
 
 static void substring_index_out_of_bounds_test_helper(int start, int length) {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     String substring; Error error = attempt(substring = string_substring(string, start, length));
     // then
@@ -337,20 +317,20 @@ void test_string_substring_start_index_greater_than_length_fails() {
 
 void test_string_concat() {
     // given
-    StringView hello = string_view("Hello ");
-    StringView world = string_view("World!");
+    String hello = string_new("Hello ");
+    String world = string_new("World!");
     // when
     String hello_world = string_concat(hello, world);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world->data);
-    TEST_ASSERT_EQUAL(hello.length + world.length, hello_world->length);
+    TEST_ASSERT_EQUAL(hello->length + world->length, hello_world->length);
     // clean up
     string_destroy(&hello_world);
 }
 
 void test_string_replace_char() {
     // given
-    StringView hello = string_view("Hello World!");
+    String hello = string_new("Hello World!");
     // when
     String replaced = string_replace(hello, 'o', '0');
     // then
@@ -361,9 +341,9 @@ void test_string_replace_char() {
 
 void test_string_replace_substring() {
     // given
-    StringView hello = string_view("Hello Worlld!");
+    String hello = string_new("Hello Worlld!");
     // when
-    String replaced = string_replace(hello, string_view("ll"), string_view("123"));
+    String replaced = string_replace(hello, string_new("ll"), string_new("123"));
     // then
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
@@ -373,7 +353,7 @@ void test_string_replace_substring() {
 
 void test_string_repeat() {
     // given
-    StringView hello = string_view("Hello");
+    String hello = string_new("Hello");
     // when
     String hello_n_times = string_repeat(hello, 3);
     // then
@@ -385,7 +365,7 @@ void test_string_repeat() {
 
 void test_string_repeat_fails_if_times_is_negative() {
     // given
-    StringView hello = string_view("Hello");
+    String hello = string_new("Hello");
     // when
     String hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
     // then
@@ -395,11 +375,11 @@ void test_string_repeat_fails_if_times_is_negative() {
 
 void test_string_join() {
     // given
-    StringView hello = string_view("Hello");
-    StringView world = string_view("World");
-    StringView exclamation = string_view("!!!");
+    String hello = string_new("Hello");
+    String world = string_new("World");
+    String exclamation = string_new("!!!");
     // when
-    String full_hello_world = string_join(string_view(" "), hello, world, exclamation);
+    String full_hello_world = string_join(string_new(" "), hello, world, exclamation);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
     TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);
@@ -409,7 +389,7 @@ void test_string_join() {
 
 void test_string_split() {
     // given
-    StringView string = string_view("Hello World !!!");
+    String string = string_new("Hello World !!!");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
@@ -427,7 +407,7 @@ void test_string_split() {
 
 void test_string_split_single_word() {
     // given
-    StringView string = string_view("Hello");
+    String string = string_new("Hello");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
@@ -439,7 +419,7 @@ void test_string_split_single_word() {
 
 void test_string_split_empty() {
     // given
-    StringView string = string_view("");
+    String string = string_new("");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
@@ -450,7 +430,7 @@ void test_string_split_empty() {
 
 void test_string_to_uppercase() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     String uppercase = string_to_uppercase(string);
     // then
@@ -461,7 +441,7 @@ void test_string_to_uppercase() {
 
 void test_string_to_lowercase() {
     // given
-    StringView string = string_view("Hello World!");
+    String string = string_new("Hello World!");
     // when
     String lowercase = string_to_lowercase(string);
     // then
@@ -490,7 +470,6 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
     RUN_TEST(test_destroy_string);
-    RUN_TEST(test_create_string_view);
     RUN_TEST(test_create_formatted_string);
     RUN_TEST(test_get_char_at_index_from_string);
     RUN_TEST(test_get_char_from_string_index_above_bounds_fails);

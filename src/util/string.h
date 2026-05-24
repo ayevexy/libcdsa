@@ -60,15 +60,41 @@ typedef struct {
 String _string_new(StringView string);
 
 /**
- * @brief Destroys a previously allocated string.
+ * @brief Destroys previously allocated strings.
  *
- * @param string_pointer pointer to a string pointer
+ * @param ... the strings
  *
- * @post *string_pointer == nullptr
+ * @post &strings[i] == nullptr
  *
- * @exception NULL_POINTER_ERROR if string_pointer || *string_pointer is null
+ * @exception NULL_POINTER_ERROR if &strings[i] || strings[i] is null
  */
-void string_destroy(String* string_pointer);
+#define string_destroy(...) (_dispatch_string_destroy(__VA_ARGS__,  \
+    _string_destroy_10,                                             \
+    _string_destroy_9,                                              \
+    _string_destroy_8,                                              \
+    _string_destroy_7,                                              \
+    _string_destroy_6,                                              \
+    _string_destroy_5,                                              \
+    _string_destroy_4,                                              \
+    _string_destroy_3,                                              \
+    _string_destroy_2,                                              \
+    _string_destroy_1                                               \
+)(__VA_ARGS__))
+
+#define _dispatch_string_destroy(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
+
+#define _string_destroy_10(string, ...) _string_destroy(string) _string_destroy_9(__VA_ARGS__)
+#define _string_destroy_9(string, ...) _string_destroy(string), _string_destroy_8(__VA_ARGS__)
+#define _string_destroy_8(string, ...) _string_destroy(string), _string_destroy_7(__VA_ARGS__)
+#define _string_destroy_7(string, ...) _string_destroy(string), _string_destroy_6(__VA_ARGS__)
+#define _string_destroy_6(string, ...) _string_destroy(string), _string_destroy_5(__VA_ARGS__)
+#define _string_destroy_5(string, ...) _string_destroy(string), _string_destroy_4(__VA_ARGS__)
+#define _string_destroy_4(string, ...) _string_destroy(string), _string_destroy_3(__VA_ARGS__)
+#define _string_destroy_3(string, ...) _string_destroy(string), _string_destroy_2(__VA_ARGS__)
+#define _string_destroy_2(string, ...) _string_destroy(string), _string_destroy_1(__VA_ARGS__)
+#define _string_destroy_1(string) _string_destroy(string)
+
+void _string_destroy(String* string_pointer);
 
 /**
  * @brief Creates a newly allocated formatted string.
@@ -410,27 +436,27 @@ String _string_repeat(StringView string, int times);
  * @warning the string list MUST be terminated by a `(StringView) {}` element, otherwise, it's undefined behavior
  *  this macro automatically inserts the null string.
  */
-#define string_join(separator, ...) _string_join(_string_view(separator), _dispatch_string_join(__VA_ARGS__, \
-    _string_join_20,                                                                                        \
-    _string_join_19,                                                                                        \
-    _string_join_18,                                                                                        \
-    _string_join_17,                                                                                        \
-    _string_join_16,                                                                                        \
-    _string_join_15,                                                                                        \
-    _string_join_14,                                                                                        \
-    _string_join_13,                                                                                        \
-    _string_join_12,                                                                                        \
-    _string_join_11,                                                                                        \
-    _string_join_10,                                                                                        \
-    _string_join_9,                                                                                         \
-    _string_join_8,                                                                                         \
-    _string_join_7,                                                                                         \
-    _string_join_6,                                                                                         \
-    _string_join_5,                                                                                         \
-    _string_join_4,                                                                                         \
-    _string_join_3,                                                                                         \
-    _string_join_2,                                                                                         \
-    _string_join_1                                                                                          \
+#define string_join(separator, ...) _string_join(_string_view(separator), _dispatch_string_join(__VA_ARGS__,    \
+    _string_join_20,                                                                                            \
+    _string_join_19,                                                                                            \
+    _string_join_18,                                                                                            \
+    _string_join_17,                                                                                            \
+    _string_join_16,                                                                                            \
+    _string_join_15,                                                                                            \
+    _string_join_14,                                                                                            \
+    _string_join_13,                                                                                            \
+    _string_join_12,                                                                                            \
+    _string_join_11,                                                                                            \
+    _string_join_10,                                                                                            \
+    _string_join_9,                                                                                             \
+    _string_join_8,                                                                                             \
+    _string_join_7,                                                                                             \
+    _string_join_6,                                                                                             \
+    _string_join_5,                                                                                             \
+    _string_join_4,                                                                                             \
+    _string_join_3,                                                                                             \
+    _string_join_2,                                                                                             \
+    _string_join_1                                                                                              \
 )(__VA_ARGS__))
 
 #define _dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, NAME, ...) NAME

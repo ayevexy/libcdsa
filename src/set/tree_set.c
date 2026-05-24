@@ -569,7 +569,7 @@ String tree_set_to_string(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
 
     const size_t total_length = calculate_string_size(tree_set);
-    String string = string_memory_alloc(sizeof(String) + total_length);
+    String string = string_memory_alloc(sizeof(struct String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;

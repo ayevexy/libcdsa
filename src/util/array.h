@@ -78,8 +78,16 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
  */
 #define array_destroy(array)                                                \
     do {                                                                    \
+        _Generic((array),                                                   \
+            struct String***: _cleanup((struct String** ) *array),          \
+            default: (void) array                                           \
+        );                                                                  \
         free((RealArray*)((char*)(*array) - offsetof(RealArray, data)));    \
         *array = nullptr;                                                   \
     } while (false)
+
+struct String;
+
+extern void _cleanup(Array(struct String*) strings);
 
 #endif

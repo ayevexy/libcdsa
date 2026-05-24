@@ -4,6 +4,8 @@
 #include "unity.h"
 #include <string.h>
 
+#include "list/array_list.h"
+
 void setUp() {
 
 }
@@ -267,49 +269,57 @@ void test_string_trim() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    StringView trimmed = string_trim(string);
+    String trimmed = string_trim(string);
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("Hello World!", trimmed.data, trimmed.length);
-    TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed.length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", trimmed->data);
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed->length);
+    // clean up
+    string_destroy(&trimmed);
 }
 
 void test_string_trim_start() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    StringView trimmed = string_trim_start(string);
+    String trimmed = string_trim_start(string);
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("Hello World!  ", trimmed.data, trimmed.length);
-    TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed.length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!  ", trimmed->data);
+    TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed->length);
+    // clean up
+    string_destroy(&trimmed);
 }
 
 void test_string_trim_end() {
     // given
     StringView string = string_view("  Hello World!  ");
     // when
-    StringView trimmed = string_trim_end(string);
+    String trimmed = string_trim_end(string);
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("  Hello World!", trimmed.data, trimmed.length);
-    TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed.length);
+    TEST_ASSERT_EQUAL_STRING("  Hello World!", trimmed->data);
+    TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed->length);
+    // clean up
+    string_destroy(&trimmed);
 }
 
 void test_string_substring() {
     // given
     StringView string = string_view("Hello World!");
     // when
-    StringView substring = string_substring(string, 1, 4);
+    String substring = string_substring(string, 1, 4);
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("ello", substring.data, substring.length);
-    TEST_ASSERT_EQUAL(strlen("ello"), substring.length);
+    TEST_ASSERT_EQUAL_STRING("ello", substring->data);
+    TEST_ASSERT_EQUAL(strlen("ello"), substring->length);
+    // clean up
+    string_destroy(&substring);
 }
 
 static void substring_index_out_of_bounds_test_helper(int start, int length) {
     // given
     StringView string = string_view("Hello World!");
     // when
-    StringView substring; Error error = attempt(substring = string_substring(string, start, length));
+    String substring; Error error = attempt(substring = string_substring(string, start, length));
     // then
-    TEST_ASSERT_NULL(substring.data);
+    TEST_ASSERT_NULL(substring);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
@@ -401,16 +411,16 @@ void test_string_split() {
     // given
     StringView string = string_view("Hello World !!!");
     // when
-    Array(StringView) strings = string_split(string, ' ');
+    Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
-    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
+    TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
+    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
     // and
-    TEST_ASSERT_EQUAL_STRING_LEN("World", strings[1].data, strings[1].length);
-    TEST_ASSERT_EQUAL(strlen("World"), strings[1].length);
+    TEST_ASSERT_EQUAL_STRING("World", strings[1]->data);
+    TEST_ASSERT_EQUAL(strlen("World"), strings[1]->length);
     // and
-    TEST_ASSERT_EQUAL_STRING_LEN("!!!", strings[2].data, strings[2].length);
-    TEST_ASSERT_EQUAL(strlen("!!!"), strings[2].length);
+    TEST_ASSERT_EQUAL_STRING("!!!", strings[2]->data);
+    TEST_ASSERT_EQUAL(strlen("!!!"), strings[2]->length);
     // clean up
     array_destroy(&strings);
 }
@@ -419,10 +429,10 @@ void test_string_split_single_word() {
     // given
     StringView string = string_view("Hello");
     // when
-    Array(StringView) strings = string_split(string, ' ');
+    Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("Hello", strings[0].data, strings[0].length);
-    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0].length);
+    TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
+    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
     // clean up
     array_destroy(&strings);
 }
@@ -431,10 +441,9 @@ void test_string_split_empty() {
     // given
     StringView string = string_view("");
     // when
-    Array(StringView) strings = string_split(string, ' ');
+    Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("", strings[0].data, strings[0].length);
-    TEST_ASSERT_NULL(strings[1].data);
+    TEST_ASSERT_EQUAL_STRING_LEN("", strings[0]->data, strings[0]->length);
     // clean up
     array_destroy(&strings);
 }

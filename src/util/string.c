@@ -193,41 +193,72 @@ bool _string_ends_with(StringView string, StringView suffix) {
         && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
 }
 
-StringView _string_trim(StringView string) {
-    return _string_trim_start(_string_trim_end(string));
+String _string_trim(StringView string) {
+    String half = _string_trim_end(string);
+    String full = _string_trim_start(string_view(half));
+    string_memory_dealloc(half);
+    return full;
 }
 
-StringView _string_trim_start(StringView string) {
-    if (require_non_null(string.data)) return (StringView) {};
+String _string_trim_start(StringView string) {
+    if (require_non_null(string.data)) return nullptr;
 
     int start = 0;
     while (start < string.length && isspace(string.data[start])) {
         start++;
     }
-    return (StringView) { .data = string.data + start, .length = string.length - start };
+    const int new_length = string.length - start;
+
+    String new_string = string_memory_alloc(sizeof(String) + new_length + NULL_TERMINATOR);
+    if (!new_string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return nullptr;
+    }
+    new_string->length = new_length;
+    memcpy(new_string->data, string.data + start, string.length - start);
+    new_string->data[new_length] = '\0';
+    return new_string;
 }
 
-StringView _string_trim_end(StringView string) {
-    if (require_non_null(string.data)) return (StringView) {};
+String _string_trim_end(StringView string) {
+    if (require_non_null(string.data)) return nullptr;
 
     int end = string.length;
     while (end > 0 && isspace(string.data[end - 1])) {
         end--;
     }
-    return (StringView) { .data = string.data, .length = end };
+    const int new_length = end;
+
+    String new_string = string_memory_alloc(sizeof(String) + new_length + NULL_TERMINATOR);
+    if (!new_string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return nullptr;
+    }
+    new_string->length = new_length;
+    memcpy(new_string->data, string.data, end);
+    new_string->data[new_length] = '\0';
+    return new_string;
 }
 
-StringView _string_substring(StringView string, int start, int length) {
-    if (require_non_null(string.data)) return (StringView) {};
+String _string_substring(StringView string, int start, int length) {
+    if (require_non_null(string.data)) return nullptr;
 
     if (start < 0 || length < 0 || start > string.length) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid range start = %d, length = %d", start, length);
-        return (StringView) {};
+        return nullptr;
     }
     const int max_length = string.length - start;
     const int new_length = length > max_length ? max_length : length;
 
-    return (StringView) { .data = string.data + start, .length = new_length };
+    String new_string = string_memory_alloc(sizeof(String) + new_length + NULL_TERMINATOR);
+    if (!new_string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return nullptr;
+    }
+    new_string->length = new_length;
+    memcpy(new_string->data, string.data + start, new_length);
+    new_string->data[new_length] = '\0';
+    return new_string;
 }
 
 String _string_concat(StringView string, StringView other_string) {
@@ -366,7 +397,7 @@ String _string_join(StringView separator, ...) {
     return new_string;
 }
 
-Array(StringView) _string_split(StringView string, char delimiter) {
+Array(String) _string_split(StringView string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;
     for (int i = 0; i < string.length; i++) {
@@ -374,7 +405,7 @@ Array(StringView) _string_split(StringView string, char delimiter) {
             count++;
         }
     }
-    Array(StringView) strings = _array_new(count, sizeof(StringView), nullptr);
+    Array(String) strings = _array_new(count, sizeof(String), nullptr);
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;
@@ -382,17 +413,22 @@ Array(StringView) _string_split(StringView string, char delimiter) {
     int index = 0;
     for (int i = 0, start = 0; i <= string.length; i++) {
         if (string.data[i] == delimiter || i == string.length) {
-            strings[index++] = (StringView) {
-                .data = string.data + start,
-                .length = i - start
-            };
+            String current = string_memory_alloc(sizeof(String) + i - start + NULL_TERMINATOR);
+            if (!current) {
+                set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+                return nullptr;
+            }
+            memcpy(current->data, string.data + start, i - start);
+            current->length = i - start;
+            current->data[current->length] = '\0';
+            strings[index++] = current;
             start = i + 1;
         }
     }
     return strings;
 }
 
-Array(StringView) _string_lines(StringView string) {
+Array(String) _string_lines(StringView string) {
     return _string_split(string, '\n');
 }
 
@@ -461,3 +497,9 @@ DEFINE_STRING_VALUE_OF(_string_value_of_double, double, "%f")
 DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
+
+void _cleanup(Array(struct String*) strings) {
+    for (int i = 0; i < (int) array_length(strings); i++) {
+        string_destroy(&strings[i]);
+    }
+}

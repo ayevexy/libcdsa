@@ -311,39 +311,42 @@ bool _string_ends_with(StringView string, StringView suffix);
  *
  * @param string the string
  *
- * @return a trimmed string view
+ * @return a trimmed allocated string
  *
  * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_trim(string) _string_trim(string_view(string))
 
-StringView _string_trim(StringView string);
+String _string_trim(StringView string);
 
 /**
  * @brief Removes all white spaces from the beginning of the string.
  *
  * @param string the string
  *
- * @return a trimmed string view
+ * @return a trimmed allocated string
  *
  * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_trim_start(string) _string_trim_start(string_view(string))
 
-StringView _string_trim_start(StringView string);
+String _string_trim_start(StringView string);
 
 /**
  * @brief Removes all white spaces from the end of the string.
  *
  * @param string the string
  *
- * @return a trimmed string view
+ * @return a trimmed allocated string
  *
  * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_trim_end(string) _string_trim_end(string_view(string))
 
-StringView _string_trim_end(StringView string);
+String _string_trim_end(StringView string);
 
 /**
  * @brief Creates a substring of the string with the specified position and length.
@@ -352,14 +355,15 @@ StringView _string_trim_end(StringView string);
  * @param start start index (inclusive)
  * @param length length of the substring
  *
- * @return a substring view
+ * @return a new allocated substring
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start < 0 || length < 0 || start > string.length
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_substring(string, start, length) _string_substring(string_view(string), start, length)
 
-StringView _string_substring(StringView string, int start, int length);
+String _string_substring(StringView string, int start, int length);
 
 /**
  * @brief Concatenates two strings into a new allocated string.
@@ -491,7 +495,7 @@ String _string_join(StringView separator, ...);
  */
 #define string_split(string, delimiter) _string_split(string_view(string), delimiter)
 
-Array(StringView) _string_split(StringView string, char delimiter);
+Array(String) _string_split(StringView string, char delimiter);
 
 /**
  * @brief Split a string into multiple lines.
@@ -507,7 +511,7 @@ Array(StringView) _string_split(StringView string, char delimiter);
  */
 #define string_lines(string) _string_lines(string_view(string))
 
-Array(StringView) _string_lines(StringView string);
+Array(String) _string_lines(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters uppercased.

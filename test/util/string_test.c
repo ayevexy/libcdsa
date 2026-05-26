@@ -229,8 +229,8 @@ void test_string_index_of_substring() {
     // given
     String string = string_new("Hello World!");
     // when
-    int index = string_index_of(string, string_new("ll"));
-    int not_found = string_index_of(string, string_new("aaa"));
+    int index = string_index_of(string, "ll");
+    int not_found = string_index_of(string, "aaa");
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -242,8 +242,8 @@ void test_string_last_index_of_substring() {
     // given
     String string = string_new("Hello Worlld!");
     // when
-    int index = string_last_index_of(string, string_new("ll"));
-    int not_found = string_last_index_of(string, string_new("aaa"));
+    int index = string_last_index_of(string, "ll");
+    int not_found = string_last_index_of(string, "aaa");
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
@@ -255,8 +255,8 @@ void test_string_contains_substring() {
     // given
     String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_contains(string, string_new("llo Wor")));
-    TEST_ASSERT_FALSE(string_contains(string, string_new("Mars")));
+    TEST_ASSERT_TRUE(string_contains(string, "llo Wor"));
+    TEST_ASSERT_FALSE(string_contains(string, "Mars"));
     // clean up
     string_destroy(&string);
 }
@@ -265,8 +265,8 @@ void test_string_starts_with_prefix() {
     // given
     String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_starts_with(string, string_new("Hello")));
-    TEST_ASSERT_FALSE(string_starts_with(string, string_new("World!")));
+    TEST_ASSERT_TRUE(string_starts_with(string, "Hello"));
+    TEST_ASSERT_FALSE(string_starts_with(string, "World!"));
     // clean up
     string_destroy(&string);
 }
@@ -275,8 +275,8 @@ void test_string_ends_with_prefix() {
     // given
     String string = string_new("Hello World!");
     // then
-    TEST_ASSERT_TRUE(string_ends_with(string, string_new("World!")));
-    TEST_ASSERT_FALSE(string_ends_with(string, string_new("Hello")));
+    TEST_ASSERT_TRUE(string_ends_with(string, "World!"));
+    TEST_ASSERT_FALSE(string_ends_with(string, "Hello"));
     // clean up
     string_destroy(&string);
 }
@@ -381,7 +381,7 @@ void test_string_replace_substring() {
     // given
     String hello = string_new("Hello Worlld!");
     // when
-    String replaced = string_replace(hello, string_new("ll"), string_new("123"));
+    String replaced = string_replace(hello, "ll", "123");
     // then
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
@@ -419,7 +419,7 @@ void test_string_join() {
     String world = string_new("World");
     String exclamation = string_new("!!!");
     // when
-    String full_hello_world = string_join(string_new(" "), hello, world, exclamation);
+    String full_hello_world = string_join(" ", hello, world, exclamation);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
     TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);

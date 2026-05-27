@@ -19,31 +19,17 @@ extern void* (*string_memory_alloc)(size_t);
 extern void (*string_memory_dealloc)(void*);
 
 /**
- * @brief String types abstraction over c-strings. The String types are conceptually immutable
+ * @brief String type abstraction over c-strings. The String type is conceptually immutable
  * and all operations that would modify a string return a new modified version instead.
  *
- * They are divided into two distinct types: StringView and String. StringView
- * are just references to other strings while String are a distinct objects with their
- * own internal buffer that must be freed manually.
- *
  * Memory ownership:
- * - StringView does NOT own memory and must not be freed.
- * - String owns its buffer and must be freed using string_destroy().
- * - Functions returning StringView reference existing memory.
- * - Functions returning String allocate new memory.
+ * - String must be freed using string_destroy(), except for strings created by `string_ref()`.
  */
-
-/** @brief Owned String type, must be freed manually */
 typedef struct String {
     int length;
-    char data[];
+    char* data;
+    char _data[];
 } * String;
-
-/** @brief Non-Owning String type that references some other string */
-typedef struct {
-    const char* data;
-    int length;
-} StringView;
 
 /**
  * @brief Creates a new allocated string copying another string.
@@ -55,9 +41,21 @@ typedef struct {
  * @exception NULL_POINTER_ERROR if string is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_new(string) _string_new(_string_view(string))
+#define string_new(string) _string_new(_string_ref(string))
 
-String _string_new(StringView string);
+String _string_new(struct String string);
+
+/**
+ * @brief Creates a string that references an existing c-string.
+ *
+ * @param string the string
+ *
+ * @return a string reference
+ */
+#define string_ref(string) _Generic((string),                                           \
+    const char*: &(struct String) { .length = strlen(string), .data = (char*) string }, \
+    char*: &(struct String) { .length = strlen(string), .data = (char*) string }        \
+)
 
 /**
  * @brief Destroys previously allocated strings.
@@ -120,9 +118,9 @@ String string_format(const char* format, ...);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= string.length
  */
-#define string_char_at(string, index) _string_char_at(_string_view(string), index)
+#define string_char_at(string, index) _string_char_at(_string_ref(string), index)
 
-char _string_char_at(StringView string, int index);
+char _string_char_at(struct String string, int index);
 
 /**
  * @brief Retrieves the length of a string.
@@ -133,9 +131,9 @@ char _string_char_at(StringView string, int index);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_length(string) _string_length(_string_view(string))
+#define string_length(string) _string_length(_string_ref(string))
 
-int _string_length(StringView string);
+int _string_length(struct String string);
 
 /**
  * @brief Checks whether the string is empty.
@@ -146,9 +144,9 @@ int _string_length(StringView string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_is_empty(string) _string_is_empty(_string_view(string))
+#define string_is_empty(string) _string_is_empty(_string_ref(string))
 
-bool _string_is_empty(StringView string);
+bool _string_is_empty(struct String string);
 
 /**
  * @brief Checks whether the string is blank.
@@ -159,9 +157,9 @@ bool _string_is_empty(StringView string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_is_blank(string) _string_is_blank(_string_view(string))
+#define string_is_blank(string) _string_is_blank(_string_ref(string))
 
-bool _string_is_blank(StringView string);
+bool _string_is_blank(struct String string);
 
 /**
  * @brief Calculate a hash value of a string.
@@ -182,9 +180,9 @@ uint64_t string_hash(const void* raw_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_compare(string, other_string) _string_compare(_string_view(string), _string_view(other_string))
+#define string_compare(string, other_string) _string_compare(_string_ref(string), _string_ref(other_string))
 
-int _string_compare(StringView string, StringView other_string);
+int _string_compare(struct String string, struct String other_string);
 
 /**
  * @brief Compares two strings lexicographically ignoring case.
@@ -196,9 +194,9 @@ int _string_compare(StringView string, StringView other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_compare_ignore_case(string, other_string) _string_compare_ignore_case(_string_view(string), _string_view(other_string))
+#define string_compare_ignore_case(string, other_string) _string_compare_ignore_case(_string_ref(string), _string_ref(other_string))
 
-int _string_compare_ignore_case(StringView string, StringView other_string);
+int _string_compare_ignore_case(struct String string, struct String other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals.
@@ -210,9 +208,9 @@ int _string_compare_ignore_case(StringView string, StringView other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_equals(string, other_string) _string_equals(_string_view(string), _string_view(other_string))
+#define string_equals(string, other_string) _string_equals(_string_ref(string), _string_ref(other_string))
 
-bool _string_equals(StringView string, StringView other_string);
+bool _string_equals(struct String string, struct String other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals ignoring case.
@@ -224,9 +222,9 @@ bool _string_equals(StringView string, StringView other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_equals_ignore_case(string, other_string) _string_equals_ignore_case(_string_view(string), _string_view(other_string))
+#define string_equals_ignore_case(string, other_string) _string_equals_ignore_case(_string_ref(string), _string_ref(other_string))
 
-bool _string_equals_ignore_case(StringView string, StringView other_string);
+bool _string_equals_ignore_case(struct String string, struct String other_string);
 
 /**
  * @brief Retrieves the index of the first occurrence of the specified character or substring in the string.
@@ -242,11 +240,11 @@ bool _string_equals_ignore_case(StringView string, StringView other_string);
     char: _string_index_of_char,                            \
     int:  _string_index_of_char,                            \
     default: _string_index_of_substring                     \
-)(_string_view(string), _dispatch_string_type(needle))
+)(_string_ref(string), _dispatch_string_type(needle))
 
-int _string_index_of_char(StringView string, char character);
+int _string_index_of_char(struct String string, char character);
 
-int _string_index_of_substring(StringView string, StringView substring);
+int _string_index_of_substring(struct String string, struct String substring);
 
 /**
  * @brief Retrieves the index of the last occurrence of the specified character or substring in the string.
@@ -262,11 +260,11 @@ int _string_index_of_substring(StringView string, StringView substring);
     char: _string_last_index_of_char,                           \
     int:  _string_last_index_of_char,                           \
     default: _string_last_index_of_substring                    \
-)(_string_view(string), _dispatch_string_type(needle))
+)(_string_ref(string), _dispatch_string_type(needle))
 
-int _string_last_index_of_char(StringView string, char character);
+int _string_last_index_of_char(struct String string, char character);
 
-int _string_last_index_of_substring(StringView string, StringView substring);
+int _string_last_index_of_substring(struct String string, struct String substring);
 
 /**
  * @brief Checks whether a substring is present in the string.
@@ -278,9 +276,9 @@ int _string_last_index_of_substring(StringView string, StringView substring);
  *
  * @exception NULL_POINTER_ERROR if string.data || substring.data is null
  */
-#define string_contains(string, substring) _string_contains(_string_view(string), _string_view(substring))
+#define string_contains(string, substring) _string_contains(_string_ref(string), _string_ref(substring))
 
-bool _string_contains(StringView string, StringView substring);
+bool _string_contains(struct String string, struct String substring);
 
 /**
  * @brief Checks whether a string starts with the specified prefix.
@@ -292,9 +290,9 @@ bool _string_contains(StringView string, StringView substring);
  *
  * @exception NULL_POINTER_ERROR if string.data || prefix.data is null
  */
-#define string_starts_with(string, prefix) _string_starts_with(_string_view(string), _string_view(prefix))
+#define string_starts_with(string, prefix) _string_starts_with(_string_ref(string), _string_ref(prefix))
 
-bool _string_starts_with(StringView string, StringView prefix);
+bool _string_starts_with(struct String string, struct String prefix);
 
 /**
  * @brief Checks whether a string ends with the specified suffix.
@@ -306,9 +304,9 @@ bool _string_starts_with(StringView string, StringView prefix);
  *
  * @exception NULL_POINTER_ERROR if string.data || suffix.data is null
  */
-#define string_ends_with(string, prefix) _string_ends_with(_string_view(string), _string_view(prefix))
+#define string_ends_with(string, prefix) _string_ends_with(_string_ref(string), _string_ref(prefix))
 
-bool _string_ends_with(StringView string, StringView suffix);
+bool _string_ends_with(struct String string, struct String suffix);
 
 /**
  * @brief Removes all white spaces from both the beginning and the end of the string.
@@ -320,9 +318,9 @@ bool _string_ends_with(StringView string, StringView suffix);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim(string) _string_trim(_string_view(string))
+#define string_trim(string) _string_trim(_string_ref(string))
 
-String _string_trim(StringView string);
+String _string_trim(struct String string);
 
 /**
  * @brief Removes all white spaces from the beginning of the string.
@@ -334,9 +332,9 @@ String _string_trim(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim_start(string) _string_trim_start(_string_view(string))
+#define string_trim_start(string) _string_trim_start(_string_ref(string))
 
-String _string_trim_start(StringView string);
+String _string_trim_start(struct String string);
 
 /**
  * @brief Removes all white spaces from the end of the string.
@@ -348,9 +346,9 @@ String _string_trim_start(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim_end(string) _string_trim_end(_string_view(string))
+#define string_trim_end(string) _string_trim_end(_string_ref(string))
 
-String _string_trim_end(StringView string);
+String _string_trim_end(struct String string);
 
 /**
  * @brief Creates a substring of the string with the specified position and length.
@@ -365,9 +363,9 @@ String _string_trim_end(StringView string);
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start < 0 || length < 0 || start > string.length
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_substring(string, start, length) _string_substring(_string_view(string), start, length)
+#define string_substring(string, start, length) _string_substring(_string_ref(string), start, length)
 
-String _string_substring(StringView string, int start, int length);
+String _string_substring(struct String string, int start, int length);
 
 /**
  * @brief Concatenates two strings into a new allocated string.
@@ -380,9 +378,9 @@ String _string_substring(StringView string, int start, int length);
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_concat(string, other_string) _string_concat(_string_view(string), _string_view(other_string))
+#define string_concat(string, other_string) _string_concat(_string_ref(string), _string_ref(other_string))
 
-String _string_concat(StringView string, StringView other_string);
+String _string_concat(struct String string, struct String other_string);
 
 /**
  * Replaces all occurrences of a character or substring in the string with a new one.
@@ -400,11 +398,11 @@ String _string_concat(StringView string, StringView other_string);
     char: _string_replace_char,                                                            \
     int: _string_replace_char,                                                             \
     default: _string_replace_substring                                                     \
-)(_string_view(string), _dispatch_string_type(target), _dispatch_string_type(replacement))
+)(_string_ref(string), _dispatch_string_type(target), _dispatch_string_type(replacement))
 
-String _string_replace_char(StringView string, char character, char replacement);
+String _string_replace_char(struct String string, char character, char replacement);
 
-String _string_replace_substring(StringView string, StringView target, StringView replacement);
+String _string_replace_substring(struct String string, struct String target, struct String replacement);
 
 /**
  * @brief Concatenates the same string n times.
@@ -418,25 +416,25 @@ String _string_replace_substring(StringView string, StringView target, StringVie
  * @exception ILLEGAL_ARGUMENT_ERROR if times is negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_repeat(string, times) _string_repeat(_string_view(string), times)
+#define string_repeat(string, times) _string_repeat(_string_ref(string), times)
 
-String _string_repeat(StringView string, int times);
+String _string_repeat(struct String string, int times);
 
 /**
  * @brief Concatenates n strings repeatedly inserting the specified separator between them.
  *
  * @param separator the separator
- * @param ... a string list (terminated by a null string view `(StringView) {}`)
+ * @param ... a string list (terminated by a null string `(struct String) {}`)
  *
  * @return a new allocated string
  *
  * @exception NULL_POINTER_ERROR if separator.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @warning the string list MUST be terminated by a `(StringView) {}` element, otherwise, it's undefined behavior
+ * @warning the string list MUST be terminated by a `(struct String) {}` element, otherwise, it's undefined behavior
  *  this macro automatically inserts the null string.
  */
-#define string_join(separator, ...) _string_join(_string_view(separator), _dispatch_string_join(__VA_ARGS__,    \
+#define string_join(separator, ...) _string_join(_string_ref(separator), _dispatch_string_join(__VA_ARGS__,    \
     _string_join_20,                                                                                            \
     _string_join_19,                                                                                            \
     _string_join_18,                                                                                            \
@@ -461,28 +459,28 @@ String _string_repeat(StringView string, int times);
 
 #define _dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, NAME, ...) NAME
 
-#define _string_join_20(s, ...) _string_view(s), _string_join_19(__VA_ARGS__)
-#define _string_join_19(s, ...) _string_view(s), _string_join_18(__VA_ARGS__)
-#define _string_join_18(s, ...) _string_view(s), _string_join_17(__VA_ARGS__)
-#define _string_join_17(s, ...) _string_view(s), _string_join_16(__VA_ARGS__)
-#define _string_join_16(s, ...) _string_view(s), _string_join_15(__VA_ARGS__)
-#define _string_join_15(s, ...) _string_view(s), _string_join_14(__VA_ARGS__)
-#define _string_join_14(s, ...) _string_view(s), _string_join_13(__VA_ARGS__)
-#define _string_join_13(s, ...) _string_view(s), _string_join_12(__VA_ARGS__)
-#define _string_join_12(s, ...) _string_view(s), _string_join_11(__VA_ARGS__)
-#define _string_join_11(s, ...) _string_view(s), _string_join_10(__VA_ARGS__)
-#define _string_join_10(s, ...) _string_view(s), _string_join_9(__VA_ARGS__)
-#define _string_join_9(s, ...) _string_view(s), _string_join_8(__VA_ARGS__)
-#define _string_join_8(s, ...) _string_view(s), _string_join_7(__VA_ARGS__)
-#define _string_join_7(s, ...) _string_view(s), _string_join_6(__VA_ARGS__)
-#define _string_join_6(s, ...) _string_view(s), _string_join_5(__VA_ARGS__)
-#define _string_join_5(s, ...) _string_view(s), _string_join_4(__VA_ARGS__)
-#define _string_join_4(s, ...) _string_view(s), _string_join_3(__VA_ARGS__)
-#define _string_join_3(s, ...) _string_view(s), _string_join_2(__VA_ARGS__)
-#define _string_join_2(s, ...) _string_view(s), _string_join_1(__VA_ARGS__)
-#define _string_join_1(s) _string_view(s), (StringView) {} // sentinel
+#define _string_join_20(s, ...) _string_ref(s), _string_join_19(__VA_ARGS__)
+#define _string_join_19(s, ...) _string_ref(s), _string_join_18(__VA_ARGS__)
+#define _string_join_18(s, ...) _string_ref(s), _string_join_17(__VA_ARGS__)
+#define _string_join_17(s, ...) _string_ref(s), _string_join_16(__VA_ARGS__)
+#define _string_join_16(s, ...) _string_ref(s), _string_join_15(__VA_ARGS__)
+#define _string_join_15(s, ...) _string_ref(s), _string_join_14(__VA_ARGS__)
+#define _string_join_14(s, ...) _string_ref(s), _string_join_13(__VA_ARGS__)
+#define _string_join_13(s, ...) _string_ref(s), _string_join_12(__VA_ARGS__)
+#define _string_join_12(s, ...) _string_ref(s), _string_join_11(__VA_ARGS__)
+#define _string_join_11(s, ...) _string_ref(s), _string_join_10(__VA_ARGS__)
+#define _string_join_10(s, ...) _string_ref(s), _string_join_9(__VA_ARGS__)
+#define _string_join_9(s, ...) _string_ref(s), _string_join_8(__VA_ARGS__)
+#define _string_join_8(s, ...) _string_ref(s), _string_join_7(__VA_ARGS__)
+#define _string_join_7(s, ...) _string_ref(s), _string_join_6(__VA_ARGS__)
+#define _string_join_6(s, ...) _string_ref(s), _string_join_5(__VA_ARGS__)
+#define _string_join_5(s, ...) _string_ref(s), _string_join_4(__VA_ARGS__)
+#define _string_join_4(s, ...) _string_ref(s), _string_join_3(__VA_ARGS__)
+#define _string_join_3(s, ...) _string_ref(s), _string_join_2(__VA_ARGS__)
+#define _string_join_2(s, ...) _string_ref(s), _string_join_1(__VA_ARGS__)
+#define _string_join_1(s) _string_ref(s), (struct String) {} // sentinel
 
-String _string_join(StringView separator, ...);
+String _string_join(struct String separator, ...);
 
 /**
  * @brief Split a string into n strings by the specified delimiter.
@@ -497,9 +495,9 @@ String _string_join(StringView separator, ...);
  *
  * @note the returned array must be freed manually (by `array_destroy()`).
  */
-#define string_split(string, delimiter) _string_split(_string_view(string), delimiter)
+#define string_split(string, delimiter) _string_split(_string_ref(string), delimiter)
 
-Array(String) _string_split(StringView string, char delimiter);
+Array(String) _string_split(struct String string, char delimiter);
 
 /**
  * @brief Split a string into multiple lines.
@@ -513,9 +511,9 @@ Array(String) _string_split(StringView string, char delimiter);
  *
  * @note the returned array must be freed manually (by `array_destroy()`).
  */
-#define string_lines(string) _string_lines(_string_view(string))
+#define string_lines(string) _string_lines(_string_ref(string))
 
-Array(String) _string_lines(StringView string);
+Array(String) _string_lines(struct String string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters uppercased.
@@ -527,9 +525,9 @@ Array(String) _string_lines(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_to_uppercase(string) _string_to_uppercase(_string_view(string))
+#define string_to_uppercase(string) _string_to_uppercase(_string_ref(string))
 
-String _string_to_uppercase(StringView string);
+String _string_to_uppercase(struct String string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters lowercased.
@@ -541,9 +539,9 @@ String _string_to_uppercase(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_to_lowercase(string) _string_to_lowercase(_string_view(string))
+#define string_to_lowercase(string) _string_to_lowercase(_string_ref(string))
 
-String _string_to_lowercase(StringView string);
+String _string_to_lowercase(struct String string);
 
 /**
  * @brief Converts a primitive value to its string representation.
@@ -583,26 +581,22 @@ String _string_value_of_double(double value);
 String _string_value_of_long_double(long double value);
 
 #define _dispatch_string_type(string) (_Generic((string),   \
-    String:  _string_view_of_string,                        \
-    StringView: _string_view_of_string_view,                \
-    const char*: _string_view_of_raw_string,                \
-    char*: _string_view_of_raw_string,                      \
+    String:  _string_ref_of_string,                         \
+    const char*: _string_ref_of_raw_string,                 \
+    char*: _string_ref_of_raw_string,                       \
     int: _char_self,                                        \
     char: _char_self                                        \
 )(string))
 
-#define _string_view(string) (_Generic((string),    \
-    String:  _string_view_of_string,                \
-    StringView: _string_view_of_string_view,        \
-    const char*: _string_view_of_raw_string,        \
-    char*: _string_view_of_raw_string               \
+#define _string_ref(string) (_Generic((string),     \
+    String: _string_ref_of_string,                  \
+    const char*: _string_ref_of_raw_string,         \
+    char*: _string_ref_of_raw_string                \
 )(string))
 
-StringView _string_view_of_string(String string);
+struct String _string_ref_of_string(String string);
 
-StringView _string_view_of_string_view(StringView string_view);
-
-StringView _string_view_of_raw_string(const char* raw_string);
+struct String _string_ref_of_raw_string(const char* raw_string);
 
 char _char_self(char c);
 

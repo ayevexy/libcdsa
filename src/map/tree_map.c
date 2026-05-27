@@ -650,6 +650,7 @@ String tree_map_to_string(const TreeMap* tree_map) {
         return nullptr;
     }
     string->length = total_length - 1;
+    string->data = string->_data;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, tree_map->size == 0 ? "[" : "[ ");
 

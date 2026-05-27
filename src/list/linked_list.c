@@ -720,6 +720,7 @@ String linked_list_to_string(const LinkedList* linked_list) {
         return nullptr;
     }
     string->length = total_length - 1;
+    string->data = string->_data;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, linked_list->size == 0 ? "[" : "[ ");
 

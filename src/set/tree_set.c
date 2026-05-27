@@ -575,6 +575,7 @@ String tree_set_to_string(const TreeSet* tree_set) {
         return nullptr;
     }
     string->length = total_length - 1;
+    string->data = string->_data;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, tree_set->size == 0 ? "(" : "( ");
 

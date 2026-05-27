@@ -33,6 +33,21 @@ void test_destroy_string() {
     TEST_ASSERT_NULL(string);
 }
 
+void test_reference_string() {
+    // given
+    const char* s1 = "Hello World!";
+    char* s2 = "Hello World!";
+    // when
+    String s1_ref = string_ref(s1);
+    String s2_ref = string_ref(s2);
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", s1_ref->data);
+    TEST_ASSERT_EQUAL(strlen(s1), s1_ref->length);
+    // and
+    TEST_ASSERT_EQUAL_STRING("Hello World!", s2_ref->data);
+    TEST_ASSERT_EQUAL(strlen(s2), s2_ref->length);
+}
+
 void test_create_formatted_string() {
     // given
     const char* format = "H%dllo W%drld!";
@@ -48,25 +63,21 @@ void test_create_formatted_string() {
 
 void test_get_char_at_index_from_string() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     char c = string_char_at(string, 3);
     // then
     TEST_ASSERT_EQUAL('l', c);
-    // clean up
-    string_destroy(&string);
 }
 
 static void get_chat_at_index_out_of_bounds_test_helper(int index) {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     char c; Error error = attempt(c = string_char_at(string, index));
     // then
     TEST_ASSERT_EQUAL('\0', c);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_get_char_from_string_index_above_bounds_fails() {
@@ -79,52 +90,44 @@ void test_get_char_from_string_negative_index_fails() {
 
 void test_string_is_empty() {
     // given
-    String string = string_new("");
+    String string = string_ref("");
     // when
     bool empty = string_is_empty(string);
     // then
     TEST_ASSERT_TRUE(empty);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_is_not_empty() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     bool empty = string_is_empty(string);
     // then
     TEST_ASSERT_FALSE(empty);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_is_blank() {
     // given
-    String string = string_new("    ");
+    String string = string_ref("    ");
     // when
     bool blank = string_is_blank(string);
     // then
     TEST_ASSERT_TRUE(blank);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_is_not_blank() {
     // given
-    String string = string_new("    Hello World!    ");
+    String string = string_ref("    Hello World!    ");
     // when
     bool blank = string_is_blank(string);
     // then
     TEST_ASSERT_FALSE(blank);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_compare_strings_with_same_length() {
     // given
-    String string = string_new("aaaaa"); // 'a' is greater than 'A' in ASCII
-    String other_string = string_new("AAAAA");
+    String string = string_ref("aaaaa"); // 'a' is greater than 'A' in ASCII
+    String other_string = string_ref("AAAAA");
     // when
     int greater = string_compare(string, other_string);
     int equals = string_compare(string, string);
@@ -133,212 +136,184 @@ void test_compare_strings_with_same_length() {
     TEST_ASSERT(greater > 0);
     TEST_ASSERT(equals == 0);
     TEST_ASSERT(lesser < 0);
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_compare_strings_with_different_lengths() {
     // given
-    String string = string_new("aAaAA");
-    String other_string = string_new("AaA");
+    String string = string_ref("aAaAA");
+    String other_string = string_ref("AaA");
     // when
     int greater = string_compare(string, other_string);
     int lesser = string_compare(other_string, string);
     // then
     TEST_ASSERT(greater > 0);
     TEST_ASSERT(lesser < 0);
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_compare_strings_with_same_length_ignore_case() {
     // given
-    String string = string_new("aAaAa"); // 'a' is greater than 'A' in ASCII
-    String other_string = string_new("AAaAA");
+    String string = string_ref("aAaAa"); // 'a' is greater than 'A' in ASCII
+    String other_string = string_ref("AAaAA");
     // when
     int equals = string_compare_ignore_case(string, other_string);
     // then
     TEST_ASSERT(equals == 0);
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_compare_strings_with_different_lengths_ignore_case() {
     // given
-    String string = string_new("aAaAA");
-    String other_string = string_new("AaA");
+    String string = string_ref("aAaAA");
+    String other_string = string_ref("AaA");
     // when
     int greater = string_compare_ignore_case(string, other_string);
     int lesser = string_compare_ignore_case(other_string, string);
     // then
     TEST_ASSERT(greater > 0);
     TEST_ASSERT(lesser < 0);
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_string_equals() {
     // given
-    String string = string_new("Hello World!");
-    String other_string = string_new("HELLO WORLD!");
+    String string = string_ref("Hello World!");
+    String other_string = string_ref("HELLO WORLD!");
     // then
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_FALSE(string_equals(string, other_string));
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_string_equals_ignore_case() {
     // given
-    String string = string_new("Hello World!");
-    String other_string = string_new("HELLO WORLD!");
+    String string = string_ref("Hello World!");
+    String other_string = string_ref("HELLO WORLD!");
     // then
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_TRUE(string_equals_ignore_case(string, other_string));
-    // clean up
-    string_destroy(&string, &other_string);
 }
 
 void test_string_index_of_char() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     int index = string_index_of(string, 'l');
     int not_found = string_index_of(string, '9');
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_last_index_of_char() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     int index = string_last_index_of(string, 'l');
     int not_found = string_last_index_of(string, '9');
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_index_of_substring() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     int index = string_index_of(string, "ll");
     int not_found = string_index_of(string, "aaa");
     // then
     TEST_ASSERT_EQUAL(2, index);
     TEST_ASSERT_EQUAL(-1, not_found);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_last_index_of_substring() {
     // given
-    String string = string_new("Hello Worlld!");
+    String string = string_ref("Hello Worlld!");
     // when
     int index = string_last_index_of(string, "ll");
     int not_found = string_last_index_of(string, "aaa");
     // then
     TEST_ASSERT_EQUAL(9, index);
     TEST_ASSERT_EQUAL(-1, not_found);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_contains_substring() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // then
     TEST_ASSERT_TRUE(string_contains(string, "llo Wor"));
     TEST_ASSERT_FALSE(string_contains(string, "Mars"));
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_starts_with_prefix() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // then
     TEST_ASSERT_TRUE(string_starts_with(string, "Hello"));
     TEST_ASSERT_FALSE(string_starts_with(string, "World!"));
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_ends_with_prefix() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // then
     TEST_ASSERT_TRUE(string_ends_with(string, "World!"));
     TEST_ASSERT_FALSE(string_ends_with(string, "Hello"));
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_trim() {
     // given
-    String string = string_new("  Hello World!  ");
+    String string = string_ref("  Hello World!  ");
     // when
     String trimmed = string_trim(string);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", trimmed->data);
     TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed->length);
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy(&trimmed);
 }
 
 void test_string_trim_start() {
     // given
-    String string = string_new("  Hello World!  ");
+    String string = string_ref("  Hello World!  ");
     // when
     String trimmed = string_trim_start(string);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!  ", trimmed->data);
     TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed->length);
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy(&trimmed);
 }
 
 void test_string_trim_end() {
     // given
-    String string = string_new("  Hello World!  ");
+    String string = string_ref("  Hello World!  ");
     // when
     String trimmed = string_trim_end(string);
     // then
     TEST_ASSERT_EQUAL_STRING("  Hello World!", trimmed->data);
     TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed->length);
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy(&trimmed);
 }
 
 void test_string_substring() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     String substring = string_substring(string, 1, 4);
     // then
     TEST_ASSERT_EQUAL_STRING("ello", substring->data);
     TEST_ASSERT_EQUAL(strlen("ello"), substring->length);
     // clean up
-    string_destroy(&string, &substring);
+    string_destroy(&substring);
 }
 
 static void substring_index_out_of_bounds_test_helper(int start, int length) {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     String substring; Error error = attempt(substring = string_substring(string, start, length));
     // then
     TEST_ASSERT_NULL(substring);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
-    // clean up
-    string_destroy(&string);
 }
 
 void test_string_substring_length_less_than_zero_fails() {
@@ -355,81 +330,79 @@ void test_string_substring_start_index_greater_than_length_fails() {
 
 void test_string_concat() {
     // given
-    String hello = string_new("Hello ");
-    String world = string_new("World!");
+    String hello = string_ref("Hello ");
+    String world = string_ref("World!");
     // when
     String hello_world = string_concat(hello, world);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world->data);
     TEST_ASSERT_EQUAL(hello->length + world->length, hello_world->length);
     // clean up
-    string_destroy(&hello, &world, &hello_world);
+    string_destroy(&hello_world);
 }
 
 void test_string_replace_char() {
     // given
-    String hello = string_new("Hello World!");
+    String hello = string_ref("Hello World!");
     // when
     String replaced = string_replace(hello, 'o', '0');
     // then
     TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced->data);
     // clean up
-    string_destroy(&hello, &replaced);
+    string_destroy(&replaced);
 }
 
 void test_string_replace_substring() {
     // given
-    String hello = string_new("Hello Worlld!");
+    String hello = string_ref("Hello Worlld!");
     // when
     String replaced = string_replace(hello, "ll", "123");
     // then
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
     // clean up
-    string_destroy(&hello, &replaced);
+    string_destroy(&replaced);
 }
 
 void test_string_repeat() {
     // given
-    String hello = string_new("Hello");
+    String hello = string_ref("Hello");
     // when
     String hello_n_times = string_repeat(hello, 3);
     // then
     TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times->data);
     TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times->length);
     // clean up
-    string_destroy(&hello, &hello_n_times);
+    string_destroy(&hello_n_times);
 }
 
 void test_string_repeat_fails_if_times_is_negative() {
     // given
-    String hello = string_new("Hello");
+    String hello = string_ref("Hello");
     // when
     String hello_n_times; Error error = attempt(hello_n_times = string_repeat(hello, -1));
     // then
     TEST_ASSERT_NULL(hello_n_times);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
-    // clean up
-    string_destroy(&hello);
 }
 
 void test_string_join() {
     // given
-    String hello = string_new("Hello");
-    String world = string_new("World");
-    String exclamation = string_new("!!!");
+    String hello = string_ref("Hello");
+    String world = string_ref("World");
+    String exclamation = string_ref("!!!");
     // when
     String full_hello_world = string_join(" ", hello, world, exclamation);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
     TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);
     // clean up
-    string_destroy(&hello, &world, &exclamation, &full_hello_world);
+    string_destroy(&full_hello_world);
 }
 
 void test_string_split() {
     // given
-    String string = string_new("Hello World !!!");
+    String string = string_ref("Hello World !!!");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
@@ -442,55 +415,52 @@ void test_string_split() {
     TEST_ASSERT_EQUAL_STRING("!!!", strings[2]->data);
     TEST_ASSERT_EQUAL(strlen("!!!"), strings[2]->length);
     // clean up
-    string_destroy(&string);
     array_destroy(&strings);
 }
 
 void test_string_split_single_word() {
     // given
-    String string = string_new("Hello");
+    String string = string_ref("Hello");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
     TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
     TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
     // clean up
-    string_destroy(&string);
     array_destroy(&strings);
 }
 
 void test_string_split_empty() {
     // given
-    String string = string_new("");
+    String string = string_ref("");
     // when
     Array(String) strings = string_split(string, ' ');
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("", strings[0]->data, strings[0]->length);
     // clean up
-    string_destroy(&string);
     array_destroy(&strings);
 }
 
 void test_string_to_uppercase() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     String uppercase = string_to_uppercase(string);
     // then
     TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase->data);
     // clean up
-    string_destroy(&string, &uppercase);
+    string_destroy(&uppercase);
 }
 
 void test_string_to_lowercase() {
     // given
-    String string = string_new("Hello World!");
+    String string = string_ref("Hello World!");
     // when
     String lowercase = string_to_lowercase(string);
     // then
     TEST_ASSERT_EQUAL_STRING("hello world!", lowercase->data);
     // clean up
-    string_destroy(&string, &lowercase);
+    string_destroy(&lowercase);
 }
 
 void test_string_value_of() {
@@ -513,6 +483,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
     RUN_TEST(test_destroy_string);
+    RUN_TEST(test_reference_string);
     RUN_TEST(test_create_formatted_string);
     RUN_TEST(test_get_char_at_index_from_string);
     RUN_TEST(test_get_char_from_string_index_above_bounds_fails);

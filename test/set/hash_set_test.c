@@ -585,7 +585,7 @@ void test_get_hash_set_string_representation() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, values);
     // when
-    String* string = hash_set_to_string(hash_set);
+    String string = hash_set_to_string(hash_set);
     // then
     TEST_ASSERT_EQUAL_STRING("( 5, 1, 2, 3, 4 )", string->data);
     // clean up
@@ -594,7 +594,7 @@ void test_get_hash_set_string_representation() {
 
 void test_get_empty_hash_set_string_representation() {
     // when
-    String* string = hash_set_to_string(hash_set);
+    String string = hash_set_to_string(hash_set);
     // then
     TEST_ASSERT_EQUAL_STRING("()", string->data);
     // clean up

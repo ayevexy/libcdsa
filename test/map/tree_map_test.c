@@ -1049,7 +1049,7 @@ void test_get_tree_map_string_representation() {
     CharIntEntry entries[] = { { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 } };
     POPULATE_TREE_MAP(tree_map, entries);
     // when
-    String* string = tree_map_to_string(tree_map);
+    String string = tree_map_to_string(tree_map);
     // then
     TEST_ASSERT_EQUAL_STRING("[ a = 1, b = 2, c = 3, d = 4, e = 5 ]", string->data);
     // clean up
@@ -1058,7 +1058,7 @@ void test_get_tree_map_string_representation() {
 
 void test_get_empty_tree_map_string_representation() {
     // when
-    String* string = tree_map_to_string(tree_map);
+    String string = tree_map_to_string(tree_map);
     // then
     TEST_ASSERT_EQUAL_STRING("[]", string->data);
     // clean up

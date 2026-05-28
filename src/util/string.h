@@ -136,6 +136,19 @@ char _string_char_at(struct String string, int index);
 int _string_length(struct String string);
 
 /**
+ * @brief Retrieves the data of a string.
+ *
+ * @param string the string
+ *
+ * @return the data
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ */
+#define string_data(string) _string_data(_string_ref(string))
+
+const char* _string_data(struct String string);
+
+/**
  * @brief Checks whether the string is empty.
  *
  * @param string the string

@@ -71,6 +71,10 @@ int _string_length(struct String string) {
     return string.length;
 }
 
+const char* _string_data(struct String string) {
+    return string.data;
+}
+
 bool _string_is_empty(struct String string) {
     if (require_non_null(string.data)) return false;
     return string.length == 0;

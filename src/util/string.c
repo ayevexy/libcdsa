@@ -36,12 +36,12 @@ void string_destroy(String* string_pointer) {
     *string_pointer = nullptr;
 }
 
-String string_format(const char* format, ...) {
-    if (require_non_null(format)) return nullptr;
+String _string_format(struct String format, ...) {
+    if (require_non_null(format.data)) return nullptr;
 
     va_list parameters = {};
     va_start(parameters, format);
-    const int length = vsnprintf(nullptr, 0, format, parameters);
+    const int length = vsnprintf(nullptr, 0, format.data, parameters);
     va_end(parameters);
 
     String string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
@@ -52,7 +52,7 @@ String string_format(const char* format, ...) {
     string->length = length;
     string->data = string->_data;
     va_start(parameters, format);
-    vsnprintf(string->data, length + NULL_TERMINATOR, format, parameters);
+    vsnprintf(string->data, length + NULL_TERMINATOR, format.data, parameters);
     va_end(parameters);
 
     return string;
@@ -89,10 +89,9 @@ bool _string_is_blank(struct String string) {
     return true;
 }
 
-uint64_t string_hash(const void* raw_string) {
-    const char* string = raw_string;
+uint64_t _string_hash(struct String string) {
     uint64_t hash = 5381;
-    for (int c = *string; c != '\0'; c = *++string) {
+    for (int c = *string.data; c != '\0'; c = *++string.data) {
         hash = hash * 33 + c;
     }
     return hash;

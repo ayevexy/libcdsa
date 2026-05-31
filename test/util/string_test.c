@@ -50,13 +50,12 @@ void test_reference_string() {
 
 void test_create_formatted_string() {
     // given
-    const char* format = "H%dllo W%drld!";
-    int e = 3, o = 0;
+    String format = string_ref("H%dllo W%drld!");
     // when
-    String string = string_format(format, e, o);
+    String string = string_format(format, 3, 0);
     // then
     TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string->data);
-    TEST_ASSERT_EQUAL(strlen(format) - 2, string->length);
+    TEST_ASSERT_EQUAL(strlen(format->data) - 2, string->length);
     // clean up
     string_destroy(&string);
 }

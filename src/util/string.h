@@ -102,10 +102,12 @@ void _string_destroy(String* string_pointer);
  *
  * @return a new allocated string
  *
- * @exception NULL_POINTER_ERROR if format is null
+ * @exception NULL_POINTER_ERROR if format.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-String string_format(const char* format, ...);
+#define string_format(format, ...) _string_format(_string_ref(format), __VA_ARGS__)
+
+String _string_format(struct String format, ...);
 
 /**
  * @brief Retrieves the character at the specified position of the string.
@@ -177,11 +179,13 @@ bool _string_is_blank(struct String string);
 /**
  * @brief Calculate a hash value of a string.
  *
- * @param raw_string the string
+ * @param string the string
  *
  * @return the hashed value
  */
-uint64_t string_hash(const void* raw_string);
+#define string_hash(string) _string_hash(_string_ref(string))
+
+uint64_t _string_hash(struct String string);
 
 /**
  * @brief Compares two strings lexicographically.

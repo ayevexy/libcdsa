@@ -14,6 +14,19 @@ void (*string_memory_dealloc)(void*) = free;
 
 constexpr int NULL_TERMINATOR = 1;
 
+void string_destruct(void* raw_string) {
+    string_memory_dealloc(raw_string);
+}
+
+uint64_t string_hash(const void* raw_string) {
+    String string = (String) raw_string;
+    uint64_t hash = 5381;
+    for (int c = *string->data; c != '\0'; c = *++string->data) {
+        hash = hash * 33 + c;
+    }
+    return hash;
+}
+
 String _string_new(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
@@ -87,14 +100,6 @@ bool _string_is_blank(struct String string) {
             return false;
     }
     return true;
-}
-
-uint64_t _string_hash(struct String string) {
-    uint64_t hash = 5381;
-    for (int c = *string.data; c != '\0'; c = *++string.data) {
-        hash = hash * 33 + c;
-    }
-    return hash;
 }
 
 int _string_compare(struct String string, struct String other_string) {

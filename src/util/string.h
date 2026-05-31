@@ -28,8 +28,24 @@ extern void (*string_memory_dealloc)(void*);
 typedef struct String {
     int length;
     char* data;
-    char _data[];
+    char _data[]; // internal
 } * String;
+
+/**
+ * @brief String hash function to be used in containers.
+ *
+ * @param raw_string the string
+ *
+ * @return the hashed value
+ */
+uint64_t string_hash(const void* raw_string);
+
+/**
+ * @brief String destructor function to be used in containers.
+ *
+ * @param raw_string the string
+ */
+void string_destruct(void* raw_string);
 
 /**
  * @brief Creates a new allocated string copying another string.
@@ -175,17 +191,6 @@ bool _string_is_empty(struct String string);
 #define string_is_blank(string) _string_is_blank(_string_ref(string))
 
 bool _string_is_blank(struct String string);
-
-/**
- * @brief Calculate a hash value of a string.
- *
- * @param string the string
- *
- * @return the hashed value
- */
-#define string_hash(string) _string_hash(_string_ref(string))
-
-uint64_t _string_hash(struct String string);
 
 /**
  * @brief Compares two strings lexicographically.

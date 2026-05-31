@@ -29,7 +29,7 @@ String _string_new(struct String string) {
     return new_string;
 }
 
-void string_destroy(String* string_pointer) {
+void _string_destroy(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
     string_memory_dealloc(string);

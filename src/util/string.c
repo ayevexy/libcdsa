@@ -14,7 +14,7 @@ void (*string_memory_dealloc)(void*) = free;
 
 constexpr int NULL_TERMINATOR = 1;
 
-uint64_t c_string_hash(const void* raw_string) {
+uint64_t string_hash_callback(const void* raw_string) {
     String string = (String) raw_string;
     uint64_t hash = 5381;
     for (int c = *string->data; c != '\0'; c = *++string->data) {
@@ -23,19 +23,19 @@ uint64_t c_string_hash(const void* raw_string) {
     return hash;
 }
 
-bool c_string_equals(const void* string, const void* other_string) {
+bool string_equals_callback(const void* string, const void* other_string) {
     return _string_equals(*((String) string), *((String) other_string));
 }
 
-int c_string_compare(const void* string, const void* other_string) {
+int string_compare_callback(const void* string, const void* other_string) {
     return _string_compare(*((String) string), *((String) other_string));
 }
 
-void c_string_destroy(void* string) {
+void string_destroy_callback(void* string) {
     string_memory_dealloc(string);
 }
 
-int c_string_to_string(const void* string, char* buffer, size_t size) {
+int string_to_string_callback(const void* string, char* buffer, size_t size) {
     return snprintf(buffer, size, "%s", ((String) string)->data);
 }
 

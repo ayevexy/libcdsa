@@ -38,7 +38,7 @@ typedef struct String {
  *
  * @return the hashed value
  */
-uint64_t c_string_hash(const void* raw_string);
+uint64_t string_hash_callback(const void* raw_string);
 
 /**
  * @brief String equality function to be used in containers (case-sensitive).
@@ -48,7 +48,7 @@ uint64_t c_string_hash(const void* raw_string);
  *
  * @return true if equal, false otherwise
  */
-bool c_string_equals(const void* string, const void* other_string);
+bool string_equals_callback(const void* string, const void* other_string);
 
 /**
  * @brief String comparator function to be used in containers (case-sensitive).
@@ -58,14 +58,14 @@ bool c_string_equals(const void* string, const void* other_string);
  *
  * @return 0 if equal; negative if the first string is less; positive if greater
  */
-int c_string_compare(const void* string, const void* other_string);
+int string_compare_callback(const void* string, const void* other_string);
 
 /**
  * @brief String destructor function to be used in containers.
  *
  * @param string the string
  */
-void c_string_destroy(void* string);
+void string_destroy_callback(void* string);
 
 /**
  * @brief String to string function to be used in containers.
@@ -76,7 +76,7 @@ void c_string_destroy(void* string);
  *
  * @return the string length
  */
-int c_string_to_string(const void* string, char* buffer, size_t size);
+int string_to_string_callback(const void* string, char* buffer, size_t size);
 
 /**
  * @brief Creates a new allocated string copying another string.

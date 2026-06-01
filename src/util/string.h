@@ -99,10 +99,8 @@ String _string_new(struct String string);
  *
  * @return a string reference
  */
-#define string_ref(string) _Generic((string),                                           \
-    const char*: &(struct String) { .length = strlen(string), .data = (char*) string }, \
-    char*: &(struct String) { .length = strlen(string), .data = (char*) string }        \
-)
+#define string_ref(string) \
+    (&(struct String) { .length = strlen(string), .data = (char*) string })
 
 /**
  * @brief Destroys previously allocated strings.

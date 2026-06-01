@@ -14,31 +14,6 @@ void (*string_memory_dealloc)(void*) = free;
 
 constexpr int NULL_TERMINATOR = 1;
 
-uint64_t string_hash_callback(const void* raw_string) {
-    String string = (String) raw_string;
-    uint64_t hash = 5381;
-    for (int c = *string->data; c != '\0'; c = *++string->data) {
-        hash = hash * 33 + c;
-    }
-    return hash;
-}
-
-bool string_equals_callback(const void* string, const void* other_string) {
-    return _string_equals(*((String) string), *((String) other_string));
-}
-
-int string_compare_callback(const void* string, const void* other_string) {
-    return _string_compare(*((String) string), *((String) other_string));
-}
-
-void string_destroy_callback(void* string) {
-    string_memory_dealloc(string);
-}
-
-int string_to_string_callback(const void* string, char* buffer, size_t size) {
-    return snprintf(buffer, size, "%s", ((String) string)->data);
-}
-
 String _string_new(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
@@ -521,6 +496,31 @@ DEFINE_STRING_VALUE_OF(_string_value_of_double, double, "%f")
 DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
+
+uint64_t string_hash_callback(const void* raw_string) {
+    String string = (String) raw_string;
+    uint64_t hash = 5381;
+    for (int c = *string->data; c != '\0'; c = *++string->data) {
+        hash = hash * 33 + c;
+    }
+    return hash;
+}
+
+bool string_equals_callback(const void* string, const void* other_string) {
+    return _string_equals(*((String) string), *((String) other_string));
+}
+
+int string_compare_callback(const void* string, const void* other_string) {
+    return _string_compare(*((String) string), *((String) other_string));
+}
+
+void string_destroy_callback(void* string) {
+    string_memory_dealloc(string);
+}
+
+int string_to_string_callback(const void* string, char* buffer, size_t size) {
+    return snprintf(buffer, size, "%s", ((String) string)->data);
+}
 
 struct String _string_ref_of_string(String string) {
     return string ? *string : (struct String) {};

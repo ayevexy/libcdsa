@@ -32,53 +32,6 @@ typedef struct String {
 } * String;
 
 /**
- * @brief String hash function to be used in containers.
- *
- * @param raw_string the string
- *
- * @return the hashed value
- */
-uint64_t string_hash_callback(const void* raw_string);
-
-/**
- * @brief String equality function to be used in containers (case-sensitive).
- *
- * @param string first string
- * @param other_string second string]
- *
- * @return true if equal, false otherwise
- */
-bool string_equals_callback(const void* string, const void* other_string);
-
-/**
- * @brief String comparator function to be used in containers (case-sensitive).
- *
- * @param string first string
- * @param other_string second string
- *
- * @return 0 if equal; negative if the first string is less; positive if greater
- */
-int string_compare_callback(const void* string, const void* other_string);
-
-/**
- * @brief String destructor function to be used in containers.
- *
- * @param string the string
- */
-void string_destroy_callback(void* string);
-
-/**
- * @brief String to string function to be used in containers.
- *
- * @param string the string
- * @param buffer buffer
- * @param size size
- *
- * @return the string length
- */
-int string_to_string_callback(const void* string, char* buffer, size_t size);
-
-/**
  * @brief Creates a new allocated string copying another string.
  *
  * @param string source string
@@ -630,6 +583,55 @@ String _string_value_of_ulong_long(unsigned long long value);
 String _string_value_of_float(float value);
 String _string_value_of_double(double value);
 String _string_value_of_long_double(long double value);
+
+/**
+ * @brief String hash function to be used in containers.
+ *
+ * @param raw_string the string
+ *
+ * @return the hashed value
+ */
+uint64_t string_hash_callback(const void* raw_string);
+
+/**
+ * @brief String equality function to be used in containers (case-sensitive).
+ *
+ * @param string first string
+ * @param other_string second string]
+ *
+ * @return true if equal, false otherwise
+ */
+bool string_equals_callback(const void* string, const void* other_string);
+
+/**
+ * @brief String comparator function to be used in containers (case-sensitive).
+ *
+ * @param string first string
+ * @param other_string second string
+ *
+ * @return 0 if equal; negative if the first string is less; positive if greater
+ */
+int string_compare_callback(const void* string, const void* other_string);
+
+/**
+ * @brief String destructor function to be used in containers.
+ *
+ * @param string the string
+ */
+void string_destroy_callback(void* string);
+
+/**
+ * @brief String to string function to be used in containers.
+ *
+ * @param string the string
+ * @param buffer buffer
+ * @param size size
+ *
+ * @return the string length
+ */
+int string_to_string_callback(const void* string, char* buffer, size_t size);
+
+/* --------------------------------------------------------------------------------- */
 
 #define _dispatch_string_type(string) (_Generic((string),   \
     String:  _string_ref_of_string,                         \

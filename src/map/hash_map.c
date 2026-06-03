@@ -494,7 +494,7 @@ String hash_map_to_string(const HashMap* hash_map) {
     strcat(string->data, hash_map->size == 0 ? "[" : "[ ");
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
-        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
+        for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next, count++) {
             constexpr int SEPARATOR = 3; constexpr int NULL_TERMINATOR = 1;
 
             const int key_length = hash_map->key_to_string(entry->key, nullptr, 0);
@@ -514,7 +514,6 @@ String hash_map_to_string(const HashMap* hash_map) {
             if (count < hash_map->size - 1) {
                 strcat(string->data, ", ");
             }
-            count++;
             string_memory_dealloc(raw_element_string);
         }
     }

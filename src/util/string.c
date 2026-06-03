@@ -498,9 +498,9 @@ DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
 #undef DEFINE_STRING_VALUE_OF
 
 uint64_t string_hash_callback(const void* raw_string) {
-    String string = (String) raw_string;
+    const char* string = ((String) raw_string)->data;
     uint64_t hash = 5381;
-    for (int c = *string->data; c != '\0'; c = *++string->data) {
+    for (int c = *string; c != '\0'; c = *++string) {
         hash = hash * 33 + c;
     }
     return hash;

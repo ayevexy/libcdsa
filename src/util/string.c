@@ -534,7 +534,7 @@ char _char_self(char c) {
     return c;
 }
 
-void _cleanup(Array(struct String*) strings) {
+void _destroy_string_array(Array(struct String*) strings) {
     for (int i = 0; i < (int) array_length(strings); i++) {
         string_destroy(&strings[i]);
     }

@@ -76,18 +76,18 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
  *
  * @warning this should only be called on arrays created by `array_new()`, otherwise it's undefined behavior
  */
-#define array_destroy(array)                                                \
-    do {                                                                    \
-        _Generic((array),                                                   \
-            struct String***: _cleanup((struct String** ) *array),          \
-            default: (void) array                                           \
-        );                                                                  \
-        free((RealArray*)((char*)(*array) - offsetof(RealArray, data)));    \
-        *array = nullptr;                                                   \
+#define array_destroy(array)                                                    \
+    do {                                                                        \
+        _Generic((array),                                                       \
+            struct String***: _destroy_string_array((struct String** ) *array), \
+            default: (void) array                                               \
+        );                                                                      \
+        free((RealArray*)((char*)(*array) - offsetof(RealArray, data)));        \
+        *array = nullptr;                                                       \
     } while (false)
 
 struct String;
 
-extern void _cleanup(Array(struct String*) strings);
+extern void _destroy_string_array(Array(struct String*) strings);
 
 #endif

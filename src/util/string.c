@@ -522,11 +522,11 @@ int string_to_string_callback(const void* string, char* buffer, size_t size) {
     return snprintf(buffer, size, "%s", ((String) string)->data);
 }
 
-struct String string_ref_of_string(String string) {
+struct String string_self(String string) {
     return string ? *string : (struct String) {};
 }
 
-struct String string_ref_of_raw_string(const char* raw_string) {
+struct String (string_ref)(const char* raw_string) {
     return (struct String) { strlen(raw_string), (char*) raw_string };
 }
 

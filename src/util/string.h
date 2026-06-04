@@ -634,16 +634,16 @@ int string_to_string_callback(const void* string, char* buffer, size_t size);
 /* --------------------------------------------------------------------------------- */
 
 #define dispatch_string_type(string) (_Generic((string),    \
-    String:  string_ref_of_string,                          \
-    const char*: string_ref_of_raw_string,                  \
-    char*: string_ref_of_raw_string,                        \
+    String:  string_self,                                   \
+    const char*: string_ref,                                \
+    char*: string_ref,                                      \
     int: char_self,                                         \
     char: char_self                                         \
 )(string))
 
-struct String string_ref_of_string(String string);
+struct String string_self(String string);
 
-struct String string_ref_of_raw_string(const char* raw_string);
+struct String (string_ref)(const char* raw_string);
 
 char char_self(char c);
 

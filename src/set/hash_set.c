@@ -410,8 +410,8 @@ String hash_set_to_string(const HashSet* hash_set) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, hash_set->size == 0 ? "(" : "( ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, hash_set->size == 0 ? "(" : "( ");
 
     for (int i = 0, count = 0; i < hash_set->capacity; i++) {
         for (const Node* node = hash_set->buckets[i]; node; node = node->next, count++) {
@@ -425,16 +425,16 @@ String hash_set_to_string(const HashSet* hash_set) {
                 return nullptr;
             }
             hash_set->to_string(node->element, raw_element_string, length);
-            strcat(string->data, raw_element_string);
+            strcat(string->buffer, raw_element_string);
 
             if (count < hash_set->size - 1) {
-                strcat(string->data, ", ");
+                strcat(string->buffer, ", ");
             }
             string_memory_dealloc(raw_element_string);
         }
     }
 
-    strcat(string->data, hash_set->size == 0 ? ")" : " )");
+    strcat(string->buffer, hash_set->size == 0 ? ")" : " )");
     return string;
 }
 

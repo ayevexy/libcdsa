@@ -27,7 +27,7 @@ extern void (*string_memory_dealloc)(void*);
  */
 typedef struct String {
     int length;
-    char* data;
+    const char* data;
     char buffer[]; // internal
 } * String;
 

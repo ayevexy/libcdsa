@@ -651,8 +651,8 @@ String tree_map_to_string(const TreeMap* tree_map) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, tree_map->size == 0 ? "[" : "[ ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, tree_map->size == 0 ? "[" : "[ ");
 
     int count = 0;
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
@@ -672,16 +672,16 @@ String tree_map_to_string(const TreeMap* tree_map) {
         strcat(raw_element_string, " = ");
         tree_map->value_to_string(entry->value, raw_element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
 
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
         if (count < tree_map->size - 1) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         count++;
         string_memory_dealloc(raw_element_string);
         entry = get_successor_entry(tree_map, entry);
     }
 
-    strcat(string->data, tree_map->size == 0 ? "]" : " ]");
+    strcat(string->buffer, tree_map->size == 0 ? "]" : " ]");
     return string;
 }
 

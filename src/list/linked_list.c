@@ -721,8 +721,8 @@ String linked_list_to_string(const LinkedList* linked_list) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, linked_list->size == 0 ? "[" : "[ ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, linked_list->size == 0 ? "[" : "[ ");
 
     for (const Node* node = linked_list->head; node; node = node->next) {
         constexpr int NULL_TERMINATOR = 1;
@@ -735,15 +735,15 @@ String linked_list_to_string(const LinkedList* linked_list) {
             return nullptr;
         }
         linked_list->to_string(node->element, raw_element_string, length);
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
 
         if (node->next) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         string_memory_dealloc(raw_element_string);
     }
 
-    strcat(string->data, linked_list->size == 0 ? "]" : " ]");
+    strcat(string->buffer, linked_list->size == 0 ? "]" : " ]");
     return string;
 }
 

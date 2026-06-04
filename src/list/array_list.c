@@ -708,8 +708,8 @@ String array_list_to_string(const ArrayList* array_list) {
     }
     string->length = total_length - 1; // null terminator
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, array_list->size == 0 ? "[" : "[ ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, array_list->size == 0 ? "[" : "[ ");
 
     for (int i = 0; i < array_list->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
@@ -722,15 +722,15 @@ String array_list_to_string(const ArrayList* array_list) {
             return nullptr;
         }
         array_list->to_string(array_list->elements[i], raw_element_string, length);
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
 
         if (i < array_list->size - 1) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         string_memory_dealloc(raw_element_string);
     }
 
-    strcat(string->data, array_list->size == 0 ? "]" : " ]");
+    strcat(string->buffer, array_list->size == 0 ? "]" : " ]");
     return string;
 }
 

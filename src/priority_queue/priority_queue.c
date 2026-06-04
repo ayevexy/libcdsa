@@ -328,8 +328,8 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, priority_queue->size == 0 ? "|" : "| ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, priority_queue->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < priority_queue->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
@@ -342,15 +342,15 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
             return nullptr;
         }
         priority_queue->to_string(priority_queue->elements[i], raw_element_string, length);
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
 
         if (i < priority_queue->size - 1) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         string_memory_dealloc(raw_element_string);
     }
 
-    strcat(string->data, priority_queue->size == 0 ? "|" : " |");
+    strcat(string->buffer, priority_queue->size == 0 ? "|" : " |");
     return string;
 }
 

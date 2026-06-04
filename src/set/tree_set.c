@@ -576,8 +576,8 @@ String tree_set_to_string(const TreeSet* tree_set) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, tree_set->size == 0 ? "(" : "( ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, tree_set->size == 0 ? "(" : "( ");
 
     int count = 0;
     Node* node = get_lower_node(tree_set, tree_set->root);
@@ -592,17 +592,17 @@ String tree_set_to_string(const TreeSet* tree_set) {
             return nullptr;
         }
         tree_set->to_string(node->element, raw_element_string, length);
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
 
         if (count < tree_set->size - 1) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         count++;
         string_memory_dealloc(raw_element_string);
         node = get_successor_node(tree_set, node);
     }
 
-    strcat(string->data, tree_set->size == 0 ? ")" : " )");
+    strcat(string->buffer, tree_set->size == 0 ? ")" : " )");
     return string;
 }
 

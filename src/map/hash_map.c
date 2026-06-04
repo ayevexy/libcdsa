@@ -490,8 +490,8 @@ String hash_map_to_string(const HashMap* hash_map) {
     }
     string->length = total_length - 1;
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, hash_map->size == 0 ? "[" : "[ ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, hash_map->size == 0 ? "[" : "[ ");
 
     for (int i = 0, count = 0; i < hash_map->capacity; i++) {
         for (const Entry* entry = hash_map->buckets[i]; entry; entry = entry->next, count++) {
@@ -510,15 +510,15 @@ String hash_map_to_string(const HashMap* hash_map) {
             strcat(raw_element_string, " = ");
             hash_map->value_to_string(entry->value, raw_element_string + key_length + SEPARATOR, value_length + NULL_TERMINATOR);
 
-            strcat(string->data, raw_element_string);
+            strcat(string->buffer, raw_element_string);
             if (count < hash_map->size - 1) {
-                strcat(string->data, ", ");
+                strcat(string->buffer, ", ");
             }
             string_memory_dealloc(raw_element_string);
         }
     }
 
-    strcat(string->data, hash_map->size == 0 ? "]" : " ]");
+    strcat(string->buffer, hash_map->size == 0 ? "]" : " ]");
     return string;
 }
 

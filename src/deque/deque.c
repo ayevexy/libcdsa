@@ -415,8 +415,8 @@ String deque_to_string(const Deque* deque) {
     }
     string->length = total_length - 1; // null terminator
     string->data = string->buffer;
-    string->data[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->data, deque->size == 0 ? "|" : "| ");
+    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
+    strcat(string->buffer, deque->size == 0 ? "|" : "| ");
 
     for (int i = 0; i < deque->size; i++) {
         constexpr int NULL_TERMINATOR = 1;
@@ -430,15 +430,15 @@ String deque_to_string(const Deque* deque) {
             return nullptr;
         }
         deque->to_string(deque->elements[index], raw_element_string, length);
-        strcat(string->data, raw_element_string);
+        strcat(string->buffer, raw_element_string);
 
         if (i < deque->size - 1) {
-            strcat(string->data, ", ");
+            strcat(string->buffer, ", ");
         }
         string_memory_dealloc(raw_element_string);
     }
 
-    strcat(string->data, deque->size == 0 ? "|" : " |");
+    strcat(string->buffer, deque->size == 0 ? "|" : " |");
     return string;
 }
 

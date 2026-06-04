@@ -18,7 +18,7 @@
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define new(T, ...) ((T*) _new(sizeof(T), &(T){__VA_ARGS__}))
+#define new(T, ...) ((T*) new(sizeof(T), &(T){__VA_ARGS__}))
 
 /**
  * @brief Allocate a block of memory and optionally initialize it.
@@ -35,7 +35,7 @@
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-static inline void* _new(size_t size, const void* source) {
+static inline void* (new)(size_t size, const void* source) {
     void* pointer = malloc(size);
     if (!pointer) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);

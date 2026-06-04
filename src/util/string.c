@@ -14,7 +14,7 @@ void (*string_memory_dealloc)(void*) = free;
 
 constexpr int NULL_TERMINATOR = 1;
 
-String _string_new(struct String string) {
+String (string_new)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
     String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
@@ -23,20 +23,20 @@ String _string_new(struct String string) {
         return nullptr;
     }
     new_string->length = string.length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     memcpy(new_string->data, string.data, string.length);
     new_string->data[new_string->length] = '\0';
     return new_string;
 }
 
-void _string_destroy(String* string_pointer) {
+void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
     string_memory_dealloc(string);
     *string_pointer = nullptr;
 }
 
-String _string_format(struct String format, ...) {
+String (string_format)(struct String format, ...) {
     if (require_non_null(format.data)) return nullptr;
 
     va_list parameters = {};
@@ -50,7 +50,7 @@ String _string_format(struct String format, ...) {
         return nullptr;
     }
     string->length = length;
-    string->data = string->_data;
+    string->data = string->buffer;
     va_start(parameters, format);
     vsnprintf(string->data, length + NULL_TERMINATOR, format.data, parameters);
     va_end(parameters);
@@ -58,7 +58,7 @@ String _string_format(struct String format, ...) {
     return string;
 }
 
-char _string_char_at(struct String string, int index) {
+char (string_char_at)(struct String string, int index) {
     if (require_non_null(string.data)) return '\0';
     if (index < 0 || index >= string.length) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, string.length);
@@ -67,20 +67,20 @@ char _string_char_at(struct String string, int index) {
     return string.data[index];
 }
 
-int _string_length(struct String string) {
+int (string_length)(struct String string) {
     return string.length;
 }
 
-const char* _string_data(struct String string) {
+const char* (string_data)(struct String string) {
     return string.data;
 }
 
-bool _string_is_empty(struct String string) {
+bool (string_is_empty)(struct String string) {
     if (require_non_null(string.data)) return false;
     return string.length == 0;
 }
 
-bool _string_is_blank(struct String string) {
+bool (string_is_blank)(struct String string) {
     if (require_non_null(string.data)) return false;
     for (int i = 0; i < string.length; i++) {
         if (!isspace((unsigned char) string.data[i]))
@@ -89,7 +89,7 @@ bool _string_is_blank(struct String string) {
     return true;
 }
 
-int _string_compare(struct String string, struct String other_string) {
+int (string_compare)(struct String string, struct String other_string) {
     if (require_non_null(string.data, other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
@@ -98,7 +98,7 @@ int _string_compare(struct String string, struct String other_string) {
     return strncmp(string.data, other_string.data, string.length);
 }
 
-int _string_compare_ignore_case(struct String string, struct String other_string) {
+int (string_compare_ignore_case)(struct String string, struct String other_string) {
     if (require_non_null(string.data, other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
@@ -107,15 +107,15 @@ int _string_compare_ignore_case(struct String string, struct String other_string
     return strncasecmp(string.data, other_string.data, string.length);
 }
 
-bool _string_equals(struct String string, struct String other_string) {
-    return _string_compare(string, other_string) == 0;
+bool (string_equals)(struct String string, struct String other_string) {
+    return (string_compare)(string, other_string) == 0;
 }
 
-bool _string_equals_ignore_case(struct String string, struct String other_string) {
-    return _string_compare_ignore_case(string, other_string) == 0;
+bool (string_equals_ignore_case)(struct String string, struct String other_string) {
+    return (string_compare_ignore_case)(string, other_string) == 0;
 }
 
-int _string_index_of_char(struct String string, char character) {
+int (string_index_of_char)(struct String string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = 0; i < string.length; i++) {
@@ -124,7 +124,7 @@ int _string_index_of_char(struct String string, char character) {
     return -1;
 }
 
-int _string_last_index_of_char(struct String string, char character) {
+int (string_last_index_of_char)(struct String string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = string.length - 1; i >= 0; i--) {
@@ -133,7 +133,7 @@ int _string_last_index_of_char(struct String string, char character) {
     return -1;
 }
 
-int _string_index_of_substring(struct String string, struct String substring) {
+int (string_index_of_substring)(struct String string, struct String substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -147,7 +147,7 @@ int _string_index_of_substring(struct String string, struct String substring) {
     return -1;
 }
 
-int _string_last_index_of_substring(struct String string, struct String substring) {
+int (string_last_index_of_substring)(struct String string, struct String substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -161,31 +161,31 @@ int _string_last_index_of_substring(struct String string, struct String substrin
     return -1;
 }
 
-bool _string_contains(struct String string, struct String substring) {
-    return _string_index_of_substring(string, substring) >= 0;
+bool (string_contains)(struct String string, struct String substring) {
+    return string_index_of_substring(string, substring) >= 0;
 }
 
-bool _string_starts_with(struct String string, struct String prefix) {
+bool (string_starts_with)(struct String string, struct String prefix) {
     if (require_non_null(string.data, prefix.data)) return false;
 
     return string.length >= prefix.length && memcmp(string.data, prefix.data, (size_t) prefix.length) == 0;
 }
 
-bool _string_ends_with(struct String string, struct String suffix) {
+bool (string_ends_with)(struct String string, struct String suffix) {
     if (require_non_null(string.data, suffix.data)) return false;
 
     return string.length >= suffix.length
         && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
 }
 
-String _string_trim(struct String string) {
-    String half = _string_trim_end(string);
-    String full = _string_trim_start(_string_ref(half));
+String (string_trim)(struct String string) {
+    String half = (string_trim_end)(string);
+    String full = string_trim_start(half);
     string_memory_dealloc(half);
     return full;
 }
 
-String _string_trim_start(struct String string) {
+String (string_trim_start)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
     int start = 0;
@@ -200,13 +200,13 @@ String _string_trim_start(struct String string) {
         return nullptr;
     }
     new_string->length = new_length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     memcpy(new_string->data, string.data + start, string.length - start);
     new_string->data[new_length] = '\0';
     return new_string;
 }
 
-String _string_trim_end(struct String string) {
+String (string_trim_end)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
     int end = string.length;
@@ -221,13 +221,13 @@ String _string_trim_end(struct String string) {
         return nullptr;
     }
     new_string->length = new_length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     memcpy(new_string->data, string.data, end);
     new_string->data[new_length] = '\0';
     return new_string;
 }
 
-String _string_substring(struct String string, int start, int length) {
+String (string_substring)(struct String string, int start, int length) {
     if (require_non_null(string.data)) return nullptr;
 
     if (start < 0 || length < 0 || start > string.length) {
@@ -243,13 +243,13 @@ String _string_substring(struct String string, int start, int length) {
         return nullptr;
     }
     new_string->length = new_length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     memcpy(new_string->data, string.data + start, new_length);
     new_string->data[new_length] = '\0';
     return new_string;
 }
 
-String _string_concat(struct String string, struct String other_string) {
+String (string_concat)(struct String string, struct String other_string) {
     if (require_non_null(string.data, other_string.data)) return nullptr;
 
     const int length = string.length + other_string.length;
@@ -260,14 +260,14 @@ String _string_concat(struct String string, struct String other_string) {
         return nullptr;
     }
     new_string->length = length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     memcpy(new_string->data, string.data, string.length);
     memcpy(new_string->data + string.length, other_string.data, other_string.length);
     new_string->data[length] = '\0';
     return new_string;
 }
 
-String _string_replace_char(struct String string, char character, char replacement) {
+String (string_replace_char)(struct String string, char character, char replacement) {
     if (require_non_null(string.data)) return nullptr;
 
     String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
@@ -276,7 +276,7 @@ String _string_replace_char(struct String string, char character, char replaceme
         return nullptr;
     }
     new_string->length = string.length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
     for (int i = 0; i < string.length; i++) {
         if (string.data[i] == character) {
             new_string->data[i] = replacement;
@@ -288,7 +288,7 @@ String _string_replace_char(struct String string, char character, char replaceme
     return new_string;
 }
 
-String _string_replace_substring(struct String string, struct String target, struct String replacement) {
+String (string_replace_substring)(struct String string, struct String target, struct String replacement) {
     if (require_non_null(string.data, target.data, replacement.data)) return nullptr;
     if (target.length == 0) return nullptr;
 
@@ -306,7 +306,7 @@ String _string_replace_substring(struct String string, struct String target, str
         return nullptr;
     }
     new_string->length = new_length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
 
     int input_index = 0;
     int output_index = 0;
@@ -324,7 +324,7 @@ String _string_replace_substring(struct String string, struct String target, str
     return new_string;
 }
 
-String _string_repeat(struct String string, int times) {
+String (string_repeat)(struct String string, int times) {
     if (require_non_null(string.data)) return nullptr;
 
     if (times < 0) {
@@ -339,7 +339,7 @@ String _string_repeat(struct String string, int times) {
         return nullptr;
     }
     new_string->length = length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
 
     for (int i = 0, offset = 0; i < times; i++) {
         memcpy(new_string->data + offset, string.data, string.length);
@@ -349,7 +349,7 @@ String _string_repeat(struct String string, int times) {
     return new_string;
 }
 
-String _string_join(struct String separator, ...) {
+String (string_join)(struct String separator, ...) {
     if (require_non_null(separator.data)) return nullptr;
 
     va_list parameters = {};
@@ -370,7 +370,7 @@ String _string_join(struct String separator, ...) {
         return nullptr;
     }
     new_string->length = total_length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
 
     va_start(parameters, separator);
     int offset = 0;
@@ -391,7 +391,7 @@ String _string_join(struct String separator, ...) {
     return new_string;
 }
 
-Array(String) _string_split(struct String string, char delimiter) {
+Array(String) (string_split)(struct String string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;
     for (int i = 0; i < string.length; i++) {
@@ -399,7 +399,7 @@ Array(String) _string_split(struct String string, char delimiter) {
             count++;
         }
     }
-    Array(String) strings = _array_new(count, sizeof(struct String), nullptr);
+    Array(String) strings = (array_new)(count, sizeof(struct String), nullptr);
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;
@@ -412,7 +412,7 @@ Array(String) _string_split(struct String string, char delimiter) {
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
                 return nullptr;
             }
-            new_string->data = new_string->_data;
+            new_string->data = new_string->buffer;
             memcpy(new_string->data, string.data + start, i - start);
             new_string->length = i - start;
             new_string->data[new_string->length] = '\0';
@@ -423,11 +423,11 @@ Array(String) _string_split(struct String string, char delimiter) {
     return strings;
 }
 
-Array(String) _string_lines(struct String string) {
-    return _string_split(string, '\n');
+Array(String) (string_lines)(struct String string) {
+    return (string_split)(string, '\n');
 }
 
-String _string_to_uppercase(struct String string) {
+String (string_to_uppercase)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
     String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
@@ -436,7 +436,7 @@ String _string_to_uppercase(struct String string) {
         return nullptr;
     }
     new_string->length = string.length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
 
     for (int i = 0; i < string.length; i++) {
         new_string->data[i] = toupper(string.data[i]);
@@ -445,7 +445,7 @@ String _string_to_uppercase(struct String string) {
     return new_string;
 }
 
-String _string_to_lowercase(struct String string) {
+String (string_to_lowercase)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
     String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
@@ -454,7 +454,7 @@ String _string_to_lowercase(struct String string) {
         return nullptr;
     }
     new_string->length = string.length;
-    new_string->data = new_string->_data;
+    new_string->data = new_string->buffer;
 
     for (int i = 0; i < string.length; i++) {
         new_string->data[i] = tolower(string.data[i]);
@@ -471,29 +471,29 @@ String _string_to_lowercase(struct String string) {
         return string_new(data);                                                    \
     }
 
-String _string_value_of_bool(bool value) {
+String string_value_of_bool(bool value) {
     return string_new(value ? "true" : "false");
 }
 
-DEFINE_STRING_VALUE_OF(_string_value_of_char, char, "%c")
+DEFINE_STRING_VALUE_OF(string_value_of_char, char, "%c")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_int, int, "%d")
+DEFINE_STRING_VALUE_OF(string_value_of_int, int, "%d")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_uint, unsigned int, "%u")
+DEFINE_STRING_VALUE_OF(string_value_of_uint, unsigned int, "%u")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_long, long, "%ld")
+DEFINE_STRING_VALUE_OF(string_value_of_long, long, "%ld")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_ulong, unsigned long, "%lu")
+DEFINE_STRING_VALUE_OF(string_value_of_ulong, unsigned long, "%lu")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_long_long, long long, "%lld")
+DEFINE_STRING_VALUE_OF(string_value_of_long_long, long long, "%lld")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_ulong_long, unsigned long long, "%llu")
+DEFINE_STRING_VALUE_OF(string_value_of_ulong_long, unsigned long long, "%llu")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_float, float, "%f")
+DEFINE_STRING_VALUE_OF(string_value_of_float, float, "%f")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_double, double, "%f")
+DEFINE_STRING_VALUE_OF(string_value_of_double, double, "%f")
 
-DEFINE_STRING_VALUE_OF(_string_value_of_long_double, long double, "%Lf")
+DEFINE_STRING_VALUE_OF(string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
 
@@ -507,11 +507,11 @@ uint64_t string_hash_callback(const void* raw_string) {
 }
 
 bool string_equals_callback(const void* string, const void* other_string) {
-    return _string_equals(*((String) string), *((String) other_string));
+    return (string_equals)(*((String) string), *((String) other_string));
 }
 
 int string_compare_callback(const void* string, const void* other_string) {
-    return _string_compare(*((String) string), *((String) other_string));
+    return (string_compare)(*((String) string), *((String) other_string));
 }
 
 void string_destroy_callback(void* string) {
@@ -522,19 +522,19 @@ int string_to_string_callback(const void* string, char* buffer, size_t size) {
     return snprintf(buffer, size, "%s", ((String) string)->data);
 }
 
-struct String _string_ref_of_string(String string) {
+struct String string_ref_of_string(String string) {
     return string ? *string : (struct String) {};
 }
 
-struct String _string_ref_of_raw_string(const char* raw_string) {
+struct String string_ref_of_raw_string(const char* raw_string) {
     return (struct String) { strlen(raw_string), (char*) raw_string };
 }
 
-char _char_self(char c) {
+char char_self(char c) {
     return c;
 }
 
-void _destroy_string_array(Array(struct String*) strings) {
+void destroy_string_array(Array(struct String*) strings) {
     for (int i = 0; i < (int) array_length(strings); i++) {
         string_destroy(&strings[i]);
     }

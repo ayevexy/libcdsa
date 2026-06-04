@@ -386,7 +386,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
 
 Array(void*) hash_set_to_array(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
-    Array(void*) elements = _array_new(hash_set->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(hash_set->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -409,7 +409,7 @@ String hash_set_to_string(const HashSet* hash_set) {
         return nullptr;
     }
     string->length = total_length - 1;
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, hash_set->size == 0 ? "(" : "( ");
 
@@ -683,6 +683,6 @@ static bool set_view_contains_internal(const void* hash_set, const void* element
     return hash_set_contains(((Pair*) hash_set)->first, element);
 }
 
-SetView* _hash_set_view(const HashSet* hash_set) {
+SetView* hash_set_view(const HashSet* hash_set) {
     return hash_set ? (SetView*) &hash_set->view : nullptr;
 }

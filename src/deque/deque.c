@@ -392,7 +392,7 @@ Collection deque_to_collection(const Deque* deque) {
 
 Array(void*) deque_to_array(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    Array(void*) elements = _array_new(deque->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(deque->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -414,7 +414,7 @@ String deque_to_string(const Deque* deque) {
         return nullptr;
     }
     string->length = total_length - 1; // null terminator
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, deque->size == 0 ? "|" : "| ");
 

@@ -297,7 +297,7 @@ static bool symmetric_difference_set_contains(const void* raw_sets, const void* 
     return set_view_contains(sets->first, element) ^ set_view_contains(sets->second, element);
 }
 
-SetView _set_view_union(SetView* set_a, SetView* set_b) {
+SetView set_view_union(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return (SetView) {};
     return (SetView) {
         .sets = { set_a, set_b },
@@ -307,7 +307,7 @@ SetView _set_view_union(SetView* set_a, SetView* set_b) {
     };
 }
 
-SetView _set_view_intersection(SetView* set_a, SetView* set_b) {
+SetView set_view_intersection(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return (SetView) {};
     return (SetView) {
         .sets = { set_a, set_b },
@@ -317,7 +317,7 @@ SetView _set_view_intersection(SetView* set_a, SetView* set_b) {
     };
 }
 
-SetView _set_view_difference(SetView* set_a, SetView* set_b) {
+SetView set_view_difference(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return (SetView) {};
     return (SetView) {
         .sets = { set_a, set_b },
@@ -327,7 +327,7 @@ SetView _set_view_difference(SetView* set_a, SetView* set_b) {
     };
 }
 
-SetView _set_view_symmetric_difference(SetView* set_a, SetView* set_b) {
+SetView set_view_symmetric_difference(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return (SetView) {};
     return (SetView) {
         .sets = { set_a, set_b },
@@ -337,7 +337,7 @@ SetView _set_view_symmetric_difference(SetView* set_a, SetView* set_b) {
     };
 }
 
-bool _set_view_is_subset(SetView* set_a, SetView* set_b) {
+bool set_view_is_subset(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return false;
 
     Iterator* iterator; Error error;
@@ -357,9 +357,9 @@ bool _set_view_is_subset(SetView* set_a, SetView* set_b) {
     return subset;
 }
 
-bool _set_view_is_superset(SetView* set_a, SetView* set_b) {
+bool set_view_is_superset(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return false;
-    return _set_view_is_subset(set_b, set_a);
+    return set_view_is_subset(set_b, set_a);
 }
 
 static int collection_size_internal(const void* set_view) {

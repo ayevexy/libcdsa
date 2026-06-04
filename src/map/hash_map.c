@@ -489,7 +489,7 @@ String hash_map_to_string(const HashMap* hash_map) {
         return nullptr;
     }
     string->length = total_length - 1;
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, hash_map->size == 0 ? "[" : "[ ");
 

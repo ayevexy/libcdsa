@@ -10,77 +10,77 @@
  * @param variable the variable which will hold the current element
  * @param collection the collection to iterate through
  */
-#define for_each(variable, collection)                                                              \
-    for (Iterator* _iter_ = _dispatch_collection(collection); _iter_; iterator_destroy(&_iter_))    \
-        for (void* _value_; iterator_has_next(_iter_) && (_value_ = iterator_next(_iter_));)        \
-            for (variable = _value_, * _flag_ = (void*) 0xDEADBEEF; _flag_; _flag_ = nullptr)
+#define for_each(variable, collection)                                                          \
+    for (Iterator* iter_ = dispatch_collection(collection); iter_; iterator_destroy(&iter_))    \
+        for (void* value_; iterator_has_next(iter_) && (value_ = iterator_next(iter_));)        \
+            for (variable = value_, * flag_ = (void*) 0xDEADBEEF; flag_; flag_ = nullptr)
 
 
-#define _dispatch_collection(collection) _Generic((collection),     \
-    _collection_case_array_list                                     \
-    _collection_case_linked_list                                    \
-    _collection_case_hash_map                                       \
-    _collection_case_tree_map                                       \
-    _collection_case_hash_set                                       \
-    _collection_case_tree_set                                       \
-    _collection_case_deque                                          \
-    _collection_case_priority_queue                                 \
-    _collection_case_set_view                                       \
-    Collection: collection_iterator                                 \
+#define dispatch_collection(collection) _Generic((collection),  \
+    collection_case_array_list                                  \
+    collection_case_linked_list                                 \
+    collection_case_hash_map                                    \
+    collection_case_tree_map                                    \
+    collection_case_hash_set                                    \
+    collection_case_tree_set                                    \
+    collection_case_deque                                       \
+    collection_case_priority_queue                              \
+    collection_case_set_view                                    \
+    Collection: collection_iterator                             \
 )(collection)
 
 #endif
 
 #ifdef LIBCDSA_ARRAY_LIST_H
-#   define _collection_case_array_list ArrayList*: array_list_iterator,
+#   define collection_case_array_list ArrayList*: array_list_iterator,
 #else
-#   define _collection_case_array_list
+#   define collection_case_array_list
 #endif
 
 #ifdef LIBCDSA_LINKED_LIST_H
-#   define _collection_case_linked_list LinkedList*: linked_list_iterator,
+#   define collection_case_linked_list LinkedList*: linked_list_iterator,
 #else
-#   define _collection_case_linked_list
+#   define collection_case_linked_list
 #endif
 
 #ifdef LIBCDSA_HASH_MAP_H
-#   define _collection_case_hash_map HashMap*: hash_map_iterator,
+#   define collection_case_hash_map HashMap*: hash_map_iterator,
 #else
-#   define _collection_case_hash_map
+#   define collection_case_hash_map
 #endif
 
 #ifdef LIBCDSA_TREE_MAP_H
-#   define _collection_case_tree_map TreeMap*: tree_map_iterator,
+#   define collection_case_tree_map TreeMap*: tree_map_iterator,
 #else
-#   define _collection_case_tree_map
+#   define collection_case_tree_map
 #endif
 
 #ifdef LIBCDSA_HASH_SET_H
-#   define _collection_case_hash_set HashSet*: hash_set_iterator,
+#   define collection_case_hash_set HashSet*: hash_set_iterator,
 #else
-#   define _collection_case_hash_set
+#   define collection_case_hash_set
 #endif
 
 #ifdef LIBCDSA_TREE_SET_H
-#   define _collection_case_tree_set TreeSet*: tree_set_iterator,
+#   define collection_case_tree_set TreeSet*: tree_set_iterator,
 #else
-#   define _collection_case_tree_set
+#   define collection_case_tree_set
 #endif
 
 #ifdef LIBCDSA_DEQUE_H
-#   define _collection_case_deque Deque*: deque_iterator,
+#   define collection_case_deque Deque*: deque_iterator,
 #else
-#   define _collection_case_deque
+#   define collection_case_deque
 #endif
 
 #ifdef LIBCDSA_PRIORITY_QUEUE_H
-#   define _collection_case_priority_queue PriorityQueue*: priority_queue_iterator,
+#   define collection_case_priority_queue PriorityQueue*: priority_queue_iterator,
 #else
-#   define _collection_case_priority_queue
+#   define collection_case_priority_queue
 #endif
 
 #ifdef LIBCDSA_SETS_H
-#   define _collection_case_set_view SetView*: set_view_iterator,
+#   define collection_case_set_view SetView*: set_view_iterator,
 #else
-#   define _collection_case_set_view
+#   define collection_case_set_view
 #endif

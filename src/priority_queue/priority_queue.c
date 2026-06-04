@@ -306,7 +306,7 @@ Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
 
 Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
-    Array(void*) elements = _array_new(priority_queue->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(priority_queue->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -327,7 +327,7 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
         return nullptr;
     }
     string->length = total_length - 1;
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, priority_queue->size == 0 ? "|" : "| ");
 

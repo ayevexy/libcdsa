@@ -697,7 +697,7 @@ Collection linked_list_to_collection(const LinkedList* linked_list) {
 
 Array(void*) linked_list_to_array(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    Array(void*) elements = _array_new(linked_list->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(linked_list->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -720,7 +720,7 @@ String linked_list_to_string(const LinkedList* linked_list) {
         return nullptr;
     }
     string->length = total_length - 1;
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, linked_list->size == 0 ? "[" : "[ ");
 

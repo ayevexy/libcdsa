@@ -20,7 +20,7 @@ typedef struct {
     size_t length;
     max_align_t alignment;
     unsigned char data[];
-} RealArray;
+} ArrayStorage;
 
 /**
  * @brief Creates a new array with the specified length, type and initial elements.
@@ -31,7 +31,7 @@ typedef struct {
  *
  * @return a newly created array
  */
-#define array_new(length, T, ...) _array_new(length, sizeof(T), (T[]){__VA_ARGS__})
+#define array_new(length, T, ...) array_new(length, sizeof(T), (T[]){__VA_ARGS__})
 
 /**
  * @brief Creates a new array with the specified length, element size and initial data.
@@ -42,9 +42,9 @@ typedef struct {
  *
  * @return a newly created array
  */
-static inline void* _array_new(int length, size_t element_size, const void* source) {
-    const size_t size = sizeof(RealArray) + length * element_size;
-    RealArray* array = malloc(size);
+static inline void* (array_new)(int length, size_t element_size, const void* source) {
+    const size_t size = sizeof(ArrayStorage) + length * element_size;
+    ArrayStorage* array = malloc(size);
     if (!array) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);
         return nullptr;
@@ -65,7 +65,7 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
  *
  * @warning this should only be called on arrays created by `array_new()`, otherwise it's undefined behavior
  */
-#define array_length(array) (((RealArray*)((char*)(array) - offsetof(RealArray, data)))->length)
+#define array_length(array) (((ArrayStorage*)((char*)(array) - offsetof(ArrayStorage, data)))->length)
 
 /**
  * @brief Destroys a previously created array.
@@ -79,15 +79,15 @@ static inline void* _array_new(int length, size_t element_size, const void* sour
 #define array_destroy(array)                                                    \
     do {                                                                        \
         _Generic((array),                                                       \
-            struct String***: _destroy_string_array((struct String** ) *array), \
+            struct String***: destroy_string_array((struct String** ) *array),  \
             default: (void) array                                               \
         );                                                                      \
-        free((RealArray*)((char*)(*array) - offsetof(RealArray, data)));        \
+        free((ArrayStorage*)((char*)(*array) - offsetof(ArrayStorage, data)));  \
         *array = nullptr;                                                       \
     } while (false)
 
 struct String;
 
-extern void _destroy_string_array(Array(struct String*) strings);
+extern void destroy_string_array(Array(struct String*) strings);
 
 #endif

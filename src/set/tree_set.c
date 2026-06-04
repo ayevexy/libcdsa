@@ -551,7 +551,7 @@ Collection tree_set_to_collection(const TreeSet* tree_set) {
 
 Array(void*) tree_set_to_array(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
-    Array(void*) elements = _array_new(tree_set->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(tree_set->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -575,7 +575,7 @@ String tree_set_to_string(const TreeSet* tree_set) {
         return nullptr;
     }
     string->length = total_length - 1;
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, tree_set->size == 0 ? "(" : "( ");
 
@@ -1059,6 +1059,6 @@ static bool set_view_contains_internal(const void* tree_set, const void* element
     return tree_set_contains(((Pair*) tree_set)->first, element);
 }
 
-SetView* _tree_set_view(const TreeSet* tree_set) {
+SetView* tree_set_view(const TreeSet* tree_set) {
     return tree_set ? (SetView*) &tree_set->view : nullptr;
 }

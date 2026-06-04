@@ -112,9 +112,9 @@ Collection set_view_to_collection(const SetView* set_view);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_union(set_a, set_b) _set_view_union(_set_view_of(set_a), _set_view_of(set_b))
+#define set_union(set_a, set_b) set_view_union(set_view_of(set_a), set_view_of(set_b))
 
-SetView _set_view_union(SetView*, SetView*);
+SetView set_view_union(SetView*, SetView*);
 
 /**
  * @brief Returns a set view representing the intersection of two sets.
@@ -128,9 +128,9 @@ SetView _set_view_union(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_intersection(set_a, set_b) _set_view_intersection(_set_view_of(set_a), _set_view_of(set_b))
+#define set_intersection(set_a, set_b) set_view_intersection(set_view_of(set_a), set_view_of(set_b))
 
-SetView _set_view_intersection(SetView*, SetView*);
+SetView set_view_intersection(SetView*, SetView*);
 
 /**
  * @brief Returns a set view representing the difference of two sets.
@@ -144,9 +144,9 @@ SetView _set_view_intersection(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_difference(set_a, set_b) _set_view_difference(_set_view_of(set_a), _set_view_of(set_b))
+#define set_difference(set_a, set_b) set_view_difference(set_view_of(set_a), set_view_of(set_b))
 
-SetView _set_view_difference(SetView*, SetView*);
+SetView set_view_difference(SetView*, SetView*);
 
 /**
  * @brief Returns a set view representing the symmetrical difference of two sets.
@@ -160,9 +160,9 @@ SetView _set_view_difference(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_symmetric_difference(set_a, set_b) _set_view_symmetric_difference(_set_view_of(set_a), _set_view_of(set_b))
+#define set_symmetric_difference(set_a, set_b) set_view_symmetric_difference(set_view_of(set_a), set_view_of(set_b))
 
-SetView _set_view_symmetric_difference(SetView*, SetView*);
+SetView set_view_symmetric_difference(SetView*, SetView*);
 
 /**
  * @brief Checks whether one set is a subset of another set.
@@ -176,9 +176,9 @@ SetView _set_view_symmetric_difference(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_is_subset(set_a, set_b) _set_view_is_subset(_set_view_of(set_a), _set_view_of(set_b))
+#define set_is_subset(set_a, set_b) set_view_is_subset(set_view_of(set_a), set_view_of(set_b))
 
-bool _set_view_is_subset(SetView*, SetView*);
+bool set_view_is_subset(SetView*, SetView*);
 
 /**
  * @brief Checks whether one set is the superset of another set.
@@ -192,9 +192,9 @@ bool _set_view_is_subset(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_is_superset(set_a, set_b) _set_view_is_superset(_set_view_of(set_a), _set_view_of(set_b))
+#define set_is_superset(set_a, set_b) set_view_is_superset(set_view_of(set_a), set_view_of(set_b))
 
-bool _set_view_is_superset(SetView*, SetView*);
+bool set_view_is_superset(SetView*, SetView*);
 
 /**
  * @brief Returns a set view of any set (including another SetView).
@@ -203,24 +203,24 @@ bool _set_view_is_superset(SetView*, SetView*);
  *
  * @return a set view representation
  */
-#define _set_view_of(set) _Generic((set),   \
-    _set_view_case_hash_set(set)            \
-    _set_view_case_tree_set(set)            \
+#define set_view_of(set) _Generic((set),    \
+    set_view_case_hash_set(set)             \
+    set_view_case_tree_set(set)             \
     SetView*: set                           \
 )
 
 #endif
 
 #ifdef LIBCDSA_HASH_SET_H
-    extern SetView* _hash_set_view(const HashSet*);
-#   define _set_view_case_hash_set(set) HashSet*: _hash_set_view((HashSet*) set),
+    extern SetView* hash_set_view(const HashSet*);
+#   define set_view_case_hash_set(set) HashSet*: hash_set_view((HashSet*) set),
 #else
-#   define _set_view_case_hash_set(set)
+#   define set_view_case_hash_set(set)
 #endif
 
 #ifdef LIBCDSA_TREE_SET_H
-    extern SetView* _tree_set_view(const TreeSet*);
-#   define _set_view_case_tree_set(set) TreeSet*: _tree_set_view((TreeSet*) set),
+    extern SetView* tree_set_view(const TreeSet*);
+#   define set_view_case_tree_set(set) TreeSet*: tree_set_view((TreeSet*) set),
 #else
-#   define _set_view_case_tree_set(set)
+#   define set_view_case_tree_set(set)
 #endif

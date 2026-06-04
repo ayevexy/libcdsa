@@ -686,7 +686,7 @@ Collection array_list_to_collection(const ArrayList* array_list) {
 
 Array(void*) array_list_to_array(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    Array(void*) elements = _array_new(array_list->size, sizeof(void*), nullptr);
+    Array(void*) elements = array_new(array_list->size, void*, nullptr);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;
@@ -707,7 +707,7 @@ String array_list_to_string(const ArrayList* array_list) {
         return nullptr;
     }
     string->length = total_length - 1; // null terminator
-    string->data = string->_data;
+    string->data = string->buffer;
     string->data[0] = '\0'; // initialize string to ignore memory garbage
     strcat(string->data, array_list->size == 0 ? "[" : "[ ");
 

@@ -74,7 +74,7 @@ void set_plain_error(Error error, const char* error_message_format, ...) {
     va_list parameters = {};
     va_start(parameters, error_message_format);
 
-    const int length = vsnprintf(message_copy,MAX_MESSAGE_LENGTH, error_message_format, parameters);
+    const int length = vsnprintf(message_copy, MAX_MESSAGE_LENGTH, error_message_format, parameters);
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");

@@ -176,8 +176,8 @@ int main(void) {
     
     // Converting the ArrayList to a string representation via `.to_string`
     // by default prints the memory addresses of the elements
-    String* string = array_list_to_string(array_list);
-    printf("%s", string.data); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
+    String string = array_list_to_string(array_list);
+    printf("%s", string_data(string)); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
     
     // It must be freed later
     string_destroy(&string);
@@ -245,8 +245,8 @@ int main(void) {
     
     // Converting the HashMap to a string representation via `.key_to_string` and `,value_to_string`
     // by default prints the memory addresses of the mapping key-value
-    String* string = hash_map_to_string(hash_map);
-    printf("%s", string.data); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
+    String string = hash_map_to_string(hash_map);
+    printf("%s", string_data(string)); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
     
     // it must be freed later
     string_destroy(&string);

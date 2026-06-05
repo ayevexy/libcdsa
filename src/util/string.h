@@ -38,7 +38,7 @@ typedef struct String {
  *
  * @return a new allocated string
  *
- * @exception NULL_POINTER_ERROR if string is null
+ * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define string_new(string) string_new(dispatch_string_type(string))

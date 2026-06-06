@@ -53,7 +53,7 @@ String (string_new)(struct String string);
  * @return a string reference
  */
 #define string_ref(string) \
-    (&(struct String) { .length = strlen(string), .data = (char*) string })
+    (&(struct String) { .length = strlen(string), .data = string })
 
 /**
  * @brief Destroys previously allocated strings.
@@ -634,7 +634,7 @@ int string_to_string_callback(const void* string, char* buffer, size_t size);
 /* --------------------------------------------------------------------------------- */
 
 #define dispatch_string_type(string) (_Generic((string),    \
-    String:  string_self,                                   \
+    String: string_self,                                    \
     const char*: string_ref,                                \
     char*: string_ref,                                      \
     int: char_self,                                         \

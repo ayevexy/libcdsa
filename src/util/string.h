@@ -24,7 +24,7 @@ extern void (*string_memory_dealloc)(void*);
  * Accessing its fields directly is discouraged.
  *
  * Memory ownership:
- * - String must be freed using string_destroy(), except for strings created by `string_ref()`.
+ * - String must be freed using `string_destroy()`, except for strings created by `string_ref()`.
  */
 typedef struct String {
     int length;
@@ -647,5 +647,82 @@ struct String string_self(String string);
 struct String (string_ref)(const char* raw_string);
 
 char char_self(char c);
+
+/* --------------------------------------------------------------------------------- */
+
+/**
+ * @brief The StringBuilder type represent a mutable resizable sequence of characters.
+ * It should be used to dynamically create custom strings of variable size.
+ * Accessing its fields directly is discouraged.
+ *
+ * Memory ownership:
+ * - StringBuilder must be freed using `string_builder_destroy()`.
+ */
+typedef struct {
+    char* buffer;
+    int length;
+    int capacity;
+} StringBuilder;
+
+/**
+ * @brief Creates a new string builder with a default capacity of ten.
+ *
+ * @return a newly created string builder.
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+#define string_builder_new() string_builder_init(&(StringBuilder){})
+
+StringBuilder* string_builder_init(StringBuilder* builder);
+
+/**
+ * @brief Appends a string at the end of the string builder character sequence.
+ *
+ * @param builder the string builder
+ * @param string the string
+ *
+ * @exception NULL_POINTER_ERROR if builder is null
+ * @exception MEMORY_ALLOCATION_ERROR if failed to resize capacity
+ */
+#define string_builder_append(builder, string) string_builder_append(builder, dispatch_string_type(string))
+
+void (string_builder_append)(StringBuilder* builder, struct String string);
+
+/**
+ * @brief Inserts a string at the specified position of the string builder character sequence.
+ *
+ * @param builder the string builder
+ * @param index the position
+ * @param string the string
+ *
+ * @exception NULL_POINTER_ERROR if builder is null
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > builder.capacity
+ * @exception MEMORY_ALLOCATION_ERROR if failed to resize string builder capacity
+ */
+#define string_builder_insert(builder, index, string) string_builder_insert(builder, index, dispatch_string_type(string))
+
+void (string_builder_insert)(StringBuilder* builder, int index, struct String string);
+
+/**
+ * @brief Constructs a string from the string builder character sequence current state.
+ *
+ * @param builder the string builder
+ *
+ * @return a new allocated string
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+String string_builder_to_string(StringBuilder* builder);
+
+/**
+ * @brief Destroy a string builder and its internal buffer.
+ *
+ * @param builder pointer to a string builder
+ *
+ * @post builder == nullptr
+ */
+#define string_builder_destroy(builder) do { string_builder_close(*builder); *builder = nullptr; } while (false)
+
+void string_builder_close(StringBuilder* builder);
 
 #endif

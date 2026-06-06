@@ -478,6 +478,99 @@ void test_string_value_of() {
     TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10)->data);
 }
 
+/* --------------------------------------------------------------------------------- */
+
+void test_create_and_destroy_string_builder() {
+    // when
+    StringBuilder *sb = string_builder_new();
+    // then
+    TEST_ASSERT_NOT_NULL(sb->buffer);
+    TEST_ASSERT_EQUAL(0, sb->length);
+    TEST_ASSERT_EQUAL(10, sb->capacity);
+    // cleanup
+    string_builder_destroy(&sb);
+    TEST_ASSERT_NULL(sb);
+}
+
+void test_string_builder_append() {
+    // given
+    StringBuilder* sb = string_builder_new();
+    // when
+    string_builder_append(sb, "Hello");
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello", sb->buffer);
+    TEST_ASSERT_EQUAL(strlen("Hello"), sb->length);
+    TEST_ASSERT_EQUAL(10, sb->capacity);
+    // cleanup
+    string_builder_destroy(&sb);
+}
+
+void test_string_builder_append_exceeding_capacity_resize_it() {
+    // given
+    StringBuilder* sb = string_builder_new();
+    // when
+    string_builder_append(sb, "Hello ");
+    string_builder_append(sb, "World");
+    string_builder_append(sb, "!");
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", sb->buffer);
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), sb->length);
+    TEST_ASSERT_EQUAL(20, sb->capacity);
+    // cleanup
+    string_builder_destroy(&sb);
+}
+
+void test_string_builder_insert() {
+    // given
+    StringBuilder* sb = string_builder_new();
+    // and
+    string_builder_append(sb, "Hello");
+    string_builder_append(sb, "World");
+    string_builder_append(sb, "!");
+    // when
+    string_builder_insert(sb, 5, " ");
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", sb->buffer);
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), sb->length);
+    TEST_ASSERT_EQUAL(20, sb->capacity);
+    // cleanup
+    string_builder_destroy(&sb);
+}
+
+static void insert_index_out_of_bounds_test_helper(int index) {
+    // given
+    StringBuilder* sb = string_builder_new();
+    // when
+    Error error = attempt(string_builder_insert(sb, index, "Hello"));
+    // then
+    TEST_ASSERT_EQUAL_STRING("", sb->buffer);
+    TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+}
+
+void test_string_builder_insert_index_above_bounds_fails() {
+    insert_index_out_of_bounds_test_helper(10);
+}
+
+void test_string_builder_insert_negative_index_fails() {
+    insert_index_out_of_bounds_test_helper(-1);
+}
+
+void test_string_builder_to_string() {
+    // given
+    StringBuilder* sb = string_builder_new();
+    // and
+    string_builder_append(sb, "Hello ");
+    string_builder_append(sb, "World");
+    string_builder_append(sb, "!");
+    // when
+    String string = string_builder_to_string(sb);
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), string->length);
+    // cleanup
+    string_builder_destroy(&sb);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_string);
@@ -523,5 +616,13 @@ int main(void) {
     RUN_TEST(test_string_to_uppercase);
     RUN_TEST(test_string_to_lowercase);
     RUN_TEST(test_string_value_of);
+    /* ---------------------------------------------------- */
+    RUN_TEST(test_create_and_destroy_string_builder);
+    RUN_TEST(test_string_builder_append);
+    RUN_TEST(test_string_builder_append_exceeding_capacity_resize_it);
+    RUN_TEST(test_string_builder_insert);
+    RUN_TEST(test_string_builder_insert_index_above_bounds_fails);
+    RUN_TEST(test_string_builder_insert_negative_index_fails);
+    RUN_TEST(test_string_builder_to_string);
     return UNITY_END();
 }

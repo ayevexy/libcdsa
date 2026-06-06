@@ -539,3 +539,76 @@ void destroy_string_array(Array(const struct String*) strings) {
         string_destroy(&strings[i]);
     }
 }
+
+/* --------------------------------------------------------------------------------- */
+
+constexpr int INITIAL_CAPACITY = 10;
+constexpr int GROWN_FACTOR = 2;
+
+StringBuilder* string_builder_init(StringBuilder* builder) {
+    if (require_non_null(builder)) return nullptr;
+
+    char* buffer = malloc(INITIAL_CAPACITY * sizeof(char) + NULL_TERMINATOR);
+    if (!buffer) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to initialize 'string builder' buffer");
+        return nullptr;
+    }
+    buffer[0] = '\0';
+    builder->buffer = buffer;
+    builder->length = 0;
+    builder->capacity = INITIAL_CAPACITY;
+    return builder;
+}
+
+void (string_builder_append)(StringBuilder* builder, struct String string) {
+    if (require_non_null(builder)) return;
+
+    if (builder->length + string.length >= builder->capacity) {
+        char* new_buffer = realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
+        if (!new_buffer) {
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to resize 'string builder' buffer");
+            return;
+        }
+        builder->buffer = new_buffer;
+        builder->capacity = builder->capacity * GROWN_FACTOR;
+    }
+    memcpy(builder->buffer + builder->length, string.data, string.length);
+    builder->length += string.length;
+    builder->buffer[builder->length] = '\0';
+}
+
+void (string_builder_insert)(StringBuilder* builder, int index, struct String string) {
+    if (require_non_null(builder)) return;
+
+    if (index < 0 || index > builder->length) {
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, builder->length);
+        return;
+    }
+    if (builder->length + string.length >= builder->capacity) {
+        char* buffer = realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
+        if (!buffer) {
+            set_error(MEMORY_ALLOCATION_ERROR, "failed to resize 'string builder' buffer");
+            return;
+        }
+        builder->buffer = buffer;
+        builder->capacity = builder->capacity * GROWN_FACTOR;
+    }
+    memmove(builder->buffer + index + string.length, builder->buffer + index, builder->length);
+    memmove(builder->buffer + index, string.data, string.length);
+    builder->length += string.length;
+    builder->buffer[builder->length] = '\0';
+}
+
+String string_builder_to_string(StringBuilder* builder) {
+    if (require_non_null(builder)) return nullptr;
+
+    return string_new(builder->buffer);
+}
+
+void string_builder_close(StringBuilder* builder) {
+    if (require_non_null(builder)) return;
+    free(builder->buffer);
+    builder->buffer = nullptr;
+    builder->length = 0;
+    builder->capacity = 0;
+}

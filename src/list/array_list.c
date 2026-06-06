@@ -701,7 +701,7 @@ String array_list_to_string(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
 
     const size_t total_length = calculate_string_size(array_list);
-    String string = string_memory_alloc(sizeof(struct String) + total_length);
+    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
@@ -717,7 +717,7 @@ String array_list_to_string(const ArrayList* array_list) {
 
         char* raw_element_string = string_memory_alloc(length);
         if (!raw_element_string) {
-            string_destroy(&string);
+            string_destroy((String*) &string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }

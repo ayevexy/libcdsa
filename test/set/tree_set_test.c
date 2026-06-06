@@ -800,7 +800,7 @@ void test_get_tree_set_string_representation() {
     // when
     String string = tree_set_to_string(tree_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string->data);
+    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string_data(string));
     // clean up
     string_destroy(&string);
 }
@@ -809,7 +809,7 @@ void test_get_empty_tree_set_string_representation() {
     // when
     String string = tree_set_to_string(tree_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("()", string->data);
+    TEST_ASSERT_EQUAL_STRING("()", string_data(string));
     // clean up
     string_destroy(&string);
 }

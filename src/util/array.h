@@ -76,18 +76,18 @@ static inline void* (array_new)(int length, size_t element_size, const void* sou
  *
  * @warning this should only be called on arrays created by `array_new()`, otherwise it's undefined behavior
  */
-#define array_destroy(array)                                                    \
-    do {                                                                        \
-        _Generic((array),                                                       \
-            struct String***: destroy_string_array((struct String** ) *array),  \
-            default: (void) array                                               \
-        );                                                                      \
-        free((ArrayStorage*)((char*)(*array) - offsetof(ArrayStorage, data)));  \
-        *array = nullptr;                                                       \
+#define array_destroy(array)                                                                \
+    do {                                                                                    \
+        _Generic((array),                                                                   \
+            const struct String***: destroy_string_array((const struct String** ) *array),  \
+            default: (void) array                                                           \
+        );                                                                                  \
+        free((ArrayStorage*)((char*)(*array) - offsetof(ArrayStorage, data)));              \
+        *array = nullptr;                                                                   \
     } while (false)
 
 struct String;
 
-extern void destroy_string_array(Array(struct String*) strings);
+extern void destroy_string_array(Array(const struct String*) strings);
 
 #endif

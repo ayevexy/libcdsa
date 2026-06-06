@@ -1247,7 +1247,7 @@ void test_get_linked_list_string_representation() {
     // when
     String string = linked_list_to_string(linked_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string->data);
+    TEST_ASSERT_EQUAL_STRING("[ 1, 2, 3, 4, 5 ]", string_data(string));
     // clean up
     string_destroy(&string);
 }
@@ -1256,7 +1256,7 @@ void test_get_empty_linked_list_string_representation() {
     // when
     String string = linked_list_to_string(linked_list);
     // then
-    TEST_ASSERT_EQUAL_STRING("[]", string->data);
+    TEST_ASSERT_EQUAL_STRING("[]", string_data(string));
     // clean up
     string_destroy(&string);
 }

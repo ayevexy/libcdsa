@@ -19,8 +19,9 @@ extern void* (*string_memory_alloc)(size_t);
 extern void (*string_memory_dealloc)(void*);
 
 /**
- * @brief String type abstraction over c-strings. The String type is conceptually immutable
+ * @brief String type abstraction over c-strings. The String type is immutable
  * and all operations that would modify a string return a new modified version instead.
+ * Accessing its fields directly is discouraged.
  *
  * Memory ownership:
  * - String must be freed using string_destroy(), except for strings created by `string_ref()`.
@@ -29,7 +30,7 @@ typedef struct String {
     int length;
     const char* data;
     char buffer[]; // internal
-} * String;
+} const * String;
 
 /**
  * @brief Creates a new allocated string copying another string.

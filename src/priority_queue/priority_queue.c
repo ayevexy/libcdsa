@@ -321,7 +321,7 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
 
     const size_t total_length = calculate_string_size(priority_queue);
-    String string = string_memory_alloc(sizeof(struct String) + total_length);
+    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
@@ -337,7 +337,7 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
 
         char* raw_element_string = string_memory_alloc(length);
         if (!raw_element_string) {
-            string_destroy(&string);
+            string_destroy((String*) &string);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
             return nullptr;
         }

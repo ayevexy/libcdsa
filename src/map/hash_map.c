@@ -483,7 +483,7 @@ String hash_map_to_string(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
 
     const size_t total_length = calculate_string_size(hash_map);
-    String string = string_memory_alloc(sizeof(struct String) + total_length);
+    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
@@ -502,7 +502,7 @@ String hash_map_to_string(const HashMap* hash_map) {
 
             char* raw_element_string = string_memory_alloc(key_length + value_length + SEPARATOR + NULL_TERMINATOR);
             if (!raw_element_string) {
-                string_destroy(&string);
+                string_destroy((String*) &string);
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
                 return nullptr;
             }

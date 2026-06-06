@@ -587,7 +587,7 @@ void test_get_hash_set_string_representation() {
     // when
     String string = hash_set_to_string(hash_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("( 5, 1, 2, 3, 4 )", string->data);
+    TEST_ASSERT_EQUAL_STRING("( 5, 1, 2, 3, 4 )", string_data(string));
     // clean up
     string_destroy(&string);
 }
@@ -596,7 +596,7 @@ void test_get_empty_hash_set_string_representation() {
     // when
     String string = hash_set_to_string(hash_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("()", string->data);
+    TEST_ASSERT_EQUAL_STRING("()", string_data(string));
     // clean up
     string_destroy(&string);
 }

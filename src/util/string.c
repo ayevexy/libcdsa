@@ -17,7 +17,7 @@ constexpr int NULL_TERMINATOR = 1;
 String (string_new)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -32,7 +32,7 @@ String (string_new)(struct String string) {
 void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
-    string_memory_dealloc(string);
+    string_memory_dealloc((struct String*) string);
     *string_pointer = nullptr;
 }
 
@@ -44,7 +44,7 @@ String (string_format)(struct String format, ...) {
     const int length = vsnprintf(nullptr, 0, format.data, parameters);
     va_end(parameters);
 
-    String string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    struct String* string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -181,7 +181,7 @@ bool (string_ends_with)(struct String string, struct String suffix) {
 String (string_trim)(struct String string) {
     String half = (string_trim_end)(string);
     String full = string_trim_start(half);
-    string_memory_dealloc(half);
+    string_memory_dealloc((struct String*) half);
     return full;
 }
 
@@ -194,7 +194,7 @@ String (string_trim_start)(struct String string) {
     }
     const int new_length = string.length - start;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -215,7 +215,7 @@ String (string_trim_end)(struct String string) {
     }
     const int new_length = end;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -237,7 +237,7 @@ String (string_substring)(struct String string, int start, int length) {
     const int max_length = string.length - start;
     const int new_length = length > max_length ? max_length : length;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -254,7 +254,7 @@ String (string_concat)(struct String string, struct String other_string) {
 
     const int length = string.length + other_string.length;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -270,7 +270,7 @@ String (string_concat)(struct String string, struct String other_string) {
 String (string_replace_char)(struct String string, char character, char replacement) {
     if (require_non_null(string.data)) return nullptr;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -300,7 +300,7 @@ String (string_replace_substring)(struct String string, struct String target, st
         }
     }
     const int new_length = string.length + count * (replacement.length - target.length);
-    String new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -333,7 +333,7 @@ String (string_repeat)(struct String string, int times) {
     }
     const int length = string.length * times;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -364,7 +364,7 @@ String (string_join)(struct String separator, ...) {
     total_length -= separator.length;
     va_end(parameters);
 
-    String new_string = string_memory_alloc(sizeof(struct String) + total_length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + total_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -407,7 +407,7 @@ Array(String) (string_split)(struct String string, char delimiter) {
     int index = 0;
     for (int i = 0, start = 0; i <= string.length; i++) {
         if (string.data[i] == delimiter || i == string.length) {
-            String new_string = string_memory_alloc(sizeof(struct String) + i - start + NULL_TERMINATOR);
+            struct String* new_string = string_memory_alloc(sizeof(struct String) + i - start + NULL_TERMINATOR);
             if (!new_string) {
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
                 return nullptr;
@@ -430,7 +430,7 @@ Array(String) (string_lines)(struct String string) {
 String (string_to_uppercase)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -448,7 +448,7 @@ String (string_to_uppercase)(struct String string) {
 String (string_to_lowercase)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
 
-    String new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    struct String* new_string = string_memory_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -534,7 +534,7 @@ char char_self(char c) {
     return c;
 }
 
-void destroy_string_array(Array(struct String*) strings) {
+void destroy_string_array(Array(const struct String*) strings) {
     for (int i = 0; i < (int) array_length(strings); i++) {
         string_destroy(&strings[i]);
     }

@@ -40,25 +40,25 @@ static inline uint64_t pointer_hash(const void* pointer) {
 /**
  * @brief Check if two pointers are equal.
  *
- * @param a first pointer
- * @param b second pointer
+ * @param pointer_a first pointer
+ * @param pointer_b second pointer
  *
  * @return true if a == b, false otherwise
  */
-static inline bool pointer_equals(const void* a, const void* b) {
-    return a == b;
+static inline bool pointer_equals(const void* pointer_a, const void* pointer_b) {
+    return pointer_a == pointer_b;
 }
 
 /**
  * @brief Compare two pointers by its memory addresses.
  *
- * @param a first pointer
- * @param b second pointer
+ * @param pointer_a first pointer
+ * @param pointer_b second pointer
  *
  * @return negative if a < b, 0 if a == b, positive if a > b
  */
-static inline int pointer_compare(const void* a, const void* b) {
-    return ((uintptr_t) a > (uintptr_t) b) - ((uintptr_t) a < (uintptr_t) b);
+static inline int pointer_compare(const void* pointer_a, const void* pointer_b) {
+    return ((uintptr_t) pointer_a > (uintptr_t) pointer_b) - ((uintptr_t) pointer_a < (uintptr_t) pointer_b);
 }
 
 /**
@@ -75,10 +75,10 @@ static inline String pointer_to_string(const void* pointer) {
 /**
  * @brief No Operation destruct function.
  *
- * @param element the element to be ignored
+ * @param pointer pointer to be ignored
  */
-static inline void noop_destruct(void* element) {
-    (void) element;
+static inline void noop_destruct(void* pointer) {
+    (void) pointer;
 }
 
 #endif

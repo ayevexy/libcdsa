@@ -1,8 +1,8 @@
 #ifndef LIBCDSA_FUNCTIONS_H
 #define LIBCDSA_FUNCTIONS_H
 
+#include "string.h"
 #include <stdint.h>
-#include <stdio.h>
 
 /**
  * @brief Generic function pointer types for functional-style operations.
@@ -64,14 +64,12 @@ static inline int pointer_compare(const void* a, const void* b) {
 /**
  * @brief Convert a pointer to string (implementation-defined format).
  *
- * @param value pointer to convert
- * @param buffer destination buffer
- * @param size size of the buffer in bytes
+ * @param pointer pointer to convert
  *
- * @return number of characters written (excluding null terminator) or negative on error
+ * @return a newly allocated string
  */
-static inline int pointer_to_string(const void* value, char* buffer, size_t size) {
-    return snprintf(buffer, size, "%p", value);
+static inline String pointer_to_string(const void* pointer) {
+    return string_format("%p", pointer);
 }
 
 /**

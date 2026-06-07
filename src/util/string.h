@@ -625,12 +625,10 @@ void string_destroy_callback(void* string);
  * @brief String to string function to be used in containers.
  *
  * @param string the string
- * @param buffer buffer
- * @param size size
  *
- * @return the string length
+ * @return the string
  */
-int string_to_string_callback(const void* string, char* buffer, size_t size);
+String string_to_string_callback(const void* string);
 
 /* --------------------------------------------------------------------------------- */
 

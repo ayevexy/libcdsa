@@ -518,8 +518,8 @@ void string_destroy_callback(void* string) {
     string_memory_dealloc(string);
 }
 
-int string_to_string_callback(const void* string, char* buffer, size_t size) {
-    return snprintf(buffer, size, "%s", ((String) string)->data);
+String string_to_string_callback(const void* string) {
+    return string;
 }
 
 struct String string_self(String string) {

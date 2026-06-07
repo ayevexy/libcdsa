@@ -3,7 +3,6 @@
 #include "util/errors.h"
 #include "util/constraints.h"
 #include "util/sets.h"
-#include <string.h>
 
 typedef enum {
     RED, BLACK
@@ -24,7 +23,7 @@ struct TreeSet {
     struct {
         void (*destruct)(void*);
         int (*compare)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);
@@ -33,8 +32,6 @@ struct TreeSet {
     int modification_count;
     SetView view;
 };
-
-static size_t calculate_string_size(const TreeSet*);
 
 static TreeSet* create_tree_set_like(const TreeSet*);
 
@@ -568,61 +565,29 @@ Array(void*) tree_set_to_array(const TreeSet* tree_set) {
 String tree_set_to_string(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
 
-    const size_t total_length = calculate_string_size(tree_set);
-    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
-    if (!string) {
+    StringBuilder* builder = string_builder_new();
+    if (!builder) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string->length = total_length - 1;
-    string->data = string->buffer;
-    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->buffer, tree_set->size == 0 ? "(" : "( ");
-
-    int count = 0;
+    string_builder_append(builder, tree_set->size == 0 ? "(" : "( ");
     Node* node = get_lower_node(tree_set, tree_set->root);
-    while (node != tree_set->sentinel) {
-        constexpr int NULL_TERMINATOR = 1;
-        const int length = tree_set->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
+    for (int count = 0; node != tree_set->sentinel; count++) {
+        String element_string = tree_set->to_string(node->element);
 
-        char* raw_element_string = string_memory_alloc(length);
-        if (!raw_element_string) {
-            string_destroy((String*) &string);
-            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
-        }
-        tree_set->to_string(node->element, raw_element_string, length);
-        strcat(string->buffer, raw_element_string);
+        string_builder_append(builder, element_string);
+        string_destroy(&element_string);
 
         if (count < tree_set->size - 1) {
-            strcat(string->buffer, ", ");
+            string_builder_append(builder, ", ");
         }
-        count++;
-        string_memory_dealloc(raw_element_string);
         node = get_successor_node(tree_set, node);
     }
+    string_builder_append(builder, tree_set->size == 0 ? ")" : " )");
 
-    strcat(string->buffer, tree_set->size == 0 ? ")" : " )");
+    String string = string_builder_to_string(builder);
+    string_builder_destroy(&builder);
     return string;
-}
-
-static size_t calculate_string_size(const TreeSet* tree_set) {
-    constexpr int PARENTHESES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
-    size_t length = 0;
-    int count = 0;
-
-    Node* node = get_lower_node(tree_set, tree_set->root);
-    while (node != tree_set->sentinel) {
-        length += tree_set->to_string(node->element, nullptr, 0);
-
-        if (count == 0) length += 1; // space after opening parenthesis
-        if (count < tree_set->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
-        if (count == tree_set->size - 1) length += 1; // space before closing parenthesis
-
-        node = get_successor_node(tree_set, node);
-        count++;
-    }
-    return length + PARENTHESES + NULL_TERMINATOR;
 }
 
 static TreeSet* create_tree_set_like(const TreeSet* tree_set) {

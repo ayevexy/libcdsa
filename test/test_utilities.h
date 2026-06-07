@@ -1,9 +1,8 @@
 #ifndef LIBCDSA_TEST_UTILITIES_H
 #define LIBCDSA_TEST_UTILITIES_H
 
-#include <stddef.h>
+#include "util/string.h"
 #include <stdint.h>
-#include <stdio.h>
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
@@ -28,12 +27,12 @@ static inline int char_pointer_value_compare(const void* a, const void* b) {
     return (*(char*) a > *(char*) b) - (*(char*) a < *(char*) b);
 }
 
-static inline int int_pointer_value_to_string(const void* value, char* buffer, size_t size) {
-    return snprintf(buffer, size, "%d", *(int*) value);
+static inline String int_pointer_value_to_string(const void* value) {
+    return string_format("%d", *(int*) value);
 }
 
-static inline int char_pointer_value_to_string(const void* value, char* buffer, size_t size) {
-    return snprintf(buffer, size, "%c", *(char*) value);
+static inline String char_pointer_value_to_string(const void* value) {
+    return string_format("%c", *(char*) value);
 }
 
 typedef struct { char key; int value; } CharIntEntry;

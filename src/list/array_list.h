@@ -85,7 +85,7 @@ typedef struct {
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);

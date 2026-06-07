@@ -2,7 +2,6 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -16,7 +15,7 @@ struct ArrayList {
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);
@@ -25,8 +24,6 @@ struct ArrayList {
     };
     int modification_count;
 };
-
-static size_t calculate_string_size(const ArrayList*);
 
 static bool ensure_capacity(ArrayList*, int);
 
@@ -700,52 +697,27 @@ Array(void*) array_list_to_array(const ArrayList* array_list) {
 String array_list_to_string(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
 
-    const size_t total_length = calculate_string_size(array_list);
-    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
-    if (!string) {
+    StringBuilder* builder = string_builder_new();
+    if (!builder) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string->length = total_length - 1; // null terminator
-    string->data = string->buffer;
-    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->buffer, array_list->size == 0 ? "[" : "[ ");
-
+    string_builder_append(builder, array_list->size == 0 ? "[" : "[ ");
     for (int i = 0; i < array_list->size; i++) {
-        constexpr int NULL_TERMINATOR = 1;
-        const int length = array_list->to_string(array_list->elements[i], nullptr, 0) + NULL_TERMINATOR;
+        String element_string = array_list->to_string(array_list->elements[i]);
 
-        char* raw_element_string = string_memory_alloc(length);
-        if (!raw_element_string) {
-            string_destroy((String*) &string);
-            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
-        }
-        array_list->to_string(array_list->elements[i], raw_element_string, length);
-        strcat(string->buffer, raw_element_string);
+        string_builder_append(builder, element_string);
+        string_destroy(&element_string);
 
         if (i < array_list->size - 1) {
-            strcat(string->buffer, ", ");
+            string_builder_append(builder, ", ");
         }
-        string_memory_dealloc(raw_element_string);
     }
+    string_builder_append(builder, array_list->size == 0 ? "]" : " ]");
 
-    strcat(string->buffer, array_list->size == 0 ? "]" : " ]");
+    String string = string_builder_to_string(builder);
+    string_builder_destroy(&builder);
     return string;
-}
-
-static size_t calculate_string_size(const ArrayList* array_list) {
-    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
-    size_t length = 0;
-
-    for (int i = 0; i < array_list->size; i++) {
-        length += array_list->to_string(array_list->elements[i], nullptr, 0);
-
-        if (i == 0) length += 1; // space after opening bracket
-        if (i < array_list->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
-        if (i == array_list->size - 1) length += 1; // space before closing bracket
-    }
-    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static bool ensure_capacity(ArrayList* array_list, int capacity) {

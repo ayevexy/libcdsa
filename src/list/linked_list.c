@@ -2,7 +2,6 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
-#include <string.h>
 
 typedef struct Node {
     void* element;
@@ -17,7 +16,7 @@ struct LinkedList {
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);
@@ -25,8 +24,6 @@ struct LinkedList {
     };
     int modification_count;
 };
-
-static size_t calculate_string_size(const LinkedList*);
 
 static Node* create_node(const LinkedList*, const void*);
 
@@ -713,52 +710,27 @@ Array(void*) linked_list_to_array(const LinkedList* linked_list) {
 String linked_list_to_string(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
 
-    const size_t total_length = calculate_string_size(linked_list);
-    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
-    if (!string) {
+    StringBuilder* builder = string_builder_new();
+    if (!builder) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string->length = total_length - 1;
-    string->data = string->buffer;
-    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->buffer, linked_list->size == 0 ? "[" : "[ ");
-
+    string_builder_append(builder, linked_list->size == 0 ? "[" : "[ ");
     for (const Node* node = linked_list->head; node; node = node->next) {
-        constexpr int NULL_TERMINATOR = 1;
-        const int length = linked_list->to_string(node->element, nullptr, 0) + NULL_TERMINATOR;
+        String element_string = linked_list->to_string(node->element);
 
-        char* raw_element_string = string_memory_alloc(length);
-        if (!raw_element_string) {
-            string_destroy((String*) &string);
-            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
-        }
-        linked_list->to_string(node->element, raw_element_string, length);
-        strcat(string->buffer, raw_element_string);
+        string_builder_append(builder, element_string);
+        string_destroy(&element_string);
 
         if (node->next) {
-            strcat(string->buffer, ", ");
+            string_builder_append(builder, ", ");
         }
-        string_memory_dealloc(raw_element_string);
     }
+    string_builder_append(builder, linked_list->size == 0 ? "]" : " ]");
 
-    strcat(string->buffer, linked_list->size == 0 ? "]" : " ]");
+    String string = string_builder_to_string(builder);
+    string_builder_destroy(&builder);
     return string;
-}
-
-static size_t calculate_string_size(const LinkedList* linked_list) {
-    constexpr int BRACKETS = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
-    size_t length = 0;
-
-    for (const Node* node = linked_list->head; node; node = node->next) {
-        length += linked_list->to_string(node->element, nullptr, 0);
-
-        if (node == linked_list->head) length += 1; // space after opening bracket
-        if (node != linked_list->tail) length += COMMA_SPACE; // prevent ", " on the last element
-        if (node == linked_list->tail) length += 1; // space before closing bracket
-    }
-    return length + BRACKETS + NULL_TERMINATOR;
 }
 
 static Node* create_node(const LinkedList* linked_list, const void* element) {

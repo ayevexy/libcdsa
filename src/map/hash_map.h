@@ -94,12 +94,12 @@ typedef struct {
     struct {
         void (*key_destruct)(void*);
         bool (*key_equals)(const void*, const void*);
-        int (*key_to_string)(const void*, char*, size_t);
+        String (*key_to_string)(const void*);
     };
     struct {
         void (*value_destruct)(void*);
         bool (*value_equals)(const void*, const void*);
-        int (*value_to_string)(const void*, char*, size_t);
+        String (*value_to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);

@@ -2,7 +2,6 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -17,7 +16,7 @@ struct Deque {
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);
@@ -25,8 +24,6 @@ struct Deque {
     };
     int modification_count;
 };
-
-static size_t calculate_string_size(const Deque*);
 
 static int next_power_of_two(int);
 
@@ -407,54 +404,28 @@ Array(void*) deque_to_array(const Deque* deque) {
 String deque_to_string(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
 
-    const size_t total_length = calculate_string_size(deque);
-    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
-    if (!string) {
+    StringBuilder* builder = string_builder_new();
+    if (!builder) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string->length = total_length - 1; // null terminator
-    string->data = string->buffer;
-    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->buffer, deque->size == 0 ? "|" : "| ");
-
+    string_builder_append(builder, deque->size == 0 ? "|" : "| ");
     for (int i = 0; i < deque->size; i++) {
-        constexpr int NULL_TERMINATOR = 1;
         const int index = (deque->first + i) & (deque->capacity - 1);
-        const int length = deque->to_string(deque->elements[index], nullptr, 0) + NULL_TERMINATOR;
+        String element_string = deque->to_string(deque->elements[index]);
 
-        char* raw_element_string = string_memory_alloc(length);
-        if (!raw_element_string) {
-            string_destroy((String*) &string);
-            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
-        }
-        deque->to_string(deque->elements[index], raw_element_string, length);
-        strcat(string->buffer, raw_element_string);
+        string_builder_append(builder, element_string);
+        string_destroy(&element_string);
 
         if (i < deque->size - 1) {
-            strcat(string->buffer, ", ");
+            string_builder_append(builder, ", ");
         }
-        string_memory_dealloc(raw_element_string);
     }
+    string_builder_append(builder, deque->size == 0 ? "|" : " |");
 
-    strcat(string->buffer, deque->size == 0 ? "|" : " |");
+    String string = string_builder_to_string(builder);
+    string_builder_destroy(&builder);
     return string;
-}
-
-static size_t calculate_string_size(const Deque* deque) {
-    constexpr int PIPES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
-    size_t length = 0;
-
-    for (int i = 0; i < deque->size; i++) {
-        const int index = (deque->first + i) & (deque->capacity - 1);
-        length += deque->to_string(deque->elements[index], nullptr, 0);
-
-        if (i == 0) length += 1; // space after opening pipe
-        if (i < deque->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
-        if (i == deque->size - 1) length += 1; // space before closing pipe
-    }
-    return length + PIPES + NULL_TERMINATOR;
 }
 
 static int next_power_of_two(int x) {

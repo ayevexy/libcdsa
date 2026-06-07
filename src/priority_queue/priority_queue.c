@@ -2,7 +2,6 @@
 
 #include "util/errors.h"
 #include "util/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -16,7 +15,7 @@ struct PriorityQueue {
     struct {
         void (*destruct)(void*);
         int (*compare)(const void*, const void*);
-        int (*to_string)(const void*, char*, size_t);
+        String (*to_string)(const void*);
     };
     struct {
         void* (*memory_alloc)(size_t);
@@ -24,8 +23,6 @@ struct PriorityQueue {
     };
     int modification_count;
 };
-
-static size_t calculate_string_size(const PriorityQueue*);
 
 static bool ensure_capacity(PriorityQueue*, int);
 
@@ -320,52 +317,27 @@ Array(void*) priority_queue_to_array(const PriorityQueue* priority_queue) {
 String priority_queue_to_string(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
 
-    const size_t total_length = calculate_string_size(priority_queue);
-    struct String* string = string_memory_alloc(sizeof(struct String) + total_length);
-    if (!string) {
+    StringBuilder* builder = string_builder_new();
+    if (!builder) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
         return nullptr;
     }
-    string->length = total_length - 1;
-    string->data = string->buffer;
-    string->buffer[0] = '\0'; // initialize string to ignore memory garbage
-    strcat(string->buffer, priority_queue->size == 0 ? "|" : "| ");
-
+    string_builder_append(builder, priority_queue->size == 0 ? "|" : "| ");
     for (int i = 0; i < priority_queue->size; i++) {
-        constexpr int NULL_TERMINATOR = 1;
-        const int length = priority_queue->to_string(priority_queue->elements[i], nullptr, 0) + NULL_TERMINATOR;
+        String element_string = priority_queue->to_string(priority_queue->elements[i]);
 
-        char* raw_element_string = string_memory_alloc(length);
-        if (!raw_element_string) {
-            string_destroy((String*) &string);
-            set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'string'");
-            return nullptr;
-        }
-        priority_queue->to_string(priority_queue->elements[i], raw_element_string, length);
-        strcat(string->buffer, raw_element_string);
+        string_builder_append(builder, element_string);
+        string_destroy(&element_string);
 
         if (i < priority_queue->size - 1) {
-            strcat(string->buffer, ", ");
+            string_builder_append(builder, ", ");
         }
-        string_memory_dealloc(raw_element_string);
     }
+    string_builder_append(builder, priority_queue->size == 0 ? "|" : " |");
 
-    strcat(string->buffer, priority_queue->size == 0 ? "|" : " |");
+    String string = string_builder_to_string(builder);
+    string_builder_destroy(&builder);
     return string;
-}
-
-static size_t calculate_string_size(const PriorityQueue* priority_queue) {
-    constexpr int PIPES = 2; constexpr int COMMA_SPACE = 2; constexpr int NULL_TERMINATOR = 1;
-    size_t length = 0;
-
-    for (int i = 0; i < priority_queue->size; i++) {
-        length += priority_queue->to_string(priority_queue->elements[i], nullptr, 0);
-
-        if (i == 0) length += 1; // space after opening pipe
-        if (i < priority_queue->size - 1) length += COMMA_SPACE; // prevent ", " on the last element
-        if (i == priority_queue->size - 1) length += 1; // space before closing pipe
-    }
-    return length + PIPES + NULL_TERMINATOR;
 }
 
 static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {

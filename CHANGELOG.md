@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.5]() — 2026-06-07
+
+This update polish the String API and improve its compatibility with the existing library containers.
+Also adds the StringBuilder to the String API.
+
+### ✨ Features
+- Added the `StringBuilder` type to the String API in `util/string.h`. Currently, with the following operations:
+  - `new()`, `append()`, `insert()`, `to_string()`, and `destroy()`.
+- The `string_destroy()` operation now can take up to 10 arguments to reduce multiple calls.
+- Added `string_data()` operation to retrieve the data of a string.
+- Added callback wrappers for common `String` operations to be used in containers:
+    - `string_hash_callback()`,
+    - `string_equals_callback()`,
+    - `string_compare_callback()`,
+    - `string_destroy_callback()`,
+    - `string_to_string_callback()`.
+
+### ✏️ Changes
+- The `String` type is now a pointer typedef instead of a raw struct; redesigned the underlying struct.
+- Removed `StringView` type; now all functions that previously returned a string view now returns an allocated string.
+- The redesigned `String` type now can reference both owning and non-owning data.
+- Replace `string_view()` by `string_ref()` to create strings that reference existing data.
+- Now `string_format()` accept a `String` instead of a `char*`.
+- Removed all leading underscores from all identifiers to accomplish the C standard.
+- The `String` type is now truly immutable through `const` modifier.
+- All `to_string()` functions now returns a `String` instead of writing to an external buffer.
+- Renamed `new()` function to `raw_new()` in `util/memory.h`.
+
+### 🪲 Bug Fixes
+- Correct `to_string()` separator calculation logic in `set/hash_set.h`.
+
+---
+
 ## 🎉 [v1.0.0-beta.4.1]() — 2026-05-17
 
 ### ✨ Features

@@ -13,7 +13,7 @@ void setUp() {
 }
 
 void tearDown() {
-    linked_list_change_destructor(linked_list, free);
+    linked_list_change_destructor(linked_list, delete);
     linked_list_destroy(&linked_list);
 }
 
@@ -422,7 +422,7 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    linked_list_change_destructor(new_linked_list, free);
+    linked_list_change_destructor(new_linked_list, delete);
     linked_list_destroy(&new_linked_list);
 }
 
@@ -479,9 +479,7 @@ void test_remove_elements_from_linked_list_matching_predicate() {
 }
 
 static void* replace_by_2_times_original(void* element) {
-    int* value = malloc(sizeof(int));
-    *value = *(int*) element * 2;
-    return value;
+    return new(int, *(int*) element * 2);
 }
 
 void test_replace_all_elements_from_linked_list() {
@@ -510,7 +508,7 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
-    linked_list_change_destructor(new_linked_list, free);
+    linked_list_change_destructor(new_linked_list, delete);
     linked_list_destroy(&new_linked_list);
 }
 
@@ -772,7 +770,7 @@ void test_linked_list_is_equal_to_another_linked_list() {
     // then
     TEST_ASSERT_TRUE(equals);
     // clean up
-    linked_list_change_destructor(other_linked_list, free);
+    linked_list_change_destructor(other_linked_list, delete);
     linked_list_destroy(&other_linked_list);
 }
 
@@ -790,7 +788,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    linked_list_change_destructor(other_linked_list, free);
+    linked_list_change_destructor(other_linked_list, delete);
     linked_list_destroy(&other_linked_list);
 }
 
@@ -808,7 +806,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_element
     // then
     TEST_ASSERT_FALSE(equals);
     // clean up
-    linked_list_change_destructor(other_linked_list, free);
+    linked_list_change_destructor(other_linked_list, delete);
     linked_list_destroy(&other_linked_list);
 }
 
@@ -1058,7 +1056,7 @@ void test_linked_list_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    linked_list_change_destructor(new_linked_list, free);
+    linked_list_change_destructor(new_linked_list, delete);
     linked_list_destroy(&new_linked_list);
 }
 
@@ -1087,7 +1085,7 @@ void test_linked_list_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    linked_list_change_destructor(new_linked_list, free);
+    linked_list_change_destructor(new_linked_list, delete);
     linked_list_destroy(&new_linked_list);
 }
 

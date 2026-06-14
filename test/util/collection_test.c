@@ -10,7 +10,7 @@ static ArrayList* array_list;
 
 void setUp() {
     array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .destruct = free,
+        .destruct = delete,
         .equals = int_pointer_value_equals,
         .to_string = int_pointer_value_to_string
     ));
@@ -53,7 +53,7 @@ void test_collection_contains_all_elements() {
     // then
     TEST_ASSERT_TRUE(contains_all);
     // clean up
-    array_list_change_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, delete);
     array_list_destroy(&new_array_list);
 }
 
@@ -85,7 +85,7 @@ void test_collection_does_not_contains_all_elements() {
     // then
     TEST_ASSERT_FALSE(contains_all);
     // clean up
-    array_list_change_destructor(new_array_list, free);
+    array_list_change_destructor(new_array_list, delete);
     array_list_destroy(&new_array_list);
 }
 

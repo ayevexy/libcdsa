@@ -5,10 +5,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void* (*set_memory_alloc)(size_t) = malloc;
-
-void (*set_memory_dealloc)(void*) = free;
-
 typedef enum {
     READY,
     NOT_READY,
@@ -69,7 +65,7 @@ static void iteration_context_destroy(void* raw_iteration_context) {
     IterationContext* iteration_context = raw_iteration_context;
     iterator_destroy((Iterator**) &iteration_context->set_iterators.first);
     iterator_destroy((Iterator**) &iteration_context->set_iterators.second);
-    set_memory_dealloc(iteration_context);
+    free(iteration_context);
 }
 
 static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(void*)) {
@@ -87,7 +83,7 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
         goto cleanup;
     }
 
-    iteration_context = set_memory_alloc(sizeof(IterationContext));
+    iteration_context = malloc(sizeof(IterationContext)); // Allocated memory is leaked false positive
     if (!iteration_context) {
         goto cleanup;
     }
@@ -106,7 +102,7 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
     return &iteration_context->iterator;
 
     cleanup: {
-        if (iteration_context) set_memory_dealloc(iteration_context);
+        if (iteration_context) free(iteration_context);
         if (set_a_iterator) iterator_destroy(&set_a_iterator);
         if (set_b_iterator) iterator_destroy(&set_b_iterator);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");

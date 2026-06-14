@@ -30,6 +30,8 @@ typedef struct {
  * @param ... optional elements
  *
  * @return a newly created array
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define array_new(length, T, ...) array_new(length, sizeof(T), (T[]){__VA_ARGS__})
 
@@ -41,6 +43,8 @@ typedef struct {
  * @param source the source to be copied (optional)
  *
  * @return a newly created array
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 static inline void* (array_new)(int length, size_t element_size, const void* source) {
     const size_t size = sizeof(ArrayStorage) + length * element_size;

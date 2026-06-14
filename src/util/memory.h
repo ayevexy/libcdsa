@@ -18,24 +18,9 @@
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define new(T, ...) ((T*) raw_new(sizeof(T), &(T){__VA_ARGS__}))
+#define new(T, ...) ((T*) (new)(sizeof(T), &(T){__VA_ARGS__}))
 
-/**
- * @brief Allocate a block of memory and optionally initialize it.
- *
- * Allocates `size` bytes using `malloc`. If `source` is not null,
- * `size` bytes are copied from `source` into the allocated memory.
- * Otherwise, the memory remains uninitialized.
- *
- * @param size the number of bytes to allocate
- * @param source pointer to the data to copy into the allocated memory,
- *               or nullptr to leave the memory uninitialized
- *
- * @return a pointer to the allocated memory block, or nullptr on failure
- *
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-static inline void* raw_new(size_t size, const void* source) {
+static inline void* (new)(size_t size, const void* source) {
     void* pointer = malloc(size);
     if (!pointer) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);
@@ -60,5 +45,9 @@ static inline void* raw_new(size_t size, const void* source) {
         free(pointer);      \
         pointer = nullptr;  \
     } while (false)
+
+static inline void (delete)(void* pointer) {
+    free(pointer);
+}
 
 #endif

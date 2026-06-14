@@ -1,7 +1,8 @@
 #ifndef LIBCDSA_MEMORY_H
 #define LIBCDSA_MEMORY_H
 
-#include "util/errors.h"
+#include "errors.h"
+
 #include <stdlib.h>
 #include <string.h>
 

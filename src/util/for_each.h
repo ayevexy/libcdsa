@@ -1,8 +1,8 @@
 #ifndef LIBCDSA_FOR_EACH_H
 #define LIBCDSA_FOR_EACH_H
 
-#include "util/collection.h"
-#include "util/iterator.h"
+#include "collection.h"
+#include "iterator.h"
 
 /**
  * @brief A utility macro to iterate sequentially through the elements of a collection.

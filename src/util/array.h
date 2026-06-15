@@ -17,9 +17,8 @@
 #define Array(T) T*
 
 typedef struct {
-    size_t length;
-    max_align_t alignment;
-    unsigned char data[];
+    int length;
+    alignas(max_align_t) unsigned char data[];
 } ArrayStorage;
 
 /**

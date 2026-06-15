@@ -535,7 +535,7 @@ char char_self(char c) {
 }
 
 void destroy_string_array(Array(const struct String*) strings) {
-    for (int i = 0; i < (int) array_length(strings); i++) {
+    for (int i = 0; i < array_length(strings); i++) {
         string_destroy(&strings[i]);
     }
 }

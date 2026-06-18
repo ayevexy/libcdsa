@@ -1,10 +1,30 @@
-#include "priority_queue_test.h"
-
 #include "priority_queue/priority_queue.h"
 #include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define INT_PRIORITY_QUEUE_OPTIONS() &(PriorityQueueOptions) {      \
+    .initial_capacity = 10,                                         \
+    .growth_factor = 2.0f,                                          \
+    .destruct = noop_destruct,                                      \
+    .compare = int_pointer_value_compare,                           \
+    .to_string = int_pointer_value_to_string,                       \
+    .memory_alloc = malloc,                                         \
+    .memory_dealloc = free                                          \
+}
+
+#define POPULATE_PRIORITY_QUEUE(priority_queue, array)                  \
+    for (int i = 0; i < SIZE(array); i++) {                             \
+        priority_queue_enqueue(priority_queue, new(int, array[i]));     \
+    }
+
+#define TEST_ASSERT_ARRAY_EQUALS_TO_PRIORITY_QUEUE(array, priority_queue)               \
+    TEST_ASSERT_EQUAL(SIZE(array), priority_queue_size(priority_queue));                \
+    for (int i = 0; i < SIZE(array); i++) {                                             \
+        TEST_ASSERT_EQUAL(array[i], *(int*) priority_queue_dequeue(priority_queue));    \
+    }
 
 static PriorityQueue* priority_queue;
 

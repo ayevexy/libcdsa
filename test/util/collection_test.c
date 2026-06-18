@@ -1,10 +1,31 @@
 #include "util/collection.h"
-
-#include "../list/array_list_test.h"
 #include "list/array_list.h"
 #include "util/memory.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define INT_ARRAY_LIST_OPTIONS() &(ArrayListOptions) {  \
+    .initial_capacity = 10,                             \
+    .growth_factor = 2.0f,                              \
+    .destruct = noop_destruct,                          \
+    .equals = int_pointer_value_equals,                 \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = malloc,                             \
+    .memory_realloc = realloc,                          \
+    .memory_dealloc = free                              \
+}
+
+#define POPULATE_ARRAY_LIST(array_list, array)                  \
+    for (int i = 0; i < SIZE(array); i++) {                     \
+        array_list_add_last(array_list, new(int, array[i]));    \
+    }
+
+#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)               \
+    for (int i = 0; i < SIZE(array); i++) {                                     \
+        TEST_ASSERT_EQUAL(array[i], *(int*) array_list_get(array_list, i));     \
+    }                                                                           \
+    TEST_ASSERT_EQUAL(SIZE(array), array_list_size(array_list));
 
 static ArrayList* array_list;
 

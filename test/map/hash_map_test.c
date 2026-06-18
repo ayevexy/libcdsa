@@ -1,10 +1,41 @@
-#include "hash_map_test.h"
-
 #include "map/hash_map.h"
 #include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define CHAR_INT_HASH_MAP_OPTIONS() &(HashMapOptions) {     \
+    .initial_capacity = 16,                                 \
+    .load_factor = 0.75f,                                   \
+    .hash = char_hash,                                      \
+    .key_destruct = noop_destruct,                          \
+    .key_equals = char_pointer_value_equals,                \
+    .key_to_string = char_pointer_value_to_string,          \
+    .value_destruct = noop_destruct,                        \
+    .value_equals = int_pointer_value_equals,               \
+    .value_to_string = int_pointer_value_to_string,         \
+    .memory_alloc = malloc,                                 \
+    .memory_dealloc = free                                  \
+}
+
+#define POPULATE_HASH_MAP(hash_map, entry_array)                                                \
+    for (int i = 0; i < SIZE(entry_array); i++) {                                               \
+        hash_map_put(hash_map, new(char, entry_array[i].key), new(int, entry_array[i].value));  \
+    }
+
+#define TEST_ASSERT_ARRAY_EQUALS_TO_HASH_MAP(entry_array, hash_map)                                     \
+    for (int i = 0; i < SIZE(entry_array); i++) {                                                       \
+        TEST_ASSERT_EQUAL(entry_array[i].value, *(int*) hash_map_get(hash_map, &entry_array[i].key));   \
+    }                                                                                                   \
+    TEST_ASSERT_EQUAL(SIZE(entry_array), hash_map_size(hash_map));
+
+#define TEST_ASSERT_EQUAL_ENTRY(_key, _value, entry)        \
+    do {                                                    \
+        MapEntry* _entry = (entry);                         \
+        TEST_ASSERT_EQUAL(_key, *(char*) _entry->key);      \
+        TEST_ASSERT_EQUAL(_value, *(int*) _entry->value);   \
+    } while (false)
 
 static HashMap* hash_map;
 

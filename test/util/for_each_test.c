@@ -1,10 +1,14 @@
-#include "../list/array_list_test.h"
-
 #include "list/array_list.h"
 #include "util/for_each.h" // should be included after all data structures
 #include "util/memory.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define POPULATE_ARRAY_LIST(array_list, array)                  \
+    for (int i = 0; i < SIZE(array); i++) {                     \
+        array_list_add_last(array_list, new(int, array[i]));    \
+    }
 
 static ArrayList* array_list;
 

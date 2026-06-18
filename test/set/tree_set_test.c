@@ -1,10 +1,33 @@
-#include "tree_set_test.h"
-
 #include "set/tree_set.h"
 #include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define INT_TREE_SET_OPTIONS() &(TreeSetOptions) {      \
+    .destruct = noop_destruct,                          \
+    .compare = int_pointer_value_compare,               \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = malloc,                             \
+    .memory_dealloc = free                              \
+}
+
+#define POPULATE_TREE_SET(tree_set, array)          \
+    for (int i = 0; i < SIZE(array); i++) {         \
+        tree_set_add(tree_set, new(int, array[i])); \
+    }
+
+#define TEST_ASSERT_TREE_SET_CONTAINS(tree_set, array)              \
+    for (int i = 0; i < SIZE(array); i++) {                         \
+        TEST_ASSERT_TRUE(tree_set_contains(tree_set, &array[i]));   \
+    }                                                               \
+    TEST_ASSERT_EQUAL(SIZE(array), tree_set_size(tree_set));
+
+#define TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS(tree_set, array)       \
+    for (int i = 0; i < SIZE(array); i++) {                         \
+        TEST_ASSERT_FALSE(tree_set_contains(tree_set, &array[i]));  \
+    }
 
 static TreeSet* tree_set;
 

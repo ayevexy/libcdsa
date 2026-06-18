@@ -1,10 +1,36 @@
-#include "hash_set_test.h"
-
 #include "set/hash_set.h"
 #include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define INT_HASH_SET_OPTIONS() &(HashSetOptions) {      \
+    .initial_capacity = 16,                             \
+    .load_factor = 0.75f,                               \
+    .hash = char_hash,                                  \
+    .destruct = noop_destruct,                          \
+    .equals = int_pointer_value_equals,                 \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = malloc,                             \
+    .memory_dealloc = free                              \
+}
+
+#define POPULATE_HASH_SET(hash_set, array)          \
+    for (int i = 0; i < SIZE(array); i++) {         \
+        hash_set_add(hash_set, new(int, array[i])); \
+    }
+
+#define TEST_ASSERT_HASH_SET_CONTAINS(hash_set, array)              \
+    for (int i = 0; i < SIZE(array); i++) {                         \
+        TEST_ASSERT_TRUE(hash_set_contains(hash_set, &array[i]));   \
+    }                                                               \
+    TEST_ASSERT_EQUAL(SIZE(array), hash_set_size(hash_set));
+
+#define TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS(hash_set, array)       \
+    for (int i = 0; i < SIZE(array); i++) {                         \
+        TEST_ASSERT_FALSE(hash_set_contains(hash_set, &array[i]));  \
+    }                                                               \
 
 static HashSet* hash_set;
 

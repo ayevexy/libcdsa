@@ -1,11 +1,26 @@
-#include "../set/hash_set_test.h"
-
 #include "set/hash_set.h"
 #include "util/sets.h" // should be included after any set
 #include "util/memory.h"
 #include "util/errors.h"
 
 #include "unity.h"
+#include "../test_utilities.h"
+
+#define INT_HASH_SET_OPTIONS() &(HashSetOptions) {      \
+    .initial_capacity = 16,                             \
+    .load_factor = 0.75f,                               \
+    .hash = char_hash,                                  \
+    .destruct = noop_destruct,                          \
+    .equals = int_pointer_value_equals,                 \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = malloc,                             \
+    .memory_dealloc = free                              \
+}
+
+#define POPULATE_HASH_SET(hash_set, array)          \
+    for (int i = 0; i < SIZE(array); i++) {         \
+        hash_set_add(hash_set, new(int, array[i])); \
+    }
 
 static HashSet* hash_set_a;
 static HashSet* hash_set_b;

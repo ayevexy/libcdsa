@@ -380,6 +380,7 @@ Deque* deque_clone(const Deque* deque) {
 Collection deque_to_collection(const Deque* deque) {
     if (require_non_null(deque)) return (Collection) {};
     return (Collection) {
+        .type = DEQUE,
         .data_structure = deque,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

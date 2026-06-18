@@ -415,6 +415,7 @@ void test_convert_priority_queue_to_collection() {
     // when
     Collection collection = priority_queue_to_collection(priority_queue);
     // then
+    TEST_ASSERT_EQUAL(PRIORITY_QUEUE, collection.type);
     TEST_ASSERT_EQUAL(priority_queue, collection.data_structure);
     TEST_ASSERT_EQUAL(priority_queue_size(priority_queue), collection_size(collection));
     // and

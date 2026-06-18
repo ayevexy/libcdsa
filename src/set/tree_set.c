@@ -539,6 +539,7 @@ TreeSet* tree_set_sub_set(const TreeSet* tree_set, const void* start_element, co
 Collection tree_set_to_collection(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return (Collection) {};
     return (Collection) {
+        .type = TREE_SET,
         .data_structure = tree_set,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

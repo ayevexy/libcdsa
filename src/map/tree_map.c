@@ -547,6 +547,7 @@ bool tree_map_contains_value(const TreeMap* tree_map, const void* value) {
 Collection tree_map_entries(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (Collection) {};
     return (Collection) {
+        .type = TREE_MAP,
         .data_structure = tree_map,
         .size = collection_size_internal,
         .iterator = entry_collection_iterator_internal,
@@ -557,6 +558,7 @@ Collection tree_map_entries(const TreeMap* tree_map) {
 Collection tree_map_keys(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (Collection) {};
     return (Collection) {
+        .type = TREE_MAP,
         .data_structure = tree_map,
         .size = collection_size_internal,
         .iterator = key_collection_iterator_internal,
@@ -567,6 +569,7 @@ Collection tree_map_keys(const TreeMap* tree_map) {
 Collection tree_map_values(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return (Collection) {};
     return (Collection) {
+        .type = TREE_MAP,
         .data_structure = tree_map,
         .size = collection_size_internal,
         .iterator = value_collection_iterator_internal,

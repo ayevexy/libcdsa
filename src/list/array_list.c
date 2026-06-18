@@ -674,6 +674,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
 Collection array_list_to_collection(const ArrayList* array_list) {
     if (require_non_null(array_list)) return (Collection) {};
     return (Collection) {
+        .type = ARRAY_LIST,
         .data_structure = array_list,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

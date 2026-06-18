@@ -349,6 +349,7 @@ bool hash_set_contains_all(const HashSet* hash_set, Collection collection) {
 Collection hash_set_to_collection(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return (Collection) {};
     return (Collection) {
+        .type = HASH_SET,
         .data_structure = hash_set,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

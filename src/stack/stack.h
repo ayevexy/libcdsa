@@ -298,7 +298,14 @@ static inline Stack* stack_clone(const Stack* stack) {
  * @exception NULL_POINTER_ERROR if stack is null
  */
 static inline Collection stack_to_collection(const Stack* stack) {
-    return deque_to_collection(stack);
+    Collection collection = deque_to_collection(stack);
+    return (Collection) {
+        .type = STACK,
+        .data_structure = collection.data_structure,
+        .size = collection.size,
+        .iterator = collection.iterator,
+        .contains = collection.contains
+    };
 }
 
 /**

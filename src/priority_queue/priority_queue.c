@@ -294,6 +294,7 @@ PriorityQueue* priority_queue_clone(const PriorityQueue* priority_queue) {
 Collection priority_queue_to_collection(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return (Collection) {};
     return (Collection) {
+        .type = PRIORITY_QUEUE,
         .data_structure = priority_queue,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

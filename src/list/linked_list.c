@@ -685,6 +685,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
 Collection linked_list_to_collection(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return (Collection) {};
     return (Collection) {
+        .type = LINKED_LIST,
         .data_structure = linked_list,
         .size = collection_size_internal,
         .iterator = collection_iterator_internal,

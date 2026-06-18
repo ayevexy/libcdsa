@@ -548,6 +548,7 @@ void test_convert_deque_to_collection() {
     // when
     Collection collection = deque_to_collection(deque);
     // then
+    TEST_ASSERT_EQUAL(DEQUE, collection.type);
     TEST_ASSERT_EQUAL(deque, collection.data_structure);
     TEST_ASSERT_EQUAL(deque_size(deque), collection_size(collection));
     // and

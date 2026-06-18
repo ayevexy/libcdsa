@@ -298,7 +298,14 @@ static inline Queue* queue_clone(const Queue* queue) {
  * @exception NULL_POINTER_ERROR if queue is null
  */
 static inline Collection queue_to_collection(const Queue* queue) {
-    return deque_to_collection(queue);
+    Collection collection = deque_to_collection(queue);
+    return (Collection) {
+        .type = QUEUE,
+        .data_structure = collection.data_structure,
+        .size = collection.size,
+        .iterator = collection.iterator,
+        .contains = collection.contains
+    };
 }
 
 /**

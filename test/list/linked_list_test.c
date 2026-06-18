@@ -1218,6 +1218,7 @@ void test_convert_linked_list_to_collection() {
     // when
     Collection collection = linked_list_to_collection(linked_list);
     // then
+    TEST_ASSERT_EQUAL(LINKED_LIST, collection.type);
     TEST_ASSERT_EQUAL(linked_list, collection.data_structure);
     TEST_ASSERT_EQUAL(linked_list_size(linked_list), collection_size(collection));
     // and

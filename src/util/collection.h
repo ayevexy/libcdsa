@@ -7,9 +7,26 @@
 #include "array.h"
 
 /**
+ * @brief Enumeration of existing collection types.
+ */
+typedef enum {
+    ARRAY_LIST,
+    LINKED_LIST,
+    HASH_MAP,
+    TREE_MAP,
+    HASH_SET,
+    TREE_SET,
+    DEQUE,
+    STACK,
+    QUEUE,
+    PRIORITY_QUEUE
+} CollectionType;
+
+/**
  * @brief A generic collection view abstraction that provides a common interface over data structures.
  */
 typedef struct {
+    const CollectionType type;
     const void* const data_structure;
     int (*const size)(const void*);
     Iterator* (*const iterator)(const void*);

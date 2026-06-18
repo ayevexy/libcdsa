@@ -1297,6 +1297,7 @@ void test_convert_array_list_to_collection() {
     // when
     Collection collection = array_list_to_collection(array_list);
     // then
+    TEST_ASSERT_EQUAL(ARRAY_LIST, collection.type);
     TEST_ASSERT_EQUAL(array_list, collection.data_structure);
     TEST_ASSERT_EQUAL(array_list_size(array_list), collection_size(collection));
     // and

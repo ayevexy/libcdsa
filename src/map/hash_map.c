@@ -421,6 +421,7 @@ bool hash_map_contains_value(const HashMap* hash_map, const void* value) {
 Collection hash_map_entries(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
+        .type = HASH_MAP,
         .data_structure = hash_map,
         .size = collection_size_internal,
         .iterator = entry_collection_iterator_internal,
@@ -431,6 +432,7 @@ Collection hash_map_entries(const HashMap* hash_map) {
 Collection hash_map_keys(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
+        .type = HASH_MAP,
         .data_structure = hash_map,
         .size = collection_size_internal,
         .iterator = key_collection_iterator_internal,
@@ -441,6 +443,7 @@ Collection hash_map_keys(const HashMap* hash_map) {
 Collection hash_map_values(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return (Collection) {};
     return (Collection) {
+        .type = HASH_MAP,
         .data_structure = hash_map,
         .size = collection_size_internal,
         .iterator = value_collection_iterator_internal,

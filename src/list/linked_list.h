@@ -3,6 +3,7 @@
 
 #include "util/iterator.h"
 #include "util/functions.h"
+#include "util/pointer.h"
 #include "util/algorithms.h"
 #include "util/collection.h"
 #include "util/optional.h"

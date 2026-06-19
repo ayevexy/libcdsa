@@ -63,6 +63,9 @@
 /** @brief Function types and utilities */
 #include "util/functions.h"
 
+/** @brief Pointer functions */
+#include "util/pointer.h"
+
 /** @brief Iterator abstraction */
 #include "util/iterator.h"
 

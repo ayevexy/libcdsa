@@ -54,7 +54,7 @@ String (string_new)(struct String string);
  * @return a string reference
  */
 #define string_ref(string) \
-    (&(struct String) { .length = strlen(string), .data = string })
+    (&(const struct String) { .length = strlen(string), .data = string })
 
 /**
  * @brief Destroys previously allocated strings.

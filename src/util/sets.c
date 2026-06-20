@@ -91,7 +91,7 @@ static Iterator* create_iterator(const void* raw_sets, void* (*internal_next)(vo
     iteration_context->iterator.has_next = iterator_has_next_internal;
     iteration_context->iterator.next = iterator_next_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = iteration_context_destroy;
+    iteration_context->iterator.destroy = iteration_context_destroy;
     
     iteration_context->sets = (Pair) { set_a, set_b };
     iteration_context->set_iterators = (Pair) { set_a_iterator, set_b_iterator };

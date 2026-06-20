@@ -534,7 +534,7 @@ static Iterator* create_iterator(const HashSet* hash_set) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = hash_set->memory_dealloc;
+    iteration_context->iterator.destroy = hash_set->memory_dealloc;
 
     iteration_context->hash_set = (HashSet*) hash_set;
     iteration_context->node = nullptr;

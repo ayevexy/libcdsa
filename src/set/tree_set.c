@@ -892,7 +892,7 @@ static Iterator* create_iterator(const TreeSet* tree_set, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = tree_set->memory_dealloc;
+    iteration_context->iterator.destroy = tree_set->memory_dealloc;
 
     Node* node = get_lower_node(tree_set, tree_set->root);
     for (int count = 0; count < position - 1 && node != tree_set->sentinel; count++) {

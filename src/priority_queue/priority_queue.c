@@ -433,7 +433,7 @@ static Iterator* create_iterator(const PriorityQueue* priority_queue) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = priority_queue->memory_dealloc;
+    iteration_context->iterator.destroy = priority_queue->memory_dealloc;
 
     iteration_context->priority_queue = (PriorityQueue*) priority_queue;
     iteration_context->cursor = 0;

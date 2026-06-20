@@ -978,7 +978,7 @@ static Iterator* create_iterator(const TreeMap* tree_map, int position, void* ne
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = tree_map->memory_dealloc;
+    iteration_context->iterator.destroy = tree_map->memory_dealloc;
 
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
     for (int count = 0; count < position - 1 && entry != tree_map->sentinel; count++) {

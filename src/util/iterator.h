@@ -23,7 +23,7 @@ typedef struct {
     void (*set)(void* iteration_context, const void* element);
     void (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
-    void (*memory_dealloc)(void*);
+    void (*destroy)(void*);
 } Iterator;
 
 /**
@@ -186,7 +186,7 @@ static inline void iterator_for_each_remaining(Iterator* iterator, Consumer acti
  */
 static inline void iterator_destroy(Iterator** iterator_pointer) {
     const Iterator* iterator = *iterator_pointer;
-    iterator->memory_dealloc(iterator->iteration_context);
+    iterator->destroy(iterator->iteration_context);
     *iterator_pointer = nullptr;
 }
 

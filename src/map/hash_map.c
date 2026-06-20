@@ -618,7 +618,7 @@ static Iterator* create_iterator(const HashMap* hash_map, void* next_function(vo
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = hash_map->memory_dealloc;
+    iteration_context->iterator.destroy = hash_map->memory_dealloc;
 
     iteration_context->hash_map = (HashMap*) hash_map;
     iteration_context->entry = nullptr;

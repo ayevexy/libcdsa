@@ -778,7 +778,7 @@ static Iterator* create_iterator(const ArrayList* array_list, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = array_list->memory_dealloc;
+    iteration_context->iterator.destroy = array_list->memory_dealloc;
 
     iteration_context->array_list = (ArrayList*) array_list;
     iteration_context->cursor = position;

@@ -824,7 +824,7 @@ static Iterator* create_iterator(const LinkedList* linked_list, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.memory_dealloc = linked_list->memory_dealloc;
+    iteration_context->iterator.destroy = linked_list->memory_dealloc;
 
     iteration_context->linked_list = (LinkedList*) linked_list;
     iteration_context->current = position == linked_list->size ? nullptr : get_node(linked_list, position);

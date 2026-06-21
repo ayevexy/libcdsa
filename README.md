@@ -53,6 +53,7 @@ Also, there is some other utilities which may be useful:
 - [Errors](src/util/errors.h): Built-in custom error handling system used by the library.
 - [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
 - [Functions](src/util/functions.h): Functions typedefs and default implementations.
+- [Pointer](src/util/pointer.h): Default functions for the library containers.
 - [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
 - [Memory](src/util/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.

@@ -22,17 +22,28 @@ typedef struct {
 } ArrayStorage;
 
 /**
- * @brief Creates a new array with the specified length, type and initial elements.
+ * @brief Creates a new array with the specified length and type (filled with zeros).
  *
  * @param length the length
  * @param T the type
- * @param ... optional elements
  *
  * @return a newly created array
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define array_new(length, T, ...) array_new(length, sizeof(T), (T[]){__VA_ARGS__})
+#define array_new(length, T) array_create(length, sizeof(T), nullptr)
+
+/**
+ * @brief Creates a new array with the specified type and elements.
+ *
+ * @param T the type
+ * @param ... elements
+ *
+ * @return a newly created array
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+#define array_of(T, ...) array_create(count_args(__VA_ARGS__), sizeof(T), (T[]){__VA_ARGS__})
 
 /**
  * @brief Creates a new array with the specified length, element size and initial data.
@@ -45,7 +56,7 @@ typedef struct {
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-static inline void* (array_new)(int length, size_t element_size, const void* source) {
+static inline void* array_create(int length, size_t element_size, const void* source) {
     const size_t size = sizeof(ArrayStorage) + length * element_size;
     ArrayStorage* array = malloc(size);
     if (!array) {
@@ -55,6 +66,8 @@ static inline void* (array_new)(int length, size_t element_size, const void* sou
     array->length = length;
     if (source) {
         memcpy(array->data, source, length * element_size);
+    } else {
+        memset(array->data, 0, length * element_size);
     }
     return array->data;
 }
@@ -68,7 +81,8 @@ static inline void* (array_new)(int length, size_t element_size, const void* sou
  *
  * @warning this should only be called on arrays created by `array_new()`, otherwise it's undefined behavior
  */
-#define array_length(array) (((ArrayStorage*)((char*)(array) - offsetof(ArrayStorage, data)))->length)
+#define array_length(array) \
+    (((ArrayStorage*)((char*)(array) - offsetof(ArrayStorage, data)))->length)
 
 /**
  * @brief Destroys a previously created array.
@@ -92,5 +106,11 @@ static inline void* (array_new)(int length, size_t element_size, const void* sou
 struct String;
 
 extern void destroy_string_array(Array(const struct String*) strings);
+
+/*------------------------------------------------------------------------------*/
+
+#define count_args(...) dispatch_count_args(0 __VA_OPT__(,) __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+
+#define dispatch_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
 
 #endif

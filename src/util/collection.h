@@ -152,7 +152,7 @@ static inline bool collection_contains_all(Collection collection, Collection oth
  * @note the created array must be freed manually (by `array_destroy()`)
  */
 static inline Array(void*) collection_to_array(Collection collection) {
-    Array(void*) elements = array_new(collection_size(collection), void*, nullptr);
+    Array(void*) elements = array_new(collection_size(collection), void*);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

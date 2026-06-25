@@ -390,7 +390,7 @@ Collection deque_to_collection(const Deque* deque) {
 
 Array(void*) deque_to_array(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    Array(void*) elements = array_new(deque->size, void*, nullptr);
+    Array(void*) elements = array_new(deque->size, void*);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

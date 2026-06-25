@@ -399,7 +399,7 @@ Array(String) (string_split)(struct String string, char delimiter) {
             count++;
         }
     }
-    Array(String) strings = (array_new)(count, sizeof(struct String), nullptr);
+    Array(String) strings = array_new(count, struct String);
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;

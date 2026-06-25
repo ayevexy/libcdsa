@@ -14,7 +14,7 @@ void tearDown() {
 
 void test_create_and_destroy_array() {
     // when
-    const Array(int) ints = array_new(5, int, 1, 2, 3, 4, 5);
+    const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // then
     TEST_ASSERT_EQUAL_INT(1, ints[0]);
     TEST_ASSERT_EQUAL_INT(2, ints[1]);
@@ -28,7 +28,7 @@ void test_create_and_destroy_array() {
 
 void test_get_array_length() {
     // given
-    const Array(int) ints = array_new(5, int, 1, 2, 3, 4, 5);
+    const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // when
     int length = array_length(ints);
     // then

@@ -695,7 +695,7 @@ Collection linked_list_to_collection(const LinkedList* linked_list) {
 
 Array(void*) linked_list_to_array(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    Array(void*) elements = array_new(linked_list->size, void*, nullptr);
+    Array(void*) elements = array_new(linked_list->size, void*);
     if (!elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
         return nullptr;

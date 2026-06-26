@@ -1,6 +1,6 @@
 #include "priority_queue.h"
 
-#include "util/errors.h"
+#include "core/errors.h"
 #include "util/constraints.h"
 
 constexpr int MIN_CAPACITY = 10;

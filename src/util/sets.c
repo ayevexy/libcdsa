@@ -1,6 +1,6 @@
 #include "sets.h"
 
-#include "errors.h"
+#include "core/errors.h"
 #include "constraints.h"
 #include <stdlib.h>
 #include <assert.h>

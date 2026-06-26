@@ -1,7 +1,8 @@
-#include "util/array.h"
+#include "core/array.h"
 
-#include "../test/test_utilities.h"
-#include "util/errors.h"
+#include "core/errors.h"
+
+#include "../test_utilities.h"
 #include "unity.h"
 
 void setUp() {

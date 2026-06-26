@@ -1,12 +1,13 @@
 #ifndef LIBCDSA_TREE_MAP_H
 #define LIBCDSA_TREE_MAP_H
 
+#include "core/string.h"
+
 #include "map_entry.h"
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/pointer.h"
 #include "util/collection.h"
-#include "util/string.h"
 
 #include <stdlib.h>
 #include <stddef.h>

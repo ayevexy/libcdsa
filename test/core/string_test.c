@@ -1,6 +1,7 @@
-#include "util/string.h"
+#include "core/string.h"
 
-#include "util/errors.h"
+#include "core/errors.h"
+
 #include "unity.h"
 #include <string.h>
 

@@ -1,7 +1,7 @@
 #ifndef LIBCDSA_TEST_UTILITIES_H
 #define LIBCDSA_TEST_UTILITIES_H
 
-#include "util/string.h"
+#include "core/string.h"
 #include <stdint.h>
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))

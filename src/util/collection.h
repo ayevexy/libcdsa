@@ -1,10 +1,10 @@
 #ifndef LIBCDSA_COLLECTION_H
 #define LIBCDSA_COLLECTION_H
 
+#include "core/errors.h"
+#include "core/array.h"
 #include "functions.h"
 #include "iterator.h"
-#include "errors.h"
-#include "array.h"
 
 /**
  * @brief Enumeration of existing collection types.

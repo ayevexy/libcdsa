@@ -1,6 +1,7 @@
 #include "list/linked_list.h"
-#include "util/memory.h"
-#include "util/errors.h"
+
+#include "core/errors.h"
+#include "core/memory.h"
 
 #include "unity.h"
 #include "../test_utilities.h"

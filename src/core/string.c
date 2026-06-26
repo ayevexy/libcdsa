@@ -1,7 +1,7 @@
 #include "string.h"
 
 #include "errors.h"
-#include "constraints.h"
+#include "util/constraints.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>

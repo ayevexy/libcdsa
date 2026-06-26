@@ -1,7 +1,8 @@
 #include "set/hash_set.h"
 #include "util/sets.h" // should be included after any set
-#include "util/memory.h"
-#include "util/errors.h"
+
+#include "core/memory.h"
+#include "core/errors.h"
 
 #include "unity.h"
 #include "../test_utilities.h"

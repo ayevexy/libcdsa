@@ -1,6 +1,7 @@
 #include "util/collection.h"
+
+#include "core/memory.h"
 #include "list/array_list.h"
-#include "util/memory.h"
 
 #include "unity.h"
 #include "../test_utilities.h"

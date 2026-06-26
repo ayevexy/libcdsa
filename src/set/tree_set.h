@@ -1,12 +1,13 @@
 #ifndef LIBCDSA_TREE_SET_H
 #define LIBCDSA_TREE_SET_H
 
+#include "core/array.h"
+#include "core/string.h"
+
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/pointer.h"
 #include "util/collection.h"
-#include "util/string.h"
-#include "util/array.h"
 
 #include <stdlib.h>
 #include <stddef.h>

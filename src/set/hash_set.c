@@ -1,6 +1,6 @@
 #include "hash_set.h"
 
-#include "util/errors.h"
+#include "core/errors.h"
 #include "util/constraints.h"
 #include "util/sets.h"
 

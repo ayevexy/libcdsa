@@ -50,17 +50,17 @@ Also, there is some other utilities which may be useful:
 - [Algorithms](src/util/algorithms.h): Algorithms related enumerations.
 - [Collection](src/util/collection.h): Collection view abstraction.
 - [Constraints](src/util/constraints.h): Pre-condition checks.
-- [Errors](src/util/errors.h): Built-in custom error handling system used by the library.
+- [Errors](src/core/errors.h): Built-in custom error handling system used by the library.
 - [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
 - [Functions](src/util/functions.h): Functions typedefs and default implementations.
 - [Pointer](src/util/pointer.h): Default functions for the library containers.
 - [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
-- [Memory](src/util/memory.h): Memory management abstractions.
+- [Memory](src/core/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
 - [Sets](src/util/sets.h): Common mathematical set operations and set view abstraction.
-- [String](src/util/string.h): Built-in custom string implementation.
-- [Array](src/util/array.h): Built-in custom array implementation.
+- [String](src/core/string.h): Built-in custom string implementation.
+- [Array](src/core/array.h): Built-in custom array implementation.
 
 ### Limitations
 

@@ -3,11 +3,11 @@
 
 #include "core/string.h"
 
-#include "map_entry.h"
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/pointer.h"
 #include "util/collection.h"
+#include "util/map_entry.h"
 
 #include <stdlib.h>
 #include <stddef.h>

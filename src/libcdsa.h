@@ -13,7 +13,19 @@
  */
 
 /** @brief Version information macros */
-#include "util/version.h"
+#include "core/version.h"
+
+/** @brief Error handling mechanism */
+#include "core/errors.h"
+
+/** @brief Memory management abstractions */
+#include "core/memory.h"
+
+/** @brief Array implementation */
+#include "core/array.h"
+
+/** @brief String implementation */
+#include "core/string.h"
 
 /** @brief Dynamic array-based list implementation */
 #include "list/array_list.h"
@@ -54,9 +66,6 @@
 /** @brief Validation and constraint utilities */
 #include "util/constraints.h"
 
-/** @brief Error handling mechanism */
-#include "util/errors.h"
-
 /** @brief for-each iteration macro utility */
 #include "util/for_each.h"
 
@@ -69,9 +78,6 @@
 /** @brief Iterator abstraction */
 #include "util/iterator.h"
 
-/** @brief Memory management abstractions */
-#include "util/memory.h"
-
 /** @brief Optional value container */
 #include "util/optional.h"
 
@@ -80,11 +86,5 @@
 
 /** @brief Mathematical set operations */
 #include "util/sets.h"
-
-/** @brief String implementation */
-#include "util/string.h"
-
-/** @brief Array implementation */
-#include "util/array.h"
 
 #endif

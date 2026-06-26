@@ -251,12 +251,7 @@ bool deque_is_empty(const Deque* deque) {
 
 Iterator* deque_iterator(const Deque* deque) {
     if (require_non_null(deque)) return nullptr;
-    Iterator* iterator = create_iterator(deque, 0);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(deque, 0);
 }
 
 Iterator* deque_iterator_at(const Deque* deque, int position) {
@@ -265,12 +260,7 @@ Iterator* deque_iterator_at(const Deque* deque, int position) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, deque->size);
         return nullptr;
     }
-    Iterator* iterator = create_iterator(deque, position);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(deque, position);
 }
 
 bool deque_equals(const Deque* deque, const Deque* other_deque) {
@@ -475,6 +465,7 @@ static Iterator* create_iterator(const Deque* deque, int position) {
     IterationContext* iteration_context = deque->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

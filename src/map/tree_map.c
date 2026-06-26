@@ -395,12 +395,7 @@ bool tree_map_is_empty(const TreeMap* tree_map) {
 
 Iterator* tree_map_iterator(const TreeMap* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_internal, iterator_previous_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_map, 0, iterator_next_internal, iterator_previous_internal);
 }
 
 Iterator* tree_map_iterator_at(const TreeMap* tree_map, int position) {
@@ -409,12 +404,7 @@ Iterator* tree_map_iterator_at(const TreeMap* tree_map, int position) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, tree_map->size);
         return nullptr;
     }
-    Iterator* iterator = create_iterator(tree_map, position, iterator_next_internal, iterator_previous_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_map, position, iterator_next_internal, iterator_previous_internal);
 }
 
 bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
@@ -966,6 +956,7 @@ static Iterator* create_iterator(const TreeMap* tree_map, int position, void* ne
     IterationContext* iteration_context = tree_map->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;
@@ -1117,22 +1108,12 @@ static Iterator* entry_collection_iterator_internal(const void* tree_map) {
 
 static Iterator* key_collection_iterator_internal(const void* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_key_internal, iterator_previous_key_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_map, 0, iterator_next_key_internal, iterator_previous_key_internal);
 }
 
 static Iterator* value_collection_iterator_internal(const void* tree_map) {
     if (require_non_null(tree_map)) return nullptr;
-    Iterator* iterator = create_iterator(tree_map, 0, iterator_next_value_internal, iterator_previous_value_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_map, 0, iterator_next_value_internal, iterator_previous_value_internal);
 }
 
 static bool entry_collection_contains_internal(const void* tree_map, const void* entry) {

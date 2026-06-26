@@ -272,12 +272,7 @@ bool hash_set_is_empty(const HashSet* hash_set) {
 
 Iterator* hash_set_iterator(const HashSet* hash_set) {
     if (require_non_null(hash_set)) return nullptr;
-    Iterator* iterator = create_iterator(hash_set);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(hash_set);
 }
 
 bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
@@ -522,6 +517,7 @@ static Iterator* create_iterator(const HashSet* hash_set) {
     IterationContext* iteration_context = hash_set->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

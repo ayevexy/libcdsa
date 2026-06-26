@@ -406,12 +406,7 @@ bool array_list_is_empty(const ArrayList* array_list) {
 
 Iterator* array_list_iterator(const ArrayList* array_list) {
     if (require_non_null(array_list)) return nullptr;
-    Iterator* iterator = create_iterator(array_list, 0);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(array_list, 0);
 }
 
 Iterator* array_list_iterator_at(const ArrayList* array_list, int position) {
@@ -420,12 +415,7 @@ Iterator* array_list_iterator_at(const ArrayList* array_list, int position) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, array_list->size);
         return nullptr;
     }
-    Iterator* iterator = create_iterator(array_list, position);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(array_list, position);
 }
 
 bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array_list) {
@@ -766,6 +756,7 @@ static Iterator* create_iterator(const ArrayList* array_list, int position) {
     IterationContext* iteration_context = array_list->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

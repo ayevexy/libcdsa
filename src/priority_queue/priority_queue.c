@@ -197,12 +197,7 @@ bool priority_queue_is_empty(const PriorityQueue* priority_queue) {
 
 Iterator* priority_queue_iterator(const PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return nullptr;
-    Iterator* iterator = create_iterator(priority_queue);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(priority_queue);
 }
 
 bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQueue* other_priority_queue) {
@@ -421,6 +416,7 @@ static Iterator* create_iterator(const PriorityQueue* priority_queue) {
     IterationContext* iteration_context = priority_queue->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

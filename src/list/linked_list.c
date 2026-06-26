@@ -414,12 +414,7 @@ bool linked_list_is_empty(const LinkedList* linked_list) {
 
 Iterator* linked_list_iterator(const LinkedList* linked_list) {
     if (require_non_null(linked_list)) return nullptr;
-    Iterator* iterator = create_iterator(linked_list, 0);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(linked_list, 0);
 }
 
 Iterator* linked_list_iterator_at(const LinkedList* linked_list, int position) {
@@ -428,12 +423,7 @@ Iterator* linked_list_iterator_at(const LinkedList* linked_list, int position) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, linked_list->size);
         return nullptr;
     }
-    Iterator* iterator = create_iterator(linked_list, position);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(linked_list, position);
 }
 
 bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_linked_list) {
@@ -812,6 +802,7 @@ static Iterator* create_iterator(const LinkedList* linked_list, int position) {
     IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

@@ -352,12 +352,7 @@ bool hash_map_is_empty(const HashMap* hash_map) {
 
 Iterator* hash_map_iterator(const HashMap* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
-    Iterator* iterator = create_iterator(hash_map, iterator_next_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(hash_map, iterator_next_internal);
 }
 
 bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
@@ -606,6 +601,7 @@ static Iterator* create_iterator(const HashMap* hash_map, void* next_function(vo
     IterationContext* iteration_context = hash_map->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;
@@ -734,20 +730,12 @@ static Iterator* entry_collection_iterator_internal(const void* hash_map) {
 
 static Iterator* key_collection_iterator_internal(const void* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
-    Iterator* iterator = create_iterator(hash_map, iterator_next_key_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-    }
-    return iterator;
+    return create_iterator(hash_map, iterator_next_key_internal);
 }
 
 static Iterator* value_collection_iterator_internal(const void* hash_map) {
     if (require_non_null(hash_map)) return nullptr;
-    Iterator* iterator = create_iterator(hash_map, iterator_next_value_internal);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-    }
-    return iterator;
+    return create_iterator(hash_map, iterator_next_value_internal);
 }
 
 static bool entry_collection_contains_internal(const void* hash_map, const void* entry) {

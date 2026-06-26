@@ -324,12 +324,7 @@ bool tree_set_is_empty(const TreeSet* tree_set) {
 
 Iterator* tree_set_iterator(const TreeSet* tree_set) {
     if (require_non_null(tree_set)) return nullptr;
-    Iterator* iterator = create_iterator(tree_set, 0);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_set, 0);
 }
 
 Iterator* tree_set_iterator_at(const TreeSet* tree_set, int position) {
@@ -338,12 +333,7 @@ Iterator* tree_set_iterator_at(const TreeSet* tree_set, int position) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "position %d out of bounds for size %d", position, tree_set->size);
         return nullptr;
     }
-    Iterator* iterator = create_iterator(tree_set, position);
-    if (!iterator) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
-        return nullptr;
-    }
-    return iterator;
+    return create_iterator(tree_set, position);
 }
 
 bool tree_set_equals(const TreeSet* tree_set, const TreeSet* other_tree_set) {
@@ -880,6 +870,7 @@ static Iterator* create_iterator(const TreeSet* tree_set, int position) {
     IterationContext* iteration_context = tree_set->memory_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
         return nullptr;
     }
     iteration_context->iterator.iteration_context = iteration_context;

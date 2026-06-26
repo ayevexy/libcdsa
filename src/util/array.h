@@ -73,6 +73,31 @@ static inline void* array_create(int length, size_t element_size, const void* so
 }
 
 /**
+ * @brief Retrieves an element of the array by its index (checking bounds).
+ *
+ * @param array the array
+ * @param index the index
+ *
+ * @return the element
+ *
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array.length
+ */
+#define array_get(array, index) \
+    ((index < 0 || index >= array_length(array)) ? (set_error(INDEX_OUT_OF_BOUNDS_ERROR, ""), *(typeof(array)){0}) : array[index])
+
+/**
+ * @brief Replaces the element at the specified position of the array (checking bounds).
+ *
+ * @param array the array
+ * @param index the index
+ * @param value the new value
+ *
+ * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array.length
+ */
+#define array_set(array, index, value) \
+    ((index < 0 || index >= array_length(array)) ? set_error(INDEX_OUT_OF_BOUNDS_ERROR, "") : (array[index] = value))
+
+/**
  * @brief Retrieves the length of the array.
  *
  * @param array the array

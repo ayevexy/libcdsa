@@ -130,136 +130,271 @@ your-project/
 
 ### Usage
 
-Now just include the `libcdsa.h` header file and start coding:
+Simply include the headers you need (or the `libcdsa.h` master header) and start coding.
+Don't forget to prefix includes with `libcdsa/` if installed system-wide.
+
+The following examples demonstrate some of the library's features:
 
 ```c++
-#include "libcdsa.h" // replace with <libcdsa/libcdsa.h> if installed system-wide
-#include <stdlib.h>
+#include "list/list.h"
 #include <stdio.h>
 
-int main(void) {
-    // Create a new ArrayList with custom options. Except for `destruct`, these are the default values,
-    // so this could be replaced with just `DEFAULT_ARRAY_LIST_OPTIONS(.destruct = free)`
-    ArrayList* array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .initial_capacity = 10,
-        .growth_factor = 2.0f,
-        .destruct = free,          // By default elements aren't freed, so let's overwrite it
-        .equals = pointer_equals,
-        .to_string = pointer_to_string,
-        .memory_alloc = malloc,
-        .memory_realloc = realloc, // Optional for resizing, can use memory_alloc and memory_dealloc instead
-        .memory_dealloc = free,
-    ));
+int main() {
+    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
-    // Add elements (heap-allocated via `new`, so it can be freed later)
-    array_list_add_last(array_list, new(int, 1));
-    array_list_add_last(array_list, new(int, 2));
-    array_list_add_last(array_list, new(int, 3));
-
-    // Error handling:
-    int* value; Error error = attempt(value = array_list_get(array_list, -1));
-    // Without the `attempt()` macro, the program would crash and print the error message
-    // in the form of: INDEX_OUT_OF_BOUNDS_ERROR: index -1 out of bounds for length 3
-    if (error == NULL_POINTER_ERROR) {
-        printf("%s\n", error_to_string(error)); // INDEX_OUT_OF_BOUNDS_ERROR
-        printf("%s\n", plain_error_message()); // index -1 out of bounds for length 3
-    }
-
-    // Iterator support:
-    Iterator* iterator = array_list_iterator(array_list);
-    while (iterator_has_next(iterator)) {
-        const int* element = iterator_next(iterator);
-        printf("element value: %d\n", *element); // 1, 2, 3
-    }
-    iterator_destroy(&iterator);
-
-    // Or simplified using `for_each`:
-    for_each (int* element, array_list) {
-        printf("element value: %d\n", *element); // 1, 2, 3
-    }
-
-    // Any data structure can be converted to a collection view, achieving some polymorphism
-    Collection collection = array_list_to_collection(array_list);
+    list_add_last(list, "Hello");
+    list_add_last(list, "World!");
     
-    // Converting the ArrayList to a string representation via `.to_string`
-    // by default prints the memory addresses of the elements
-    String string = array_list_to_string(array_list);
-    printf("%s", string_data(string)); // [ 0x7ffd8c1a4e92, 0x7ffd3b7f9c10... ]
+    const char* hello = list_get(list, 0);
+    const char* world = list_get(list, 1);
     
-    // It must be freed later
-    string_destroy(&string);
-    
-    // Cleanup (elements are freed via `.destruct`)
-    array_list_destroy(&array_list);
+    printf("%s %s\n", hello, world); // Hello World!
+
+    list_destroy(&list);    
     return 0;
 }
 ```
-```c++
-// including only the necessary headers instead:
-// replace all with <libcdsa/MODULE_NAME> if installed system-wide
-#include "map/hash_map.h"
-#include "util/for_each.h" // `for_each.h` should be placed last, after all data structure includes
-#include "util/errors.h"
 
-#include <stdlib.h>
+```c++
+#include "map/map.h"
 #include <stdio.h>
 
-int main(void) {
-    // Create a new HashMap with default options, could be replaced with just `DEFAULT_HASH_MAP_OPTIONS()`
-    HashMap* hash_map = hash_map_new(DEFAULT_HASH_MAP_OPTIONS(
-        .initial_capacity = 16,
-        .load_factor = 0.75f,
-        .hash = pointer_hash,           // hash function
-        .key_destruct = noop_destruct,
-        .key_equals = pointer_equals,
-        .key_to_string = pointer_to_string,
-        .value_destruct = noop_destruct,
-        .value_equals = pointer_equals,
-        .value_to_string = pointer_to_string,
-        .memory_alloc = malloc, 
-        .memory_dealloc = free
-    ));
+int main() {
+    HashMap* map = map_new(DEFAULT_HASH_MAP_OPTIONS());
 
-    // Put entries (stack-allocated via compound expression, no need to free)
-    hash_map_put(hash_map, "Rock", &(int){10});
-    hash_map_put(hash_map, "Paper", &(int){20}); // Keys are `void*` too, using string literals just for convenience
-    hash_map_put(hash_map, "Scissors", &(int){30}); 
+    map_put(map, "Hello", &(int){5});
+    map_put(map, "World!", &(int){6});
 
-    // Error handling, different approach:
-    Result(void*) result = try(hash_map_get(nullptr, "Rock"));
-    // Same behavior as `attempt()`, but the expression result and the error are wrapped in the Result struct
-    if (result.error == NULL_POINTER_ERROR) {
-        printf("%p\n", result.value); // (nil)
-        printf("%s\n", error_to_string(result.error)); // NULL_POINTER_ERROR
-        printf("%s\n", plain_error_message()); // 'hash_map' argument must not be null
-    }
+    int* hello_length = map_get(map, "Hello");
+    int* world_length = map_get(map, "World!");
 
-    // Iterator support:
-    Iterator* iterator = hash_map_iterator(hash_map);
-    while (iterator_has_next(iterator)) {
-        const MapEntry* entry = iterator_next(iterator);
-        printf("key: %s, value: %d\n", (char*) entry->key, *(int*) entry->value); // "Rock" 10, "Paper" 20...
-    }
-    iterator_destroy(&iterator);
+    printf("Full length: %d\n", *hello_length + *world_length); // 11
 
-    // Or simplified using `for_each`:
-    for_each (MapEntry* entry, hash_map) {
-        printf("key: %s, value: %d\n", (char*) entry->key, *(int*) entry->value); // "Rock" 10, "Paper" 20...
-    }
+    map_destroy(&map);
+    return 0;
+}
+```
 
-    // The HashMap can also be converted to a collection view
-    Collection entries = hash_map_entries(hash_map);
+```c++
+#include "set/set.h"
+#include <stdio.h>
+
+int main() {
+    HashSet* set = set_new(DEFAULT_HASH_SET_OPTIONS());
     
-    // Converting the HashMap to a string representation via `.key_to_string` and `,value_to_string`
-    // by default prints the memory addresses of the mapping key-value
-    String string = hash_map_to_string(hash_map);
-    printf("%s", string_data(string)); // [ 0x7ffd8c1a4e92 = 0x7ffd1c9b2f44, 0x7ffd3b7f9c10... ]
-    
-    // it must be freed later
-    string_destroy(&string);
+    set_add(set, &(int){10});
+    set_add(set, &(int){20});
 
-    // Cleanup (no elements are freed since no destruct functions were provided)
-    hash_map_destroy(&hash_map);
+    bool present = set_contains(set, &(int){30});
+    printf("%s\n", present ? "true" : "false"); // false
+
+    set_destroy(&set);
+    return 0;
+}
+```
+
+```c++
+#include "list/list.h"
+#include <stdio.h>
+
+int main() {
+    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+
+    list_add_last(list, "Hello");
+    list_add_last(list, "World!");
+
+    Iterator* iter = list_iterator(list);
+
+    while (iterator_has_next(iter)) {
+        const char* string = iterator_next(iter);
+        printf("%s ", string); // Hello World!
+    }
+
+    iterator_destroy(&iter);
+
+    list_destroy(&list);
+    return 0;
+}
+```
+
+```c++
+#include "list/list.h"
+#include "util/for_each.h" // should be included last
+#include <stdio.h>
+
+int main() {
+    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+
+    list_add_last(list, "Hello");
+    list_add_last(list, "World!");
+
+    for_each (const char* string, list) {
+        printf("%s ", string); // Hello World!
+    }
+
+    list_destroy(&list);
+    return 0;
+}
+```
+
+```c++
+#include "list/list.h"
+#include <stdio.h>
+
+int main() {
+    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+
+    list_add_last(list, "Hello");
+    list_add_last(list, "World!");
+
+    Collection collection = list_to_collection(list);
+
+    LinkedList* other_list = list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    list_add_all_last(other_list, collection);
+
+    const char* hello = list_get(other_list, 0);
+    const char* world = list_get(other_list, 1);
+
+    printf("%s %s\n", hello, world); // Hello World!
+
+    list_destroy(&list);
+    list_destroy(&other_list);
+    
+    return 0;
+}
+```
+
+```c++
+#include "core/errors.h"
+#include <stdio.h>
+
+int divide(int a, int b) {
+    if (b == 0) {
+        set_error(ARITHMETIC_ERROR, "Cannot divide by zero: %d / %d", a, b);
+        return -1;
+    }
+    return a / b;
+}
+
+int main() {
+    int result; Error error = attempt(result = divide(10, 0));
+
+    if (error) {
+        printf("An error occurred, continuing execution... details: %s\n", error_message());
+    }
+
+    divide(-1, 0); // ARITHMETIC_ERROR: Cannot divide by zero: -1 / 0
+
+    printf("Unreachable");
+    
+    return 0;
+}
+```
+
+```c++
+#include "core/errors.h"
+#include <stdio.h>
+
+int divide(int a, int b) {
+    if (b == 0) {
+        set_error(ARITHMETIC_ERROR, "Cannot divide by zero: %d / %d", a, b);
+        return -1;
+    }
+    return a / b;
+}
+
+int main() {
+    Result(int) result = try(divide(10, 0));
+
+    if (result.error) {
+        printf("%s\n", error_message()); // ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0
+        return 1;
+    }
+
+    printf("result value: %d\n", result.value); // Unreachable
+    
+    return 0;
+}
+```
+
+```c++
+#include "core/array.h"
+#include <stdio.h>
+
+int main() {
+    Array(int) array_a = array_new(5, int); // [ 0, 0, 0, 0, 0 ]
+    Array(int) array_b = array_of(int, 1, 2, 3, 4, 5); // [ 1, 2, 3, 4, 5 ]
+
+    int n = array_get(array_a, 0); // `int n = array_a[0];` also works
+    printf("%d\n", n); // 0
+
+    array_set(array_a, 0, 10); // `array_a[0] = 10;` also works
+
+    for (int i = 0; i < array_length(array_a); i++) {
+        printf("%d ", array_a[i]); // 10, 0, 0, 0, 0
+    }
+    
+    printf("\n");
+
+    for (int i = 0; i < array_length(array_b); i++) {
+        printf("%d ", array_b[i]); // 1, 2, 3, 4, 5
+    }
+
+    array_destroy(&array_a);
+    array_destroy(&array_b);
+    
+    return 0;
+}
+```
+
+```c++
+#include "core/string.h"
+#include <stdio.h>
+
+int main() {
+    String hello = string_new("Hello"); // heap allocated
+    String world = string_ref("World!"); // stack referenced
+
+    char c = string_char_at(hello, 2);
+    printf("%c\n", c); // l
+
+    String sub = string_substring("literal", 0, 3);
+    printf("%s\n", string_data(sub)); // lit
+
+    // functions accepts both literals and string types
+    String hello_world = string_join(" ", hello, world, "Code!");
+    printf("%s\n", string_data(hello_world)); // Hello World! Code!
+
+    Array(String) words = string_split(hello_world, ' ');
+    for (int i = 0; i < array_length(words); i++) {
+        printf("%s ", string_data(words[i])); // Hello World! Code!
+    }
+
+    string_destroy(&hello, &sub, &hello_world);
+    array_destroy(&words);
+    
+    return 0;
+}
+```
+
+```c++
+#include "core/memory.h"
+#include <stdio.h>
+
+typedef struct {
+    float x, y;
+} Point;
+
+int main() {
+    int* number = new(int, 10);
+    Point* point = new(Point, .x = 10, .y = 20);
+
+    printf("%d\n", *number); // 10
+    printf("x: %f, y: %f\n", point->x, point->y); // x: 10, y: 20
+
+    delete(number);
+    delete(point);
+    
     return 0;
 }
 ```

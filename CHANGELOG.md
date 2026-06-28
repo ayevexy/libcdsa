@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.6]() — 2026-06-28
+
+This update enhances the library project structure and introduces compile-time dispatch abstractions for collections.
+
+### ✨ Features
+- Added `malloc()`, `realloc()` and `free()` safe wrappers to `core/memory.h`.
+- Added `type` field to `Collection` to allow safe casts to the underlying data structure.
+- Added `array_get()` and `array_set()` operations to allow safe index access in `util/array.h`.
+- Added compile-time dispatch support through function macros to the following data structures:
+  - `ArrayList` and `LinkedList` in `list/list.h`.
+  - `HashMap` and `TreeMap` in `map/map.h`.
+  - `HashSet` and `TreeSet` in `set/set.h`.
+
+### ✏️ Changes
+- Replaced `set_memory_alloc()` and `set_memory_dealloc()` function pointers by `malloc()` and `free()`.
+- Added function version of `delete()` to allow usage as function pointer.
+- Rename `raw_new()` to `(new)()` to avoid usage.
+- Moved pointer functions from `util/functions.h` to `util/pointer.h`.
+- Renamed the `memory_dealloc` field in `Iterator` to `destroy`.
+- Redesigned array initialization (`core/array.h`):
+    - `array_new()` no longer accepts `...` as argument.
+    - Moved initialization to the new `array_of()` function.
+- Moved the following core utilities to the new `core/` module:
+  - `errors.h`
+  - `string.h`
+  - `memory.h`
+  - `array.h`
+  - `version.h`
+- Moved `map_entry.h` to the `util/` module.
+- Changed `set` prefix to `sets` in `util/sets.h` to avoid confusion with `set/set.h`.
+
+### 🪲 Bug Fixes
+- Added missing `const` qualifier in `string_ref()` implementation.
+
+### 📚 Documentation
+- Add compile-time dispatch of collections to README feature section.
+- Improve usage examples in README.
+
+---
+
 ## 🎉 [v1.0.0-beta.5]() — 2026-06-07
 
 This update polish the String API and improve its compatibility with the existing library containers.

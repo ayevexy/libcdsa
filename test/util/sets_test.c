@@ -51,7 +51,7 @@ void test_set_union() {
     int other_elements[] = { 6, 7, 8, 9, 10};
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    SetView new_set = set_union(hash_set_a, hash_set_b);
+    SetView new_set = sets_union(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_EQUAL(10, set_view_size(&new_set));
     // and
@@ -80,7 +80,7 @@ void test_set_intersection() {
     int other_elements[] = { 0, 2, 3, 4, 6};
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    SetView new_set = set_intersection(hash_set_a, hash_set_b);
+    SetView new_set = sets_intersection(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_EQUAL(3, set_view_size(&new_set));
     // and
@@ -102,7 +102,7 @@ void test_set_difference() {
     int other_elements[] = { 0, 2, 3, 4, 6};
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    SetView new_set = set_difference(hash_set_a, hash_set_b);
+    SetView new_set = sets_difference(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_EQUAL(2, set_view_size(&new_set));
     // and
@@ -123,7 +123,7 @@ void test_set_symmetric_difference() {
     int other_elements[] = { 0, 2, 3, 4, 6};
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    SetView new_set = set_symmetric_difference(hash_set_a, hash_set_b);
+    SetView new_set = sets_symmetric_difference(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_EQUAL(4, set_view_size(&new_set));
     // and
@@ -146,7 +146,7 @@ void test_set_is_subset() {
     int other_elements[] = { 2, 3, 4 };
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    bool subset = set_is_subset(hash_set_b, hash_set_a);
+    bool subset = sets_is_subset(hash_set_b, hash_set_a);
     // then
     TEST_ASSERT_TRUE(subset);
 }
@@ -159,7 +159,7 @@ void test_set_is_not_subset() {
     int other_elements[] = { 2, 3, 4, 6 };
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    bool subset = set_is_subset(hash_set_b, hash_set_a);
+    bool subset = sets_is_subset(hash_set_b, hash_set_a);
     // then
     TEST_ASSERT_FALSE(subset);
 }
@@ -172,7 +172,7 @@ void test_set_is_superset() {
     int other_elements[] = { 2, 3, 4 };
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    bool superset = set_is_superset(hash_set_a, hash_set_b);
+    bool superset = sets_is_superset(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_TRUE(superset);
 }
@@ -185,7 +185,7 @@ void test_set_is_not_superset() {
     int other_elements[] = { 2, 3, 4, 6 };
     POPULATE_HASH_SET(hash_set_b, other_elements);
     // when
-    bool superset = set_is_superset(hash_set_a, hash_set_b);
+    bool superset = sets_is_superset(hash_set_a, hash_set_b);
     // then
     TEST_ASSERT_FALSE(superset);
 }
@@ -201,8 +201,8 @@ void test_set_chained_operations_passing_set_view_as_argument() {
     int another_elements[] = { 0, 2, 3, 5 };
     POPULATE_HASH_SET(hash_set_c, another_elements);
     // when
-    SetView union_set = set_union(hash_set_a, hash_set_b);
-    SetView new_set = set_intersection(hash_set_c, &union_set);
+    SetView union_set = sets_union(hash_set_a, hash_set_b);
+    SetView new_set = sets_intersection(hash_set_c, &union_set);
     // then
     TEST_ASSERT_EQUAL(2, set_view_size(&new_set));
     // and

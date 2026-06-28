@@ -100,7 +100,7 @@ Collection set_view_to_collection(const SetView* set_view);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_union(set_a, set_b) set_view_union(set_view_of(set_a), set_view_of(set_b))
+#define sets_union(set_a, set_b) set_view_union(set_view_of(set_a), set_view_of(set_b))
 
 SetView set_view_union(SetView*, SetView*);
 
@@ -116,7 +116,7 @@ SetView set_view_union(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_intersection(set_a, set_b) set_view_intersection(set_view_of(set_a), set_view_of(set_b))
+#define sets_intersection(set_a, set_b) set_view_intersection(set_view_of(set_a), set_view_of(set_b))
 
 SetView set_view_intersection(SetView*, SetView*);
 
@@ -132,7 +132,7 @@ SetView set_view_intersection(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_difference(set_a, set_b) set_view_difference(set_view_of(set_a), set_view_of(set_b))
+#define sets_difference(set_a, set_b) set_view_difference(set_view_of(set_a), set_view_of(set_b))
 
 SetView set_view_difference(SetView*, SetView*);
 
@@ -148,7 +148,7 @@ SetView set_view_difference(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_symmetric_difference(set_a, set_b) set_view_symmetric_difference(set_view_of(set_a), set_view_of(set_b))
+#define sets_symmetric_difference(set_a, set_b) set_view_symmetric_difference(set_view_of(set_a), set_view_of(set_b))
 
 SetView set_view_symmetric_difference(SetView*, SetView*);
 
@@ -164,7 +164,7 @@ SetView set_view_symmetric_difference(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_is_subset(set_a, set_b) set_view_is_subset(set_view_of(set_a), set_view_of(set_b))
+#define sets_is_subset(set_a, set_b) set_view_is_subset(set_view_of(set_a), set_view_of(set_b))
 
 bool set_view_is_subset(SetView*, SetView*);
 
@@ -180,7 +180,7 @@ bool set_view_is_subset(SetView*, SetView*);
  *
  * @note set_a and set_b could be a HashSet*, TreeSet* or another SetView*
  */
-#define set_is_superset(set_a, set_b) set_view_is_superset(set_view_of(set_a), set_view_of(set_b))
+#define sets_is_superset(set_a, set_b) set_view_is_superset(set_view_of(set_a), set_view_of(set_b))
 
 bool set_view_is_superset(SetView*, SetView*);
 

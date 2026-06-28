@@ -45,6 +45,12 @@ The library currently provides the following data structures:
 - [Queue](src/queue/queue.h): A linear FIFO structure where elements are added at the rear and removed from the front.
 - [Priority Queue](src/priority_queue/priority_queue.h): A dynamic, linear structure that stores elements according to their priority in a queue.
 
+There are also thin abstraction layers for list, map, and set types (compile-time dispatch):
+
+- [List](src/list/list.h): A thin abstraction layer for `ArrayList` and `LinkedList`.
+- [Map](src/map/map.h): A thin abstraction layer for `HashMap` and `TreeMap`.
+- [Set](src/set/set.h): A thin abstraction layer for `HashSet` and `TreeSet`.
+
 Also, there is some other utilities which may be useful:
 
 - [Algorithms](src/util/algorithms.h): Algorithms related enumerations.

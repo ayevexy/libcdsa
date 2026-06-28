@@ -33,17 +33,26 @@
 /** @brief Doubly-linked list implementation */
 #include "list/linked_list.h"
 
+/** @brief List compile-time dispatch abstraction */
+#include "list/list.h"
+
 /** @brief Hash table based map implementation */
 #include "map/hash_map.h"
 
 /** @brief Self-balancing binary tree based map implementation */
 #include "map/tree_map.h"
 
+/** @brief Map compile-time dispatch abstraction */
+#include "map/map.h"
+
 /** @brief Hash based set implementation */
 #include "set/hash_set.h"
 
 /** @brief Self-balancing binary tree based set implementation */
 #include "set/tree_set.h"
+
+/** @brief Set compile-time dispatch abstraction */
+#include "set/set.h"
 
 /** @brief Double-ended queue implemented with a resizable array. */
 #include "deque/deque.h"

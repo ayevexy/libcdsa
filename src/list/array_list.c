@@ -1,6 +1,5 @@
 #include "array_list.h"
 
-#include "core/errors.h"
 #include "util/constraints.h"
 #include <string.h>
 
@@ -922,8 +921,8 @@ static void merge(ArrayList* array_list, int start_index, int middle_index, int 
 
     if (!left_elements || !right_elements) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate temporary arrays for merge");
-        free(left_elements);
-        free(right_elements);
+        array_list->memory_dealloc(left_elements);
+        array_list->memory_dealloc(right_elements);
         return;
     }
     for (int i = 0; i < LEFT_ELEMENTS_SIZE; i++) {

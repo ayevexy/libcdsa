@@ -1,6 +1,5 @@
 #include "deque.h"
 
-#include "core/errors.h"
 #include "util/constraints.h"
 
 constexpr int MIN_CAPACITY = 8;

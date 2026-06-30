@@ -1,6 +1,5 @@
 #include "tree_map.h"
 
-#include "core/errors.h"
 #include "util/constraints.h"
 #include <string.h>
 

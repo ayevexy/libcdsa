@@ -1,6 +1,5 @@
 #include "priority_queue.h"
 
-#include "core/errors.h"
 #include "util/constraints.h"
 #include <string.h>
 

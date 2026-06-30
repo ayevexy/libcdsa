@@ -1,16 +1,15 @@
 #ifndef LIBCDSA_TREE_MAP_H
 #define LIBCDSA_TREE_MAP_H
 
+#include "core/errors.h"
+#include "core/memory.h"
+#include "core/array.h"
 #include "core/string.h"
-
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/pointer.h"
 #include "util/collection.h"
 #include "util/map_entry.h"
-
-#include <stdlib.h>
-#include <stddef.h>
 
 /**
  * A tree map is an ordered associative data structure that maps keys to values
@@ -105,8 +104,8 @@ typedef struct {
     .value_destruct = noop_destruct,                        \
     .value_equals = pointer_equals,                         \
     .value_to_string = pointer_to_string,                   \
-    .memory_alloc = malloc,                                 \
-    .memory_dealloc = free,                                 \
+    .memory_alloc = memory_try_alloc,                       \
+    .memory_dealloc = memory_dealloc,                       \
     __VA_ARGS__                                             \
 }
 

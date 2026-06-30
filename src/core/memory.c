@@ -29,6 +29,10 @@ void* memory_alloc(size_t size) {
     return pointer;
 }
 
+void* memory_try_alloc(size_t size) {
+    return malloc(size);
+}
+
 void* memory_realloc(void* pointer, size_t size) {
     void* new_pointer = realloc(pointer, size);
     if (!new_pointer) {
@@ -36,6 +40,10 @@ void* memory_realloc(void* pointer, size_t size) {
         return nullptr;
     }
     return new_pointer;
+}
+
+void* memory_try_realloc(void* pointer, size_t size) {
+    return realloc(pointer, size);
 }
 
 void memory_dealloc(void* pointer) {

@@ -1,18 +1,16 @@
 #ifndef LIBCDSA_LINKED_LIST_H
 #define LIBCDSA_LINKED_LIST_H
 
+#include "core/errors.h"
+#include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
-
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/pointer.h"
 #include "util/algorithms.h"
 #include "util/collection.h"
 #include "util/optional.h"
-
-#include <stdlib.h>
-#include <stddef.h>
 
 /**
  * A linked list is a generic dynamic linear data structure where elements are
@@ -97,8 +95,8 @@ typedef struct {
     .destruct = noop_destruct,                                      \
     .equals = pointer_equals,                                       \
     .to_string = pointer_to_string,                                 \
-    .memory_alloc = malloc,                                         \
-    .memory_dealloc = free,                                         \
+    .memory_alloc = memory_try_alloc,                               \
+    .memory_dealloc = memory_dealloc,                               \
     __VA_ARGS__                                                     \
 }
 

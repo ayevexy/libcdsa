@@ -44,6 +44,15 @@ void (delete)(void* pointer);
 void* memory_alloc(size_t size);
 
 /**
+ * @brief Allocate `size` bytes of memory.
+ *
+ * @param size number of bytes
+ *
+ * @return pointer to the memory block, or nullptr on failure
+ */
+void* memory_try_alloc(size_t size);
+
+/**
  * @brief Reallocate a memory block changing its size.
  *
  * @param pointer pointer to the old memory block
@@ -54,6 +63,16 @@ void* memory_alloc(size_t size);
  * @exception MEMORY_ALLOCATION_ERROR if memory reallocation fails
  */
 void* memory_realloc(void* pointer, size_t size);
+
+/**
+ * @brief Reallocate a memory block changing its size.
+ *
+ * @param pointer pointer to the old memory block
+ * @param size the new size in bytes
+ *
+ * @return pointer to the reallocated memory block, or nullptr on failure
+ */
+void* memory_try_realloc(void* pointer, size_t size);
 
 /**
  * @brief Deallocate a memory block.

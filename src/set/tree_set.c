@@ -1,6 +1,5 @@
 #include "tree_set.h"
 
-#include "core/errors.h"
 #include "util/constraints.h"
 #include "util/sets.h"
 #include <string.h>

@@ -14,7 +14,7 @@ This update enhances the library project structure and introduces compile-time d
 ### ✨ Features
 - Added `malloc()`, `realloc()` and `free()` safe wrappers to `core/memory.h`.
 - Added `type` field to `Collection` to allow safe casts to the underlying data structure.
-- Added `array_get()` and `array_set()` operations to allow safe index access in `util/array.h`.
+- Added `array_get()` and `array_set()` operations to allow safe index access in `core/array.h`.
 - Added compile-time dispatch support through function macros to the following data structures:
   - `ArrayList` and `LinkedList` in `list/list.h`.
   - `HashMap` and `TreeMap` in `map/map.h`.

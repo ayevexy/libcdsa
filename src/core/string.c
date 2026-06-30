@@ -1,16 +1,16 @@
 #include "string.h"
 
 #include "errors.h"
+#include "memory.h"
 #include "util/constraints.h"
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
 
-void* (*string_memory_alloc)(size_t) = malloc;
+void* (*string_memory_alloc)(size_t) = memory_try_alloc;
 
-void (*string_memory_dealloc)(void*) = free;
+void (*string_memory_dealloc)(void*) = memory_dealloc;
 
 constexpr int NULL_TERMINATOR = 1;
 
@@ -549,7 +549,7 @@ constexpr int GROWN_FACTOR = 2;
 StringBuilder* string_builder_init(StringBuilder* builder) {
     if (require_non_null(builder)) return nullptr;
 
-    char* buffer = malloc(INITIAL_CAPACITY * sizeof(char) + NULL_TERMINATOR);
+    char* buffer = memory_try_alloc(INITIAL_CAPACITY * sizeof(char) + NULL_TERMINATOR);
     if (!buffer) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to initialize 'string builder' buffer");
         return nullptr;
@@ -565,7 +565,7 @@ void (string_builder_append)(StringBuilder* builder, struct String string) {
     if (require_non_null(builder)) return;
 
     if (builder->length + string.length >= builder->capacity) {
-        char* new_buffer = realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
+        char* new_buffer = memory_try_realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
         if (!new_buffer) {
             set_error(MEMORY_ALLOCATION_ERROR, "failed to resize 'string builder' buffer");
             return;
@@ -586,7 +586,7 @@ void (string_builder_insert)(StringBuilder* builder, int index, struct String st
         return;
     }
     if (builder->length + string.length >= builder->capacity) {
-        char* buffer = realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
+        char* buffer = memory_try_realloc(builder->buffer, builder->capacity * GROWN_FACTOR + NULL_TERMINATOR);
         if (!buffer) {
             set_error(MEMORY_ALLOCATION_ERROR, "failed to resize 'string builder' buffer");
             return;
@@ -608,7 +608,7 @@ String string_builder_to_string(StringBuilder* builder) {
 
 void string_builder_close(StringBuilder* builder) {
     if (require_non_null(builder)) return;
-    free(builder->buffer);
+    memory_dealloc(builder->buffer);
     builder->buffer = nullptr;
     builder->length = 0;
     builder->capacity = 0;

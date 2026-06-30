@@ -1,7 +1,13 @@
 #ifndef LIBCDSA_MEMORY_H
 #define LIBCDSA_MEMORY_H
 
+#include "allocator.h"
 #include <stddef.h>
+
+/**
+ * @brief Global memory allocator instance used by default for memory management.
+ */
+extern Allocator global_memory_allocator;
 
 /**
  * @brief Allocate and initialize an object of type `T` on the heap.

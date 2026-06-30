@@ -1,7 +1,7 @@
 #include "array.h"
 
+#include "memory.h"
 #include "errors.h"
-#include <stdlib.h>
 #include <string.h>
 
 typedef struct {
@@ -16,7 +16,7 @@ static ArrayStorage* array_storage(const void* array) {
 
 void* array_create(int length, size_t element_size, const void* source) {
     const size_t size = sizeof(ArrayStorage) + length * element_size;
-    ArrayStorage* array = malloc(size); // // Allocated memory is leaked false positive
+    ArrayStorage* array = memory_try_alloc(size);
     if (!array) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);
         return nullptr;
@@ -44,5 +44,5 @@ int (array_length)(const void* array) {
 }
 
 void (array_destroy)(void* array) {
-    free(array_storage(array));
+    memory_dealloc(array_storage(array));
 }

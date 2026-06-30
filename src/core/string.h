@@ -8,13 +8,13 @@
 
 /**
  * @brief Internal memory allocation function used internally
- * to allocate String instances. Defaults to malloc.
+ * to allocate String instances. Defaults to `memory_try_alloc()`.
  */
 extern void* (*string_memory_alloc)(size_t);
 
 /**
  * @brief Internal memory deallocation function used internally
- * to deallocate String instances. Defaults to free.
+ * to deallocate String instances. Defaults to `memory_dealloc()`.
  */
 extern void (*string_memory_dealloc)(void*);
 

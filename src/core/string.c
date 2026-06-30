@@ -534,10 +534,11 @@ char char_self(char c) {
     return c;
 }
 
-void destroy_string_array(Array(const struct String*) strings) {
+void string_array_destroy(Array(String) strings) {
     for (int i = 0; i < array_length(strings); i++) {
         string_destroy(&strings[i]);
     }
+    (array_destroy)(strings);
 }
 
 /* --------------------------------------------------------------------------------- */

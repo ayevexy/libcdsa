@@ -3,6 +3,7 @@
 #include "core/errors.h"
 #include "util/constraints.h"
 #include "util/sets.h"
+#include <string.h>
 
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;

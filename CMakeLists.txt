@@ -22,6 +22,7 @@ include(FetchContent)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_library(${PROJECT_NAME}
+        src/util/collection.c
         src/deque/deque.c
         src/priority_queue/priority_queue.c
         src/list/array_list.c
@@ -32,6 +33,8 @@ add_library(${PROJECT_NAME}
         src/set/tree_set.c
         src/util/sets.c
         src/core/errors.c
+        src/core/memory.c
+        src/core/array.c
         src/core/string.c
 )
 

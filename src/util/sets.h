@@ -31,9 +31,7 @@ typedef struct SetView {
  *
  * @exception MEMORY_ALLOCATION_ERROR if failed to create underlying iterators while calculating
  */
-static inline int set_view_size(const SetView* set_view) {
-    return set_view->size(&set_view->sets);
-}
+int set_view_size(const SetView* set_view);
 
 /**
  * @brief Checks whether the set view is empty.
@@ -44,9 +42,7 @@ static inline int set_view_size(const SetView* set_view) {
  *
  * @exception MEMORY_ALLOCATION_ERROR if failed to create underlying iterators while calculating
  */
-static inline bool set_view_is_empty(const SetView* set_view) {
-    return set_view_size(set_view) == 0;
-}
+bool set_view_is_empty(const SetView* set_view);
 
 /**
  * @brief Creates an iterator for the set view.
@@ -59,9 +55,7 @@ static inline bool set_view_is_empty(const SetView* set_view) {
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-static inline Iterator* set_view_iterator(const SetView* set_view) {
-    return set_view->iterator(&set_view->sets);
-}
+Iterator* set_view_iterator(const SetView* set_view);
 
 /**
  * @brief Checks whether an element is present in the set view.
@@ -71,9 +65,7 @@ static inline Iterator* set_view_iterator(const SetView* set_view) {
  *
  * @return true if the element is present, false otherwise
  */
-static inline bool set_view_contains(const SetView* set_view, const void* element) {
-    return set_view->contains(&set_view->sets, element);
-}
+bool set_view_contains(const SetView* set_view, const void* element);
 
 /**
  * @brief Returns a Collection view of the set view.

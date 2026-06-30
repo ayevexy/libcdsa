@@ -2,6 +2,7 @@
 
 #include "core/errors.h"
 #include "util/constraints.h"
+#include <string.h>
 
 typedef enum {
     RED, BLACK

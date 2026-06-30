@@ -1,7 +1,6 @@
 #ifndef LIBCDSA_COLLECTION_H
 #define LIBCDSA_COLLECTION_H
 
-#include "core/errors.h"
 #include "core/array.h"
 #include "functions.h"
 #include "iterator.h"
@@ -40,9 +39,7 @@ typedef struct {
  *
  * @return the current size
  */
-static inline int collection_size(Collection collection) {
-    return collection.size(collection.data_structure);
-}
+int collection_size(Collection collection);
 
 /**
  * @brief Checks whether the collection is empty.
@@ -51,9 +48,7 @@ static inline int collection_size(Collection collection) {
  *
  * @return true if empty, false otherwise
  */
-static inline bool collection_is_empty(Collection collection) {
-    return collection_size(collection) == 0;
-}
+bool collection_is_empty(Collection collection);
 
 /**
  * @brief Creates an iterator for the collection.
@@ -62,9 +57,7 @@ static inline bool collection_is_empty(Collection collection) {
  *
  * @return pointer to a newly created Iterator
  */
-static inline Iterator* collection_iterator(Collection collection) {
-    return collection.iterator(collection.data_structure);
-}
+Iterator* collection_iterator(Collection collection);
 
 /**
  * @brief Checks whether two collections are equals.
@@ -74,9 +67,7 @@ static inline Iterator* collection_iterator(Collection collection) {
  *
  * @return true if equals, false otherwise
  */
-static inline bool collection_equals(Collection collection, Collection other_collection) {
-    return collection.data_structure == other_collection.data_structure;
-}
+bool collection_equals(Collection collection, Collection other_collection);
 
 /**
  * @brief Applies an action to each element of the collection.
@@ -86,18 +77,7 @@ static inline bool collection_equals(Collection collection, Collection other_col
  *
  * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
-static inline void collection_for_each(Collection collection, Consumer action) {
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return;
-    }
-    while (iterator_has_next(iterator)) {
-        action(iterator_next(iterator));
-    }
-    iterator_destroy(&iterator);
-}
+void collection_for_each(Collection collection, Consumer action);
 
 /**
  * @brief Checks whether an element is present in the collection.
@@ -107,9 +87,7 @@ static inline void collection_for_each(Collection collection, Consumer action) {
  *
  * @return true if the element is present, false otherwise
  */
-static inline bool collection_contains(Collection collection, const void* element) {
-    return collection.contains(collection.data_structure, element);
-}
+bool collection_contains(Collection collection, const void* element);
 
 /**
  * @brief Checks whether all elements of another collection are present in the collection.
@@ -121,24 +99,7 @@ static inline bool collection_contains(Collection collection, const void* elemen
  *
  * @exception MEMORY_ALLOCATION_ERROR if creation of other_collection iterator fails
  */
-static inline bool collection_contains_all(Collection collection, Collection other_collection) {
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(other_collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return false;
-    }
-    bool contains = true;
-    while (iterator_has_next(iterator)) {
-        const void* element = iterator_next(iterator);
-        if (!collection_contains(collection, element)) {
-            contains = false;
-            break;
-        }
-    }
-    iterator_destroy(&iterator);
-    return contains;
-}
+bool collection_contains_all(Collection collection, Collection other_collection);
 
 /**
  * @brief Returns a newly allocated array containing all elements of the collection.
@@ -151,23 +112,6 @@ static inline bool collection_contains_all(Collection collection, Collection oth
  *
  * @note the created array must be freed manually (by `array_destroy()`)
  */
-static inline Array(void*) collection_to_array(Collection collection) {
-    Array(void*) elements = array_new(collection_size(collection), void*);
-    if (!elements) {
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'array'");
-        return nullptr;
-    }
-    Iterator* iterator; Error error;
-
-    if ((error = attempt(iterator = collection_iterator(collection)))) {
-        array_destroy(&elements);
-        set_error(error, "%s of 'collection'", plain_error_message());
-        return nullptr;
-    }
-    for (int i = 0; iterator_has_next(iterator); i++) {
-        elements[i] = iterator_next(iterator);
-    }
-    return elements;
-}
+Array(void*) collection_to_array(Collection collection);
 
 #endif

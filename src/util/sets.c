@@ -293,6 +293,21 @@ static bool symmetric_difference_set_contains(const void* raw_sets, const void* 
     return set_view_contains(sets->first, element) ^ set_view_contains(sets->second, element);
 }
 
+int set_view_size(const SetView* set_view) {
+    return set_view->size(&set_view->sets);
+}
+
+bool set_view_is_empty(const SetView* set_view) {
+    return set_view_size(set_view) == 0;
+}
+Iterator* set_view_iterator(const SetView* set_view) {
+    return set_view->iterator(&set_view->sets);
+}
+
+bool set_view_contains(const SetView* set_view, const void* element) {
+    return set_view->contains(&set_view->sets, element);
+}
+
 SetView set_view_union(SetView* set_a, SetView* set_b) {
     if (require_non_null(set_a, set_b)) return (SetView) {};
     return (SetView) {

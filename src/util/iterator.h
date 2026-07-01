@@ -23,7 +23,7 @@ typedef struct {
     void (*set)(void* iteration_context, const void* element);
     void (*remove)(void* iteration_context);
     void (*reset)(void* iteration_context);
-    void (*destroy)(void*);
+    void (*destroy)(void* iteration_context);
 } Iterator;
 
 /**

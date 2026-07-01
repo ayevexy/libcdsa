@@ -37,42 +37,42 @@
 #define set_destroy(set) \
     _Generic((set), HashSet**: hash_set_destroy, TreeSet**: tree_set_destroy)(set)
 
-#define set_change_destructor(set, destructor) SET_DISPATCH(change_destructor, set, destructor)
+#define set_change_destructor(...) SET_DISPATCH(change_destructor, __VA_ARGS__)
 
-#define set_add(set, element) SET_DISPATCH(add, set, element)
+#define set_add(...) SET_DISPATCH(add, __VA_ARGS__)
 
-#define set_add_all(set, collection) SET_DISPATCH(add_all, set, collection)
+#define set_add_all(...) SET_DISPATCH(add_all, __VA_ARGS__)
 
-#define set_remove(set, element) SET_DISPATCH(remove, set, element)
+#define set_remove(...) SET_DISPATCH(remove, __VA_ARGS__)
 
-#define set_remove_all(set, collection) SET_DISPATCH(remove_all, set, collection)
+#define set_remove_all(...) SET_DISPATCH(remove_all, __VA_ARGS__)
 
-#define set_remove_if(set, condition) SET_DISPATCH(remove_if, set, condition)
+#define set_remove_if(...) SET_DISPATCH(remove_if, __VA_ARGS__)
 
-#define set_retain_all(set, collection) SET_DISPATCH(retain_all, set, collection)
+#define set_retain_all(...) SET_DISPATCH(retain_all, __VA_ARGS__)
 
-#define set_size(set) SET_DISPATCH(size, set)
+#define set_size(...) SET_DISPATCH(size, __VA_ARGS__)
 
-#define set_is_empty(set) SET_DISPATCH(is_empty, set)
+#define set_is_empty(...) SET_DISPATCH(is_empty, __VA_ARGS__)
 
-#define set_iterator(set) SET_DISPATCH(iterator, set)
+#define set_iterator(...) SET_DISPATCH(iterator, __VA_ARGS__)
 
-#define set_equals(set, other_set) SET_DISPATCH(equals, set, other_set)
+#define set_equals(...) SET_DISPATCH(equals, __VA_ARGS__)
 
-#define set_for_each(set, action) SET_DISPATCH(for_each, set, action)
+#define set_for_each(...) SET_DISPATCH(for_each, __VA_ARGS__)
 
-#define set_clear(set) SET_DISPATCH(clear, set)
+#define set_clear(...) SET_DISPATCH(clear, __VA_ARGS__)
 
-#define set_contains(set, element) SET_DISPATCH(contains, set, element)
+#define set_contains(...) SET_DISPATCH(contains, __VA_ARGS__)
 
-#define set_contains_all(set, collection) SET_DISPATCH(contains_all, set, collection)
+#define set_contains_all(...) SET_DISPATCH(contains_all, __VA_ARGS__)
 
-#define set_clone(set) SET_DISPATCH(clone, set)
+#define set_clone(...) SET_DISPATCH(clone, __VA_ARGS__)
 
-#define set_to_collection(set) SET_DISPATCH(to_collection, set)
+#define set_to_collection(...) SET_DISPATCH(to_collection, __VA_ARGS__)
 
-#define set_to_array(set) SET_DISPATCH(to_array, set)
+#define set_to_array(...) SET_DISPATCH(to_array, __VA_ARGS__)
 
-#define set_to_string(set) SET_DISPATCH(to_string, set)
+#define set_to_string(...) SET_DISPATCH(to_string, __VA_ARGS__)
 
 #endif

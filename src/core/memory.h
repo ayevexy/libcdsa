@@ -2,7 +2,7 @@
 #define LIBCDSA_MEMORY_H
 
 #include "allocator.h"
-#include <stddef.h>
+#include "types.h"
 
 /**
  * @brief Global memory allocator instance used by default for memory management.
@@ -24,7 +24,7 @@ extern Allocator global_memory_allocator;
  */
 #define new(T, ...) ((T*) (new)(sizeof(T), &(T){__VA_ARGS__}))
 
-void* (new)(size_t size, const void* source);
+void* (new)(bytes size, const void* source);
 
 /**
  * @brief Deallocate a memory block and set its pointer to nullptr.
@@ -47,7 +47,7 @@ void (delete)(void* pointer);
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-void* memory_alloc(size_t size);
+void* memory_alloc(bytes size);
 
 /**
  * @brief Allocate `size` bytes of memory.
@@ -56,7 +56,7 @@ void* memory_alloc(size_t size);
  *
  * @return pointer to the memory block, or nullptr on failure
  */
-void* memory_try_alloc(size_t size);
+void* memory_try_alloc(bytes size);
 
 /**
  * @brief Reallocate a memory block changing its size.
@@ -68,7 +68,7 @@ void* memory_try_alloc(size_t size);
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory reallocation fails
  */
-void* memory_realloc(void* pointer, size_t size);
+void* memory_realloc(void* pointer, bytes size);
 
 /**
  * @brief Reallocate a memory block changing its size.
@@ -78,7 +78,7 @@ void* memory_realloc(void* pointer, size_t size);
  *
  * @return pointer to the reallocated memory block, or nullptr on failure
  */
-void* memory_try_realloc(void* pointer, size_t size);
+void* memory_try_realloc(void* pointer, bytes size);
 
 /**
  * @brief Deallocate a memory block.

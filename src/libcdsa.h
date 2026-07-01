@@ -15,6 +15,9 @@
 /** @brief Version information macros */
 #include "core/version.h"
 
+/** @brief Type aliases */
+#include "core/types.h"
+
 /** @brief Error handling mechanism */
 #include "core/errors.h"
 

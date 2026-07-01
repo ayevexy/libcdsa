@@ -20,14 +20,14 @@ struct HashSet {
     int capacity;
     int threshold;
     float load_factor;
-    uint64_t (*hash)(const void* element);
+    uint64 (*hash)(const void* element);
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
     int modification_count;

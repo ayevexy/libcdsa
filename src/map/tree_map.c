@@ -33,7 +33,7 @@ struct TreeMap {
         String (*value_to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
     int modification_count;

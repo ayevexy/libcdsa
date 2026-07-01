@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_HASH_MAP_H
 #define LIBCDSA_HASH_MAP_H
 
+#include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -91,7 +92,7 @@ typedef struct HashMap HashMap;
 typedef struct {
     int initial_capacity;
     float load_factor;
-    uint64_t (*hash)(const void* key);
+    uint64 (*hash)(const void* key);
     struct {
         void (*key_destruct)(void*);
         bool (*key_equals)(const void*, const void*);
@@ -103,7 +104,7 @@ typedef struct {
         String (*value_to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
 } HashMapOptions;

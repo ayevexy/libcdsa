@@ -8,7 +8,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void* (*string_memory_alloc)(size_t) = memory_try_alloc;
+void* (*string_memory_alloc)(bytes) = memory_try_alloc;
 
 void (*string_memory_dealloc)(void*) = memory_dealloc;
 
@@ -83,7 +83,7 @@ bool (string_is_empty)(struct String string) {
 bool (string_is_blank)(struct String string) {
     if (require_non_null(string.data)) return false;
     for (int i = 0; i < string.length; i++) {
-        if (!isspace((unsigned char) string.data[i]))
+        if (!isspace((uchar) string.data[i]))
             return false;
     }
     return true;
@@ -140,7 +140,7 @@ int (string_index_of_substring)(struct String string, struct String substring) {
     if (substring.length > string.length) return -1;
 
     for (int i = 0; i <= string.length - substring.length; i++) {
-        if (memcmp(string.data + i, substring.data, (size_t) substring.length) == 0) {
+        if (memcmp(string.data + i, substring.data, (bytes) substring.length) == 0) {
             return i;
         }
     }
@@ -154,7 +154,7 @@ int (string_last_index_of_substring)(struct String string, struct String substri
     if (substring.length > string.length) return -1;
 
     for (int i = string.length - substring.length; i >= 0; i--) {
-        if (memcmp(string.data + i, substring.data, (size_t) substring.length) == 0) {
+        if (memcmp(string.data + i, substring.data, (bytes) substring.length) == 0) {
             return i;
         }
     }
@@ -168,14 +168,14 @@ bool (string_contains)(struct String string, struct String substring) {
 bool (string_starts_with)(struct String string, struct String prefix) {
     if (require_non_null(string.data, prefix.data)) return false;
 
-    return string.length >= prefix.length && memcmp(string.data, prefix.data, (size_t) prefix.length) == 0;
+    return string.length >= prefix.length && memcmp(string.data, prefix.data, (bytes) prefix.length) == 0;
 }
 
 bool (string_ends_with)(struct String string, struct String suffix) {
     if (require_non_null(string.data, suffix.data)) return false;
 
     return string.length >= suffix.length
-        && memcmp(string.data + string.length - suffix.length, suffix.data, (size_t) suffix.length) == 0;
+        && memcmp(string.data + string.length - suffix.length, suffix.data, (bytes) suffix.length) == 0;
 }
 
 String (string_trim)(struct String string) {
@@ -479,11 +479,11 @@ DEFINE_STRING_VALUE_OF(string_value_of_char, char, "%c")
 
 DEFINE_STRING_VALUE_OF(string_value_of_int, int, "%d")
 
-DEFINE_STRING_VALUE_OF(string_value_of_uint, unsigned int, "%u")
+DEFINE_STRING_VALUE_OF(string_value_of_uint, uint, "%u")
 
 DEFINE_STRING_VALUE_OF(string_value_of_long, long, "%ld")
 
-DEFINE_STRING_VALUE_OF(string_value_of_ulong, unsigned long, "%lu")
+DEFINE_STRING_VALUE_OF(string_value_of_ulong, ulong, "%lu")
 
 DEFINE_STRING_VALUE_OF(string_value_of_long_long, long long, "%lld")
 
@@ -497,9 +497,9 @@ DEFINE_STRING_VALUE_OF(string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
 
-uint64_t string_hash_callback(const void* raw_string) {
+uint64 string_hash_callback(const void* raw_string) {
     const char* string = ((String) raw_string)->data;
-    uint64_t hash = 5381;
+    uint64 hash = 5381;
     for (int c = *string; c != '\0'; c = *++string) {
         hash = hash * 33 + c;
     }

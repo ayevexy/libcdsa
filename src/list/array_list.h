@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_ARRAY_LIST_H
 #define LIBCDSA_ARRAY_LIST_H
 
+#include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -88,8 +89,8 @@ typedef struct {
         String (*to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
-        void* (*memory_realloc)(void*, size_t);
+        void* (*memory_alloc)(bytes);
+        void* (*memory_realloc)(void*, bytes);
         void (*memory_dealloc)(void*);
     };
 } ArrayListOptions;

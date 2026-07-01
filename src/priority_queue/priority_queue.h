@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_PRIORITY_QUEUE_H
 #define LIBCDSA_PRIORITY_QUEUE_H
 
+#include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -81,7 +82,7 @@ typedef struct {
         String (*to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
 } PriorityQueueOptions;

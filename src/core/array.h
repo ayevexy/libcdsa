@@ -1,7 +1,7 @@
 #ifndef LIBCDSA_ARRAY_H
 #define LIBCDSA_ARRAY_H
 
-#include <stddef.h>
+#include "types.h"
 
 /**
  * @brief Defines a heap allocated array of type T.
@@ -90,7 +90,7 @@
 
 #define dispatch_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
 
-void* array_create(int, size_t, const void*);
+void* array_create(int, bytes, const void*);
 
 bool array_check_bounds(const void*, int);
 

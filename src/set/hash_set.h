@@ -1,6 +1,7 @@
 #ifndef LIBCDSA_HASH_SET_H
 #define LIBCDSA_HASH_SET_H
 
+#include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -81,14 +82,14 @@ typedef struct HashSet HashSet;
 typedef struct {
     int initial_capacity;
     float load_factor;
-    uint64_t (*hash)(const void* element);
+    uint64 (*hash)(const void* element);
     struct {
         void (*destruct)(void*);
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
 } HashSetOptions;

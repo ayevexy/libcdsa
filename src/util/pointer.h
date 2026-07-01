@@ -2,7 +2,7 @@
 #define LIBCDSA_POINTER_H
 
 #include "core/string.h"
-#include <stdint.h>
+#include "core/types.h"
 
 /**
  * @brief Calculate a hash value of a pointer by its memory address.
@@ -11,8 +11,8 @@
  *
  * @return the hashed value
  */
-static inline uint64_t pointer_hash(const void* pointer) {
-    return (uintptr_t) pointer * 0x9e3779b97f4a7c15ULL;
+static inline uint64 pointer_hash(const void* pointer) {
+    return (uintptr) pointer * 0x9e3779b97f4a7c15ULL;
 }
 
 /**
@@ -36,7 +36,7 @@ static inline bool pointer_equals(const void* pointer_a, const void* pointer_b) 
  * @return negative if a < b, 0 if a == b, positive if a > b
  */
 static inline int pointer_compare(const void* pointer_a, const void* pointer_b) {
-    return ((uintptr_t) pointer_a > (uintptr_t) pointer_b) - ((uintptr_t) pointer_a < (uintptr_t) pointer_b);
+    return ((uintptr) pointer_a > (uintptr) pointer_b) - ((uintptr) pointer_a < (uintptr) pointer_b);
 }
 
 /**

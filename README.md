@@ -67,6 +67,7 @@ Also, there is some other utilities which may be useful:
 - [Sets](src/util/sets.h): Common mathematical set operations and set view abstraction.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
+- [Types](src/core/types.h): Optioned type aliases.
 
 ### Limitations
 

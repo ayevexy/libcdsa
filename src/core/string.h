@@ -2,15 +2,13 @@
 #define LIBCDSA_STRING_H
 
 #include "array.h"
-
-#include <stdint.h>
-#include <stddef.h>
+#include "types.h"
 
 /**
  * @brief Internal memory allocation function used internally
  * to allocate String instances. Defaults to `memory_try_alloc()`.
  */
-extern void* (*string_memory_alloc)(size_t);
+extern void* (*string_memory_alloc)(bytes);
 
 /**
  * @brief Internal memory deallocation function used internally
@@ -559,13 +557,13 @@ String (string_to_lowercase)(struct String string);
     bool: string_value_of_bool,                         \
     char: string_value_of_char,                         \
     signed char: string_value_of_int,                   \
-    unsigned char: string_value_of_uint,                \
+    uchar: string_value_of_uint,                        \
     short: string_value_of_int,                         \
     unsigned short: string_value_of_uint,               \
     int: string_value_of_int,                           \
-    unsigned int: string_value_of_uint,                 \
+    uint: string_value_of_uint,                         \
     long: string_value_of_long,                         \
-    unsigned long: string_value_of_ulong,               \
+    ulong: string_value_of_ulong,                       \
     long long: string_value_of_long_long,               \
     unsigned long long: string_value_of_ulong_long,     \
     float: string_value_of_float,                       \
@@ -576,9 +574,9 @@ String (string_to_lowercase)(struct String string);
 String string_value_of_bool(bool value);
 String string_value_of_char(char value);
 String string_value_of_int(int value);
-String string_value_of_uint(unsigned int value);
+String string_value_of_uint(uint value);
 String string_value_of_long(long value);
-String string_value_of_ulong(unsigned long value);
+String string_value_of_ulong(ulong value);
 String string_value_of_long_long(long long value);
 String string_value_of_ulong_long(unsigned long long value);
 String string_value_of_float(float value);
@@ -592,7 +590,7 @@ String string_value_of_long_double(long double value);
  *
  * @return the hashed value
  */
-uint64_t string_hash_callback(const void* raw_string);
+uint64 string_hash_callback(const void* raw_string);
 
 /**
  * @brief String equality function to be used in containers (case-sensitive).

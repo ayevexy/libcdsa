@@ -13,7 +13,7 @@ typedef struct Entry {
         MapEntry view;
         struct { const void* key; void* value; };
     };
-    uint64_t hash;
+    uint64 hash;
     struct Entry* next;
 } Entry;
 
@@ -23,7 +23,7 @@ struct HashMap {
     int capacity;
     int threshold;
     float load_factor;
-    uint64_t (*hash)(const void* key);
+    uint64 (*hash)(const void* key);
     struct {
         void (*key_destruct)(void*);
         bool (*key_equals)(const void*, const void*);
@@ -35,7 +35,7 @@ struct HashMap {
         String (*value_to_string)(const void*);
     };
     struct {
-        void* (*memory_alloc)(size_t);
+        void* (*memory_alloc)(bytes);
         void (*memory_dealloc)(void*);
     };
     int modification_count;

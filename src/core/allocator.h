@@ -1,7 +1,7 @@
 #ifndef LIBCDSA_ALLOCATOR_H
 #define LIBCDSA_ALLOCATOR_H
 
-#include <stddef.h>
+#include "types.h"
 
 /**
  * @brief Allocator abstraction.
@@ -10,8 +10,8 @@
  */
 typedef struct {
     void* storage;
-    void* (*alloc)(size_t, void*);
-    void* (*realloc)(void*, size_t, void*);
+    void* (*alloc)(bytes, void*);
+    void* (*realloc)(void*, bytes, void*);
     void (*dealloc)(void*, void*);
     void (*reset)(void*);
 } Allocator;
@@ -24,7 +24,7 @@ typedef struct {
  *
  * @return pointer to the allocated block
  */
-static inline void* allocator_alloc(const Allocator* allocator, size_t size) {
+static inline void* allocator_alloc(const Allocator* allocator, bytes size) {
     return allocator->alloc(size, allocator->storage);
 }
 
@@ -37,7 +37,7 @@ static inline void* allocator_alloc(const Allocator* allocator, size_t size) {
  *
  * @return pointer to the new reallocated block
  */
-static inline void* allocator_realloc(const Allocator* allocator, void* pointer, size_t size) {
+static inline void* allocator_realloc(const Allocator* allocator, void* pointer, bytes size) {
     return allocator->realloc(pointer, size, allocator->storage);
 }
 

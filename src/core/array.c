@@ -6,16 +6,16 @@
 
 typedef struct {
     int length;
-    size_t element_size;
-    alignas(max_align_t) unsigned char data[];
+    bytes element_size;
+    alignas(max_align_t) uchar data[];
 } ArrayStorage;
 
 static ArrayStorage* array_storage(const void* array) {
     return ((ArrayStorage*)((char*)(array) - offsetof(ArrayStorage, data)));
 }
 
-void* array_create(int length, size_t element_size, const void* source) {
-    const size_t size = sizeof(ArrayStorage) + length * element_size;
+void* array_create(int length, bytes element_size, const void* source) {
+    const bytes size = sizeof(ArrayStorage) + length * element_size;
     ArrayStorage* array = memory_try_alloc(size);
     if (!array) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);

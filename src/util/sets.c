@@ -3,7 +3,6 @@
 #include "core/errors.h"
 #include "core/memory.h"
 #include "constraints.h"
-#include <stdlib.h>
 #include <assert.h>
 
 typedef enum {

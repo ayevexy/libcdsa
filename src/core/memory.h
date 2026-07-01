@@ -29,8 +29,8 @@ void* (new)(size_t size, const void* source);
 /**
  * @brief Deallocate a memory block and set its pointer to nullptr.
  *
- * Frees the memory previously allocated with `malloc` (or `new`)
- * and assigns `nullptr` to the pointer to avoid dangling references.
+ * Frees the memory previously allocated with `new` and
+ * assigns `nullptr` to the pointer to avoid dangling references.
  *
  * @param pointer pointer to the memory block
  */

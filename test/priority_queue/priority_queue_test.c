@@ -12,8 +12,8 @@
     .destruct = noop_destruct,                                      \
     .compare = int_pointer_value_compare,                           \
     .to_string = int_pointer_value_to_string,                       \
-    .memory_alloc = malloc,                                         \
-    .memory_dealloc = free                                          \
+    .memory_alloc = memory_try_alloc,                               \
+    .memory_dealloc = memory_dealloc                                \
 }
 
 #define POPULATE_PRIORITY_QUEUE(priority_queue, array)                  \

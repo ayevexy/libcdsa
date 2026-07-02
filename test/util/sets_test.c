@@ -14,13 +14,13 @@
     .destruct = noop_destruct,                          \
     .equals = int_pointer_value_equals,                 \
     .to_string = int_pointer_value_to_string,           \
-    .memory_alloc = malloc,                             \
-    .memory_dealloc = free                              \
+    .memory_alloc = memory_try_alloc,                   \
+    .memory_dealloc = memory_dealloc                    \
 }
 
-#define POPULATE_HASH_SET(hash_set, array)          \
-    for (int i = 0; i < SIZE(array); i++) {         \
-        hash_set_add(hash_set, new(int, array[i])); \
+#define POPULATE_HASH_SET(hash_set, array)              \
+    for (int i = 0; i < SIZE(array); i++) {             \
+        hash_set_add(hash_set, new(int, array[i]));     \
     }
 
 static HashSet* hash_set_a;

@@ -2,7 +2,7 @@
 #define LIBCDSA_TEST_UTILITIES_H
 
 #include "core/string.h"
-#include <stdint.h>
+#include "core/types.h"
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
@@ -37,8 +37,8 @@ static inline String char_pointer_value_to_string(const void* value) {
 
 typedef struct { char key; int value; } CharIntEntry;
 
-static inline uint64_t char_hash(const void *character) {
-    return *(const unsigned char *) character % 5;
+static inline uint64 char_hash(const void *character) {
+    return *(const uchar*) character % 5;
 }
 
 #endif

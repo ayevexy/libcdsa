@@ -13,8 +13,8 @@
     .value_destruct = noop_destruct,                        \
     .value_equals = int_pointer_value_equals,               \
     .value_to_string = int_pointer_value_to_string,         \
-    .memory_alloc = malloc,                                 \
-    .memory_dealloc = free                                  \
+    .memory_alloc = memory_try_alloc,                       \
+    .memory_dealloc = memory_dealloc                        \
 }
 
 #define POPULATE_TREE_MAP(tree_map, entry_array)                                                \

@@ -23,6 +23,10 @@ static inline int int_pointer_value_compare(const void* a, const void* b) {
     return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
 }
 
+static inline int int_pointer_value_compare_reversed(const void* a, const void* b) {
+    return int_pointer_value_compare(b, a);
+}
+
 static inline int char_pointer_value_compare(const void* a, const void* b) {
     return (*(char*) a > *(char*) b) - (*(char*) a < *(char*) b);
 }

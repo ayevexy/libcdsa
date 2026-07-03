@@ -36,6 +36,7 @@ add_library(${PROJECT_NAME}
         src/core/memory.c
         src/core/array.c
         src/core/string.c
+        src/util/sequence.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

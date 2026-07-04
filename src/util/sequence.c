@@ -9,7 +9,6 @@
 
 constexpr int INTERMEDIATE_OPERATION_LIMIT = 15;
 constexpr int SORT_OPERATION_LIMIT = 5;
-constexpr int SEQUENCE_PROCESSING_ERROR = -2;
 
 typedef enum {
     FILTER,

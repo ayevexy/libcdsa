@@ -11,10 +11,7 @@ static bool is_less_or_equal_3(const void* number) {
 }
 
 static bool is_even(const void* number) {
-    if (*(int*) number % 2 == 0) {
-        return true;
-    }
-    return false;
+    return *(int*) number % 2 == 0;
 }
 
 static bool is_not_null(const void* number) {

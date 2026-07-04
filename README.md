@@ -284,6 +284,51 @@ int main() {
 ```
 
 ```c++
+#include "set/set.h"
+#include "util/sets.h"
+#include "util/for_each.h"
+#include <stdio.h>
+
+static inline uint64 int_hash(const void* number) {
+    return *(int*) number * 0x9e3779b97f4a7c15ULL;
+}
+
+static bool int_pointer_value_equals(const void* a, const void* b) {
+    return *(int*) a == *(int*) b;
+}
+
+static int int_pointer_value_compare(const void* a, const void* b) {
+    return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
+}
+
+int main() {
+    HashSet* set_a = set_new(DEFAULT_HASH_SET_OPTIONS(.hash = int_hash, .equals = int_pointer_value_equals));
+    set_add(set_a, &(int){1});
+    set_add(set_a, &(int){2});
+    set_add(set_a, &(int){3});
+
+    TreeSet* set_b = set_new(DEFAULT_TREE_SET_OPTIONS(.compare = int_pointer_value_compare));
+    set_add(set_b, &(int){3});
+    set_add(set_b, &(int){4});
+    set_add(set_b, &(int){5});
+
+    SetView union_set = sets_union(set_a, set_b); // 1, 2, 3, 4, 5
+    SetView intersection_set = sets_intersection(set_a, set_b); // 3
+    SetView difference_set = sets_difference(set_a, set_b); // 1, 2
+
+    for_each (int* e, &union_set) printf("%d ", *e); // 1, 2, 3, 4, 5
+    printf("\n");
+    for_each (int* e, &intersection_set) printf("%d ", *e); // 3
+    printf("\n");
+    for_each (int* e, &difference_set) printf("%d ", *e); // 1, 2
+
+    set_destroy(&set_a);
+    set_destroy(&set_b);
+    return 0;
+}
+```
+
+```c++
 #include "list/list.h"
 #include <stdio.h>
 

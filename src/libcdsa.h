@@ -99,4 +99,7 @@
 /** @brief Mathematical set operations */
 #include "util/sets.h"
 
+/** @brief Sequence API */
+#include "util/sequence.h"
+
 #endif

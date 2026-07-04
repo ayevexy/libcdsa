@@ -68,6 +68,7 @@ Also, there is some other utilities which may be useful:
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
+- [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 
 ### Limitations
 
@@ -234,6 +235,50 @@ int main() {
     }
 
     list_destroy(&list);
+    return 0;
+}
+```
+
+```c++
+#include "list/list.h"
+#include "util/sequence.h"
+#include <stdio.h>
+
+bool is_even(const void* number) {
+    return *(int*) number % 2 == 0;
+}
+
+void add_one(void* number) {
+    *(int*) number += 1;
+}
+
+void* replace_by_two_times(void* number) {
+    return new(int, *(int*) number * 2);
+}
+
+int main() {
+    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+
+    list_add_last(list, &(int){1});
+    list_add_last(list, &(int){2});
+    list_add_last(list, &(int){3});
+    list_add_last(list, &(int){4});
+    list_add_last(list, &(int){5});
+
+    Sequence* sequence = sequence_from(list_to_collection(list));
+
+    sequence_filter(sequence, is_even); // 2, 4
+    sequence_peek(sequence, add_one); // 3, 5
+    sequence_map(sequence, replace_by_two_times); // 6, 10
+
+    Array(void*) array = sequence_to_array(sequence);
+
+    for (int i = 0; i < array_length(array); i++) {
+        printf("%d ", *(int*) array[i]); // 6, 10
+    }
+
+    list_destroy(&list);
+    array_destroy(&array);
     return 0;
 }
 ```

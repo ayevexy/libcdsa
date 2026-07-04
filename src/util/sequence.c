@@ -9,6 +9,7 @@
 
 constexpr int INTERMEDIATE_OPERATION_LIMIT = 15;
 constexpr int SORT_OPERATION_LIMIT = 5;
+constexpr int SEQUENCE_PROCESSING_ERROR = -2;
 
 typedef enum {
     FILTER,
@@ -54,7 +55,7 @@ typedef struct {
     TerminalOperationType type;
     union {
         struct { Consumer consume; } for_each;
-        struct { void* identity; BiOperator accumulate; } reduce;
+        struct { void* result; BiOperator accumulate; } reduce;
         struct { void* element; bool found; } find;
         struct { void* element; bool found; Comparator compare; } max_min;
         struct { int count; int matches; Predicate test; } match;
@@ -75,7 +76,8 @@ typedef enum {
     PENDING,
     PROCESSING,
     BUFFERING,
-    EXHAUSTED
+    EXHAUSTED,
+    ABORTED
 } SequencePipeLineState;
 
 typedef struct {
@@ -107,19 +109,25 @@ static void release_pipeline_resources(Sequence*);
 
 static SequencePipeLineResult sequence_pipeline_result(Sequence*);
 
-static Array(void*) sequence_pipeline_result_array(TerminalOperation*);
+static SequencePipeLineResult sequence_pipeline_result_array(Sequence*, TerminalOperation*);
 
 static bool execute_operation(Sequence*, void**);
+
+static bool operation_distinct(Sequence*, Operation*, void*);
 
 static bool operation_sort(Sequence*, Operation*, int, void*);
 
 static void execute_terminal_operation(Sequence*, void*);
+
+static void operation_reduce(TerminalOperation*, void*);
 
 static void operation_min_max(TerminalOperation*, void*);
 
 static void operation_find(TerminalOperation*, void*);
 
 static void operation_match(TerminalOperation*, void*);
+
+static void operation_to_array(Sequence*, TerminalOperation*, void*);
 
 Sequence* sequence_from(Collection collection) {
     Iterator* iterator; Error error;
@@ -168,14 +176,20 @@ void sequence_peek(Sequence* sequence, Consumer action) {
 
 void sequence_limit(Sequence* sequence, int max_size) {
     if (require_non_null(sequence) || require_operation_count(sequence)) return;
-
+    if (max_size < 0) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "'max_size' can't be negative");
+        return;
+    }
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = LIMIT, .limit = { 0, max_size } };
 }
 
-void sequence_skip(Sequence* sequence, int n) {
+void sequence_skip(Sequence* sequence, int count) {
     if (require_non_null(sequence) || require_operation_count(sequence)) return;
-
-    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = SKIP, .skip = { 0, n } };
+    if (count < 0) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "'count' can't be negative");
+        return;
+    }
+    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = SKIP, .skip = { 0, count } };
 }
 
 void sequence_take_while(Sequence* sequence, Predicate predicate) {
@@ -194,19 +208,21 @@ void sequence_distinct(Sequence* sequence, bool (*equals)(const void*, const voi
     if (require_non_null(sequence, equals) || require_operation_count(sequence)) return;
 
     if (!sequence->pipeline.distinct) {
-        sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) {
-            .type = DISTINCT,
-            .distinct.set = set_new((&(HashSetOptions) {
-                .initial_capacity = 16,
-                .load_factor = 0.75f,
-                .hash = pointer_hash,
-                .destruct = noop_destruct,
-                .equals = equals,
-                .to_string = pointer_to_string,
-                .memory_alloc = memory_try_alloc,
-                .memory_dealloc = memory_dealloc
-            }))
-        };
+        HashSet* set; Error error = attempt(set = set_new((&(HashSetOptions) {
+            .initial_capacity = 16,
+            .load_factor = 0.75f,
+            .hash = pointer_hash,
+            .destruct = noop_destruct,
+            .equals = equals,
+            .to_string = pointer_to_string,
+            .memory_alloc = memory_try_alloc,
+            .memory_dealloc = memory_dealloc
+        })));
+        if (error) {
+            set_error(error, "%s", plain_error_message());
+            return;
+        }
+        sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = DISTINCT, .distinct = { set } };
         sequence->pipeline.distinct = &sequence->pipeline.operations[sequence->pipeline.operation_count - 1];
     }
 }
@@ -218,14 +234,12 @@ void sequence_sort(Sequence* sequence, Comparator comparator, SortingAlgorithm a
         set_error(ILLEGAL_STATE_ERROR, "Sequence has more than 5 chained sort operations", SORT_OPERATION_LIMIT);
         return;
     }
-    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) {
-        .type = SORT,
-        .sort = {
-            .list = list_new(DEFAULT_ARRAY_LIST_OPTIONS()),
-            .comparator = comparator,
-            .algorithm = algorithm
-        }
-    };
+    ArrayList* list; Error error = attempt(list = list_new(DEFAULT_ARRAY_LIST_OPTIONS()));
+    if (error) {
+        set_error(error, "%s", plain_error_message());
+        return;
+    }
+    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = SORT, .sort = { list, comparator, algorithm } };
     sequence->pipeline.sort[sequence->pipeline.sort_count++] = &sequence->pipeline.operations[sequence->pipeline.operation_count - 1];
 }
 
@@ -307,6 +321,10 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
         if (sequence->pipeline.state == BUFFERING) {
             replace_pipeline_source(sequence);
         }
+        if (sequence->pipeline.state == ABORTED) {
+            set_plain_error(SEQUENCE_PROCESSING_ERROR, "SEQUENCE_PROCESSING_ERROR: %s", plain_error_message());
+            return (SequencePipeLineResult) {};
+        }
         if (sequence->pipeline.state == EXHAUSTED) {
             release_pipeline_resources(sequence);
             return sequence_pipeline_result(sequence);
@@ -317,7 +335,7 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
 static void execute_pipeline_operations(Sequence* sequence) {
     sequence->pipeline.state = PROCESSING;
 
-    while (iterator_has_next(sequence->pipeline.source)) {
+    while (sequence->pipeline.state != ABORTED && iterator_has_next(sequence->pipeline.source)) {
         void* element = iterator_next(sequence->pipeline.source);
         bool skipped = execute_operation(sequence, &element);
 
@@ -327,16 +345,24 @@ static void execute_pipeline_operations(Sequence* sequence) {
     }
     iterator_destroy(&sequence->pipeline.source);
 
-    if (sequence->pipeline.state != BUFFERING) {
+    if (sequence->pipeline.state == PROCESSING) {
         sequence->pipeline.state = EXHAUSTED;
     }
 }
 
 static void replace_pipeline_source(Sequence* sequence) {
     auto sort = sequence->pipeline.sort[sequence->pipeline.sort_index++]->sort;
-    list_sort(sort.list, sort.comparator, sort.algorithm);
-
-    sequence->pipeline.source = list_iterator(sort.list);
+    Error error;
+    if ((error = attempt(list_sort(sort.list, sort.comparator, sort.algorithm)))) {
+        sequence->pipeline.state = ABORTED;
+        return;
+    }
+    Iterator* iterator;
+    if ((error = attempt(iterator = list_iterator(sort.list)))) {
+        sequence->pipeline.state = ABORTED;
+        return;
+    }
+    sequence->pipeline.source = iterator;
     sequence->pipeline.operation_index = sequence->pipeline.operation_last_index + 1;
     sequence->pipeline.state = PENDING;
 }
@@ -355,7 +381,7 @@ static SequencePipeLineResult sequence_pipeline_result(Sequence* sequence) {
     TerminalOperation operation = sequence->pipeline.terminal_operation;
     switch (operation.type) {
         case FOR_EACH:    return (SequencePipeLineResult) {};
-        case REDUCE:      return (SequencePipeLineResult) { .element = operation.reduce.identity };
+        case REDUCE:      return (SequencePipeLineResult) { .element = operation.reduce.result };
         case COUNT:       return (SequencePipeLineResult) { .count = operation.count.count };
         case MAX:         return (SequencePipeLineResult) { .optional = (Optional) { operation.max_min.element, operation.max_min.found } };
         case MIN:         return (SequencePipeLineResult) { .optional = (Optional) { operation.max_min.element, operation.max_min.found } };
@@ -363,17 +389,22 @@ static SequencePipeLineResult sequence_pipeline_result(Sequence* sequence) {
         case ALL_MATCH:   return (SequencePipeLineResult) { .match = operation.match.matches == operation.match.count };
         case ANY_MATCH:   return (SequencePipeLineResult) { .match = operation.match.matches > 0 };
         case NONE_MATCH:  return (SequencePipeLineResult) { .match = operation.match.matches == 0 };
-        case TO_ARRAY:    return (SequencePipeLineResult) { .array = sequence_pipeline_result_array(&operation) };
+        case TO_ARRAY:    return sequence_pipeline_result_array(sequence, &operation);
     }
     assert(!"unreachable code");
 }
 
-static Array(void*) sequence_pipeline_result_array(TerminalOperation* operation) {
+static SequencePipeLineResult sequence_pipeline_result_array(Sequence* sequence, TerminalOperation* operation) {
     ArrayList* list = operation->to_array.list;
-    Array(void*) array = list_to_array(list);
+    Array(void*) array; Error error = attempt(array = list_to_array(list));
 
+    if (error) {
+        sequence->pipeline.state = ABORTED;
+        set_plain_error(SEQUENCE_PROCESSING_ERROR, "SEQUENCE_PROCESSING_ERROR: %s", plain_error_message());
+        return (SequencePipeLineResult) {};
+    }
     list_destroy(&list);
-    return array;
+    return (SequencePipeLineResult) { .array = array };
 }
 
 static bool execute_operation(Sequence* sequence, void** element) {
@@ -382,42 +413,60 @@ static bool execute_operation(Sequence* sequence, void** element) {
         bool skip = false;
 
         switch (operation->type) {
-            case FILTER:      skip = !operation->filter(*element);                      break;
-            case MAP:         *element = operation->map(*element);                      break;
-            case PEEK:        operation->peek(*element);                                break;
-            case LIMIT:       skip = operation->limit.count++ >= operation->limit.max;  break;
-            case SKIP:        skip = operation->skip.count++ < operation->skip.max;     break;
-            case TAKE_WHILE:  skip = !operation->take_while.test(*element);             break;
-            case DROP_WHILE:  skip = operation->drop_while.test(*element);              break;
-            case DISTINCT:    skip = !set_add(operation->distinct.set, *element);       break;
-            case SORT:        skip = operation_sort(sequence, operation, i, *element);  break;
+            case FILTER:      skip = !operation->filter(*element);                       break;
+            case MAP:         *element = operation->map(*element);                       break;
+            case PEEK:        operation->peek(*element);                                 break;
+            case LIMIT:       skip = operation->limit.count++ >= operation->limit.max;   break;
+            case SKIP:        skip = operation->skip.count++ < operation->skip.max;      break;
+            case TAKE_WHILE:  skip = !operation->take_while.test(*element);              break;
+            case DROP_WHILE:  skip = operation->drop_while.test(*element);               break;
+            case DISTINCT:    skip = operation_distinct(sequence, operation, *element);  break;
+            case SORT:        skip = operation_sort(sequence, operation, i, *element);   break;
         }
         if (skip) return true;
     }
     return false;
 }
 
+static bool operation_distinct(Sequence* sequence, Operation* operation, void* element) {
+    bool added; Error error = attempt(added = set_add(operation->distinct.set, element));
+    if (error) {
+        sequence->pipeline.state = ABORTED;
+        return true;
+    }
+    return !added;
+}
+
 static bool operation_sort(Sequence* sequence, Operation* operation, int index, void* element) {
-    list_add_last(operation->sort.list, element);
-    sequence->pipeline.state = BUFFERING;
-    sequence->pipeline.operation_last_index = index;
+    Error error = attempt(list_add_last(operation->sort.list, element));
+    if (error) {
+        sequence->pipeline.state = ABORTED;
+    } else {
+        sequence->pipeline.state = BUFFERING;
+        sequence->pipeline.operation_last_index = index;
+    }
     return true;
 }
 
 static void execute_terminal_operation(Sequence* sequence, void* element) {
     TerminalOperation* operation = &sequence->pipeline.terminal_operation;
     switch (operation->type) {
-        case FOR_EACH:    operation->for_each.consume(element);                               break;
-        case REDUCE:      operation->reduce.accumulate(operation->reduce.identity, element);  break;
-        case COUNT:       operation->count.count++;                                           break;
-        case MAX:         operation_min_max(operation, element);                              break;
-        case MIN:         operation_min_max(operation, element);                              break;
-        case FIND:        operation_find(operation, element);                                 break;
-        case ALL_MATCH:   operation_match(operation, element);                                break;
-        case ANY_MATCH:   operation_match(operation, element);                                break;
-        case NONE_MATCH:  operation_match(operation, element);                                break;
-        case TO_ARRAY:    array_list_add_last(operation->to_array.list, element);             break;
+        case FOR_EACH:    operation->for_each.consume(element);              break;
+        case REDUCE:      operation_reduce(operation, element);              break;
+        case COUNT:       operation->count.count++;                          break;
+        case MAX:         operation_min_max(operation, element);             break;
+        case MIN:         operation_min_max(operation, element);             break;
+        case FIND:        operation_find(operation, element);                break;
+        case ALL_MATCH:   operation_match(operation, element);               break;
+        case ANY_MATCH:   operation_match(operation, element);               break;
+        case NONE_MATCH:  operation_match(operation, element);               break;
+        case TO_ARRAY:    operation_to_array(sequence, operation, element);  break;
     }
+}
+
+static void operation_reduce(TerminalOperation* operation, void* element) {
+    auto reduce = &operation->reduce;
+    reduce->result = reduce->accumulate(reduce->result, element);
 }
 
 static void operation_min_max(TerminalOperation* operation, void* element) {
@@ -445,5 +494,12 @@ static void operation_match(TerminalOperation* operation, void* element) {
     match->count++;
     if (match->test(element)) {
         match->matches++;
+    }
+}
+
+static void operation_to_array(Sequence* sequence, TerminalOperation* operation, void* element) {
+    Error error = attempt(list_add_last(operation->to_array.list, element));
+    if (error) {
+        sequence->pipeline.state = ABORTED;
     }
 }

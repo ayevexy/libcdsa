@@ -1,5 +1,5 @@
-#ifndef LIBCDSA_STREAM_H
-#define LIBCDSA_STREAM_H
+#ifndef LIBCDSA_SEQUENCE_H
+#define LIBCDSA_SEQUENCE_H
 
 #include "core/array.h"
 #include "algorithms.h"

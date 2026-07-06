@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.7]() — 2026-07-05
+
+This update enhances the encapsulation of some modules, redesign the memory system and introduces the new Sequence API.
+
+### ✨ Features
+- Added `memory_try_alloc()` and `memory_try_realloc()` to `core/memory.h`.
+- Added the memory allocator abstraction and the global memory allocator (`core/allocator.h`, `core/memory.h`).
+- Added optioned type aliases for c types (`core/types.h`).
+- Added the new Sequence API (`util/sequence.h`):
+  - Creation: `sequence_from()`.
+  - Operations: `filter()`, `map()`, `peek()`, etc.
+  - Terminal Operations: `count()`, `to_array()`, `reduce()`, etc.
+
+### ✏️ Changes
+- Moved function definitions from `sets.h`, `collection.h`, `array.h`, and `memory.h` to their respective new source files.
+- Replace all `malloc()`, `realloc()` and `free()`calls to `memory_try_alloc()`, `memory_try_realloc()` and `memory_dealloc()`.
+- Simplified dispatcher abstraction macros (`list/list.h`, `map/map.h`, `set/set.h`).
+
+### 📚 Documentation
+- Correct `delete()` description (`core/memory.h`).
+- Introduce the Sequence API in features and usage section of README.
+- Add missing example of set operations in usage section of README.
+
+---
+
 ## 🎉 [v1.0.0-beta.6]() — 2026-06-28
 
 This update enhances the library project structure and introduces compile-time dispatch abstractions for collections.

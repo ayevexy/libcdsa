@@ -7,7 +7,7 @@
 #include "constraints.h"
 #include <assert.h>
 
-constexpr int INTERMEDIATE_OPERATION_LIMIT = 15;
+constexpr int OPERATION_LIMIT = 15;
 constexpr int SORT_OPERATION_LIMIT = 5;
 
 typedef enum {
@@ -38,9 +38,9 @@ typedef enum {
 typedef struct {
     OperationType type;
     union {
-        Predicate filter;
-        Operator map;
-        Consumer peek;
+        struct { Predicate test; } filter;
+        struct { Operator operate; } map;
+        struct { Consumer consume; } peek;
         struct { int count; int max; } limit;
         struct { int count; int max; } skip;
         struct { Predicate test; } take_while;
@@ -82,7 +82,7 @@ typedef enum {
 typedef struct {
     Iterator* source;
     SequencePipeLineState state;
-    Operation operations[INTERMEDIATE_OPERATION_LIMIT];
+    Operation operations[OPERATION_LIMIT];
     int operation_count;
     int operation_index;
     int operation_last_index;
@@ -94,7 +94,6 @@ typedef struct {
 } SequencePipeline;
 
 struct Sequence {
-    Collection collection;
     SequencePipeline pipeline;
 };
 
@@ -106,11 +105,11 @@ static void replace_pipeline_source(Sequence*);
 
 static void release_pipeline_resources(Sequence*);
 
-static SequencePipeLineResult sequence_pipeline_result(Sequence*);
+static SequencePipeLineResult pipeline_result(Sequence*);
 
-static SequencePipeLineResult sequence_pipeline_result_array(Sequence*, TerminalOperation*);
+static SequencePipeLineResult pipeline_result_array(Sequence*, TerminalOperation*);
 
-static bool execute_operation(Sequence*, void**);
+static bool execute_operation(Sequence*, int, void**);
 
 static bool operation_distinct(Sequence*, Operation*, void*);
 
@@ -120,7 +119,7 @@ static void execute_terminal_operation(Sequence*, void*);
 
 static void operation_reduce(TerminalOperation*, void*);
 
-static void operation_min_max(TerminalOperation*, void*);
+static void operation_max_min(TerminalOperation*, void*);
 
 static void operation_find(TerminalOperation*, void*);
 
@@ -148,8 +147,8 @@ Sequence* sequence_from(Collection collection) {
 }
 
 static bool require_operation_count(Sequence* sequence) {
-    if (sequence->pipeline.operation_count >= INTERMEDIATE_OPERATION_LIMIT) {
-        set_error(ILLEGAL_STATE_ERROR, "Sequence has more than 15 chained operations", INTERMEDIATE_OPERATION_LIMIT);
+    if (sequence->pipeline.operation_count >= OPERATION_LIMIT) {
+        set_error(ILLEGAL_STATE_ERROR, "Sequence has more than 15 chained operations", OPERATION_LIMIT);
         return true;
     }
     return false;
@@ -158,19 +157,19 @@ static bool require_operation_count(Sequence* sequence) {
 void sequence_filter(Sequence* sequence, Predicate predicate) {
     if (require_non_null(sequence, predicate) || require_operation_count(sequence)) return;
 
-    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = FILTER, .filter = predicate };
+    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = FILTER, .filter = { predicate } };
 }
 
 void sequence_map(Sequence* sequence, Operator operator) {
     if (require_non_null(sequence, operator) || require_operation_count(sequence)) return;
 
-    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = MAP, .map = operator };
+    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = MAP, .map = { operator } };
 }
 
 void sequence_peek(Sequence* sequence, Consumer action) {
     if (require_non_null(sequence, action) || require_operation_count(sequence)) return;
 
-    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = PEEK, .peek = action };
+    sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = PEEK, .peek = { action } };
 }
 
 void sequence_limit(Sequence* sequence, int max_size) {
@@ -244,7 +243,7 @@ void sequence_sort(Sequence* sequence, Comparator comparator, SortingAlgorithm a
 
 void sequence_for_each(Sequence* sequence, Consumer action) {
     if (require_non_null(sequence, action)) return;
-    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = FOR_EACH, .for_each.consume = action };
+    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = FOR_EACH, .for_each = { action } };
 
     process_sequence_pipeline(sequence);
 }
@@ -300,14 +299,14 @@ bool sequence_none_match(Sequence* sequence, Predicate predicate) {
 
 int sequence_count(Sequence* sequence) {
     if (require_non_null(sequence)) return 0;
-    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = COUNT, .count.count = 0 };
+    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = COUNT, .count = { 0 } };
 
     return process_sequence_pipeline(sequence).count;
 }
 
 Array(void*) sequence_to_array(Sequence* sequence) {
     if (require_non_null(sequence)) return nullptr;
-    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = TO_ARRAY, .to_array.list = list_new(DEFAULT_ARRAY_LIST_OPTIONS()) };
+    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = TO_ARRAY, .to_array = { list_new(DEFAULT_ARRAY_LIST_OPTIONS()) } };
 
     return process_sequence_pipeline(sequence).array;
 }
@@ -326,7 +325,7 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
         }
         if (sequence->pipeline.state == EXHAUSTED) {
             release_pipeline_resources(sequence);
-            return sequence_pipeline_result(sequence);
+            return pipeline_result(sequence);
         }
     }
 }
@@ -334,13 +333,15 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
 static void execute_pipeline_operations(Sequence* sequence) {
     sequence->pipeline.state = PROCESSING;
 
+    next_element:
     while (sequence->pipeline.state != ABORTED && iterator_has_next(sequence->pipeline.source)) {
         void* element = iterator_next(sequence->pipeline.source);
-        bool skipped = execute_operation(sequence, &element);
 
-        if (!skipped) {
-            execute_terminal_operation(sequence, element);
+        for (int i = sequence->pipeline.operation_index; i < sequence->pipeline.operation_count; i++) {
+            const bool skip = execute_operation(sequence, i, &element);
+            if (skip) goto next_element;
         }
+        execute_terminal_operation(sequence, element);
     }
     iterator_destroy(&sequence->pipeline.source);
 
@@ -376,7 +377,7 @@ static void release_pipeline_resources(Sequence* sequence) {
     memory_dealloc(sequence);
 }
 
-static SequencePipeLineResult sequence_pipeline_result(Sequence* sequence) {
+static SequencePipeLineResult pipeline_result(Sequence* sequence) {
     TerminalOperation operation = sequence->pipeline.terminal_operation;
     switch (operation.type) {
         case FOR_EACH:    return (SequencePipeLineResult) {};
@@ -388,12 +389,12 @@ static SequencePipeLineResult sequence_pipeline_result(Sequence* sequence) {
         case ALL_MATCH:   return (SequencePipeLineResult) { .match = operation.match.matches == operation.match.count };
         case ANY_MATCH:   return (SequencePipeLineResult) { .match = operation.match.matches > 0 };
         case NONE_MATCH:  return (SequencePipeLineResult) { .match = operation.match.matches == 0 };
-        case TO_ARRAY:    return sequence_pipeline_result_array(sequence, &operation);
+        case TO_ARRAY:    return pipeline_result_array(sequence, &operation);
     }
     assert(!"unreachable code");
 }
 
-static SequencePipeLineResult sequence_pipeline_result_array(Sequence* sequence, TerminalOperation* operation) {
+static SequencePipeLineResult pipeline_result_array(Sequence* sequence, TerminalOperation* operation) {
     ArrayList* list = operation->to_array.list;
     Array(void*) array; Error error = attempt(array = list_to_array(list));
 
@@ -406,25 +407,21 @@ static SequencePipeLineResult sequence_pipeline_result_array(Sequence* sequence,
     return (SequencePipeLineResult) { .array = array };
 }
 
-static bool execute_operation(Sequence* sequence, void** element) {
-    for (int i = sequence->pipeline.operation_index; i < sequence->pipeline.operation_count; i++) {
-        Operation* operation = &sequence->pipeline.operations[i];
-        bool skip = false;
-
-        switch (operation->type) {
-            case FILTER:      skip = !operation->filter(*element);                       break;
-            case MAP:         *element = operation->map(*element);                       break;
-            case PEEK:        operation->peek(*element);                                 break;
-            case LIMIT:       skip = operation->limit.count++ >= operation->limit.max;   break;
-            case SKIP:        skip = operation->skip.count++ < operation->skip.max;      break;
-            case TAKE_WHILE:  skip = !operation->take_while.test(*element);              break;
-            case DROP_WHILE:  skip = operation->drop_while.test(*element);               break;
-            case DISTINCT:    skip = operation_distinct(sequence, operation, *element);  break;
-            case SORT:        skip = operation_sort(sequence, operation, i, *element);   break;
-        }
-        if (skip) return true;
+static bool execute_operation(Sequence* sequence, int index, void** element) {
+    Operation* operation = &sequence->pipeline.operations[index];
+    bool skip = false;
+    switch (operation->type) {
+        case FILTER:      skip = !operation->filter.test(*element);                     break;
+        case MAP:         *element = operation->map.operate(*element);                  break;
+        case PEEK:        operation->peek.consume(*element);                            break;
+        case LIMIT:       skip = operation->limit.count++ >= operation->limit.max;      break;
+        case SKIP:        skip = operation->skip.count++ < operation->skip.max;         break;
+        case TAKE_WHILE:  skip = !operation->take_while.test(*element);                 break;
+        case DROP_WHILE:  skip = operation->drop_while.test(*element);                  break;
+        case DISTINCT:    skip = operation_distinct(sequence, operation, *element);     break;
+        case SORT:        skip = operation_sort(sequence, operation, index, *element);  break;
     }
-    return false;
+    return skip;
 }
 
 static bool operation_distinct(Sequence* sequence, Operation* operation, void* element) {
@@ -453,8 +450,8 @@ static void execute_terminal_operation(Sequence* sequence, void* element) {
         case FOR_EACH:    operation->for_each.consume(element);              break;
         case REDUCE:      operation_reduce(operation, element);              break;
         case COUNT:       operation->count.count++;                          break;
-        case MAX:         operation_min_max(operation, element);             break;
-        case MIN:         operation_min_max(operation, element);             break;
+        case MAX:         operation_max_min(operation, element);             break;
+        case MIN:         operation_max_min(operation, element);             break;
         case FIND:        operation_find(operation, element);                break;
         case ALL_MATCH:   operation_match(operation, element);               break;
         case ANY_MATCH:   operation_match(operation, element);               break;
@@ -468,15 +465,15 @@ static void operation_reduce(TerminalOperation* operation, void* element) {
     reduce->result = reduce->accumulate(reduce->result, element);
 }
 
-static void operation_min_max(TerminalOperation* operation, void* element) {
-    auto min_max = &operation->max_min;
-    if (!min_max->element) {
-        min_max->element = element;
-        min_max->found = true;
-    } else if (operation->type == MAX && min_max->compare(min_max->element, element) <= 0) {
-        min_max->element = element;
-    } else if (operation->type == MIN && min_max->compare(min_max->element, element) >= 0) {
-        min_max->element = element;
+static void operation_max_min(TerminalOperation* operation, void* element) {
+    auto max_min = &operation->max_min;
+    if (!max_min->element) {
+        max_min->element = element;
+        max_min->found = true;
+    } else if (operation->type == MAX && max_min->compare(max_min->element, element) <= 0) {
+        max_min->element = element;
+    } else if (operation->type == MIN && max_min->compare(max_min->element, element) >= 0) {
+        max_min->element = element;
     }
 }
 

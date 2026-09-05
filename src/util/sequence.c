@@ -378,8 +378,9 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
             return (SequencePipeLineResult) {};
         }
         if (sequence->pipeline.state == EXHAUSTED) {
+            SequencePipeLineResult result = pipeline_result(sequence);
             release_pipeline_resources(sequence);
-            return pipeline_result(sequence);
+            return result;
         }
     }
 }

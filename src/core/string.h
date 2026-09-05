@@ -52,7 +52,7 @@ String (string_new)(struct String string);
  * @return a string reference
  */
 #define string_ref(string) \
-    (&(const struct String) { .length = strlen(string), .data = string })
+    (&(const struct String) { .length = strlen_(string), .data = string })
 
 /**
  * @brief Destroys previously allocated strings.
@@ -643,6 +643,8 @@ struct String string_self(String string);
 struct String (string_ref)(const char* raw_string);
 
 char char_self(char c);
+
+bytes strlen_(const char* raw_string);
 
 /* --------------------------------------------------------------------------------- */
 

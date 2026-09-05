@@ -534,6 +534,10 @@ char char_self(char c) {
     return c;
 }
 
+bytes strlen_(const char* raw_string) {
+    return strlen(raw_string);
+}
+
 void string_array_destroy(Array(String) strings) {
     for (int i = 0; i < array_length(strings); i++) {
         string_destroy(&strings[i]);

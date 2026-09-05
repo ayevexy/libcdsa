@@ -66,7 +66,56 @@ void test_create_sequence_from_collection() {
     // when
     Sequence* sequence = sequence_from(collection);
     // then
-    TEST_ASSERT_NOT_NULL(sequence);
+    Array(void*) elements = sequence_to_array(sequence);
+    int expected[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+}
+
+void test_create_sequence_of_given_elements() {
+    // given
+    Sequence* sequence = sequence_of(&(int){1}, &(int){2}, &(int){3}, &(int){4}, &(int){5});
+    // then
+    Array(void*) elements = sequence_to_array(sequence);
+    int expected[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+}
+
+void test_create_empty_sequence() {
+    // given
+    Sequence* sequence = sequence_empty();
+    // then
+    TEST_ASSERT_EQUAL(0, sequence_count(sequence));
+}
+
+void* int_generator() {
+    static int counter = 1;
+    return new(int, counter++);
+}
+
+void test_generate_sequence() {
+    // given
+    Sequence* sequence = sequence_generate(int_generator, 5);
+    // then
+    Array(void*) elements = sequence_to_array(sequence);
+    int expected[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+}
+
+bool int_has_next(const void* number) {
+    return *(int*) number <= 5;
+}
+
+void* int_next(void* number) {
+    return new(int, *(int*) number + 1);
+}
+
+void test_iterate_sequence() {
+    // given
+    Sequence* sequence = sequence_iterate(&(int){1}, int_has_next, int_next);
+    // then
+    Array(void*) elements = sequence_to_array(sequence);
+    int expected[] = { 1, 2, 3, 4, 5 };
+    TEST_ASSERT_ARRAY_EQUALS(expected, elements);
 }
 
 void test_filter_sequence() {
@@ -328,6 +377,10 @@ void test_convert_empty_sequence_to_array() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_sequence_from_collection);
+    RUN_TEST(test_create_sequence_of_given_elements);
+    RUN_TEST(test_create_empty_sequence);
+    RUN_TEST(test_generate_sequence);
+    RUN_TEST(test_iterate_sequence);
     RUN_TEST(test_filter_sequence);
     RUN_TEST(test_map_sequence);
     RUN_TEST(test_peek_sequence);

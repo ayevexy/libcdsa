@@ -97,6 +97,8 @@ struct Sequence {
     SequencePipeline pipeline;
 };
 
+typedef struct IterationContextOptions IterationContextOptions;
+
 static SequencePipeLineResult process_sequence_pipeline(Sequence*);
 
 static void execute_pipeline_operations(Sequence*);
@@ -127,23 +129,75 @@ static void operation_match(TerminalOperation*, void*);
 
 static void operation_to_array(Sequence*, TerminalOperation*, void*);
 
+static Iterator* create_iterator(IterationContextOptions);
+
+static bool iterator_has_next_internal(const void*);
+
+static void* iterator_next_internal(void*);
+
+static void iterator_destroy_internal(void*);
+
+static Sequence* sequence_create(Iterator* source) {
+    if (!source) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'sequence'");
+        return nullptr;
+    }
+    Sequence* sequence = memory_try_alloc(sizeof(Sequence));
+    if (!sequence) {
+        iterator_destroy(&source);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'sequence'");
+        return nullptr;
+    }
+    sequence->pipeline = (SequencePipeline) {
+        .source = source,
+        .state = PENDING
+    };
+    return sequence;
+}
+
 Sequence* sequence_from(Collection collection) {
     Iterator* iterator; Error error;
     if ((error = attempt(iterator = collection_iterator(collection)))) {
         set_error(error, "%s of 'collection'", plain_error_message());
         return nullptr;
     }
-    Sequence* sequence = memory_try_alloc(sizeof(Sequence));
-    if (!sequence) {
-        iterator_destroy(&iterator);
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'sequence'");
+    return sequence_create(iterator);
+}
+
+struct IterationContextOptions {
+    void* seed;
+    int limit;
+    Predicate test;
+    Supplier get;
+    Operator operate;
+    Array(void*) elements;
+};
+
+Sequence* (sequence_of)(Array(void*) elements) {
+    if (require_non_null(elements)) return nullptr;
+    return sequence_create(create_iterator((IterationContextOptions) { .limit = array_length(elements), .elements = elements }));
+}
+
+Sequence* sequence_empty() {
+    return sequence_create(create_iterator((IterationContextOptions) { .limit = -1 }));
+}
+
+Sequence* sequence_generate(Supplier generator, int limit) {
+    if (require_non_null(generator)) return nullptr;
+    if (limit < 1) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "'limit' can't be less than 1");
         return nullptr;
     }
-    sequence->pipeline = (SequencePipeline) {
-        .source = iterator,
-        .state = PENDING
-    };
-    return sequence;
+    return sequence_create(create_iterator((IterationContextOptions) { .limit = limit, .get = generator }));
+}
+
+Sequence* sequence_iterate(void* seed, Predicate has_next, Operator next) {
+    if (require_non_null(has_next, next)) return nullptr;
+    return sequence_create(create_iterator((IterationContextOptions) { .seed = seed, .test = has_next, .operate = next }));
+}
+
+void sequence_close(Sequence* sequence) {
+    release_pipeline_resources(sequence);
 }
 
 static bool require_operation_count(Sequence* sequence) {
@@ -344,6 +398,7 @@ static void execute_pipeline_operations(Sequence* sequence) {
         execute_terminal_operation(sequence, element);
     }
     iterator_destroy(&sequence->pipeline.source);
+    sequence->pipeline.source = nullptr;
 
     if (sequence->pipeline.state == PROCESSING) {
         sequence->pipeline.state = EXHAUSTED;
@@ -368,6 +423,9 @@ static void replace_pipeline_source(Sequence* sequence) {
 }
 
 static void release_pipeline_resources(Sequence* sequence) {
+    if (sequence->pipeline.source) {
+        iterator_destroy(&sequence->pipeline.source);
+    }
     if (sequence->pipeline.distinct) {
         set_destroy(&sequence->pipeline.distinct->distinct.set);
     }
@@ -498,4 +556,69 @@ static void operation_to_array(Sequence* sequence, TerminalOperation* operation,
     if (error) {
         sequence->pipeline.state = ABORTED;
     }
+}
+
+typedef struct {
+    Iterator iterator;
+    void* seed;
+    int count;
+    int limit;
+    Predicate test;
+    Supplier get;
+    Operator operate;
+    Array(void*) elements;
+} IterationContext;
+
+static Iterator* create_iterator(IterationContextOptions options) {
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
+
+    if (!iteration_context) {
+        return nullptr;
+    }
+    iteration_context->iterator = (Iterator) {
+        .iteration_context = iteration_context,
+        .has_next = iterator_has_next_internal,
+        .next = iterator_next_internal,
+        .destroy = iterator_destroy_internal
+    };
+
+    iteration_context->seed = options.seed;
+    iteration_context->count = 0;
+    iteration_context->limit = options.limit;
+    iteration_context->test = options.test;
+    iteration_context->get = options.get;
+    iteration_context->operate = options.operate;
+    iteration_context->elements = options.elements;
+
+    return &iteration_context->iterator;
+}
+
+static bool iterator_has_next_internal(const void* raw_iteration_context) {
+    const IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->test) {
+        return iteration_context->test(iteration_context->seed);
+    }
+    return iteration_context->count < iteration_context->limit;
+}
+
+static void* iterator_next_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->get) {
+        iteration_context->count++;
+        return iteration_context->get();
+    }
+    if (iteration_context->operate) {
+        void* element = iteration_context->seed;
+        iteration_context->seed = iteration_context->operate(iteration_context->seed);
+        return element;
+    }
+    return iteration_context->elements[iteration_context->count++];
+}
+
+static void iterator_destroy_internal(void* raw_iteration_context) {
+    IterationContext* iteration_context = raw_iteration_context;
+    if (iteration_context->elements) {
+        array_destroy(&iteration_context->elements);
+    }
+    memory_dealloc(iteration_context);
 }

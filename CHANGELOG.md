@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.7.1]() — 2026-09-06
+
+A small update to add missing operations to the Sequence API and fix some bugs.
+
+### ✨ Features
+- Added `of()`, `empty()`, `generate()`, `iterate()` and `close()` operations to `util/sequence.h`.
+
+### 🪲 Bug Fixes
+- Prevent use-after-free in sequence processing (`util/sequence.h`).
+- `string_ref()` macro no longer needs the inclusion of the `<string.h>` libc header.
+
+---
+
 ## 🎉 [v1.0.0-beta.7]() — 2026-07-05
 
 This update enhances the encapsulation of some modules, redesign the memory system and introduces the new Sequence API.

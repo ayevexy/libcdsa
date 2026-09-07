@@ -30,6 +30,9 @@
 /** @brief String implementation */
 #include "core/string.h"
 
+/** @brief Runtime System abstraction */
+#include "core/system.h"
+
 /** @brief Dynamic array-based list implementation */
 #include "list/array_list.h"
 

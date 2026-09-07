@@ -2,6 +2,7 @@
 #define LIBCDSA_SYSTEM_H
 
 #include "types.h"
+#include "array.h"
 #include "string.h"
 
 /** @brief The system input stream (initially nullptr, defaults to stdin) */
@@ -117,6 +118,100 @@ const char* system_platform_version();
  * @return the platform architecture
  */
 const char* system_platform_architecture();
+
+#ifdef __linux__
+
+/**
+ * @brief Creates a Linux operating system process.
+ *
+ * @param ... an executable followed by its parameters.
+ *
+ * @return the process id
+ */
+#define system_process_create(...) system_process_create(count_args(__VA_ARGS__) __VA_OPT__(,) __VA_ARGS__)
+
+uintptr (system_process_create)(int count, ...);
+
+/**
+ * @brief Waits until a process finalize its execution.
+ *
+ * @param process_id the process id
+ *
+ * @return 0..255 -> normal exit code
+ *         -1     -> waitpid() error
+ *         -N     -> process was killed by signal N
+ */
+int system_process_wait(uintptr process_id);
+
+/**
+ * @brief Waits until a process finalize its execution.
+ *
+ * @param process_id the process id
+ * @param timeout the timeout in milliseconds
+ * @param timed_out a variable to store where time expired before process exited,
+ *
+ * @return 0..255 -> normal exit code
+ *         -1     -> waitpid() error, or timeout when *timed_out is true
+ *         -N     -> process was killed by signal N
+ */
+int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_out);
+
+/**
+ * @brief Checks whether a process is alive.
+ *
+ * @param process_id the process id
+ *
+ * @return true if alive, false otherwise
+ */
+bool system_process_is_alive(uintptr process_id);
+
+/**
+ * @brief Sends a signal to the given process.
+ *
+ * @param process_id the process id
+ * @param signum the signal number
+ *
+ * @return true if successfully signaled, false otherwise
+ */
+bool system_process_signal(uintptr process_id, int signum);
+
+/**
+ * @brief Suspends the execution of a process.
+ *
+ * @param process_id the process id
+ *
+ * @return true if successfully suspended, false otherwise
+ */
+bool system_process_suspend(uintptr process_id);
+
+/**
+ * @brief Resumes the execution of a process.
+ *
+ * @param process_id the process id
+ *
+ * @return true if successfully resumed, false otherwise
+ */
+bool system_process_resume(uintptr process_id);
+
+/**
+ * @brief Request the termination of a process.
+ *
+ * @param process_id the process id
+ *
+ * @return true if successfully terminated, false otherwise
+ */
+bool system_process_terminate(uintptr process_id);
+
+/**
+ * @brief Forcible terminate an existing process.
+ *
+ * @param process_id the process id
+ *
+ * @return true if successfully terminated, false otherwise
+ */
+bool system_process_kill(uintptr process_id);
+
+#endif
 
 /**
  * @brief Executes a command line through the system shell.

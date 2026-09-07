@@ -1,5 +1,7 @@
 #include "core/system.h"
 
+#include <unistd.h>
+
 #include "../test_utilities.h"
 #include "unity.h"
 
@@ -115,6 +117,15 @@ void test_system_platform_info() {
     TEST_PASS();
 }
 
+void test_system_process_management() {
+    // when
+    uintptr process_id = system_process_create("echo", "I'm a child process!");
+    // and
+    system_process_wait(process_id);
+    // then
+    TEST_ASSERT_NOT_EQUAL(process_id, -1);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_system_read);
@@ -125,5 +136,6 @@ int main(void) {
     RUN_TEST(test_system_write_error_line);
     RUN_TEST(test_system_environment_variable);
     RUN_TEST(test_system_platform_info);
+    RUN_TEST(test_system_process_management);
     return UNITY_END();
 }

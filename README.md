@@ -69,6 +69,8 @@ Also, there is some other utilities which may be useful:
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
+- [System](src/core/system.h): Runtime system abstraction.
+- [File](src/core/file.h): Simple file handling abstraction.
 
 ### Limitations
 

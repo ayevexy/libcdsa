@@ -6,39 +6,64 @@
 #include <stdlib.h>
 #include <time.h>
 
-void* system_input = nullptr;
+struct File {
+    FILE* self;
+};
 
-void* system_output = nullptr;
+static File* system_input_stream;
 
-void* system_error = nullptr;
+static File* system_output_stream;
 
-static void* system_input_stream() {
-    if (!system_input) {
-        system_input = stdin;
+static File* system_error_stream;
+
+File* system_input() {
+    static File system_standard_input_stream;
+
+    if (!system_input_stream) {
+        system_standard_input_stream.self = stdin;
+        system_input_stream = &system_standard_input_stream;
     }
-    return system_input;
+    return system_input_stream;
 }
 
-static void* system_output_stream() {
-    if (!system_output) {
-        system_output = stdout;
-    }
-    return system_output;
+void system_change_input(File* input) {
+    system_input_stream = input;
 }
 
-static void* system_error_stream() {
-    if (!system_error) {
-        system_error = stderr;
+File* system_output() {
+    static File system_standard_output_stream;
+
+    if (!system_output_stream) {
+        system_standard_output_stream.self = stdout;
+        system_input_stream = &system_standard_output_stream;
     }
-    return system_error;
+    return system_output_stream;
+}
+
+void system_change_output(File* output) {
+    system_output_stream = output;
+}
+
+File* system_error() {
+    static File system_standard_error_stream;
+
+    if (!system_error_stream) {
+        system_standard_error_stream.self = stderr;
+        system_input_stream = &system_standard_error_stream;
+    }
+    return system_error_stream;
+}
+
+void system_change_error(File* error) {
+    system_error_stream = error;
 }
 
 char system_read() {
-    return fgetc(system_input_stream());
+    return fgetc(system_input()->self);
 }
 
 String (system_read_line)(char* buffer, bytes size) {
-    fgets(buffer, size, system_input_stream());
+    fgets(buffer, size, system_input()->self);
     return string_new(buffer);
 }
 
@@ -46,7 +71,7 @@ void (system_write)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_output_stream(), string.data, parameters);
+    vfprintf(system_output()->self, string.data, parameters);
     va_end(parameters);
 }
 
@@ -54,17 +79,17 @@ void (system_write_line)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_output_stream(), string.data, parameters);
+    vfprintf(system_output()->self, string.data, parameters);
     va_end(parameters);
 
-    fprintf(system_output_stream(), "\n");
+    fprintf(system_output()->self, "\n");
 }
 
 void (system_write_error)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_error_stream(), string.data, parameters);
+    vfprintf(system_error()->self, string.data, parameters);
     va_end(parameters);
 }
 
@@ -72,10 +97,10 @@ void (system_write_error_line)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_error_stream(), string.data, parameters);
+    vfprintf(system_error()->self, string.data, parameters);
     va_end(parameters);
 
-    fprintf(system_error_stream(), "\n");
+    fprintf(system_error()->self, "\n");
 }
 
 const char* system_get_environment_variable(const char* name) {

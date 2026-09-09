@@ -4,15 +4,49 @@
 #include "types.h"
 #include "array.h"
 #include "string.h"
+#include "file.h"
 
-/** @brief The system input stream (initially nullptr, defaults to stdin) */
-extern void* system_input;
+/**
+ * @brief Returns the system input stream (defaults to stdin).
+ *
+ * @return the file input stream
+ */
+File* system_input();
 
-/** @brief The system output stream (initially nullptr, defaults to stdout) */
-extern void* system_output;
+/**
+ * @brief Replaces the system input stream.
+ *
+ * @param input the new file input stream
+ */
+void system_change_input(File* input);
 
-/** @brief The system error stream (initially nullptr, defaults to stderr) */
-extern void* system_error;
+/**
+ * @brief Returns the system output stream (defaults to stdout).
+ *
+ * @return the file output stream
+ */
+File* system_output();
+
+/**
+ * @brief Replaces the system output stream.
+ *
+ * @param output the new file output stream
+ */
+void system_change_output(File* output);
+
+/**
+ * @brief Returns the system error stream (defaults to stderr).
+ *
+ * @return the file error stream
+ */
+File* system_error();
+
+/**
+ * @brief Replaces the system error stream.
+ *
+ * @param error the new file error stream
+ */
+void system_change_error(File* error);
 
 /**
  * @brief Reads a single character from the system input stream.

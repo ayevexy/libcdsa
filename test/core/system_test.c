@@ -1,34 +1,35 @@
 #include "core/system.h"
 
-#include <unistd.h>
-
-#include "../test_utilities.h"
 #include "unity.h"
 
-static FILE* input;
-static FILE* output;
-static FILE* error;
+static File* standard_output;
+
+static File* input;
+static File* output;
+static File* error;
 
 void setUp() {
-    input = tmpfile();
-    output = tmpfile();
-    error = tmpfile();
+    if (!standard_output) standard_output = system_output();
 
-    system_input = input;
-    system_output = output;
-    system_error = error;
+    input = file_temp();
+    output = file_temp();
+    error = file_temp();
+
+    system_change_input(input);
+    system_change_output(output);
+    system_change_error(error);
 }
 
 void tearDown() {
-    fclose(input);
-    fclose(output);
-    fclose(error);
+    file_close(input);
+    file_close(output);
+    file_close(error);
 }
 
 void test_system_read() {
     // given
-    fprintf(input, "a");
-    rewind(input);
+    file_write_char(input, 'a');
+    file_rewind(input);
     // when
     char c = system_read();
     // then
@@ -37,8 +38,8 @@ void test_system_read() {
 
 void test_system_read_line() {
     // given
-    fprintf(input, "Hello World!\n");
-    rewind(input);
+    file_write_string(input, "Hello World!\n");
+    file_rewind(input);
     // when
     String string = system_read_line();
     // then
@@ -51,50 +52,54 @@ void test_system_write() {
     // when
     system_write("Hello World!");
     system_write("H%dll%d W%drld!", 3, 0, 0);
-    rewind(output);
+    file_rewind(output);
     // then
-    char buffer[256];
-    fgets(buffer, 256, output);
-    TEST_ASSERT_EQUAL_STRING("Hello World!H3ll0 W0rld!", buffer);
+    String string = file_read_line(output);
+    TEST_ASSERT_EQUAL_STRING("Hello World!H3ll0 W0rld!", string_data(string));
+    // clean up
+    string_destroy(&string);
 }
 
 void test_system_write_line() {
     // when
     system_write_line("Hello World!");
     system_write_line("H%dll%d W%drld!", 3, 0, 0);
-    rewind(output);
+    file_rewind(output);
     // then
-    char buffer[256];
-    fgets(buffer, 256, output);
-    TEST_ASSERT_EQUAL_STRING("Hello World!\n", buffer);
+    String string = file_read_line(output);
+    TEST_ASSERT_EQUAL_STRING("Hello World!\n", string_data(string));
+    string_destroy(&string);
     // and
-    fgets(buffer, 256, output);
-    TEST_ASSERT_EQUAL_STRING("H3ll0 W0rld!\n", buffer);
+    string = file_read_line(output);
+    TEST_ASSERT_EQUAL_STRING("H3ll0 W0rld!\n", string_data(string));
+    string_destroy(&string);
 }
 
 void test_system_write_error() {
     // when
     system_write_error("Hello World!");
     system_write_error("H%dll%d W%drld!", 3, 0, 0);
-    rewind(error);
+    file_rewind(error);
     // then
-    char buffer[256];
-    fgets(buffer, 256, error);
-    TEST_ASSERT_EQUAL_STRING("Hello World!H3ll0 W0rld!", buffer);
+    String string = file_read_line(error);
+    TEST_ASSERT_EQUAL_STRING("Hello World!H3ll0 W0rld!", string_data(string));
+    // clean up
+    string_destroy(&string);
 }
 
 void test_system_write_error_line() {
     // when
     system_write_error_line("Hello World!");
     system_write_error_line("H%dll%d W%drld!", 3, 0, 0);
-    rewind(error);
+    file_rewind(error);
     // then
-    char buffer[256];
-    fgets(buffer, 256, error);
-    TEST_ASSERT_EQUAL_STRING("Hello World!\n", buffer);
+    String string = file_read_line(error);
+    TEST_ASSERT_EQUAL_STRING("Hello World!\n", string_data(string));
+    string_destroy(&string);
     // and
-    fgets(buffer, 256, error);
-    TEST_ASSERT_EQUAL_STRING("H3ll0 W0rld!\n", buffer);
+    string = file_read_line(error);
+    TEST_ASSERT_EQUAL_STRING("H3ll0 W0rld!\n", string_data(string));
+    string_destroy(&string);
 }
 
 void test_system_environment_variable() {
@@ -110,7 +115,7 @@ void test_system_environment_variable() {
 }
 
 void test_system_platform_info() {
-    system_output = stdout;
+    system_change_output(standard_output);
     system_write_line(system_platform_name());
     system_write_line(system_platform_version());
     system_write_line(system_platform_architecture());

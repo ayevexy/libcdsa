@@ -1,0 +1,297 @@
+#ifndef LIBCDSA_FILE_H
+#define LIBCDSA_FILE_H
+
+#include "types.h"
+#include "string.h"
+
+/**
+ * @brief Represents a file.
+ */
+typedef struct File File;
+
+/**
+ * @brief A bitmask enum representing the file opening modes.
+ */
+typedef enum FileOpenOption {
+    FILE_READ         = 1 << 0,
+    FILE_WRITE        = 1 << 1,
+    FILE_APPEND       = 1 << 2,
+    FILE_TRUNCATE     = 1 << 3
+} FileOpenOption;
+
+/**
+ * @brief Creates a file.
+ *
+ * @param path the file path
+ *
+ * @return the created file, or nullptr if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_NOT_FOUND_ERROR if a path component does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the path is denied
+ * @exception FILE_ALREADY_EXISTS_ERROR if the file already exists
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
+ */
+File* file_create(const char* path);
+
+/**
+ * @brief Opens a file.
+ *
+ * @param path the file path
+ * @param modes the file opening modes
+ *
+ * @return the opened file, or nullptr if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if path or mode is null
+ * @exception FILE_NOT_FOUND_ERROR if the file does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
+ */
+File* file_open(const char* path, FileOpenOption modes);
+
+/**
+ * @brief Creates a temporary file.
+ *
+ * @return the created temporary file, or nullptr if the operation fails
+ *
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the temporary file is denied
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
+ */
+File* file_temp();
+
+/**
+ * @brief Closes a file.
+ *
+ * @param file the file to close
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_close(File* file);
+
+/**
+ * @brief Reads data from a file.
+ *
+ * @param file the file to read from
+ * @param buffer the buffer to store the data
+ * @param size the number of bytes to read
+ *
+ * @return the number of bytes read
+ *
+ * @exception NULL_POINTER_ERROR if file or buffer is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+bytes file_read(File* file, void* buffer, bytes size);
+
+/**
+ * @brief Reads a character from a file.
+ *
+ * @param file the file to read from
+ *
+ * @return the character read, or EOF if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+int file_read_char(File* file);
+
+/**
+ * @brief Reads a string line from a file.
+ *
+ * @param file the file to read from
+ * @param ... optional buffer size
+ *
+ * @return the string containing the line, or nullptr if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the string fails
+ */
+#define file_read_line(file, ...) file_read_line_(file, __VA_OPT__(__VA_ARGS__,) 256, __VA_ARGS__)
+
+#define file_read_line_(file, size, ...) file_read_line(file, (char[size]){}, size)
+
+String (file_read_line)(File* file, char* buffer, bytes size);
+
+/**
+ * @brief Writes data to a file.
+ *
+ * @param file the file to write to
+ * @param buffer the data to write
+ * @param size the number of bytes to write
+ *
+ * @return the number of bytes written
+ *
+ * @exception NULL_POINTER_ERROR if file or buffer is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+bytes file_write(File* file, const void* buffer, bytes size);
+
+/**
+ * @brief Writes a character to a file.
+ *
+ * @param file the file to write to
+ * @param character the character to write
+ *
+ * @return the character written, or EOF if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+int file_write_char(File* file, int character);
+
+/**
+ * @brief Writes a formatted string to a file.
+ *
+ * @param file the file to write to
+ * @param string the string format
+ * @param ... optional arguments
+ *
+ * @return the number of characters written, or a negative value if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file or string.data is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define file_write_string(file, string, ...) file_write_string(file, dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+
+int (file_write_string)(File* file, struct String string, ...);
+
+/**
+ * @brief Changes the file position.
+ *
+ * @param file the file whose position to change
+ * @param offset the offset from the origin
+ * @param origin the position from which the offset is calculated
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_seek(File* file, long offset, int origin);
+
+/**
+ * @brief Gets the current file position.
+ *
+ * @param file the file whose position to get
+ *
+ * @return the current file position, or -1 if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+long file_position(File* file);
+
+/**
+ * @brief Resets the file position to the beginning.
+ *
+ * @param file the file to rewind
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_rewind(File* file);
+
+/**
+ * @brief Checks whether the end of the file has been reached.
+ *
+ * @param file the file to check
+ *
+ * @return true if the end of the file has been reached, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ */
+bool file_at_end(File* file);
+
+/**
+ * @brief Flushes the file.
+ *
+ * @param file the file to flush
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_flush(File* file);
+
+/**
+ * @brief Checks whether a file exists.
+ *
+ * @param path the file path
+ *
+ * @return true if the file exists, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+bool file_exists(const char* path);
+
+/**
+ * @brief Retrieves the size of a file.
+ *
+ * @param file the file
+ *
+ * @return the size in bytes, or -1 if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+bytes file_size(File* file);
+
+/**
+ * @brief Moves or renames a file.
+ *
+ * @param old_path the old file path
+ * @param new_path the new file path
+ *
+ * @exception NULL_POINTER_ERROR if old_path or new_path is null
+ * @exception FILE_NOT_FOUND_ERROR if the source file does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_move(const char* old_path, const char* new_path);
+
+/**
+ * @brief Deletes a file.
+ *
+ * @param path the file path
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_NOT_FOUND_ERROR if the file does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
+ * @exception FILE_DIRECTORY_NOT_EMPTY_ERROR if the directory is not empty
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_delete(const char* path);
+
+/**
+ * @brief Deletes a file if it exists.
+ *
+ * @param path the file path
+ *
+ * @return true if the file was successfully deleted, false if it does not exist
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
+ * @exception FILE_DIRECTORY_NOT_EMPTY_ERROR if the directory is not empty
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+bool file_delete_if_exists(const char* path);
+
+#endif

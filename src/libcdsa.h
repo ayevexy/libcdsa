@@ -30,6 +30,9 @@
 /** @brief String implementation */
 #include "core/string.h"
 
+/** @brief Simple file handling abstraction */
+#include "core/file.h"
+
 /** @brief Runtime System abstraction */
 #include "core/system.h"
 

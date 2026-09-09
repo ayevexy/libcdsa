@@ -20,11 +20,18 @@ typedef enum {
     ILLEGAL_STATE_ERROR,
     UNSUPPORTED_OPERATION_ERROR,
     CONCURRENT_MODIFICATION_ERROR,
+    FILE_NOT_FOUND_ERROR,
+    FILE_ALREADY_EXISTS_ERROR,
+    FILE_ACCESS_DENIED_ERROR,
+    FILE_IS_DIRECTORY_ERROR,
+    FILE_DIRECTORY_NOT_EMPTY_ERROR,
+    FILE_INPUT_OUTPUT_ERROR,
+    FILE_SYSTEM_ERROR,
     MEMORY_ALLOCATION_ERROR
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 10;
+constexpr int ERROR_COUNT = 17;
 
 /**
  * @brief Converts an error enumeration to its string representation.

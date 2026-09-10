@@ -43,10 +43,10 @@ File* file_create(const char* path);
  *
  * @return the opened file, or nullptr if the operation fails
  *
- * @exception NULL_POINTER_ERROR if path or mode is null
+ * @exception NULL_POINTER_ERROR if path or modes is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if the file open modes is unknown
  * @exception FILE_NOT_FOUND_ERROR if the file does not exist
  * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
- * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
@@ -273,7 +273,6 @@ void file_move(const char* old_path, const char* new_path);
  * @exception NULL_POINTER_ERROR if path is null
  * @exception FILE_NOT_FOUND_ERROR if the file does not exist
  * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
- * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
  * @exception FILE_DIRECTORY_NOT_EMPTY_ERROR if the directory is not empty
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
@@ -288,7 +287,6 @@ void file_delete(const char* path);
  *
  * @exception NULL_POINTER_ERROR if path is null
  * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
- * @exception FILE_IS_DIRECTORY_ERROR if the path refers to a directory
  * @exception FILE_DIRECTORY_NOT_EMPTY_ERROR if the directory is not empty
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */

@@ -31,7 +31,6 @@ const char* error_to_string(Error error) {
         "FILE_NOT_FOUND_ERROR",
         "FILE_ALREADY_EXISTS_ERROR",
         "FILE_ACCESS_DENIED_ERROR",
-        "FILE_IS_DIRECTORY_ERROR",
         "FILE_DIRECTORY_NOT_EMPTY_ERROR",
         "FILE_INPUT_OUTPUT_ERROR",
         "FILE_SYSTEM_ERROR",

@@ -5,7 +5,7 @@
 static const char* file_name = "test_file.txt";
 
 void setUp() {
-
+    file_delete_if_exists(file_name);
 }
 
 void tearDown() {

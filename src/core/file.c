@@ -19,6 +19,10 @@ static void file_set_error(int error) {
             case ENOENT:     set_error(FILE_NOT_FOUND_ERROR, "no such file or directory");            break;
         #endif
 
+        #ifdef ENOTDIR
+            case ENOTDIR:    set_error(FILE_NOT_FOUND_ERROR, "a path component is not a directory");  break;
+        #endif
+
         #ifdef EEXIST
             case EEXIST:     set_error(FILE_ALREADY_EXISTS_ERROR, "file already exists");             break;
         #endif
@@ -31,20 +35,16 @@ static void file_set_error(int error) {
             case EPERM:      set_error(FILE_ACCESS_DENIED_ERROR, "operation not permitted");          break;
         #endif
 
-        #ifdef ENOTDIR
-            case ENOTDIR:    set_error(FILE_NOT_FOUND_ERROR, "a path component is not a directory");  break;
-        #endif
-
-        #ifdef EISDIR
-            case EISDIR:     set_error(FILE_IS_DIRECTORY_ERROR, "path refers to a directory");        break;
-        #endif
-
         #ifdef ENOTEMPTY
             case ENOTEMPTY:  set_error(FILE_DIRECTORY_NOT_EMPTY_ERROR, "directory is not empty");     break;
         #endif
 
         #ifdef EIO
             case EIO:        set_error(FILE_INPUT_OUTPUT_ERROR, "input/output error");                break;
+        #endif
+
+        #ifdef EISDIR
+            case EISDIR:     set_error(FILE_SYSTEM_ERROR, "path refers to a directory");              break;
         #endif
 
         default:             set_error(FILE_SYSTEM_ERROR, "%s", strerror(error));                     break;
@@ -188,7 +188,7 @@ int (file_write_string)(File* file, struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    int bytes = vfprintf(file->self, string.data, parameters);
+    const int bytes = vfprintf(file->self, string.data, parameters);
     va_end(parameters);
 
     if (bytes < 0) {

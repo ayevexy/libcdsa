@@ -23,7 +23,6 @@ typedef enum {
     FILE_NOT_FOUND_ERROR,
     FILE_ALREADY_EXISTS_ERROR,
     FILE_ACCESS_DENIED_ERROR,
-    FILE_IS_DIRECTORY_ERROR,
     FILE_DIRECTORY_NOT_EMPTY_ERROR,
     FILE_INPUT_OUTPUT_ERROR,
     FILE_SYSTEM_ERROR,
@@ -31,7 +30,7 @@ typedef enum {
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 17;
+constexpr int ERROR_COUNT = 16;
 
 /**
  * @brief Converts an error enumeration to its string representation.

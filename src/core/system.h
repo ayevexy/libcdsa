@@ -17,6 +17,8 @@ File* system_input();
  * @brief Replaces the system input stream.
  *
  * @param input the new file input stream
+ *
+ * @exception NULL_POINTER_ERROR if input is null
  */
 void system_change_input(File* input);
 
@@ -31,6 +33,8 @@ File* system_output();
  * @brief Replaces the system output stream.
  *
  * @param output the new file output stream
+ *
+ * @exception NULL_POINTER_ERROR if output is null
  */
 void system_change_output(File* output);
 
@@ -45,6 +49,8 @@ File* system_error();
  * @brief Replaces the system error stream.
  *
  * @param error the new file error stream
+ *
+ * @exception NULL_POINTER_ERROR if error is null
  */
 void system_change_error(File* error);
 
@@ -52,6 +58,9 @@ void system_change_error(File* error);
  * @brief Reads a single character from the system input stream.
  *
  * @return a char
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 char system_read();
 
@@ -61,6 +70,10 @@ char system_read();
  * @param ... the buffer size (default is 256 bytes)
  *
  * @return the string line
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the string fails
  */
 #define system_read_line(...) system_read_line_(__VA_OPT__(__VA_ARGS__,) 256, __VA_ARGS__)
 
@@ -73,6 +86,9 @@ String (system_read_line)(char* buffer, bytes size);
  *
  * @param string the string
  * @param ... additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 #define system_write(string, ...) system_write(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
 
@@ -83,6 +99,9 @@ void (system_write)(struct String string, ...);
  *
  * @param string the string
  * @param ... additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 #define system_write_line(string, ...) system_write_line(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
 
@@ -93,6 +112,9 @@ void (system_write_line)(struct String string, ...);
  *
  * @param string the string
  * @param ... additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 #define system_write_error(string, ...) system_write_error(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
 
@@ -103,6 +125,9 @@ void (system_write_error)(struct String string, ...);
  *
  * @param string the string
  * @param ... additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 #define system_write_error_line(string, ...) system_write_error_line(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
 
@@ -111,24 +136,32 @@ void (system_write_error_line)(struct String string, ...);
 /**
  * @brief Retrieves an environment variable value as a string.
  *
- * @param name the name
+ * @param name the environment variable name
  *
- * @return a string
+ * @return the variable value as a string, or nullptr if the variable isn't defined
+ *
+ * @xception NULL_POINTER_ERROR if name is null
  */
 const char* system_get_environment_variable(const char* name);
 
 /**
  * @brief Sets the string value of an environment variable.
  *
- * @param name the name
- * @param value the value
+ * @param name the environment variable name
+ * @param value the new environment variable value
+ *
+ * @exception NULL_POINTER_ERROR if name is null
+ * @exception INVALID_ARGUMENT_ERROR if name is empty or is the equal sign "="
  */
 void system_set_environment_variable(const char* name, const char* value);
 
 /**
  * @brief Removes an environment variable.
  *
- * @param name the name
+ * @param name the environment variable name
+ *
+ * @exception NULL_POINTER_ERROR if name is null
+ * @exception INVALID_ARGUMENT_ERROR if name is empty or is the equal sign "="
  */
 void system_remove_environment_variable(const char* name);
 

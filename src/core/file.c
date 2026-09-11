@@ -197,6 +197,16 @@ int (file_write_string)(File* file, struct String string, ...) {
     return bytes;
 }
 
+int file_write_string_variadic(File* file, struct String string, va_list parameters) {
+    if (require_non_null(file, string.data)) return -1;
+
+    const int bytes = vfprintf(file->self, string.data, parameters);
+    if (bytes < 0) {
+        file_set_error(errno);
+    }
+    return bytes;
+}
+
 void file_seek(File* file, long offset, int origin) {
     if (require_non_null(file)) return;
 

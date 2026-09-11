@@ -1,9 +1,11 @@
 #include "system.h"
 
+#include "util/constraints.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 struct File {
@@ -16,6 +18,8 @@ static File* system_output_stream;
 
 static File* system_error_stream;
 
+extern int file_write_string_variadic(File*, struct String, va_list);
+
 File* system_input() {
     static File system_standard_input_stream;
 
@@ -27,6 +31,7 @@ File* system_input() {
 }
 
 void system_change_input(File* input) {
+    if (require_non_null(input)) return;
     system_input_stream = input;
 }
 
@@ -41,6 +46,7 @@ File* system_output() {
 }
 
 void system_change_output(File* output) {
+    if (require_non_null(output)) return;
     system_output_stream = output;
 }
 
@@ -55,23 +61,23 @@ File* system_error() {
 }
 
 void system_change_error(File* error) {
+    if (require_non_null(error)) return;
     system_error_stream = error;
 }
 
 char system_read() {
-    return fgetc(system_input()->self);
+    return file_read_char(system_input());
 }
 
 String (system_read_line)(char* buffer, bytes size) {
-    fgets(buffer, size, system_input()->self);
-    return string_new(buffer);
+    return (file_read_line)(system_input(), buffer, size);
 }
 
 void (system_write)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_output()->self, string.data, parameters);
+    file_write_string_variadic(system_output(), string, parameters);
     va_end(parameters);
 }
 
@@ -79,17 +85,17 @@ void (system_write_line)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_output()->self, string.data, parameters);
+    file_write_string_variadic(system_output(), string, parameters);
     va_end(parameters);
 
-    fprintf(system_output()->self, "\n");
+    file_write_char(system_output(), '\n');
 }
 
 void (system_write_error)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_error()->self, string.data, parameters);
+    file_write_string_variadic(system_error(), string, parameters);
     va_end(parameters);
 }
 
@@ -97,22 +103,48 @@ void (system_write_error_line)(struct String string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    vfprintf(system_error()->self, string.data, parameters);
+    file_write_string_variadic(system_error(), string, parameters);
     va_end(parameters);
 
-    fprintf(system_error()->self, "\n");
+    file_write_char(system_error(), '\n');
 }
 
 const char* system_get_environment_variable(const char* name) {
+    if (require_non_null(name)) return nullptr;
     return getenv(name);
 }
 
 void (system_set_environment_variable)(const char* name, const char* value) {
+    if (require_non_null(name)) return;
     setenv(name, value, 1);
+    if (errno == 0) {
+        return;
+    }
+    switch (errno) {
+        #ifdef EINVAL
+            case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
+        #endif
+
+        #ifdef ENOMEM
+            case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
+        #endif
+            default:      set_error(UNKNOWN_ERROR, "%s", strerror(errno));                         break;
+    }
 }
 
 void (system_remove_environment_variable)(const char* name) {
+    if (require_non_null(name)) return;
     unsetenv(name);
+    if (errno == 0) {
+        return;
+    }
+    #ifdef EINVAL
+        if (errno == EINVAL) {
+            set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");
+            return;
+        }
+    #endif
+    set_error(UNKNOWN_ERROR, "%s", strerror(errno));
 }
 
 const char* system_platform_name() {

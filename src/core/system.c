@@ -387,7 +387,25 @@ void system_process_kill(uintptr process_id) {
 #endif
 
 int system_execute(const char* command) {
-    return system(command);
+    if (require_non_null(command)) return -1;
+
+    const int status = system(command);
+    if (status == -1) {
+        set_error(PROCESS_ERROR, "%s", strerror(errno));
+        return -1;
+    }
+#ifdef __linux__
+    if (WIFEXITED(status)) {
+        return WEXITSTATUS(status);
+    }
+    if (WIFSIGNALED(status)) {
+        return -WTERMSIG(status);
+    }
+    set_error(PROCESS_ERROR, "unknown process termination status");
+    return -1;
+#else
+    return status;
+#endif
 }
 
 void system_exit(int status) {

@@ -223,6 +223,13 @@ void test_system_process_kill() {
 
 #endif
 
+void test_system_execute() {
+    // when
+    int exit_code = system_execute("echo \"Hello World!\"");
+    // then
+    TEST_ASSERT_EQUAL(0, exit_code);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_system_read);
@@ -245,5 +252,6 @@ int main(void) {
     RUN_TEST(test_system_process_terminate);
     RUN_TEST(test_system_process_kill);
 #endif
+    RUN_TEST(test_system_execute);
     return UNITY_END();
 }

@@ -314,6 +314,16 @@ void system_process_kill(uintptr process_id);
  * @brief Executes a command line through the system shell.
  *
  * @param command the command
+ *
+ * @return 0..255 if it exits normally
+ *         -1 if operation fails
+ *         -N if the process is terminated by signal N
+ *
+ * @exception NULL_POINTER_ERROR if command is null
+ * @exception PROCESS_ERROR if the operation fails for some reason
+ *
+ * @note On Linux, the return value is POSIX-specific; on other platforms,
+ *       the underlying system() status is returned.
  */
 int system_execute(const char* command);
 

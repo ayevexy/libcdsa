@@ -40,7 +40,7 @@ File* system_output() {
 
     if (!system_output_stream) {
         system_standard_output_stream.self = stdout;
-        system_input_stream = &system_standard_output_stream;
+        system_output_stream = &system_standard_output_stream;
     }
     return system_output_stream;
 }
@@ -55,7 +55,7 @@ File* system_error() {
 
     if (!system_error_stream) {
         system_standard_error_stream.self = stderr;
-        system_input_stream = &system_standard_error_stream;
+        system_error_stream = &system_standard_error_stream;
     }
     return system_error_stream;
 }

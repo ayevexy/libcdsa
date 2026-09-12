@@ -102,6 +102,8 @@ void test_system_write_error_line() {
     string_destroy(&string);
 }
 
+#ifdef __linux
+
 void test_system_environment_variable() {
     // given
     system_set_environment_variable("LIBCDSA_TEST_ENV", "0");
@@ -114,6 +116,8 @@ void test_system_environment_variable() {
     TEST_ASSERT_NULL(system_get_environment_variable("LIBCDSA_TEST_ENV"));
 }
 
+#endif
+
 void test_system_platform_info() {
     system_change_output(standard_output);
     system_write_line(system_platform_name());
@@ -122,14 +126,102 @@ void test_system_platform_info() {
     TEST_PASS();
 }
 
-void test_system_process_management() {
+#ifdef __linux
+
+#include <signal.h>
+
+void test_system_process_creation() {
     // when
     uintptr process_id = system_process_create("echo", "I'm a child process!");
     // and
-    system_process_wait(process_id);
+    int exit_code = system_process_wait(process_id);
     // then
     TEST_ASSERT_NOT_EQUAL(process_id, -1);
+    TEST_ASSERT_EQUAL(0, exit_code);
 }
+
+void test_system_process_is_alive() {
+    // when
+    uintptr process_id = system_process_create("sleep", "3");
+    // then
+    TEST_ASSERT_TRUE(system_process_is_alive(process_id));
+    // and
+    system_process_wait(process_id);
+    // then
+    TEST_ASSERT_FALSE(system_process_is_alive(process_id));
+}
+
+void test_system_process_wait_timeout() {
+    // when
+    uintptr process_id = system_process_create("sleep", "3");
+    bool timed_out = false;
+    int exit_code = system_process_wait_timeout(process_id, 10, &timed_out);
+    // then
+    TEST_ASSERT_EQUAL(-1, exit_code);
+    TEST_ASSERT_TRUE(timed_out);
+    // cleanup
+    system_process_kill(process_id);
+    system_process_wait(process_id);
+}
+
+void test_system_process_wait_timeout_completed() {
+    // when
+    uintptr process_id = system_process_create("true");
+    bool timed_out = false;
+    int exit_code = system_process_wait_timeout(process_id, 1000, &timed_out);
+    // then
+    TEST_ASSERT_EQUAL(0, exit_code);
+    TEST_ASSERT_FALSE(timed_out);
+}
+
+void test_system_process_exit_code() {
+    // when
+    uintptr process_id = system_process_create("sh", "-c", "exit 42");
+    // and
+    int exit_code = system_process_wait(process_id);
+    // then
+    TEST_ASSERT_EQUAL(42, exit_code);
+}
+
+void test_system_process_suspend_resume() {
+    // when
+    uintptr process_id = system_process_create("sleep", "3");
+    // and
+    system_process_suspend(process_id);
+    // then
+    TEST_ASSERT_TRUE(system_process_is_alive(process_id));
+    // when
+    system_process_resume(process_id);
+    // then
+    TEST_ASSERT_TRUE(system_process_is_alive(process_id));
+    // cleanup
+    system_process_kill(process_id);
+    system_process_wait(process_id);
+}
+
+void test_system_process_terminate() {
+    // when
+    uintptr process_id = system_process_create("sleep", "3");
+    // and
+    system_process_terminate(process_id);
+    // and
+    int exit_code = system_process_wait(process_id);
+    // then
+    TEST_ASSERT_EQUAL(-SIGTERM, exit_code);
+}
+
+void test_system_process_kill() {
+    // when
+    uintptr process_id = system_process_create("sleep", "3");
+    // and
+    system_process_kill(process_id);
+    // and
+    int exit_code = system_process_wait(process_id);
+    // then
+    TEST_ASSERT_EQUAL(-SIGKILL, exit_code);
+}
+
+#endif
 
 int main(void) {
     UNITY_BEGIN();
@@ -139,8 +231,19 @@ int main(void) {
     RUN_TEST(test_system_write_line);
     RUN_TEST(test_system_write_error);
     RUN_TEST(test_system_write_error_line);
+#ifdef __linux__
     RUN_TEST(test_system_environment_variable);
+#endif
     RUN_TEST(test_system_platform_info);
-    RUN_TEST(test_system_process_management);
+#ifdef __linux
+    RUN_TEST(test_system_process_creation);
+    RUN_TEST(test_system_process_is_alive);
+    RUN_TEST(test_system_process_wait_timeout);
+    RUN_TEST(test_system_process_wait_timeout_completed);
+    RUN_TEST(test_system_process_exit_code);
+    RUN_TEST(test_system_process_suspend_resume);
+    RUN_TEST(test_system_process_terminate);
+    RUN_TEST(test_system_process_kill);
+#endif
     return UNITY_END();
 }

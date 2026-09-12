@@ -26,11 +26,17 @@ typedef enum {
     FILE_DIRECTORY_NOT_EMPTY_ERROR,
     FILE_INPUT_OUTPUT_ERROR,
     FILE_SYSTEM_ERROR,
+    PROCESS_CREATION_ERROR,
+    PROCESS_EXECUTION_ERROR,
+    PROCESS_NOT_FOUND_ERROR,
+    PROCESS_ACCESS_DENIED_ERROR,
+    PROCESS_INTERRUPTED_ERROR,
+    PROCESS_ERROR,
     MEMORY_ALLOCATION_ERROR
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 16;
+constexpr int ERROR_COUNT = 22;
 
 /**
  * @brief Converts an error enumeration to its string representation.

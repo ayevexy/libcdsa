@@ -114,38 +114,35 @@ const char* system_get_environment_variable(const char* name) {
     return getenv(name);
 }
 
-void (system_set_environment_variable)(const char* name, const char* value) {
+#ifdef __linux__
+
+void system_set_environment_variable(const char* name, const char* value) {
     if (require_non_null(name)) return;
     setenv(name, value, 1);
     if (errno == 0) {
         return;
     }
     switch (errno) {
-        #ifdef EINVAL
-            case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
-        #endif
-
-        #ifdef ENOMEM
-            case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
-        #endif
-            default:      set_error(UNKNOWN_ERROR, "%s", strerror(errno));                         break;
+        case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
+        case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
+        default:      set_error(UNKNOWN_ERROR, "%s", strerror(errno));
     }
 }
 
-void (system_remove_environment_variable)(const char* name) {
+void system_remove_environment_variable(const char* name) {
     if (require_non_null(name)) return;
     unsetenv(name);
     if (errno == 0) {
         return;
     }
-    #ifdef EINVAL
-        if (errno == EINVAL) {
-            set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");
-            return;
-        }
-    #endif
+    if (errno == EINVAL) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");
+        return;
+    }
     set_error(UNKNOWN_ERROR, "%s", strerror(errno));
 }
+
+#endif
 
 const char* system_platform_name() {
     #if defined(__linux__)
@@ -190,14 +187,61 @@ const char* system_platform_architecture() {
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <fcntl.h>
+
+static void system_process_set_creation_error(int error) {
+    switch (error) {
+        case EAGAIN:  set_error(PROCESS_CREATION_ERROR, "unable to create process due to limited resources");          break;
+        case ENOMEM:  set_error(PROCESS_CREATION_ERROR, "unable to create process due to limited resources");          break;
+        case ENOSYS:  set_error(PROCESS_CREATION_ERROR, "process creation is not supported by the operating system");  break;
+        default:      set_error(PROCESS_CREATION_ERROR, "%s", strerror(error));
+    }
+}
+
+static void system_process_set_execution_error(int error) {
+    switch (error) {
+        case EACCES:   set_error(PROCESS_ACCESS_DENIED_ERROR, "permission denied");              break;
+        case ENOENT:   set_error(PROCESS_EXECUTION_ERROR, "executable not found");               break;
+        case ENOTDIR:  set_error(PROCESS_EXECUTION_ERROR, "path component is not a directory");  break;
+        case ELOOP:    set_error(PROCESS_EXECUTION_ERROR, "too many symbolic links");            break;
+        case ENOEXEC:  set_error(PROCESS_EXECUTION_ERROR, "invalid executable format");          break;
+        case ENOMEM:   set_error(PROCESS_EXECUTION_ERROR, "insufficient memory");                break;
+        case ETXTBSY:  set_error(PROCESS_EXECUTION_ERROR, "executable is being used");           break;
+        default:       set_error(PROCESS_EXECUTION_ERROR, "%s", strerror(error));
+    }
+}
 
 uintptr (system_process_create)(int count, ...) {
-    pid_t process_id = fork();
-    if (process_id == -1) {
-        perror("fork() failed");
+    if (count == 0) {
+        const pid_t process_id = fork();
+
+        if (process_id == -1) {
+            system_process_set_creation_error(errno);
+            return -1;
+        }
+        return process_id;
+    }
+
+    int error_pipe[2];
+
+    if (pipe(error_pipe) == -1) {
+        set_error(PROCESS_CREATION_ERROR, "pipe creation for process failed");
         return -1;
     }
-    if (process_id == 0 && count > 0) {
+    fcntl(error_pipe[1], F_SETFD, FD_CLOEXEC);
+
+    const pid_t process_id = fork();
+
+    if (process_id == -1) {
+        const int error = errno;
+        close(error_pipe[0]);
+        close(error_pipe[1]);
+        system_process_set_creation_error(error);
+        return -1;
+    }
+    if (process_id == 0) {
+        close(error_pipe[0]);
+
         va_list parameters = {};
         va_start(parameters, count);
 
@@ -209,15 +253,37 @@ uintptr (system_process_create)(int count, ...) {
         va_end(parameters);
 
         execvp(arguments[0], arguments);
-        perror("execvp() failed");
-        _exit(127);
+
+        const int error = errno;
+        const isize n = write(error_pipe[1], &error, sizeof(error));
+
+        close(error_pipe[1]);
+        _exit(n == sizeof(error) ? 127 : 126);
     }
+    close(error_pipe[1]);
+
+    int error;
+    const isize n = read(error_pipe[0], &error, sizeof(error));
+
+    if (n == sizeof(error)) {
+        system_process_set_execution_error(error);
+    } else if (n == -1) {
+        const int read_error = errno;
+        set_error(PROCESS_ERROR, "%s", strerror(read_error));
+    }
+
+    close(error_pipe[0]);
     return process_id;
 }
 
 int system_process_wait(uintptr process_id) {
     int status;
     if (waitpid(process_id, &status, 0) == -1) {
+        switch (errno) {
+            case ECHILD:  set_error(PROCESS_NOT_FOUND_ERROR, "no child process");                 break;
+            case EINTR:   set_error(PROCESS_INTERRUPTED_ERROR, "process operation interrupted");  break;
+            default:      set_error(PROCESS_ERROR, "%s", strerror(errno));
+        }
         return -1;
     }
     if (WIFEXITED(status)) {
@@ -232,10 +298,12 @@ int system_process_wait(uintptr process_id) {
 int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_out) {
     int status;
     uint64 elapsed = 0;
-    if (timed_out) *timed_out = false;
 
-    while (elapsed < timeout) {
-        pid_t result = waitpid(process_id, &status, WNOHANG);
+    if (timed_out) {
+        *timed_out = false;
+    }
+    while (elapsed <= timeout) {
+        const pid_t result = waitpid(process_id, &status, WNOHANG);
 
         if (result == (pid_t) process_id) {
             if (WIFEXITED(status)) {
@@ -247,47 +315,73 @@ int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_
             return -1;
         }
         if (result == -1) {
+            if (errno == EINTR) {
+                continue;
+            }
+            switch (errno) {
+                case ECHILD:  set_error(PROCESS_NOT_FOUND_ERROR, "no child process");  break;
+                default:      set_error(PROCESS_ERROR, "%s", strerror(errno));         break;
+            }
             return -1;
         }
-        struct timespec delay = {
-            .tv_sec = 0,
-            .tv_nsec = 10 * 1000 * 1000
+
+        if (elapsed == timeout) {
+            break;
+        }
+        uint64 delay = timeout - elapsed;
+        if (delay > 10) {
+            delay = 10;
+        }
+        const struct timespec sleep_time = {
+            .tv_sec = delay / 1000,
+            .tv_nsec = (delay % 1000) * 1000000
         };
-        nanosleep(&delay, NULL);
-        elapsed += 10;
+        nanosleep(&sleep_time, NULL);
+        elapsed += delay;
     }
-    if (timed_out) *timed_out = true;
+
+    if (timed_out) {
+        *timed_out = true;
+    }
     return -1;
 }
 
 bool system_process_is_alive(uintptr process_id) {
-    if (!kill(process_id, 0)) {
-        return true;
+    if (kill(process_id, 0) == -1) {
+        switch (errno) {
+            case ESRCH: return false;
+            case EPERM: return true;
+            default: set_error(PROCESS_ERROR, "%s", strerror(errno)); return false;
+        }
     }
-    if (errno == EPERM) {
-        return true;
+    return true;
+}
+
+void system_process_signal(uintptr process_id, int signum) {
+    if (kill(process_id, signum) == -1) {
+        switch (errno) {
+            case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid signal number");           break;
+            case ESRCH:   set_error(PROCESS_NOT_FOUND_ERROR, "no process with that id found");  break;
+            case EPERM:   set_error(PROCESS_ACCESS_DENIED_ERROR, "permission denied");          break;
+            default:      set_error(PROCESS_ERROR, "%s", strerror(errno));
+        }
     }
-    return false;
 }
 
-bool system_process_signal(uintptr process_id, int signum) {
-    return !kill(process_id, signum);
+void system_process_suspend(uintptr process_id) {
+    system_process_signal(process_id, SIGSTOP);
 }
 
-bool system_process_suspend(uintptr process_id) {
-    return !kill(process_id, SIGSTOP);
+void system_process_resume(uintptr process_id) {
+    system_process_signal(process_id, SIGCONT);
 }
 
-bool system_process_resume(uintptr process_id) {
-    return !kill(process_id, SIGCONT);
+void system_process_terminate(uintptr process_id) {
+    system_process_signal(process_id, SIGTERM);
 }
 
-bool system_process_terminate(uintptr process_id) {
-    return !kill(process_id, SIGTERM);
-}
-
-bool system_process_kill(uintptr process_id) {
-    return !kill(process_id, SIGKILL);
+void system_process_kill(uintptr process_id) {
+    system_process_signal(process_id, SIGKILL);
 }
 
 #endif

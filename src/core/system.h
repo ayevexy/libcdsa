@@ -144,6 +144,8 @@ void (system_write_error_line)(struct String string, ...);
  */
 const char* system_get_environment_variable(const char* name);
 
+#ifdef __linux__
+
 /**
  * @brief Sets the string value of an environment variable.
  *
@@ -164,6 +166,8 @@ void system_set_environment_variable(const char* name, const char* value);
  * @exception INVALID_ARGUMENT_ERROR if name is empty or is the equal sign "="
  */
 void system_remove_environment_variable(const char* name);
+
+#endif
 
 /**
  * @brief Retrieves the underlying platform information name.
@@ -189,94 +193,120 @@ const char* system_platform_architecture();
 #ifdef __linux__
 
 /**
- * @brief Creates a Linux operating system process.
+ * @brief Creates an operating system process.
  *
- * @param ... an executable followed by its parameters.
+ * If no arguments are provided, the function behaves like fork().
+ * Otherwise, the first argument is treated as the executable and the
+ * remaining arguments as its parameters.
  *
- * @return the process id
+ * @param ... the executable followed by its parameters (optional)
+ *
+ * @return the process id, 0 in the child process, or -1 if the operation fails
+ *
+ * @exception PROCESS_CREATION_ERROR if the process cannot be created
+ * @exception PROCESS_EXECUTION_ERROR if the executable cannot be executed
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to execute the executable is denied
  */
 #define system_process_create(...) system_process_create(count_args(__VA_ARGS__) __VA_OPT__(,) __VA_ARGS__)
 
 uintptr (system_process_create)(int count, ...);
 
 /**
- * @brief Waits until a process finalize its execution.
+ * @brief Waits until a process finishes its execution.
  *
  * @param process_id the process id
  *
- * @return 0..255 -> normal exit code
- *         -1     -> waitpid() error
- *         -N     -> process was killed by signal N
+ * @return 0..255 if the process exits normally
+ *         -1 if waiting fails
+ *         -N if the process is terminated by signal N
+ *
+ * @exception PROCESS_NOT_FOUND_ERROR if the process is not a child process
+ * @exception PROCESS_INTERRUPTED_ERROR if waiting is interrupted by a signal
  */
 int system_process_wait(uintptr process_id);
 
 /**
- * @brief Waits until a process finalize its execution.
+ * @brief Waits for a process to finish its execution until a timeout expires.
  *
  * @param process_id the process id
- * @param timeout the timeout in milliseconds
- * @param timed_out a variable to store where time expired before process exited,
+ * @param timeout the maximum waiting time in milliseconds
+ * @param timed_out a variable to store whether the timeout expired before the process finished
  *
- * @return 0..255 -> normal exit code
- *         -1     -> waitpid() error, or timeout when *timed_out is true
- *         -N     -> process was killed by signal N
+ * @return 0..255 if the process exits normally
+ *         -1 if waiting fails or the timeout expires
+ *         -N if the process is terminated by signal N
+ *
+ * @exception PROCESS_NOT_FOUND_ERROR if the process is not a child process
  */
 int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_out);
 
 /**
- * @brief Checks whether a process is alive.
+ * @brief Checks whether a process exists.
  *
  * @param process_id the process id
  *
- * @return true if alive, false otherwise
+ * @return true if the process exists, false otherwise
+ *
+ * @exception PROCESS_ERROR if the process status cannot be determined
  */
 bool system_process_is_alive(uintptr process_id);
 
 /**
- * @brief Sends a signal to the given process.
+ * @brief Sends a signal to a process.
  *
  * @param process_id the process id
  * @param signum the signal number
  *
- * @return true if successfully signaled, false otherwise
+ * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
+ * @exception ILLEGAL_ARGUMENT_ERROR if the signal number is invalid
+ * @exception PROCESS_ERROR if the operation fails for another reason
  */
-bool system_process_signal(uintptr process_id, int signum);
+void system_process_signal(uintptr process_id, int signum);
 
 /**
  * @brief Suspends the execution of a process.
  *
  * @param process_id the process id
  *
- * @return true if successfully suspended, false otherwise
+ * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
+ * @exception PROCESS_ERROR if the operation fails for another reason
  */
-bool system_process_suspend(uintptr process_id);
+void system_process_suspend(uintptr process_id);
 
 /**
  * @brief Resumes the execution of a process.
  *
  * @param process_id the process id
  *
- * @return true if successfully resumed, false otherwise
+ * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
+ * @exception PROCESS_ERROR if the operation fails for another reason
  */
-bool system_process_resume(uintptr process_id);
+void system_process_resume(uintptr process_id);
 
 /**
- * @brief Request the termination of a process.
+ * @brief Requests the termination of a process.
  *
  * @param process_id the process id
  *
- * @return true if successfully terminated, false otherwise
+ * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
+ * @exception PROCESS_ERROR if the operation fails for another reason
  */
-bool system_process_terminate(uintptr process_id);
+void system_process_terminate(uintptr process_id);
 
 /**
- * @brief Forcible terminate an existing process.
+ * @brief Forcibly terminates a process.
  *
  * @param process_id the process id
  *
- * @return true if successfully terminated, false otherwise
+ * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
+ * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
+ * @exception PROCESS_ERROR if the operation fails for another reason
  */
-bool system_process_kill(uintptr process_id);
+void system_process_kill(uintptr process_id);
 
 #endif
 

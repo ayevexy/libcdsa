@@ -34,6 +34,12 @@ const char* error_to_string(Error error) {
         "FILE_DIRECTORY_NOT_EMPTY_ERROR",
         "FILE_INPUT_OUTPUT_ERROR",
         "FILE_SYSTEM_ERROR",
+        "PROCESS_CREATION_ERROR",
+        "PROCESS_EXECUTION_ERROR",
+        "PROCESS_NOT_FOUND_ERROR",
+        "PROCESS_ACCESS_DENIED_ERROR",
+        "PROCESS_INTERRUPTED_ERROR",
+        "PROCESS_ERROR",
         "MEMORY_ALLOCATION_ERROR"
     };
     return error > 0 && error < ERROR_COUNT ? error_strings[error] : "UNKNOWN_ERROR";

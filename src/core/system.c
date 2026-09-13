@@ -504,6 +504,22 @@ int system_execute(const char* command) {
 #endif
 }
 
+uint64 system_current_time(void) {
+    struct timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);
+
+    return (uint64) time.tv_sec * 1000
+         + (uint64) time.tv_nsec / 1000000;
+}
+
+uint64 system_elapsed_time(void) {
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+
+    return (uint64) time.tv_sec * 1000000000
+         + (uint64) time.tv_nsec;
+}
+
 void system_exit(int status) {
     exit(status);
 }

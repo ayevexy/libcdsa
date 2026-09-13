@@ -425,6 +425,20 @@ void system_thread_sleep(uint64 milliseconds);
 int system_execute(const char* command);
 
 /**
+ * @brief Returns the current system time.
+ *
+ * @return the number of milliseconds elapsed since the Unix epoch.
+ */
+uint64 system_current_time(void);
+
+/**
+ * @brief Returns a monotonic system time value.
+ *
+ * @return a time value in nanoseconds suitable for measuring elapsed time.
+ */
+uint64 system_elapsed_time(void);
+
+/**
  * @brief Terminate the program execution with a status code.
  *
  * @param status the status code

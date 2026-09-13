@@ -222,7 +222,7 @@ typedef enum : uint16 {
  */
 #define system_process_create(...) system_process_create(count_args(__VA_ARGS__) __VA_OPT__(,) __VA_ARGS__)
 
-uintptr (system_process_create)(int count, ...);
+intptr (system_process_create)(int count, ...);
 
 /**
  * @brief Waits until a process finishes its execution.
@@ -236,7 +236,7 @@ uintptr (system_process_create)(int count, ...);
  * @exception PROCESS_NOT_FOUND_ERROR if the process is not a child process
  * @exception PROCESS_INTERRUPTED_ERROR if waiting is interrupted by a signal
  */
-int system_process_wait(uintptr process_id);
+int system_process_wait(intptr process_id);
 
 /**
  * @brief Waits for a process to finish its execution until a timeout expires.
@@ -251,7 +251,7 @@ int system_process_wait(uintptr process_id);
  *
  * @exception PROCESS_NOT_FOUND_ERROR if the process is not a child process
  */
-int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_out);
+int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_out);
 
 /**
  * @brief Checks whether a process exists.
@@ -262,7 +262,7 @@ int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_
  *
  * @exception PROCESS_ERROR if the process status cannot be determined
  */
-bool system_process_is_alive(uintptr process_id);
+bool system_process_is_alive(intptr process_id);
 
 /**
  * @brief Sends a signal to a process.
@@ -275,7 +275,7 @@ bool system_process_is_alive(uintptr process_id);
  * @exception ILLEGAL_ARGUMENT_ERROR if the signal number is invalid
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
-void system_process_signal(uintptr process_id, int signum);
+void system_process_signal(intptr process_id, int signum);
 
 /**
  * @brief Suspends the execution of a process.
@@ -286,7 +286,7 @@ void system_process_signal(uintptr process_id, int signum);
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
-void system_process_suspend(uintptr process_id);
+void system_process_suspend(intptr process_id);
 
 /**
  * @brief Resumes the execution of a process.
@@ -297,7 +297,7 @@ void system_process_suspend(uintptr process_id);
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
-void system_process_resume(uintptr process_id);
+void system_process_resume(intptr process_id);
 
 /**
  * @brief Requests the termination of a process.
@@ -308,7 +308,7 @@ void system_process_resume(uintptr process_id);
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
-void system_process_terminate(uintptr process_id);
+void system_process_terminate(intptr process_id);
 
 /**
  * @brief Forcibly terminates a process.
@@ -319,7 +319,7 @@ void system_process_terminate(uintptr process_id);
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
-void system_process_kill(uintptr process_id);
+void system_process_kill(intptr process_id);
 
 /**
  * @brief Enumeration of possible thread errors.
@@ -347,7 +347,7 @@ typedef enum : uint16 {
 
 #define system_thread_create_(function, argument, ...) system_thread_create(function, argument)
 
-uintptr (system_thread_create)(void* (*routine)(void*), void* argument);
+intptr (system_thread_create)(void* (*routine)(void*), void* argument);
 
 /**
  * @brief Waits for a thread to terminate.
@@ -361,7 +361,7 @@ uintptr (system_thread_create)(void* (*routine)(void*), void* argument);
  * @exception THREAD_DEADLOCK_ERROR if joining the thread would cause a deadlock
  * @exception THREAD_ERROR if the operation fails for another reason
  */
-void* system_thread_join(uintptr thread_id);
+void* system_thread_join(intptr thread_id);
 
 /**
  * @brief Detaches a thread.
@@ -372,7 +372,7 @@ void* system_thread_join(uintptr thread_id);
  * @exception ILLEGAL_STATE_ERROR if the thread is not joinable
  * @exception THREAD_ERROR if the operation fails for another reason
  */
-void system_thread_detach(uintptr thread_id);
+void system_thread_detach(intptr thread_id);
 
 /**
  * @brief Requests cancellation of a thread.
@@ -382,14 +382,14 @@ void system_thread_detach(uintptr thread_id);
  * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
  * @exception THREAD_ERROR if the operation fails for another reason
  */
-void system_thread_interrupt(uintptr thread_id);
+void system_thread_interrupt(intptr thread_id);
 
 /**
  * @brief Returns the current thread id.
  *
  * @return the current thread id
  */
-uintptr system_thread_current();
+intptr system_thread_current();
 
 /**
  * @brief Terminates the current thread.

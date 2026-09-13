@@ -132,7 +132,7 @@ void test_system_platform_info() {
 
 void test_system_process_creation() {
     // when
-    uintptr process_id = system_process_create("echo", "I'm a child process!");
+    intptr process_id = system_process_create("echo", "I'm a child process!");
     // and
     int exit_code = system_process_wait(process_id);
     // then
@@ -142,7 +142,7 @@ void test_system_process_creation() {
 
 void test_system_process_is_alive() {
     // when
-    uintptr process_id = system_process_create("sleep", "3");
+    intptr process_id = system_process_create("sleep", "3");
     // then
     TEST_ASSERT_TRUE(system_process_is_alive(process_id));
     // and
@@ -153,7 +153,7 @@ void test_system_process_is_alive() {
 
 void test_system_process_wait_timeout() {
     // when
-    uintptr process_id = system_process_create("sleep", "3");
+    intptr process_id = system_process_create("sleep", "3");
     bool timed_out = false;
     int exit_code = system_process_wait_timeout(process_id, 10, &timed_out);
     // then
@@ -166,7 +166,7 @@ void test_system_process_wait_timeout() {
 
 void test_system_process_wait_timeout_completed() {
     // when
-    uintptr process_id = system_process_create("true");
+    intptr process_id = system_process_create("true");
     bool timed_out = false;
     int exit_code = system_process_wait_timeout(process_id, 1000, &timed_out);
     // then
@@ -176,7 +176,7 @@ void test_system_process_wait_timeout_completed() {
 
 void test_system_process_exit_code() {
     // when
-    uintptr process_id = system_process_create("sh", "-c", "exit 42");
+    intptr process_id = system_process_create("sh", "-c", "exit 42");
     // and
     int exit_code = system_process_wait(process_id);
     // then
@@ -185,7 +185,7 @@ void test_system_process_exit_code() {
 
 void test_system_process_suspend_resume() {
     // when
-    uintptr process_id = system_process_create("sleep", "3");
+    intptr process_id = system_process_create("sleep", "3");
     // and
     system_process_suspend(process_id);
     // then
@@ -201,7 +201,7 @@ void test_system_process_suspend_resume() {
 
 void test_system_process_terminate() {
     // when
-    uintptr process_id = system_process_create("sleep", "3");
+    intptr process_id = system_process_create("sleep", "3");
     // and
     system_process_terminate(process_id);
     // and
@@ -212,7 +212,7 @@ void test_system_process_terminate() {
 
 void test_system_process_kill() {
     // when
-    uintptr process_id = system_process_create("sleep", "3");
+    intptr process_id = system_process_create("sleep", "3");
     // and
     system_process_kill(process_id);
     // and
@@ -233,7 +233,7 @@ void test_system_thread_creation() {
     // given
     int counter = 0;
     // when
-    uintptr thread_id = system_thread_create(count_to_ten, &counter);
+    intptr thread_id = system_thread_create(count_to_ten, &counter);
     // and
     int* result = system_thread_join(thread_id);
     // then
@@ -254,9 +254,9 @@ void test_system_thread_creation_multiple() {
     // given
     atomic_int counter = 0;
     // when
-    uintptr thread_id_1 = system_thread_create(increment, &counter);
-    uintptr thread_id_2 = system_thread_create(increment, &counter);
-    uintptr thread_id_3 = system_thread_create(increment, &counter);
+    intptr thread_id_1 = system_thread_create(increment, &counter);
+    intptr thread_id_2 = system_thread_create(increment, &counter);
+    intptr thread_id_3 = system_thread_create(increment, &counter);
     // and
     system_thread_join(thread_id_1);
     system_thread_join(thread_id_2);
@@ -278,7 +278,7 @@ void test_system_thread_interrupt() {
     // given
     int counter = 0;
     // when
-    uintptr thread_id = system_thread_create(count_to_ten_seconds, &counter);
+    intptr thread_id = system_thread_create(count_to_ten_seconds, &counter);
     system_thread_sleep(100);
     // and
     system_thread_interrupt(thread_id);

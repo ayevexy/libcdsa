@@ -211,7 +211,7 @@ static void system_process_set_execution_error(int error) {
     }
 }
 
-uintptr (system_process_create)(int count, ...) {
+intptr (system_process_create)(int count, ...) {
     if (count == 0) {
         const pid_t process_id = fork();
 
@@ -276,7 +276,7 @@ uintptr (system_process_create)(int count, ...) {
     return process_id;
 }
 
-int system_process_wait(uintptr process_id) {
+int system_process_wait(intptr process_id) {
     int status;
     if (waitpid(process_id, &status, 0) == -1) {
         switch (errno) {
@@ -295,7 +295,7 @@ int system_process_wait(uintptr process_id) {
     return -1;
 }
 
-int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_out) {
+int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_out) {
     int status;
     uint64 elapsed = 0;
 
@@ -346,7 +346,7 @@ int system_process_wait_timeout(uintptr process_id, uint64 timeout, bool* timed_
     return -1;
 }
 
-bool system_process_is_alive(uintptr process_id) {
+bool system_process_is_alive(intptr process_id) {
     if (kill(process_id, 0) == -1) {
         switch (errno) {
             case ESRCH: return false;
@@ -357,7 +357,7 @@ bool system_process_is_alive(uintptr process_id) {
     return true;
 }
 
-void system_process_signal(uintptr process_id, int signum) {
+void system_process_signal(intptr process_id, int signum) {
     if (kill(process_id, signum) == -1) {
         switch (errno) {
             case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid signal number");           break;
@@ -368,19 +368,19 @@ void system_process_signal(uintptr process_id, int signum) {
     }
 }
 
-void system_process_suspend(uintptr process_id) {
+void system_process_suspend(intptr process_id) {
     system_process_signal(process_id, SIGSTOP);
 }
 
-void system_process_resume(uintptr process_id) {
+void system_process_resume(intptr process_id) {
     system_process_signal(process_id, SIGCONT);
 }
 
-void system_process_terminate(uintptr process_id) {
+void system_process_terminate(intptr process_id) {
     system_process_signal(process_id, SIGTERM);
 }
 
-void system_process_kill(uintptr process_id) {
+void system_process_kill(intptr process_id) {
     system_process_signal(process_id, SIGKILL);
 }
 
@@ -400,7 +400,7 @@ const char* process_error_to_string(uint8 error) {
 
 #include <pthread.h>
 
-uintptr (system_thread_create)(void* (*routine)(void*), void* argument) {
+intptr (system_thread_create)(void* (*routine)(void*), void* argument) {
     if (require_non_null(routine)) return -1;
 
     pthread_t thread_id;
@@ -416,7 +416,7 @@ uintptr (system_thread_create)(void* (*routine)(void*), void* argument) {
     return thread_id;
 }
 
-void* system_thread_join(uintptr thread_id) {
+void* system_thread_join(intptr thread_id) {
     void* result = nullptr;
     const int status = pthread_join(thread_id, &result);
     if (status != 0) {
@@ -430,7 +430,7 @@ void* system_thread_join(uintptr thread_id) {
     return result;
 }
 
-void system_thread_detach(uintptr thread_id) {
+void system_thread_detach(intptr thread_id) {
     const int status = pthread_detach(thread_id);
     if (status != 0) {
         switch (status) {
@@ -441,7 +441,7 @@ void system_thread_detach(uintptr thread_id) {
     }
 }
 
-void system_thread_interrupt(uintptr thread_id) {
+void system_thread_interrupt(intptr thread_id) {
     const int status = pthread_cancel(thread_id);
     if (status != 0) {
         switch (status) {
@@ -451,7 +451,7 @@ void system_thread_interrupt(uintptr thread_id) {
     }
 }
 
-uintptr system_thread_current() {
+intptr system_thread_current() {
     return pthread_self();
 }
 

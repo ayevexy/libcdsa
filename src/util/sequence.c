@@ -1,9 +1,8 @@
 #include "sequence.h"
 
+#include "core/memory.h"
 #include "list/list.h"
 #include "set/set.h"
-#include "core/memory.h"
-#include "core/errors.h"
 #include "constraints.h"
 #include <assert.h>
 
@@ -374,7 +373,7 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
             replace_pipeline_source(sequence);
         }
         if (sequence->pipeline.state == ABORTED) {
-            set_plain_error(SEQUENCE_PROCESSING_ERROR, "SEQUENCE_PROCESSING_ERROR: %s", plain_error_message());
+            set_error(SEQUENCE_PROCESSING_ERROR, "%s", plain_error_message());
             return (SequencePipeLineResult) {};
         }
         if (sequence->pipeline.state == EXHAUSTED) {
@@ -459,7 +458,7 @@ static SequencePipeLineResult pipeline_result_array(Sequence* sequence, Terminal
 
     if (error) {
         sequence->pipeline.state = ABORTED;
-        set_plain_error(SEQUENCE_PROCESSING_ERROR, "SEQUENCE_PROCESSING_ERROR: %s", plain_error_message());
+        set_error(SEQUENCE_PROCESSING_ERROR, "%s", plain_error_message());
         return (SequencePipeLineResult) {};
     }
     list_destroy(&list);
@@ -622,4 +621,13 @@ static void iterator_destroy_internal(void* raw_iteration_context) {
         array_destroy(&iteration_context->elements);
     }
     memory_dealloc(iteration_context);
+}
+
+const char* sequence_error_to_string(uint8 error) {
+    static const char* error_strings[] = {
+        "SEQUENCE_PROCESSING_ERROR"
+    };
+    return error < sizeof(error_strings) / sizeof(error_strings[0])
+        ? error_strings[error]
+        : "UNKNOWN_ERROR";
 }

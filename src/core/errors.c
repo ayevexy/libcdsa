@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define error_category_shift 8
+#define error_category_mask 0xFF00
+#define error_value_mask 0x00FF
+
 constexpr int MAX_MESSAGE_LENGTH = 256;
 
 typedef struct {
@@ -17,9 +21,9 @@ typedef struct {
 
 thread_local static ErrorContext error_context = { .abort = true };
 
-const char* error_to_string(Error error) {
+static const char* runtime_error_to_string(uint8 error) {
     static const char* error_strings[] = {
-        "NO_ERROR",
+        "RUNTIME_ERROR",
         "NULL_POINTER_ERROR",
         "ARITHMETIC_ERROR",
         "INDEX_OUT_OF_BOUNDS_ERROR",
@@ -28,26 +32,35 @@ const char* error_to_string(Error error) {
         "ILLEGAL_STATE_ERROR",
         "UNSUPPORTED_OPERATION_ERROR",
         "CONCURRENT_MODIFICATION_ERROR",
-        "FILE_NOT_FOUND_ERROR",
-        "FILE_ALREADY_EXISTS_ERROR",
-        "FILE_ACCESS_DENIED_ERROR",
-        "FILE_DIRECTORY_NOT_EMPTY_ERROR",
-        "FILE_INPUT_OUTPUT_ERROR",
-        "FILE_SYSTEM_ERROR",
-        "PROCESS_CREATION_ERROR",
-        "PROCESS_EXECUTION_ERROR",
-        "PROCESS_NOT_FOUND_ERROR",
-        "PROCESS_ACCESS_DENIED_ERROR",
-        "PROCESS_INTERRUPTED_ERROR",
-        "PROCESS_ERROR",
-        "THREAD_CREATION_ERROR",
-        "THREAD_NOT_FOUND_ERROR",
-        "THREAD_ILLEGAL_STATE_ERROR",
-        "THREAD_DEADLOCK_ERROR",
-        "THREAD_ERROR",
         "MEMORY_ALLOCATION_ERROR"
     };
-    return error > 0 && error < ERROR_COUNT ? error_strings[error] : "UNKNOWN_ERROR";
+    return error < sizeof(error_strings) / sizeof(error_strings[0])
+        ? error_strings[error]
+        : "UNKNOWN_ERROR";
+}
+
+extern const char* file_system_error_to_string(uint8);
+
+extern const char* process_error_to_string(uint8);
+
+extern const char* thread_error_to_string(uint8);
+
+extern const char* sequence_error_to_string(uint8);
+
+const char* error_to_string(Error error) {
+    if (error == NO_ERROR) {
+        return "NO_ERROR";
+    }
+    const uint8 category = (error & error_category_mask) >> error_category_shift;
+    const uint8 value = error & error_value_mask;
+    switch (category) {
+        case RUNTIME_ERROR_CATEGORY:      return runtime_error_to_string(value);
+        case FILE_SYSTEM_ERROR_CATEGORY:  return file_system_error_to_string(value);
+        case PROCESS_ERROR_CATEGORY:      return process_error_to_string(value);
+        case THREAD_ERROR_CATEGORY:       return thread_error_to_string(value);
+        case SEQUENCE_ERROR_CATEGORY:     return sequence_error_to_string(value);
+        default:                          return "UNKNOWN_ERROR";
+    }
 }
 
 const char* error_message(void) {

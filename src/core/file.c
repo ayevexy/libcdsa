@@ -322,3 +322,17 @@ bool file_delete_if_exists(const char* path) {
     file_set_error(errno);
     return false;
 }
+
+const char* file_system_error_to_string(uint8 error) {
+    static const char* error_strings[] = {
+        "FILE_SYSTEM_ERROR",
+        "FILE_INPUT_OUTPUT_ERROR",
+        "FILE_NOT_FOUND_ERROR",
+        "FILE_ALREADY_EXISTS_ERROR",
+        "FILE_ACCESS_DENIED_ERROR",
+        "FILE_DIRECTORY_NOT_EMPTY_ERROR"
+    };
+    return error < sizeof(error_strings) / sizeof(error_strings[0])
+        ? error_strings[error]
+        : "UNKNOWN_ERROR";
+}

@@ -2,6 +2,7 @@
 #define LIBCDSA_FILE_H
 
 #include "types.h"
+#include "errors.h"
 #include "string.h"
 
 /**
@@ -12,12 +13,24 @@ typedef struct File File;
 /**
  * @brief A bitmask enum representing the file opening modes.
  */
-typedef enum FileOpenOption {
+typedef enum {
     FILE_READ         = 1 << 0,
     FILE_WRITE        = 1 << 1,
     FILE_APPEND       = 1 << 2,
     FILE_TRUNCATE     = 1 << 3
 } FileOpenOption;
+
+/**
+ * @brief Enumeration of possible file system errors.
+ */
+typedef enum : uint16 {
+    FILE_SYSTEM_ERROR = ERROR_BASE(FILE_SYSTEM_ERROR_CATEGORY),
+    FILE_INPUT_OUTPUT_ERROR,
+    FILE_NOT_FOUND_ERROR,
+    FILE_ALREADY_EXISTS_ERROR,
+    FILE_ACCESS_DENIED_ERROR,
+    FILE_DIRECTORY_NOT_EMPTY_ERROR
+} FileSystemError;
 
 /**
  * @brief Creates a file.

@@ -1,6 +1,8 @@
 #ifndef LIBCDSA_SEQUENCE_H
 #define LIBCDSA_SEQUENCE_H
 
+#include "core/types.h"
+#include "core/errors.h"
 #include "core/array.h"
 #include "algorithms.h"
 #include "functions.h"
@@ -29,9 +31,11 @@
 typedef struct Sequence Sequence;
 
 /**
- * @brief Error code indicating a failure during sequence pipeline processing.
+ * @brief Enumeration of possible sequence errors.
  */
-constexpr int SEQUENCE_PROCESSING_ERROR = -2;
+typedef enum : uint16 {
+    SEQUENCE_PROCESSING_ERROR = ERROR_BASE(SEQUENCE_ERROR_CATEGORY)
+} SequenceError;
 
 /**
  * @brief Creates a sequence from an existing collection.

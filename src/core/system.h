@@ -2,6 +2,7 @@
 #define LIBCDSA_SYSTEM_H
 
 #include "types.h"
+#include "errors.h"
 #include "array.h"
 #include "string.h"
 #include "file.h"
@@ -153,7 +154,7 @@ const char* system_get_environment_variable(const char* name);
  * @param value the new environment variable value
  *
  * @exception NULL_POINTER_ERROR if name is null
- * @exception INVALID_ARGUMENT_ERROR if name is empty or is the equal sign "="
+ * @exception ILLEGAL_ARGUMENT_ERROR if name is empty or is the equal sign "="
  */
 void system_set_environment_variable(const char* name, const char* value);
 
@@ -163,7 +164,7 @@ void system_set_environment_variable(const char* name, const char* value);
  * @param name the environment variable name
  *
  * @exception NULL_POINTER_ERROR if name is null
- * @exception INVALID_ARGUMENT_ERROR if name is empty or is the equal sign "="
+ * @exception ILLEGAL_ARGUMENT_ERROR if name is empty or is the equal sign "="
  */
 void system_remove_environment_variable(const char* name);
 
@@ -191,6 +192,18 @@ const char* system_platform_version();
 const char* system_platform_architecture();
 
 #ifdef __linux__
+
+/**
+ * @brief Enumeration of possible process errors.
+ */
+typedef enum : uint16 {
+    PROCESS_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
+    PROCESS_CREATION_ERROR,
+    PROCESS_EXECUTION_ERROR,
+    PROCESS_NOT_FOUND_ERROR,
+    PROCESS_ACCESS_DENIED_ERROR,
+    PROCESS_INTERRUPTED_ERROR,
+} ProcessError;
 
 /**
  * @brief Creates an operating system process.
@@ -307,6 +320,17 @@ void system_process_terminate(uintptr process_id);
  * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_kill(uintptr process_id);
+
+/**
+ * @brief Enumeration of possible thread errors.
+ */
+typedef enum : uint16 {
+    THREAD_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
+    THREAD_CREATION_ERROR,
+    THREAD_NOT_FOUND_ERROR,
+    THREAD_ILLEGAL_STATE_ERROR,
+    THREAD_DEADLOCK_ERROR
+} ThreadError;
 
 /**
  * @brief Creates a thread.

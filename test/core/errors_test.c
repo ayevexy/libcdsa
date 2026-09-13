@@ -20,7 +20,7 @@ void test_set_error_aborts_program() {
     // given
     atexit(exit_handler);
     // then
-    set_error(UNKNOWN_ERROR, "No additional details available");
+    set_error(RUNTIME_ERROR, "No additional details available");
     //
     TEST_ASSERT_TRUE(false); // Should not be reached...
 }

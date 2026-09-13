@@ -1,17 +1,47 @@
 #ifndef LIBCDSA_ERRORS_H
 #define LIBCDSA_ERRORS_H
 
+#include "types.h"
+
 /**
- * @brief Enumeration of possible runtime errors.
+ * @brief Error code.
  *
- * This enumeration defines all error types that can be raised and captured
- * by the error handling subsystem.
+ * Encodes an error category and error value.
  *
- * NO_ERROR indicates the absence of an error.
+ * @note The upper 8 bits identify the error category and the lower 8 bits identify the specific error.
  */
-typedef enum {
-    UNKNOWN_ERROR = -1,
-    NO_ERROR = 0,
+typedef uint16 Error;
+
+/** Constant expression defining the absence of an error. */
+constexpr Error NO_ERROR = 0;
+
+/**
+ * @brief Enumeration of error categories.
+ */
+typedef enum : uint8 {
+    RUNTIME_ERROR_CATEGORY = 1,
+    FILE_SYSTEM_ERROR_CATEGORY,
+    PROCESS_ERROR_CATEGORY,
+    THREAD_ERROR_CATEGORY,
+    SEQUENCE_ERROR_CATEGORY
+} ErrorCategory;
+
+/**
+ * @brief Creates the base value for an error category.
+ *
+ * @param category the error category
+ *
+ * @return the category encoded in the upper 8 bits
+ *
+ * @note Intended for the first member of an error enum.
+ */
+#define ERROR_BASE(category) ((category) << 8)
+
+/**
+ * @brief Enumeration of common runtime errors.
+ */
+typedef enum : uint16 {
+    RUNTIME_ERROR = ERROR_BASE(RUNTIME_ERROR_CATEGORY),
     NULL_POINTER_ERROR,
     ARITHMETIC_ERROR,
     INDEX_OUT_OF_BOUNDS_ERROR,
@@ -20,31 +50,11 @@ typedef enum {
     ILLEGAL_STATE_ERROR,
     UNSUPPORTED_OPERATION_ERROR,
     CONCURRENT_MODIFICATION_ERROR,
-    FILE_NOT_FOUND_ERROR,
-    FILE_ALREADY_EXISTS_ERROR,
-    FILE_ACCESS_DENIED_ERROR,
-    FILE_DIRECTORY_NOT_EMPTY_ERROR,
-    FILE_INPUT_OUTPUT_ERROR,
-    FILE_SYSTEM_ERROR,
-    PROCESS_CREATION_ERROR,
-    PROCESS_EXECUTION_ERROR,
-    PROCESS_NOT_FOUND_ERROR,
-    PROCESS_ACCESS_DENIED_ERROR,
-    PROCESS_INTERRUPTED_ERROR,
-    PROCESS_ERROR,
-    THREAD_CREATION_ERROR,
-    THREAD_NOT_FOUND_ERROR,
-    THREAD_ILLEGAL_STATE_ERROR,
-    THREAD_DEADLOCK_ERROR,
-    THREAD_ERROR,
     MEMORY_ALLOCATION_ERROR
-} Error;
-
-/** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 27;
+} RuntimeError;
 
 /**
- * @brief Converts an error enumeration to its string representation.
+ * @brief Converts an error to its string representation.
  *
  * @param error the error to be converted
  *

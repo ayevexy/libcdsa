@@ -125,7 +125,7 @@ void system_set_environment_variable(const char* name, const char* value) {
     switch (errno) {
         case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
         case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
-        default:      set_error(UNKNOWN_ERROR, "%s", strerror(errno));
+        default:      set_error(RUNTIME_ERROR, "%s", strerror(errno));
     }
 }
 
@@ -139,7 +139,7 @@ void system_remove_environment_variable(const char* name) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");
         return;
     }
-    set_error(UNKNOWN_ERROR, "%s", strerror(errno));
+    set_error(RUNTIME_ERROR, "%s", strerror(errno));
 }
 
 #endif
@@ -384,6 +384,20 @@ void system_process_kill(uintptr process_id) {
     system_process_signal(process_id, SIGKILL);
 }
 
+const char* process_error_to_string(uint8 error) {
+    static const char* error_strings[] = {
+        "PROCESS_ERROR",
+        "PROCESS_CREATION_ERROR",
+        "PROCESS_EXECUTION_ERROR",
+        "PROCESS_NOT_FOUND_ERROR",
+        "PROCESS_ACCESS_DENIED_ERROR",
+        "PROCESS_INTERRUPTED_ERROR"
+    };
+    return error < sizeof(error_strings) / sizeof(error_strings[0])
+        ? error_strings[error]
+        : "UNKNOWN_ERROR";
+}
+
 #include <pthread.h>
 
 uintptr (system_thread_create)(void* (*routine)(void*), void* argument) {
@@ -451,6 +465,19 @@ void system_thread_sleep(uint64 milliseconds) {
         .tv_nsec = (milliseconds % 1000) * 1000000
     };
     while (nanosleep(&remaining, &remaining) == -1 && errno == EINTR) {}
+}
+
+const char* thread_error_to_string(uint8 error) {
+    static const char* error_strings[] = {
+        "THREAD_ERROR",
+        "THREAD_CREATION_ERROR",
+        "THREAD_NOT_FOUND_ERROR",
+        "THREAD_ILLEGAL_STATE_ERROR",
+        "THREAD_DEADLOCK_ERROR"
+    };
+    return error < sizeof(error_strings) / sizeof(error_strings[0])
+        ? error_strings[error]
+        : "UNKNOWN_ERROR";
 }
 
 #endif

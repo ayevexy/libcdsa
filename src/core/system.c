@@ -384,6 +384,75 @@ void system_process_kill(uintptr process_id) {
     system_process_signal(process_id, SIGKILL);
 }
 
+#include <pthread.h>
+
+uintptr (system_thread_create)(void* (*routine)(void*), void* argument) {
+    if (require_non_null(routine)) return -1;
+
+    pthread_t thread_id;
+    const int status = pthread_create(&thread_id, nullptr, routine, argument);
+
+    if (status != 0) {
+        switch (status) {
+            case EAGAIN: set_error(THREAD_CREATION_ERROR, "unable to create thread due to limited resources"); break;
+            default: set_error(THREAD_CREATION_ERROR, "%s", strerror(status)); break;
+        }
+        return -1;
+    }
+    return thread_id;
+}
+
+void* system_thread_join(uintptr thread_id) {
+    void* result = nullptr;
+    const int status = pthread_join(thread_id, &result);
+    if (status != 0) {
+        switch (status) {
+            case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
+            case EINVAL: set_error(THREAD_ILLEGAL_STATE_ERROR, "thread is not joinable or is already being joined"); break;
+            case EDEADLK: set_error(THREAD_DEADLOCK_ERROR, "thread cannot be joined without causing deadlock"); break;
+            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+        }
+    }
+    return result;
+}
+
+void system_thread_detach(uintptr thread_id) {
+    const int status = pthread_detach(thread_id);
+    if (status != 0) {
+        switch (status) {
+            case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
+            case EINVAL: set_error(THREAD_ILLEGAL_STATE_ERROR, "thread is not joinable"); break;
+            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+        }
+    }
+}
+
+void system_thread_interrupt(uintptr thread_id) {
+    const int status = pthread_cancel(thread_id);
+    if (status != 0) {
+        switch (status) {
+            case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
+            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+        }
+    }
+}
+
+uintptr system_thread_current() {
+    return pthread_self();
+}
+
+_Noreturn void system_thread_exit(void* result) {
+    pthread_exit(result);
+}
+
+void system_thread_sleep(uint64 milliseconds) {
+    struct timespec remaining = {
+        .tv_sec = milliseconds / 1000,
+        .tv_nsec = (milliseconds % 1000) * 1000000
+    };
+    while (nanosleep(&remaining, &remaining) == -1 && errno == EINTR) {}
+}
+
 #endif
 
 int system_execute(const char* command) {

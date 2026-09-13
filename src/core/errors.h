@@ -32,11 +32,16 @@ typedef enum {
     PROCESS_ACCESS_DENIED_ERROR,
     PROCESS_INTERRUPTED_ERROR,
     PROCESS_ERROR,
+    THREAD_CREATION_ERROR,
+    THREAD_NOT_FOUND_ERROR,
+    THREAD_ILLEGAL_STATE_ERROR,
+    THREAD_DEADLOCK_ERROR,
+    THREAD_ERROR,
     MEMORY_ALLOCATION_ERROR
 } Error;
 
 /** Constant expression defining the total numbers of errors. */
-constexpr int ERROR_COUNT = 22;
+constexpr int ERROR_COUNT = 27;
 
 /**
  * @brief Converts an error enumeration to its string representation.

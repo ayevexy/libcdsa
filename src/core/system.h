@@ -308,6 +308,79 @@ void system_process_terminate(uintptr process_id);
  */
 void system_process_kill(uintptr process_id);
 
+/**
+ * @brief Creates a thread.
+ *
+ * @param routine the routine executed by the thread
+ * @param ... the routine argument (optional)
+ *
+ * @return the thread id, or -1 if creation fails
+ *
+ * @exception NULL_POINTER_ERROR if routine is null
+ * @exception THREAD_CREATION_ERROR if the thread cannot be created
+ */
+#define system_thread_create(function, ...) system_thread_create_(function, __VA_OPT__(__VA_ARGS__,) nullptr)
+
+#define system_thread_create_(function, argument, ...) system_thread_create(function, argument)
+
+uintptr (system_thread_create)(void* (*routine)(void*), void* argument);
+
+/**
+ * @brief Waits for a thread to terminate.
+ *
+ * @param thread_id the thread id
+ *
+ * @return the thread result, or nullptr if the operation fails
+ *
+ * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
+ * @exception THREAD_ILLEGAL_STATE_ERROR if the thread is not joinable or is already being joined
+ * @exception THREAD_DEADLOCK_ERROR if joining the thread would cause a deadlock
+ * @exception THREAD_ERROR if the operation fails for another reason
+ */
+void* system_thread_join(uintptr thread_id);
+
+/**
+ * @brief Detaches a thread.
+ *
+ * @param thread_id the thread id
+ *
+ * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
+ * @exception ILLEGAL_STATE_ERROR if the thread is not joinable
+ * @exception THREAD_ERROR if the operation fails for another reason
+ */
+void system_thread_detach(uintptr thread_id);
+
+/**
+ * @brief Requests cancellation of a thread.
+ *
+ * @param thread_id the thread id
+ *
+ * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
+ * @exception THREAD_ERROR if the operation fails for another reason
+ */
+void system_thread_interrupt(uintptr thread_id);
+
+/**
+ * @brief Returns the current thread id.
+ *
+ * @return the current thread id
+ */
+uintptr system_thread_current();
+
+/**
+ * @brief Terminates the current thread.
+ *
+ * @param result the thread result
+ */
+_Noreturn void system_thread_exit(void* result);
+
+/**
+ * @brief Suspends the current thread.
+ *
+ * @param milliseconds the duration in milliseconds
+ */
+void system_thread_sleep(uint64 milliseconds);
+
 #endif
 
 /**

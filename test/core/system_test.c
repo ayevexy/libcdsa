@@ -221,6 +221,72 @@ void test_system_process_kill() {
     TEST_ASSERT_EQUAL(-SIGKILL, exit_code);
 }
 
+void* count_to_ten(void* raw_counter) {
+    int* counter = raw_counter;
+    while (*counter < 10) {
+        (*counter)++;
+    }
+    return counter;
+}
+
+void test_system_thread_creation() {
+    // given
+    int counter = 0;
+    // when
+    uintptr thread_id = system_thread_create(count_to_ten, &counter);
+    // and
+    int* result = system_thread_join(thread_id);
+    // then
+    TEST_ASSERT_EQUAL(10, counter);
+    TEST_ASSERT_EQUAL(10, *result);
+    TEST_ASSERT_EQUAL_PTR(result, &counter);
+}
+
+#include <stdatomic.h>
+
+void* increment(void* raw_counter) {
+    atomic_int* counter = raw_counter;
+    atomic_fetch_add(counter, 1);
+    return counter;
+}
+
+void test_system_thread_creation_multiple() {
+    // given
+    atomic_int counter = 0;
+    // when
+    uintptr thread_id_1 = system_thread_create(increment, &counter);
+    uintptr thread_id_2 = system_thread_create(increment, &counter);
+    uintptr thread_id_3 = system_thread_create(increment, &counter);
+    // and
+    system_thread_join(thread_id_1);
+    system_thread_join(thread_id_2);
+    system_thread_join(thread_id_3);
+    // then
+    TEST_ASSERT_EQUAL(3, counter);
+}
+
+void* count_to_ten_seconds(void* raw_counter) {
+    int* counter = raw_counter;
+    while (*counter < 10) {
+        system_thread_sleep(1000);
+        (*counter)++;
+    }
+    return counter;
+}
+
+void test_system_thread_interrupt() {
+    // given
+    int counter = 0;
+    // when
+    uintptr thread_id = system_thread_create(count_to_ten_seconds, &counter);
+    system_thread_sleep(100);
+    // and
+    system_thread_interrupt(thread_id);
+    system_thread_join(thread_id);
+    // then
+    TEST_ASSERT_EQUAL(0, counter);
+}
+
 #endif
 
 void test_system_execute() {
@@ -251,6 +317,9 @@ int main(void) {
     RUN_TEST(test_system_process_suspend_resume);
     RUN_TEST(test_system_process_terminate);
     RUN_TEST(test_system_process_kill);
+    RUN_TEST(test_system_thread_creation);
+    RUN_TEST(test_system_thread_creation_multiple);
+    RUN_TEST(test_system_thread_interrupt);
 #endif
     RUN_TEST(test_system_execute);
     return UNITY_END();

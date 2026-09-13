@@ -40,6 +40,11 @@ const char* error_to_string(Error error) {
         "PROCESS_ACCESS_DENIED_ERROR",
         "PROCESS_INTERRUPTED_ERROR",
         "PROCESS_ERROR",
+        "THREAD_CREATION_ERROR",
+        "THREAD_NOT_FOUND_ERROR",
+        "THREAD_ILLEGAL_STATE_ERROR",
+        "THREAD_DEADLOCK_ERROR",
+        "THREAD_ERROR",
         "MEMORY_ALLOCATION_ERROR"
     };
     return error > 0 && error < ERROR_COUNT ? error_strings[error] : "UNKNOWN_ERROR";

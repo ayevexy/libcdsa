@@ -196,7 +196,7 @@ const char* system_platform_architecture();
 /**
  * @brief Enumeration of possible process errors.
  */
-typedef enum : uint16 {
+typedef enum : Error {
     PROCESS_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
     PROCESS_CREATION_ERROR,
     PROCESS_EXECUTION_ERROR,
@@ -324,7 +324,7 @@ void system_process_kill(intptr process_id);
 /**
  * @brief Enumeration of possible thread errors.
  */
-typedef enum : uint16 {
+typedef enum : Error {
     THREAD_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
     THREAD_CREATION_ERROR,
     THREAD_NOT_FOUND_ERROR,

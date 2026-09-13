@@ -40,7 +40,7 @@ typedef enum : uint8 {
 /**
  * @brief Enumeration of common runtime errors.
  */
-typedef enum : uint16 {
+typedef enum : Error {
     RUNTIME_ERROR = ERROR_BASE(RUNTIME_ERROR_CATEGORY),
     NULL_POINTER_ERROR,
     ARITHMETIC_ERROR,

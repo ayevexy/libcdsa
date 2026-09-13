@@ -1,7 +1,6 @@
 #ifndef LIBCDSA_SEQUENCE_H
 #define LIBCDSA_SEQUENCE_H
 
-#include "core/types.h"
 #include "core/errors.h"
 #include "core/array.h"
 #include "algorithms.h"
@@ -33,7 +32,7 @@ typedef struct Sequence Sequence;
 /**
  * @brief Enumeration of possible sequence errors.
  */
-typedef enum : uint16 {
+typedef enum : Error {
     SEQUENCE_PROCESSING_ERROR = ERROR_BASE(SEQUENCE_ERROR_CATEGORY)
 } SequenceError;
 

@@ -207,7 +207,7 @@ int file_write_string_variadic(File* file, struct String string, va_list paramet
     return bytes;
 }
 
-void file_seek(File* file, long offset, int origin) {
+void file_seek(File* file, long offset, FileSeekOrigin origin) {
     if (require_non_null(file)) return;
 
     if (fseek(file->self, offset, origin) != 0) {

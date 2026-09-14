@@ -181,6 +181,15 @@ int file_write_char(File* file, int character);
 int (file_write_string)(File* file, struct String string, ...);
 
 /**
+ * @brief Enumeration of file seek origins.
+ */
+typedef enum {
+    FILE_SEEK_BEGIN,
+    FILE_SEEK_CURRENT,
+    FILE_SEEK_END
+} FileSeekOrigin;
+
+/**
  * @brief Changes the file position.
  *
  * @param file the file whose position to change
@@ -191,7 +200,7 @@ int (file_write_string)(File* file, struct String string, ...);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-void file_seek(File* file, long offset, int origin);
+void file_seek(File* file, long offset, FileSeekOrigin origin);
 
 /**
  * @brief Gets the current file position.

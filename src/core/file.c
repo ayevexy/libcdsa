@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "file.h"
 
 #include "errors.h"
@@ -291,6 +293,36 @@ bytes file_size(File* file) {
     }
     return size;
 }
+
+#ifdef __linux
+
+#include <fcntl.h>
+#include <sys/stat.h>
+
+FileInfo file_info(const char* path) {
+    if (require_non_null(path)) return (FileInfo) {};
+
+    struct statx info;
+
+    if (statx(AT_FDCWD, path, 0,
+        STATX_TYPE | STATX_SIZE | STATX_BTIME | STATX_MTIME | STATX_ATIME, &info) == -1)
+    {
+        file_set_error(errno);
+        return (FileInfo) {};
+    }
+
+    return (FileInfo) {
+        .size = info.stx_size,
+        .is_regular = S_ISREG(info.stx_mode),
+        .is_directory = S_ISDIR(info.stx_mode),
+        .is_symbolic_link = S_ISLNK(info.stx_mode),
+        .creation_time = info.stx_btime.tv_sec,
+        .modified_time = info.stx_mtime.tv_sec,
+        .access_time = info.stx_atime.tv_sec
+    };
+}
+
+#endif
 
 void file_move(const char* old_path, const char* new_path) {
     if (require_non_null(old_path, new_path)) return;

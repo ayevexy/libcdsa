@@ -92,6 +92,24 @@ void test_file_size() {
     file_delete(file_name);
 }
 
+#ifdef __linux__
+
+void test_file_info() {
+    // given
+    File* file = file_create(file_name);
+    file_write_string(file, "Hello World!\n");
+    file_close(file);
+    // when
+    FileInfo file_metadata = file_info(file_name);
+    // then
+    TEST_ASSERT_EQUAL(13, file_metadata.size);
+    TEST_ASSERT_TRUE(file_metadata.is_regular);
+    TEST_ASSERT_FALSE(file_metadata.is_directory);
+    TEST_ASSERT_FALSE(file_metadata.is_symbolic_link);
+}
+
+#endif
+
 void test_file_move() {
     // given
     const char* new_file_name = "new_file.txt";
@@ -134,6 +152,9 @@ int main(void) {
     RUN_TEST(test_file_read_line_and_write_string);
     RUN_TEST(test_file_exists);
     RUN_TEST(test_file_size);
+#ifdef __linux__
+    RUN_TEST(test_file_info);
+#endif
     RUN_TEST(test_file_move);
     RUN_TEST(test_file_delete);
     RUN_TEST(test_file_delete_if_exists);

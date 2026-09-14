@@ -274,6 +274,38 @@ bool file_exists(const char* path);
  */
 bytes file_size(File* file);
 
+#ifdef __linux__
+
+/**
+ * @brief Represents a file metadata.
+ */
+typedef struct {
+    bytes size;
+    bool is_directory;
+    bool is_regular;
+    bool is_symbolic_link;
+    int64 creation_time;
+    int64 modified_time;
+    int64 access_time;
+} FileInfo;
+
+/**
+ * @brief Retrieves the metadata of a file.
+ *
+ * @param path the file path
+ *
+ * @return the file metadata
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_NOT_FOUND_ERROR if the file does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the file is denied
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+FileInfo file_info(const char* path);
+
+#endif
+
 /**
  * @brief Moves or renames a file.
  *

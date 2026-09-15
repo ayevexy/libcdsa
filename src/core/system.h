@@ -197,7 +197,7 @@ const char* system_platform_architecture();
  * @brief Enumeration of possible process errors.
  */
 typedef enum : Error {
-    PROCESS_CREATION_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
+    PROCESS_CREATION_ERROR = ERROR_BASE(PROCESS_CATEGORY),
     PROCESS_EXECUTION_ERROR,
     PROCESS_NOT_FOUND_ERROR,
     PROCESS_ACCESS_DENIED_ERROR,
@@ -317,7 +317,7 @@ void system_process_kill(intptr process_id);
  * @brief Enumeration of possible thread errors.
  */
 typedef enum : Error {
-    THREAD_CREATION_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
+    THREAD_CREATION_ERROR = ERROR_BASE(THREAD_CATEGORY),
     THREAD_NOT_FOUND_ERROR,
     THREAD_ILLEGAL_STATE_ERROR,
     THREAD_DEADLOCK_ERROR

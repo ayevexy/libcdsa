@@ -19,11 +19,11 @@ constexpr Error NO_ERROR = 0;
  * @brief Enumeration of error categories.
  */
 typedef enum : uint8 {
-    RUNTIME_ERROR_CATEGORY = 1,
-    FILE_SYSTEM_ERROR_CATEGORY,
-    PROCESS_ERROR_CATEGORY,
-    THREAD_ERROR_CATEGORY,
-    SEQUENCE_ERROR_CATEGORY
+    RUNTIME_CATEGORY = 1,
+    FILE_SYSTEM_CATEGORY,
+    PROCESS_CATEGORY,
+    THREAD_CATEGORY,
+    SEQUENCE_CATEGORY
 } ErrorCategory;
 
 /**
@@ -41,7 +41,7 @@ typedef enum : uint8 {
  * @brief Enumeration of common runtime errors.
  */
 typedef enum : Error {
-    RUNTIME_ERROR = ERROR_BASE(RUNTIME_ERROR_CATEGORY),
+    RUNTIME_ERROR = ERROR_BASE(RUNTIME_CATEGORY),
     NULL_POINTER_ERROR,
     ARITHMETIC_ERROR,
     INDEX_OUT_OF_BOUNDS_ERROR,

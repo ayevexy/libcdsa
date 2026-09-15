@@ -54,12 +54,12 @@ const char* error_to_string(Error error) {
     const uint8 category = (error & error_category_mask) >> error_category_shift;
     const uint8 value = error & error_value_mask;
     switch (category) {
-        case RUNTIME_ERROR_CATEGORY:      return runtime_error_to_string(value);
-        case FILE_SYSTEM_ERROR_CATEGORY:  return file_system_error_to_string(value);
-        case PROCESS_ERROR_CATEGORY:      return process_error_to_string(value);
-        case THREAD_ERROR_CATEGORY:       return thread_error_to_string(value);
-        case SEQUENCE_ERROR_CATEGORY:     return sequence_error_to_string(value);
-        default:                          return "UNKNOWN_ERROR";
+        case RUNTIME_CATEGORY:      return runtime_error_to_string(value);
+        case FILE_SYSTEM_CATEGORY:  return file_system_error_to_string(value);
+        case PROCESS_CATEGORY:      return process_error_to_string(value);
+        case THREAD_CATEGORY:       return thread_error_to_string(value);
+        case SEQUENCE_CATEGORY:     return sequence_error_to_string(value);
+        default:                    return "UNKNOWN_ERROR";
     }
 }
 

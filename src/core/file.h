@@ -24,7 +24,7 @@ typedef enum {
  * @brief Enumeration of possible file system errors.
  */
 typedef enum : Error {
-    FILE_SYSTEM_ERROR = ERROR_BASE(FILE_SYSTEM_ERROR_CATEGORY),
+    FILE_SYSTEM_ERROR = ERROR_BASE(FILE_SYSTEM_CATEGORY),
     FILE_INPUT_OUTPUT_ERROR,
     FILE_NOT_FOUND_ERROR,
     FILE_ALREADY_EXISTS_ERROR,

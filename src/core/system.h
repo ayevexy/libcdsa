@@ -407,7 +407,7 @@ void system_thread_sleep(uint64 milliseconds);
  *         -N if the process is terminated by signal N
  *
  * @exception NULL_POINTER_ERROR if command is null
- * @exception RUNTIME_ERROR if the operation fails for some reason
+ * @exception PROCESS_EXECUTION_ERROR if the process cannot be executed
  *
  * @note On Linux, the return value is POSIX-specific; on other platforms,
  *       the underlying system() status is returned.

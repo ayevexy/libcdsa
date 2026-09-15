@@ -479,7 +479,7 @@ int system_execute(const char* command) {
 
     const int status = system(command);
     if (status == -1) {
-        set_error(RUNTIME_ERROR, "%s", strerror(errno));
+        set_error(PROCESS_EXECUTION_ERROR, "%s", strerror(errno));
         return -1;
     }
 #ifdef __linux__
@@ -489,7 +489,7 @@ int system_execute(const char* command) {
     if (WIFSIGNALED(status)) {
         return -WTERMSIG(status);
     }
-    set_error(RUNTIME_ERROR, "unknown process termination status");
+    set_error(PROCESS_EXECUTION_ERROR, "unknown process termination status");
     return -1;
 #else
     return status;

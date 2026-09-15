@@ -384,7 +384,8 @@ intptr system_thread_current();
  *
  * @param result the thread result
  */
-_Noreturn void system_thread_exit(void* result);
+[[noreturn]]
+void system_thread_exit(void* result);
 
 /**
  * @brief Suspends the current thread.
@@ -431,6 +432,7 @@ uint64 system_elapsed_time(void);
  *
  * @param status the status code
  */
+[[noreturn]]
 void system_exit(int status);
 
 #endif

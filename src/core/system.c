@@ -453,7 +453,7 @@ intptr system_thread_current() {
     return pthread_self();
 }
 
-_Noreturn void system_thread_exit(void* result) {
+void system_thread_exit(void* result) {
     pthread_exit(result);
 }
 

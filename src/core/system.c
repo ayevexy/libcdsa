@@ -269,7 +269,7 @@ intptr (system_process_create)(int count, ...) {
         system_process_set_execution_error(error);
     } else if (n == -1) {
         const int read_error = errno;
-        set_error(PROCESS_ERROR, "%s", strerror(read_error));
+        set_error(PROCESS_CREATION_ERROR, "%s", strerror(read_error));
     }
 
     close(error_pipe[0]);
@@ -282,7 +282,7 @@ int system_process_wait(intptr process_id) {
         switch (errno) {
             case ECHILD:  set_error(PROCESS_NOT_FOUND_ERROR, "no child process");                 break;
             case EINTR:   set_error(PROCESS_INTERRUPTED_ERROR, "process operation interrupted");  break;
-            default:      set_error(PROCESS_ERROR, "%s", strerror(errno));
+            default:      unreachable();
         }
         return -1;
     }
@@ -318,9 +318,8 @@ int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_o
             if (errno == EINTR) {
                 continue;
             }
-            switch (errno) {
-                case ECHILD:  set_error(PROCESS_NOT_FOUND_ERROR, "no child process");  break;
-                default:      set_error(PROCESS_ERROR, "%s", strerror(errno));         break;
+            if (errno == ECHILD) {
+                set_error(PROCESS_NOT_FOUND_ERROR, "no child process");
             }
             return -1;
         }
@@ -351,7 +350,7 @@ bool system_process_is_alive(intptr process_id) {
         switch (errno) {
             case ESRCH: return false;
             case EPERM: return true;
-            default: set_error(PROCESS_ERROR, "%s", strerror(errno)); return false;
+            default: unreachable();
         }
     }
     return true;
@@ -363,7 +362,7 @@ void system_process_signal(intptr process_id, int signum) {
             case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid signal number");           break;
             case ESRCH:   set_error(PROCESS_NOT_FOUND_ERROR, "no process with that id found");  break;
             case EPERM:   set_error(PROCESS_ACCESS_DENIED_ERROR, "permission denied");          break;
-            default:      set_error(PROCESS_ERROR, "%s", strerror(errno));
+            default:      unreachable();
         }
     }
 }
@@ -386,7 +385,6 @@ void system_process_kill(intptr process_id) {
 
 const char* process_error_to_string(uint8 error) {
     static const char* error_strings[] = {
-        "PROCESS_ERROR",
         "PROCESS_CREATION_ERROR",
         "PROCESS_EXECUTION_ERROR",
         "PROCESS_NOT_FOUND_ERROR",
@@ -424,7 +422,7 @@ void* system_thread_join(intptr thread_id) {
             case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
             case EINVAL: set_error(THREAD_ILLEGAL_STATE_ERROR, "thread is not joinable or is already being joined"); break;
             case EDEADLK: set_error(THREAD_DEADLOCK_ERROR, "thread cannot be joined without causing deadlock"); break;
-            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+            default: unreachable();
         }
     }
     return result;
@@ -436,7 +434,7 @@ void system_thread_detach(intptr thread_id) {
         switch (status) {
             case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
             case EINVAL: set_error(THREAD_ILLEGAL_STATE_ERROR, "thread is not joinable"); break;
-            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+            default: unreachable();
         }
     }
 }
@@ -446,7 +444,7 @@ void system_thread_interrupt(intptr thread_id) {
     if (status != 0) {
         switch (status) {
             case ESRCH: set_error(THREAD_NOT_FOUND_ERROR, "no thread with that id found"); break;
-            default: set_error(THREAD_ERROR, "%s", strerror(status)); break;
+            default: unreachable();
         }
     }
 }
@@ -469,7 +467,6 @@ void system_thread_sleep(uint64 milliseconds) {
 
 const char* thread_error_to_string(uint8 error) {
     static const char* error_strings[] = {
-        "THREAD_ERROR",
         "THREAD_CREATION_ERROR",
         "THREAD_NOT_FOUND_ERROR",
         "THREAD_ILLEGAL_STATE_ERROR",
@@ -487,7 +484,7 @@ int system_execute(const char* command) {
 
     const int status = system(command);
     if (status == -1) {
-        set_error(PROCESS_ERROR, "%s", strerror(errno));
+        set_error(RUNTIME_ERROR, "%s", strerror(errno));
         return -1;
     }
 #ifdef __linux__
@@ -497,7 +494,7 @@ int system_execute(const char* command) {
     if (WIFSIGNALED(status)) {
         return -WTERMSIG(status);
     }
-    set_error(PROCESS_ERROR, "unknown process termination status");
+    set_error(RUNTIME_ERROR, "unknown process termination status");
     return -1;
 #else
     return status;

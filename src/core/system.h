@@ -197,8 +197,7 @@ const char* system_platform_architecture();
  * @brief Enumeration of possible process errors.
  */
 typedef enum : Error {
-    PROCESS_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
-    PROCESS_CREATION_ERROR,
+    PROCESS_CREATION_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
     PROCESS_EXECUTION_ERROR,
     PROCESS_NOT_FOUND_ERROR,
     PROCESS_ACCESS_DENIED_ERROR,
@@ -259,8 +258,6 @@ int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_o
  * @param process_id the process id
  *
  * @return true if the process exists, false otherwise
- *
- * @exception PROCESS_ERROR if the process status cannot be determined
  */
 bool system_process_is_alive(intptr process_id);
 
@@ -273,7 +270,6 @@ bool system_process_is_alive(intptr process_id);
  * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
  * @exception ILLEGAL_ARGUMENT_ERROR if the signal number is invalid
- * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_signal(intptr process_id, int signum);
 
@@ -284,7 +280,6 @@ void system_process_signal(intptr process_id, int signum);
  *
  * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
- * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_suspend(intptr process_id);
 
@@ -295,7 +290,6 @@ void system_process_suspend(intptr process_id);
  *
  * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
- * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_resume(intptr process_id);
 
@@ -306,7 +300,6 @@ void system_process_resume(intptr process_id);
  *
  * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
- * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_terminate(intptr process_id);
 
@@ -317,7 +310,6 @@ void system_process_terminate(intptr process_id);
  *
  * @exception PROCESS_NOT_FOUND_ERROR if the process does not exist
  * @exception PROCESS_ACCESS_DENIED_ERROR if permission to signal the process is denied
- * @exception PROCESS_ERROR if the operation fails for another reason
  */
 void system_process_kill(intptr process_id);
 
@@ -325,8 +317,7 @@ void system_process_kill(intptr process_id);
  * @brief Enumeration of possible thread errors.
  */
 typedef enum : Error {
-    THREAD_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
-    THREAD_CREATION_ERROR,
+    THREAD_CREATION_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
     THREAD_NOT_FOUND_ERROR,
     THREAD_ILLEGAL_STATE_ERROR,
     THREAD_DEADLOCK_ERROR
@@ -359,7 +350,6 @@ intptr (system_thread_create)(void* (*routine)(void*), void* argument);
  * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
  * @exception THREAD_ILLEGAL_STATE_ERROR if the thread is not joinable or is already being joined
  * @exception THREAD_DEADLOCK_ERROR if joining the thread would cause a deadlock
- * @exception THREAD_ERROR if the operation fails for another reason
  */
 void* system_thread_join(intptr thread_id);
 
@@ -369,8 +359,7 @@ void* system_thread_join(intptr thread_id);
  * @param thread_id the thread id
  *
  * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
- * @exception ILLEGAL_STATE_ERROR if the thread is not joinable
- * @exception THREAD_ERROR if the operation fails for another reason
+ * @exception THREAD_ILLEGAL_STATE_ERROR if the thread is not joinable
  */
 void system_thread_detach(intptr thread_id);
 
@@ -380,7 +369,6 @@ void system_thread_detach(intptr thread_id);
  * @param thread_id the thread id
  *
  * @exception THREAD_NOT_FOUND_ERROR if the thread does not exist
- * @exception THREAD_ERROR if the operation fails for another reason
  */
 void system_thread_interrupt(intptr thread_id);
 
@@ -417,7 +405,7 @@ void system_thread_sleep(uint64 milliseconds);
  *         -N if the process is terminated by signal N
  *
  * @exception NULL_POINTER_ERROR if command is null
- * @exception PROCESS_ERROR if the operation fails for some reason
+ * @exception RUNTIME_ERROR if the operation fails for some reason
  *
  * @note On Linux, the return value is POSIX-specific; on other platforms,
  *       the underlying system() status is returned.

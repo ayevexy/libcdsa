@@ -155,6 +155,7 @@ const char* system_get_environment_variable(const char* name);
  *
  * @exception NULL_POINTER_ERROR if name is null
  * @exception ILLEGAL_ARGUMENT_ERROR if name is empty or is the equal sign "="
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the new variable fails
  */
 void system_set_environment_variable(const char* name, const char* value);
 

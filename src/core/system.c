@@ -118,28 +118,23 @@ const char* system_get_environment_variable(const char* name) {
 
 void system_set_environment_variable(const char* name, const char* value) {
     if (require_non_null(name)) return;
-    setenv(name, value, 1);
-    if (errno == 0) {
-        return;
-    }
-    switch (errno) {
-        case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
-        case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
-        default:      set_error(RUNTIME_ERROR, "%s", strerror(errno));
+    if (setenv(name, value, 1) == -1) {
+        switch (errno) {
+            case EINVAL:  set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");  break;
+            case ENOMEM:  set_error(MEMORY_ALLOCATION_ERROR, "insufficient memory");               break;
+            default:      unreachable();
+        }
     }
 }
 
 void system_remove_environment_variable(const char* name) {
     if (require_non_null(name)) return;
-    unsetenv(name);
-    if (errno == 0) {
+    if (unsetenv(name) == 0) {
         return;
     }
     if (errno == EINVAL) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "invalid environment variable name");
-        return;
     }
-    set_error(RUNTIME_ERROR, "%s", strerror(errno));
 }
 
 #endif

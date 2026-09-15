@@ -29,6 +29,19 @@ String (string_new)(struct String string) {
     return new_string;
 }
 
+String (string_ref)(struct String string) {
+    if (require_non_null(string.data)) return nullptr;
+
+    struct String* new_string = string_memory_alloc(sizeof(struct String));
+    if (!new_string) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
+        return nullptr;
+    }
+    new_string->length = string.length;
+    new_string->data = string.data;
+    return new_string;
+}
+
 void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
@@ -526,16 +539,12 @@ struct String string_self(String string) {
     return string ? *string : (struct String) {};
 }
 
-struct String (string_ref)(const char* raw_string) {
+struct String string_raw(const char* raw_string) {
     return (struct String) { strlen(raw_string), (char*) raw_string };
 }
 
 char char_self(char c) {
     return c;
-}
-
-bytes strlen_(const char* raw_string) {
-    return strlen(raw_string);
 }
 
 void string_array_destroy(Array(String) strings) {

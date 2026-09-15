@@ -22,7 +22,7 @@ extern void (*string_memory_dealloc)(void*);
  * Accessing its fields directly is discouraged.
  *
  * Memory ownership:
- * - String must be freed using `string_destroy()`, except for strings created by `string_ref()`.
+ * - String must be freed using `string_destroy()`.
  */
 typedef struct String {
     int length;
@@ -45,14 +45,18 @@ typedef struct String {
 String (string_new)(struct String string);
 
 /**
- * @brief Creates a string that references an existing c-string.
+ * @brief Creates a new allocated string that references an existing string.
  *
  * @param string the string
  *
- * @return a string reference
+ * @return a new allocated string
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_ref(string) \
-    (&(const struct String) { .length = strlen_(string), .data = string })
+#define string_ref(string) string_ref(dispatch_string_type(string))
+
+String (string_ref)(struct String string);
 
 /**
  * @brief Destroys previously allocated strings.
@@ -632,19 +636,17 @@ String string_to_string_callback(const void* string);
 
 #define dispatch_string_type(string) (_Generic((string),    \
     String: string_self,                                    \
-    const char*: string_ref,                                \
-    char*: string_ref,                                      \
+    const char*: string_raw,                                \
+    char*: string_raw,                                      \
     int: char_self,                                         \
     char: char_self                                         \
 )(string))
 
 struct String string_self(String string);
 
-struct String (string_ref)(const char* raw_string);
+struct String string_raw(const char* raw_string);
 
 char char_self(char c);
-
-bytes strlen_(const char* raw_string);
 
 /* --------------------------------------------------------------------------------- */
 

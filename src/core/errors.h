@@ -41,8 +41,7 @@ typedef enum : uint8 {
  * @brief Enumeration of common runtime errors.
  */
 typedef enum : Error {
-    RUNTIME_ERROR = ERROR_BASE(RUNTIME_CATEGORY),
-    NULL_POINTER_ERROR,
+    NULL_POINTER_ERROR = ERROR_BASE(RUNTIME_CATEGORY),
     ARITHMETIC_ERROR,
     INDEX_OUT_OF_BOUNDS_ERROR,
     NO_SUCH_ELEMENT_ERROR,

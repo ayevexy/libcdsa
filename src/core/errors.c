@@ -23,7 +23,6 @@ thread_local static ErrorContext error_context = { .abort = true };
 
 static const char* runtime_error_to_string(uint8 error) {
     static const char* error_strings[] = {
-        "RUNTIME_ERROR",
         "NULL_POINTER_ERROR",
         "ARITHMETIC_ERROR",
         "INDEX_OUT_OF_BOUNDS_ERROR",

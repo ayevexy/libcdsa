@@ -78,6 +78,10 @@ File* file_create(const char* path) {
     return file_new(fopen(path, "w+"));
 }
 
+File* file_create_temp() {
+    return file_new(tmpfile());
+}
+
 static const char* file_open_modes(int modes) {
     const bool read = modes & FILE_READ;
     const bool write = modes & FILE_WRITE;
@@ -114,10 +118,6 @@ File* file_open(const char* path, FileOpenOption modes) {
         return nullptr;
     }
     return file_new(fopen(path, raw_modes));
-}
-
-File* file_temp() {
-    return file_new(tmpfile());
 }
 
 void file_close(File* file) {

@@ -11,9 +11,9 @@ static File* error;
 void setUp() {
     if (!standard_output) standard_output = system_output();
 
-    input = file_temp();
-    output = file_temp();
-    error = file_temp();
+    input = file_create_temp();
+    output = file_create_temp();
+    error = file_create_temp();
 
     system_change_input(input);
     system_change_output(output);

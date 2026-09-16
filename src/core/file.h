@@ -49,6 +49,17 @@ typedef enum : Error {
 File* file_create(const char* path);
 
 /**
+ * @brief Creates a temporary file.
+ *
+ * @return the created temporary file, or nullptr if the operation fails
+ *
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the temporary file is denied
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
+ */
+File* file_create_temp();
+
+/**
  * @brief Opens a file.
  *
  * @param path the file path
@@ -64,17 +75,6 @@ File* file_create(const char* path);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
 File* file_open(const char* path, FileOpenOption modes);
-
-/**
- * @brief Creates a temporary file.
- *
- * @return the created temporary file, or nullptr if the operation fails
- *
- * @exception FILE_ACCESS_DENIED_ERROR if access to the temporary file is denied
- * @exception FILE_SYSTEM_ERROR if a file system error occurs
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
- */
-File* file_temp();
 
 /**
  * @brief Closes a file.

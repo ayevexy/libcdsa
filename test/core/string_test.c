@@ -13,11 +13,23 @@ void tearDown() {
 
 }
 
-void test_create_string() {
+void test_create_new_string() {
     // given
     const char* raw_string = "Hello World!";
     // when
     String string = string_new(raw_string);
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
+    TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
+    // clean up
+    string_destroy(&string);
+}
+
+void test_create_reference_string() {
+    // given
+    const char* raw_string = "Hello World!";
+    // when
+    String string = string_ref(raw_string);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
     TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
@@ -619,7 +631,8 @@ void test_string_builder_to_string() {
 
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_create_string);
+    RUN_TEST(test_create_new_string);
+    RUN_TEST(test_create_reference_string);
     RUN_TEST(test_destroy_string);
     RUN_TEST(test_reference_string);
     RUN_TEST(test_create_formatted_string);

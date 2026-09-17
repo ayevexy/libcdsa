@@ -42,6 +42,25 @@ String (string_ref)(struct String string) {
     return new_string;
 }
 
+String (string_static)(struct String string) {
+    constexpr int STRING_POOL_CAPACITY = 256;
+    static _Alignas(struct String) uchar string_pool[STRING_POOL_CAPACITY * sizeof(struct String)];
+    static int string_pool_size = 0;
+
+    if (require_non_null(string.data)) return nullptr;
+
+    if (string_pool_size >= STRING_POOL_CAPACITY) {
+        set_error(MEMORY_ALLOCATION_ERROR, "string pool exhausted");
+        return nullptr;
+    }
+    struct String* new_string = (struct String*) &string_pool[string_pool_size * sizeof(struct String)];
+    new_string->length = string.length;
+    new_string->data = string.data;
+
+    string_pool_size++;
+    return new_string;
+}
+
 void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;

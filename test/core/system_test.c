@@ -1,5 +1,6 @@
 #include "core/system.h"
 
+#include "core/file.h"
 #include "unity.h"
 
 static File* standard_output;
@@ -11,9 +12,9 @@ static File* error;
 void setUp() {
     if (!standard_output) standard_output = system_output();
 
-    input = file_create_temp();
-    output = file_create_temp();
-    error = file_create_temp();
+    input = file_create_temporary();
+    output = file_create_temporary();
+    error = file_create_temporary();
 
     system_change_input(input);
     system_change_output(output);

@@ -12,7 +12,7 @@ void tearDown() {
 
 }
 
-void test_file_creation() {
+void test_file_create() {
     // when
     File* file = file_create(file_name);
     // then
@@ -20,6 +20,15 @@ void test_file_creation() {
     // clean up
     file_close(file);
     file_delete(file_name);
+}
+
+void test_file_create_temp() {
+    // when
+    File* file = file_create_temp();
+    // then
+    TEST_ASSERT_NOT_NULL(file);
+    // clean up
+    file_close(file);
 }
 
 void test_file_read_and_write_data() {
@@ -146,7 +155,8 @@ void test_file_delete_if_exists() {
 
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_file_creation);
+    RUN_TEST(test_file_create);
+    RUN_TEST(test_file_create_temp);
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);

@@ -62,7 +62,7 @@ String (string_ref)(struct String string);
  * @brief Returns a static-storage string that references an existing string.
  *
  * @param string the string
- *2
+ *
  * @return the static-storage string
  *
  * @exception NULL_POINTER_ERROR if string.data is null

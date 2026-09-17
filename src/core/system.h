@@ -5,7 +5,8 @@
 #include "errors.h"
 #include "array.h"
 #include "string.h"
-#include "file.h"
+
+typedef struct File File;
 
 /**
  * @brief Returns the system input stream (defaults to stdin).

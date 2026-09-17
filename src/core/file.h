@@ -11,16 +11,6 @@
 typedef struct File File;
 
 /**
- * @brief A bitmask enum representing the file opening modes.
- */
-typedef enum {
-    FILE_READ         = 1 << 0,
-    FILE_WRITE        = 1 << 1,
-    FILE_APPEND       = 1 << 2,
-    FILE_TRUNCATE     = 1 << 3
-} FileOpenOption;
-
-/**
  * @brief Enumeration of possible file system errors.
  */
 typedef enum : Error {
@@ -58,6 +48,16 @@ File* file_create(const char* path);
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
 File* file_create_temp();
+
+/**
+ * @brief A bitmask enum representing the file opening modes.
+ */
+typedef enum {
+    FILE_READ         = 1 << 0,
+    FILE_WRITE        = 1 << 1,
+    FILE_APPEND       = 1 << 2,
+    FILE_TRUNCATE     = 1 << 3
+} FileOpenOption;
 
 /**
  * @brief Opens a file.

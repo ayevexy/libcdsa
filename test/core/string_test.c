@@ -56,23 +56,6 @@ void test_destroy_string() {
     TEST_ASSERT_NULL(string);
 }
 
-void test_reference_string() {
-    // given
-    const char* s1 = "Hello World!";
-    const char* s2 = "Hello World!";
-    // when
-    String s1_ref = string_ref(s1);
-    String s2_ref = string_ref(s2);
-    // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", s1_ref->data);
-    TEST_ASSERT_EQUAL(strlen(s1), s1_ref->length);
-    // and
-    TEST_ASSERT_EQUAL_STRING("Hello World!", s2_ref->data);
-    TEST_ASSERT_EQUAL(strlen(s2), s2_ref->length);
-    // clean up
-    string_destroy(&s1_ref, &s2_ref);
-}
-
 void test_create_formatted_string() {
     // given
     String format = string_ref("H%dllo W%drld!");
@@ -645,7 +628,6 @@ int main(void) {
     RUN_TEST(test_create_reference_string);
     RUN_TEST(test_create_static_string);
     RUN_TEST(test_destroy_string);
-    RUN_TEST(test_reference_string);
     RUN_TEST(test_create_formatted_string);
     RUN_TEST(test_get_char_at_index_from_string);
     RUN_TEST(test_get_char_from_string_index_above_bounds_fails);

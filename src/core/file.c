@@ -78,7 +78,7 @@ File* file_create(const char* path) {
     return file_new(fopen(path, "w+"));
 }
 
-File* file_create_temp() {
+File* file_create_temporary() {
     return file_new(tmpfile());
 }
 

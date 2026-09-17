@@ -22,9 +22,9 @@ void test_file_create() {
     file_delete(file_name);
 }
 
-void test_file_create_temp() {
+void test_file_create_temporary() {
     // when
-    File* file = file_create_temp();
+    File* file = file_create_temporary();
     // then
     TEST_ASSERT_NOT_NULL(file);
     // clean up
@@ -156,7 +156,7 @@ void test_file_delete_if_exists() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_file_create);
-    RUN_TEST(test_file_create_temp);
+    RUN_TEST(test_file_create_temporary);
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);

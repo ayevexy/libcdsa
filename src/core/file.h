@@ -47,7 +47,7 @@ File* file_create(const char* path);
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
-File* file_create_temp();
+File* file_create_temporary();
 
 /**
  * @brief A bitmask enum representing the file opening modes.

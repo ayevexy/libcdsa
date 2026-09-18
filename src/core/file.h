@@ -49,6 +49,23 @@ File* file_create(const char* path);
  */
 File* file_create_temporary();
 
+#ifdef __linux__
+
+/**
+ * @brief Creates a directory.
+ *
+ * @param path the directory path
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_NOT_FOUND_ERROR if a path component does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the path is denied
+ * @exception FILE_ALREADY_EXISTS_ERROR if the file already exists
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_create_directory(const char* path);
+
+#endif
+
 /**
  * @brief A bitmask enum representing the file opening modes.
  */

@@ -31,6 +31,15 @@ void test_file_create_temporary() {
     file_close(file);
 }
 
+void test_file_create_directory() {
+    // when
+    file_create_directory("test_dir");
+    // then
+    TEST_ASSERT_TRUE(file_exists("test_dir"));
+    // clean up
+    file_delete("test_dir");
+}
+
 void test_file_read_and_write_data() {
     // given
     File* file = file_create(file_name);
@@ -157,6 +166,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_file_create);
     RUN_TEST(test_file_create_temporary);
+    RUN_TEST(test_file_create_directory);
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);

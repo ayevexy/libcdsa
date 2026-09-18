@@ -82,6 +82,20 @@ File* file_create_temporary() {
     return file_new(tmpfile());
 }
 
+#ifdef __linux__
+
+#include <sys/stat.h>
+
+void file_create_directory(const char* path) {
+    if (require_non_null(path)) return;
+
+    if (mkdir(path, 0755) == -1) {
+        file_set_error(errno);
+    }
+}
+
+#endif
+
 static const char* file_open_modes(int modes) {
     const bool read = modes & FILE_READ;
     const bool write = modes & FILE_WRITE;

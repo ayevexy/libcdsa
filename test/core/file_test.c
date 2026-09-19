@@ -6,6 +6,9 @@ static const char* file_name = "test_file.txt";
 
 void setUp() {
     file_delete_if_exists(file_name);
+    file_delete_if_exists("test_dir/file_1.txt");
+    file_delete_if_exists("test_dir/file_2.txt");
+    file_delete_if_exists("test_dir");
 }
 
 void tearDown() {
@@ -37,6 +40,24 @@ void test_file_create_directory() {
     // then
     TEST_ASSERT_TRUE(file_exists("test_dir"));
     // clean up
+    file_delete("test_dir");
+}
+
+void test_file_list_directory() {
+    // given
+    file_create_directory("test_dir");
+    file_close(file_create("test_dir/file_1.txt"));
+    file_close(file_create("test_dir/file_2.txt"));
+    // when
+    Array(String) files = file_list_directory("test_dir");
+    // then
+    TEST_ASSERT_EQUAL(2, array_length(files));
+    TEST_ASSERT_EQUAL_STRING("file_2.txt", string_data(files[0]));
+    TEST_ASSERT_EQUAL_STRING("file_1.txt", string_data(files[1]));
+    // clean up
+    array_destroy(&files);
+    file_delete("test_dir/file_1.txt");
+    file_delete("test_dir/file_2.txt");
     file_delete("test_dir");
 }
 
@@ -167,6 +188,7 @@ int main(void) {
     RUN_TEST(test_file_create);
     RUN_TEST(test_file_create_temporary);
     RUN_TEST(test_file_create_directory);
+    RUN_TEST(test_file_list_directory);
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);

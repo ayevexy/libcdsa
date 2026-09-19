@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "errors.h"
+#include "array.h"
 #include "string.h"
 
 /**
@@ -103,6 +104,24 @@ File* file_open(const char* path, FileOpenOption modes);
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 void file_close(File* file);
+
+#ifdef __linux__
+
+/**
+ * @brief Lists the contents of a directory.
+ *
+ * @param path the directory path
+ *
+ * @return an array containing the names of each directory entry
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+Array(String) file_list_directory(const char* path);
+
+#endif
 
 /**
  * @brief Reads data from a file.

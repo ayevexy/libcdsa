@@ -144,6 +144,66 @@ void file_close(File* file) {
     memory_dealloc(file);
 }
 
+#ifdef __linux
+
+#include <dirent.h>
+
+Array(String) file_list_directory(const char* path) {
+    if (require_non_null(path)) return nullptr;
+
+    DIR* directory = opendir(path);
+    if (!directory) {
+        file_set_error(errno);
+        return nullptr;
+    }
+
+    errno = 0;
+    int count = 0;
+    struct dirent* entry;
+    while ((entry = readdir(directory))) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        count++;
+    }
+
+    if (errno != 0) {
+        const int error = errno;
+        closedir(directory);
+        file_set_error(error);
+        return nullptr;
+    }
+    rewinddir(directory);
+
+    Array(String) entries = array_new(count, String);
+    if (!entries) {
+        closedir(directory);
+        return nullptr;
+    }
+
+    errno = 0;
+    int index = 0;
+    while ((entry = readdir(directory))) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+        entries[index++] = string_new(entry->d_name);
+    }
+
+    if (errno != 0) {
+        const int error = errno;
+        array_destroy(&entries);
+        closedir(directory);
+        file_set_error(error);
+        return nullptr;
+    }
+    closedir(directory);
+
+    return entries;
+}
+
+#endif
+
 bytes file_read(File* file, void* buffer, bytes size) {
     if (require_non_null(file, buffer)) return 0;
 

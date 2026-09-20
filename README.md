@@ -69,8 +69,8 @@ Also, there is some other utilities which may be useful:
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
-- [System](src/core/system.h): Runtime system abstraction.
 - [File](src/core/file.h): Simple file handling abstraction.
+- [System](src/core/system.h): Runtime system abstraction.
 
 ### Limitations
 
@@ -488,6 +488,124 @@ int main() {
     delete(number);
     delete(point);
     
+    return 0;
+}
+```
+
+```c++
+#include "core/file.h"
+#include <stdio.h>
+
+int main(void) {
+
+    // file operations
+    file_create("test_file.txt");
+
+    File* file = file_open("test_file.txt", FILE_READ | FILE_WRITE);
+
+    file_write_string(file, "Hello, World!\n");
+    file_rewind(file);
+
+    String line = file_read_line(file);
+    printf("%s", string_data(line));
+
+    file_close(file);
+    file_delete("test_file.txt");
+    
+    string_destroy(&line);
+
+    // directory operations
+    file_create_directory("test_dir");
+
+    file_create("test_dir/file_1.txt");
+    file_create("test_dir/file_2.txt");
+
+    Array(String) files = file_list_directory("test_dir");
+
+    for (size_t i = 0; i < array_length(files); i++) {
+        printf("%s\n", string_data(files[i]));
+    }
+
+    array_destroy(&files);
+
+    // path operations
+    bool exists = file_exists("test_dir/file_2.txt");
+    printf("file_2.txt exists: %s\n", exists ? "true" : "false");
+
+    FileInfo info = file_info("test_dir/file_2.txt");
+
+    printf("Size: %zu bytes\n", info.size);
+    printf("Type: %s\n",
+           info.is_regular ? "regular file" :
+           info.is_directory ? "directory" :
+           info.is_symbolic_link ? "symbolic link" :
+           "other"
+    );
+
+    file_move("test_dir/file_2.txt", "test_dir/file_2_new.txt");
+    file_delete("test_dir/file_2_new.txt");
+
+    file_delete("test_dir/file_1.txt");
+    file_delete("test_dir");
+
+    return 0;
+}
+```
+
+```c++
+#include "core/system.h"
+#include <inttypes.h>
+
+void* hello_thread(void*) {
+    system_write_line("I'm a thread!");
+    return nullptr;
+}
+
+int main() {
+
+    // input/output operations
+    system_write_line("What's up?");
+
+    String response = system_read_line();
+    system_write_line(response);
+
+    string_destroy(&response);
+
+
+    // process management
+    const intptr process_id = system_process_create("echo", "I'm a child process!");
+
+    system_process_wait(process_id);
+
+
+    // multithreading
+    const intptr thread_id = system_thread_create(hello_thread);
+
+    system_thread_join(thread_id);
+
+
+    // environment variables
+    system_set_environment_variable("LIBCDSA_TEST_ENV", "0");
+
+    const char* env = system_get_environment_variable("LIBCDSA_TEST_ENV");
+    system_write_line("LIBCDSA_TEST_ENV: %s", env);
+
+    system_remove_environment_variable("LIBCDSA_TEST_ENV");
+
+
+    // platform information
+    system_write_line(system_platform_name());
+    system_write_line(system_platform_version());
+    system_write_line(system_platform_architecture());
+
+
+    // time measurement
+    uint64 milliseconds = system_current_time(); // milliseconds elapsed since the Unix epoch.
+    uint64 nanoseconds = system_elapsed_time(); // nanoseconds suitable for measuring elapsed time.
+
+    system_write_line("%" PRIu64 "", milliseconds);
+    system_write_line("%" PRIu64 "", nanoseconds);
+
     return 0;
 }
 ```

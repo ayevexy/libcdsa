@@ -36,17 +36,6 @@ typedef enum : Error {
  */
 void file_create(const char* path);
 
-/**
- * @brief Creates a temporary file.
- *
- * @return the created temporary file, or nullptr if the operation fails
- *
- * @exception FILE_ACCESS_DENIED_ERROR if access to the temporary file is denied
- * @exception FILE_SYSTEM_ERROR if a file system error occurs
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
- */
-File* file_create_temporary();
-
 #ifdef __linux__
 
 /**
@@ -61,6 +50,20 @@ File* file_create_temporary();
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 void file_create_directory(const char* path);
+
+/**
+ * @brief Lists the contents of a directory.
+ *
+ * @param path the directory path
+ *
+ * @return an array containing the names of each directory entry
+ *
+ * @exception NULL_POINTER_ERROR if path is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+Array(String) file_list_directory(const char* path);
 
 #endif
 
@@ -92,6 +95,17 @@ typedef enum {
 File* file_open(const char* path, FileOpenOption modes);
 
 /**
+ * @brief Creates and opens a temporary file.
+ *
+ * @return the created temporary file, or nullptr if the operation fails
+ *
+ * @exception FILE_ACCESS_DENIED_ERROR if access to the temporary file is denied
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
+ */
+File* file_open_temporary();
+
+/**
  * @brief Closes a file.
  *
  * @param file the file to close
@@ -101,24 +115,6 @@ File* file_open(const char* path, FileOpenOption modes);
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
 void file_close(File* file);
-
-#ifdef __linux__
-
-/**
- * @brief Lists the contents of a directory.
- *
- * @param path the directory path
- *
- * @return an array containing the names of each directory entry
- *
- * @exception NULL_POINTER_ERROR if path is null
- * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
- * @exception FILE_SYSTEM_ERROR if a file system error occurs
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
- */
-Array(String) file_list_directory(const char* path);
-
-#endif
 
 /**
  * @brief Reads data from a file.

@@ -53,21 +53,6 @@ static void file_set_error(int error) {
     }
 }
 
-static File* file_new(FILE* handle) {
-    if (!handle) {
-        file_set_error(errno);
-        return nullptr;
-    }
-    File* file = memory_try_alloc(sizeof(File));
-    if (!file) {
-        fclose(handle);
-        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory to create the file object");
-        return nullptr;
-    }
-    file->self = handle;
-    return file;
-}
-
 void file_create(const char* path) {
     if (require_non_null(path)) return;
 
@@ -83,13 +68,10 @@ void file_create(const char* path) {
     fclose(file);
 }
 
-File* file_create_temporary() {
-    return file_new(tmpfile());
-}
-
 #ifdef __linux__
 
 #include <sys/stat.h>
+#include <dirent.h>
 
 void file_create_directory(const char* path) {
     if (require_non_null(path)) return;
@@ -98,60 +80,6 @@ void file_create_directory(const char* path) {
         file_set_error(errno);
     }
 }
-
-#endif
-
-static const char* file_open_modes(int modes) {
-    const bool read = modes & FILE_READ;
-    const bool write = modes & FILE_WRITE;
-    const bool append = modes & FILE_APPEND;
-    const bool truncate = modes & FILE_TRUNCATE;
-
-    if (read && !write && !append) {
-        return "r";
-    }
-    if (!read && write && !append) {
-        return "w";
-    }
-    if (!read && write && append) {
-        return "a";
-    }
-    if (read && write && !append && !truncate) {
-        return "r+";
-    }
-    if (read && write && !append && truncate) {
-        return "w+";
-    }
-    if (read && write && append) {
-        return "a+";
-    }
-    set_error(ILLEGAL_ARGUMENT_ERROR, "unknown file open modes");
-    return nullptr;
-}
-
-File* file_open(const char* path, FileOpenOption modes) {
-    if (require_non_null(path)) return nullptr;
-    const char* raw_modes = file_open_modes(modes);
-
-    if (!raw_modes) {
-        return nullptr;
-    }
-    return file_new(fopen(path, raw_modes));
-}
-
-void file_close(File* file) {
-    if (require_non_null(file)) return;
-
-    if (fclose(file->self) == EOF) {
-        file_set_error(errno);
-        return;
-    }
-    memory_dealloc(file);
-}
-
-#ifdef __linux
-
-#include <dirent.h>
 
 Array(String) file_list_directory(const char* path) {
     if (require_non_null(path)) return nullptr;
@@ -208,6 +136,73 @@ Array(String) file_list_directory(const char* path) {
 }
 
 #endif
+
+static const char* file_open_modes(int modes) {
+    const bool read = modes & FILE_READ;
+    const bool write = modes & FILE_WRITE;
+    const bool append = modes & FILE_APPEND;
+    const bool truncate = modes & FILE_TRUNCATE;
+
+    if (read && !write && !append) {
+        return "r";
+    }
+    if (!read && write && !append) {
+        return "w";
+    }
+    if (!read && write && append) {
+        return "a";
+    }
+    if (read && write && !append && !truncate) {
+        return "r+";
+    }
+    if (read && write && !append && truncate) {
+        return "w+";
+    }
+    if (read && write && append) {
+        return "a+";
+    }
+    set_error(ILLEGAL_ARGUMENT_ERROR, "unknown file open modes");
+    return nullptr;
+}
+
+static File* file_new(FILE* handle) {
+    if (!handle) {
+        file_set_error(errno);
+        return nullptr;
+    }
+    File* file = memory_try_alloc(sizeof(File));
+    if (!file) {
+        fclose(handle);
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory to create the file object");
+        return nullptr;
+    }
+    file->self = handle;
+    return file;
+}
+
+File* file_open(const char* path, FileOpenOption modes) {
+    if (require_non_null(path)) return nullptr;
+    const char* raw_modes = file_open_modes(modes);
+
+    if (!raw_modes) {
+        return nullptr;
+    }
+    return file_new(fopen(path, raw_modes));
+}
+
+File* file_open_temporary() {
+    return file_new(tmpfile());
+}
+
+void file_close(File* file) {
+    if (require_non_null(file)) return;
+
+    if (fclose(file->self) == EOF) {
+        file_set_error(errno);
+        return;
+    }
+    memory_dealloc(file);
+}
 
 bytes file_read(File* file, void* buffer, bytes size) {
     if (require_non_null(file, buffer)) return 0;

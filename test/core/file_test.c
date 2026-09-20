@@ -26,15 +26,6 @@ void test_file_create() {
     file_delete(file_name);
 }
 
-void test_file_create_temporary() {
-    // when
-    File* file = file_create_temporary();
-    // then
-    TEST_ASSERT_NOT_NULL(file);
-    // clean up
-    file_close(file);
-}
-
 void test_file_create_directory() {
     // when
     file_create_directory("test_dir");
@@ -60,6 +51,15 @@ void test_file_list_directory() {
     file_delete("test_dir/file_1.txt");
     file_delete("test_dir/file_2.txt");
     file_delete("test_dir");
+}
+
+void test_file_open_temporary() {
+    // when
+    File* file = file_open_temporary();
+    // then
+    TEST_ASSERT_NOT_NULL(file);
+    // clean up
+    file_close(file);
 }
 
 void test_file_read_and_write_data() {
@@ -219,9 +219,9 @@ void test_file_delete_if_exists() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_file_create);
-    RUN_TEST(test_file_create_temporary);
     RUN_TEST(test_file_create_directory);
     RUN_TEST(test_file_list_directory);
+    RUN_TEST(test_file_open_temporary);
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);

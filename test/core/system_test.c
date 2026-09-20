@@ -12,9 +12,9 @@ static File* error;
 void setUp() {
     if (!standard_output) standard_output = system_output();
 
-    input = file_create_temporary();
-    output = file_create_temporary();
-    error = file_create_temporary();
+    input = file_open_temporary();
+    output = file_open_temporary();
+    error = file_open_temporary();
 
     system_change_input(input);
     system_change_output(output);

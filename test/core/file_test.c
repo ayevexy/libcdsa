@@ -19,11 +19,10 @@ void tearDown() {
 
 void test_file_create() {
     // when
-    File* file = file_create(file_name);
+    file_create(file_name);
     // then
-    TEST_ASSERT_NOT_NULL(file);
+    TEST_ASSERT_TRUE(file_exists(file_name));
     // clean up
-    file_close(file);
     file_delete(file_name);
 }
 
@@ -48,8 +47,8 @@ void test_file_create_directory() {
 void test_file_list_directory() {
     // given
     file_create_directory("test_dir");
-    file_close(file_create("test_dir/file_1.txt"));
-    file_close(file_create("test_dir/file_2.txt"));
+    file_create("test_dir/file_1.txt");
+    file_create("test_dir/file_2.txt");
     // when
     Array(String) files = file_list_directory("test_dir");
     // then
@@ -65,7 +64,7 @@ void test_file_list_directory() {
 
 void test_file_read_and_write_data() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     uint8 input[] = { 1, 2, 3, 4, 5 };
     uint8 output[] = { 0, 0, 0, 0, 0 };
     // when
@@ -81,7 +80,7 @@ void test_file_read_and_write_data() {
 
 void test_file_read_and_write_char() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     char self = file_write_char(file, 'a');
     file_rewind(file);
     // when
@@ -96,7 +95,7 @@ void test_file_read_and_write_char() {
 
 void test_file_read_line_and_write_string() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     int chars = file_write_string(file, "Hello World!\n");
     file_rewind(file);
     // when
@@ -113,7 +112,7 @@ void test_file_read_line_and_write_string() {
 
 void test_file_truncate() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
     file_rewind(file);
     // when
@@ -129,8 +128,7 @@ void test_file_truncate() {
 
 void test_file_exists() {
     // given
-    File* file = file_create(file_name);
-    file_close(file);
+    file_create(file_name);
     // then
     TEST_ASSERT_TRUE(file_exists(file_name));
     TEST_ASSERT_FALSE(file_exists("nonexistent.txt"));
@@ -140,7 +138,7 @@ void test_file_exists() {
 
 void test_file_size() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
     // when
     bytes size = file_size(file);
@@ -155,7 +153,7 @@ void test_file_size() {
 
 void test_file_info() {
     // given
-    File* file = file_create(file_name);
+    File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
     file_close(file);
     // when
@@ -171,7 +169,7 @@ void test_file_info() {
 
 void test_file_copy() {
     // given
-    File* source = file_create("source.txt");
+    File* source = file_open("source.txt", FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(source, "Hello World!\n");
     file_close(source);
     // when
@@ -191,8 +189,7 @@ void test_file_move() {
     // given
     const char* new_file_name = "new_file.txt";
     // and
-    File* file = file_create(file_name);
-    file_close(file);
+    file_create(file_name);
     // when
     file_move(file_name, new_file_name);
     // then
@@ -204,8 +201,7 @@ void test_file_move() {
 
 void test_file_delete() {
     // given
-    File* file = file_create(file_name);
-    file_close(file);
+    file_create(file_name);
     // when
     file_delete(file_name);
     // then
@@ -214,8 +210,7 @@ void test_file_delete() {
 
 void test_file_delete_if_exists() {
     // given
-    File* file = file_create(file_name);
-    file_close(file);
+    file_create(file_name);
     // then
     TEST_ASSERT_TRUE(file_delete_if_exists(file_name));
     TEST_ASSERT_FALSE(file_delete_if_exists("nonexistent.txt"));

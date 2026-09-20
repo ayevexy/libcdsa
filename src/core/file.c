@@ -68,14 +68,19 @@ static File* file_new(FILE* handle) {
     return file;
 }
 
-File* file_create(const char* path) {
-    if (require_non_null(path)) return nullptr;
+void file_create(const char* path) {
+    if (require_non_null(path)) return;
 
     if (file_exists(path)) {
         set_error(FILE_ALREADY_EXISTS_ERROR, "file already exists");
-        return nullptr;
+        return;
     }
-    return file_new(fopen(path, "w+"));
+    FILE* file = fopen(path, "w");
+    if (!file) {
+        file_set_error(errno);
+        return;
+    }
+    fclose(file);
 }
 
 File* file_create_temporary() {

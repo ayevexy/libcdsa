@@ -28,16 +28,13 @@ typedef enum : Error {
  *
  * @param path the file path
  *
- * @return the created file, or nullptr if the operation fails
- *
  * @exception NULL_POINTER_ERROR if path is null
  * @exception FILE_NOT_FOUND_ERROR if a path component does not exist
  * @exception FILE_ACCESS_DENIED_ERROR if access to the path is denied
  * @exception FILE_ALREADY_EXISTS_ERROR if the file already exists
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
- * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
-File* file_create(const char* path);
+void file_create(const char* path);
 
 /**
  * @brief Creates a temporary file.

@@ -324,6 +324,20 @@ void file_flush(File* file) {
     }
 }
 
+#ifdef __linux__
+
+#include <unistd.h>
+
+void file_truncate(File* file, bytes size) {
+    if (require_non_null(file)) return;
+
+    if (ftruncate(fileno(file->self), (off_t) size) == -1) {
+        file_set_error(errno);
+    }
+}
+
+#endif
+
 bool file_exists(const char* path) {
     if (require_non_null(path)) return false;
 

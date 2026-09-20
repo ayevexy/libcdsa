@@ -284,6 +284,22 @@ bool file_at_end(File* file);
  */
 void file_flush(File* file);
 
+#ifdef __linux__
+
+/**
+ * @brief Changes the size of a file.
+ *
+ * @param file the file to truncate
+ * @param size the new file size in bytes
+ *
+ * @exception NULL_POINTER_ERROR if file is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_truncate(File* file, bytes size);
+
+#endif
+
 /**
  * @brief Checks whether a file exists.
  *

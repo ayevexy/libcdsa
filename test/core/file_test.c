@@ -109,6 +109,24 @@ void test_file_read_line_and_write_string() {
     file_delete(file_name);
 }
 
+#ifdef __linux__
+
+void test_file_truncate() {
+    // given
+    File* file = file_create(file_name);
+    file_write_string(file, "Hello World!\n");
+    file_rewind(file);
+    // when
+    file_truncate(file, 0);
+    // then
+    TEST_ASSERT_EQUAL(0, file_size(file));
+    // clean up
+    file_close(file);
+    file_delete(file_name);
+}
+
+#endif
+
 void test_file_exists() {
     // given
     File* file = file_create(file_name);
@@ -212,6 +230,9 @@ int main(void) {
     RUN_TEST(test_file_read_and_write_data);
     RUN_TEST(test_file_read_and_write_char);
     RUN_TEST(test_file_read_line_and_write_string);
+#ifdef __linux__
+    RUN_TEST(test_file_truncate);
+#endif
     RUN_TEST(test_file_exists);
     RUN_TEST(test_file_size);
 #ifdef __linux__

@@ -398,6 +398,43 @@ FileInfo file_info(const char* path) {
 
 #endif
 
+void file_copy(const char* source, const char* destination) {
+    if (require_non_null(source, destination)) return;
+
+    FILE* input = nullptr, * output = nullptr;
+    errno = 0;
+
+    input = fopen(source, "rb");
+    if (!input) {
+        goto cleanup;
+    }
+
+    output = fopen(destination, "wb");
+    if (!output) {
+        goto cleanup;
+    }
+
+    constexpr bytes CAPACITY = 8192;
+    uchar buffer[CAPACITY];
+    bytes read;
+
+    while ((read = fread(buffer, 1, sizeof(buffer), input)) > 0) {
+        if (fwrite(buffer, 1, read, output) != read) {
+            goto cleanup;
+        }
+    }
+
+    if (ferror(input)) {
+        errno = EIO;
+    }
+
+    cleanup:
+        const int error = errno;
+        if (input) fclose(input);
+        if (output) fclose(output);
+        if (error) file_set_error(error);
+}
+
 void file_move(const char* old_path, const char* new_path) {
     if (require_non_null(old_path, new_path)) return;
 

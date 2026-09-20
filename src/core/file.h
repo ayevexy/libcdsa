@@ -343,6 +343,20 @@ FileInfo file_info(const char* path);
 #endif
 
 /**
+ * @brief Copies a file to a destination path.
+ *
+ * @param source the path of the file to copy
+ * @param destination the destination path
+ *
+ * @exception NULL_POINTER_ERROR if source or destination is null
+ * @exception FILE_NOT_FOUND_ERROR if source does not exist
+ * @exception FILE_ACCESS_DENIED_ERROR if access to either files is denied
+ * @exception FILE_INPUT_OUTPUT_ERROR if an I/O error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+void file_copy(const char* source, const char* destination);
+
+/**
  * @brief Moves or renames a file.
  *
  * @param old_path the old file path

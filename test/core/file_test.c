@@ -9,6 +9,8 @@ void setUp() {
     file_delete_if_exists("test_dir/file_1.txt");
     file_delete_if_exists("test_dir/file_2.txt");
     file_delete_if_exists("test_dir");
+    file_delete_if_exists("source.txt");
+    file_delete_if_exists("destination.txt");
 }
 
 void tearDown() {
@@ -149,6 +151,24 @@ void test_file_info() {
 
 #endif
 
+void test_file_copy() {
+    // given
+    File* source = file_create("source.txt");
+    file_write_string(source, "Hello World!\n");
+    file_close(source);
+    // when
+    file_copy("source.txt", "destination.txt");
+    // then
+    File* destination = file_open("destination.txt", FILE_READ);
+    String string = file_read_line(destination);
+    TEST_ASSERT_EQUAL_STRING("Hello World!\n", string_data(string));
+    // clean up
+    string_destroy(&string);
+    file_close(destination);
+    file_delete("source.txt");
+    file_delete("destination.txt");
+}
+
 void test_file_move() {
     // given
     const char* new_file_name = "new_file.txt";
@@ -197,6 +217,7 @@ int main(void) {
 #ifdef __linux__
     RUN_TEST(test_file_info);
 #endif
+    RUN_TEST(test_file_copy);
     RUN_TEST(test_file_move);
     RUN_TEST(test_file_delete);
     RUN_TEST(test_file_delete_if_exists);

@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.8]() — 2026-09-20
+
+A major update introducing the new System and File APIs, along with categorized error handling.
+
+### ✨ Features
+- Added the `system.h` module with the following functionalities:
+  - `system_read...`/`system_write...` for convenience input/output operations.
+  - `system_process_<operation>` for process management.
+  - `system_thread_<operation>` for multithreading.
+  - Other useful utilities (environment variables, platform info, time measure, etc.).
+- Added the `file.h` module with the following functionalities:
+  - File operations (`create`, `open`, `close`, `read`, `write`, `seek`, etc.).
+  - Directory operations (`create_directory`, `list_directory`).
+  - Path operations (`exists`, `info`, `move`, `delete`, etc.).
+- Added `string_static()` to create static-storage strings (`string.h`).
+
+### ✏️ Changes
+- Redesigned the `errors.h` module to introduce error categories:
+  - Renamed `Error` enum to `RuntimeError`; unrelated members were moved to appropriate enums in their respective modules.
+  - Introduced the `ErrorCategory` enum.
+  - `Error` is now an alias for `uint16`, where the upper 8 bits identify the category and the lower 8 bits identify the specific error value.
+  - `NO_ERROR` is now a `constexpr` variable; its value remains unchanged.
+  - Removed the `UNKNOWN_ERROR` enum constant because it represents the result of mapping an unknown error code, not a settable error code.
+  - Introduced the `ERROR_BASE()` macro to associate an error enum with a category.
+  - Added `error_has_category()` operation to check whether an error belongs to a specific category.
+- `string_ref()` now creates an allocated string (`string.h`).
+
+### 📚 Documentation
+- Introduce the System and File APIs in features and usage sections of README.
+
+### ⚙️ Notes
+- Some functionality is currently available only on Linux systems and may not be implemented on Windows in the future.
+
+---
+
 ## 🎉 [v1.0.0-beta.7.1]() — 2026-09-06
 
 A small update to add missing operations to the Sequence API and fix some bugs.

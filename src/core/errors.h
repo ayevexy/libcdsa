@@ -53,6 +53,16 @@ typedef enum : Error {
 } RuntimeError;
 
 /**
+ * @brief Checks whether an error belongs to a specific category.
+ *
+ * @param error the error
+ * @param category the error category
+ *
+ * @return true if the error belongs to the category, false otherwise
+ */
+bool error_has_category(Error error, ErrorCategory category);
+
+/**
  * @brief Converts an error to its string representation.
  *
  * @param error the error to be converted

@@ -100,6 +100,12 @@ void test_try_result() {
     TEST_ASSERT_EQUAL(result.error, ARITHMETIC_ERROR);
 }
 
+void test_error_has_category() {
+    TEST_ASSERT_TRUE(error_has_category(NULL_POINTER_ERROR, RUNTIME_CATEGORY));
+    TEST_ASSERT_FALSE(error_has_category(NULL_POINTER_ERROR, FILE_SYSTEM_CATEGORY));
+    TEST_ASSERT_FALSE(error_has_category(NO_ERROR, RUNTIME_CATEGORY));
+}
+
 int main(void) {
     UNITY_BEGIN();
     if (TEST_PROTECT()) RUN_TEST(test_set_error_aborts_program);
@@ -109,5 +115,6 @@ int main(void) {
     RUN_TEST(test_nested_attempt_on_success_catch_no_error);
     RUN_TEST(test_get_plain_error_message);
     RUN_TEST(test_try_result);
+    RUN_TEST(test_error_has_category);
     return UNITY_END();
 }

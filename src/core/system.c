@@ -21,7 +21,7 @@ static File* system_error_stream;
 
 extern int file_write_string_variadic(File*, struct String, va_list);
 
-File* system_input() {
+File* system_input(void) {
     static File system_standard_input_stream;
 
     if (!system_input_stream) {
@@ -36,7 +36,7 @@ void system_change_input(File* input) {
     system_input_stream = input;
 }
 
-File* system_output() {
+File* system_output(void) {
     static File system_standard_output_stream;
 
     if (!system_output_stream) {
@@ -51,7 +51,7 @@ void system_change_output(File* output) {
     system_output_stream = output;
 }
 
-File* system_error() {
+File* system_error(void) {
     static File system_standard_error_stream;
 
     if (!system_error_stream) {
@@ -66,7 +66,7 @@ void system_change_error(File* error) {
     system_error_stream = error;
 }
 
-char system_read() {
+char system_read(void) {
     return file_read_char(system_input());
 }
 
@@ -140,7 +140,7 @@ void system_remove_environment_variable(const char* name) {
 
 #endif
 
-const char* system_platform_name() {
+const char* system_platform_name(void) {
     #if defined(__linux__)
         return "Linux";
     #else
@@ -152,7 +152,7 @@ const char* system_platform_name() {
 #include <sys/utsname.h>
 #endif
 
-const char* system_platform_version() {
+const char* system_platform_version(void) {
     #ifdef __linux__
         static struct utsname info;
 
@@ -165,7 +165,7 @@ const char* system_platform_version() {
     #endif
 }
 
-const char* system_platform_architecture() {
+const char* system_platform_architecture(void) {
     #if defined(__x86_64__) || defined(_M_X64)
         return "x86_64";
     #elif defined(__aarch64__) || defined(_M_ARM64)
@@ -445,7 +445,7 @@ void system_thread_interrupt(intptr thread_id) {
     }
 }
 
-intptr system_thread_current() {
+intptr system_thread_current(void) {
     return pthread_self();
 }
 

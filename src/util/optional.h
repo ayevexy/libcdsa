@@ -14,7 +14,7 @@ typedef struct {
  *
  * @return an empty optional
  */
-static inline Optional optional_empty() {
+static inline Optional optional_empty(void) {
     return (Optional) { .present = false };
 }
 

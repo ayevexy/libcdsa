@@ -190,7 +190,7 @@ File* file_open(const char* path, FileOpenOption modes) {
     return file_new(fopen(path, raw_modes));
 }
 
-File* file_open_temporary() {
+File* file_open_temporary(void) {
     return file_new(tmpfile());
 }
 

@@ -177,7 +177,7 @@ Sequence* (sequence_of)(Array(void*) elements) {
     return sequence_create(create_iterator((IterationContextOptions) { .limit = array_length(elements), .elements = elements }));
 }
 
-Sequence* sequence_empty() {
+Sequence* sequence_empty(void) {
     return sequence_create(create_iterator((IterationContextOptions) { .limit = -1 }));
 }
 

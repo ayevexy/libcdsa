@@ -13,7 +13,7 @@ typedef struct File File;
  *
  * @return the file input stream
  */
-File* system_input();
+File* system_input(void);
 
 /**
  * @brief Replaces the system input stream.
@@ -29,7 +29,7 @@ void system_change_input(File* input);
  *
  * @return the file output stream
  */
-File* system_output();
+File* system_output(void);
 
 /**
  * @brief Replaces the system output stream.
@@ -45,7 +45,7 @@ void system_change_output(File* output);
  *
  * @return the file error stream
  */
-File* system_error();
+File* system_error(void);
 
 /**
  * @brief Replaces the system error stream.
@@ -64,7 +64,7 @@ void system_change_error(File* error);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-char system_read();
+char system_read(void);
 
 /**
  * @brief Reads a string line from the system input stream.
@@ -177,21 +177,21 @@ void system_remove_environment_variable(const char* name);
  *
  * @return the platform name
  */
-const char* system_platform_name();
+const char* system_platform_name(void);
 
 /**
  * @brief Retrieves the underlying platform information version.
  *
  * @return the platform version
  */
-const char* system_platform_version();
+const char* system_platform_version(void);
 
 /**
  * @brief Retrieves the underlying platform information architecture.
  *
  * @return the platform architecture
  */
-const char* system_platform_architecture();
+const char* system_platform_architecture(void);
 
 #ifdef __linux__
 
@@ -379,7 +379,7 @@ void system_thread_interrupt(intptr thread_id);
  *
  * @return the current thread id
  */
-intptr system_thread_current();
+intptr system_thread_current(void);
 
 /**
  * @brief Terminates the current thread.

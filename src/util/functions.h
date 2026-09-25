@@ -12,7 +12,7 @@ typedef void (*Consumer)(void*);
 typedef void (*BiConsumer)(void*, void*);
 
 /** @brief Function to generate a value */
-typedef void* (*Supplier)();
+typedef void* (*Supplier)(void);
 
 /** @brief Predicate function returning true or false for a given element */
 typedef bool (*Predicate)(const void*);

@@ -103,7 +103,7 @@ File* file_open(const char* path, FileOpenOption modes);
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for the file object fails
  */
-File* file_open_temporary();
+File* file_open_temporary(void);
 
 /**
  * @brief Closes a file.

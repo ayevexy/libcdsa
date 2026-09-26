@@ -71,6 +71,7 @@ Also, there is some other utilities which may be useful:
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 - [File](src/core/file.h): Simple file handling abstraction.
 - [System](src/core/system.h): Runtime system abstraction.
+- [Sync](src/core/sync.h): Thread synchronization abstractions.
 
 ### Limitations
 

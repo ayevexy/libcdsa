@@ -46,6 +46,8 @@ extern const char* thread_error_to_string(uint8);
 
 extern const char* sequence_error_to_string(uint8);
 
+extern const char* synchronization_error_to_string(uint8);
+
 bool error_has_category(Error error, ErrorCategory category) {
     if (error == NO_ERROR) {
         return false;

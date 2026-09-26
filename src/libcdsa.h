@@ -36,6 +36,9 @@
 /** @brief Runtime System abstraction */
 #include "core/system.h"
 
+/** @brief Thread synchronization abstractions */
+#include "core/sync.h"
+
 /** @brief Dynamic array-based list implementation */
 #include "list/array_list.h"
 

@@ -38,6 +38,7 @@ add_library(${PROJECT_NAME}
         src/core/string.c
         src/core/file.c
         src/core/system.c
+        src/core/sync.c
         src/util/sequence.c
 )
 

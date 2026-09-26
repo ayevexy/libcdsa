@@ -497,6 +497,10 @@ int system_execute(const char* command) {
 #endif
 }
 
+uint64 system_random(void) {
+    return rand();
+}
+
 uint64 system_current_time(void) {
     struct timespec time;
     clock_gettime(CLOCK_REALTIME, &time);

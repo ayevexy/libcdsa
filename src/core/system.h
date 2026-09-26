@@ -416,6 +416,13 @@ void system_thread_sleep(uint64 milliseconds);
 int system_execute(const char* command);
 
 /**
+ * @brief Generates a pseudo-random number.
+ *
+ * @return the generated number
+ */
+uint64 system_random(void);
+
+/**
  * @brief Returns the current system time.
  *
  * @return the number of milliseconds elapsed since the Unix epoch.

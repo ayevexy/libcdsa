@@ -16,8 +16,8 @@ static void free_callback(void* pointer, void*) {
     free(pointer);
 }
 
-static void unsupported_operation(void*) {
-    set_error(UNSUPPORTED_OPERATION_ERROR, "The global allocator does not support the reset operation");
+static void reset_unsupported_callback(void*) {
+    set_error(UNSUPPORTED_OPERATION_ERROR, "The global memory allocator does not support the reset operation");
 }
 
 Allocator global_memory_allocator = {
@@ -25,7 +25,7 @@ Allocator global_memory_allocator = {
     .alloc = malloc_callback,
     .realloc = realloc_callback,
     .dealloc = free_callback,
-    .reset = unsupported_operation
+    .reset = reset_unsupported_callback
 };
 
 void* (new)(bytes size, const void* source) {

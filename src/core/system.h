@@ -389,6 +389,11 @@ void system_thread_detach(intptr thread_id);
 void system_thread_interrupt(intptr thread_id);
 
 /**
+ * @brief Yields the execution of the current thread.
+ */
+void system_thread_yield(void);
+
+/**
  * @brief Returns the current thread id.
  *
  * @return the current thread id

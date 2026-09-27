@@ -453,6 +453,10 @@ void system_thread_interrupt(intptr thread_id) {
     }
 }
 
+void system_thread_yield(void) {
+    sched_yield();
+}
+
 intptr system_thread_current(void) {
     return pthread_self();
 }

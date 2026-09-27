@@ -22,7 +22,7 @@ void collection_for_each(Collection collection, Consumer action) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     while (iterator_has_next(iterator)) {
@@ -39,7 +39,7 @@ bool collection_contains_all(Collection collection, Collection other_collection)
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(other_collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -64,7 +64,7 @@ Array(void*) collection_to_array(Collection collection) {
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
         array_destroy(&elements);
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return nullptr;
     }
     for (int i = 0; iterator_has_next(iterator); i++) {

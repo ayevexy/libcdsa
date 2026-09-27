@@ -157,7 +157,7 @@ static Sequence* sequence_create(Iterator* source) {
 Sequence* sequence_from(Collection collection) {
     Iterator* iterator; Error error;
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return nullptr;
     }
     return sequence_create(iterator);
@@ -270,7 +270,7 @@ void sequence_distinct(Sequence* sequence, bool (*equals)(const void*, const voi
             .memory_dealloc = memory_dealloc
         })));
         if (error) {
-            set_error(error, "%s", plain_error_message());
+            set_error(error, "%s", error_description());
             return;
         }
         sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = DISTINCT, .distinct = { set } };
@@ -287,7 +287,7 @@ void sequence_sort(Sequence* sequence, Comparator comparator, SortingAlgorithm a
     }
     ArrayList* list; Error error = attempt(list = list_new(DEFAULT_ARRAY_LIST_OPTIONS()));
     if (error) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return;
     }
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = SORT, .sort = { list, comparator, algorithm } };
@@ -373,7 +373,7 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
             replace_pipeline_source(sequence);
         }
         if (sequence->pipeline.state == ABORTED) {
-            set_error(SEQUENCE_PROCESSING_ERROR, "%s", plain_error_message());
+            set_error(SEQUENCE_PROCESSING_ERROR, "%s", error_description());
             return (SequencePipeLineResult) {};
         }
         if (sequence->pipeline.state == EXHAUSTED) {
@@ -458,7 +458,7 @@ static SequencePipeLineResult pipeline_result_array(Sequence* sequence, Terminal
 
     if (error) {
         sequence->pipeline.state = ABORTED;
-        set_error(SEQUENCE_PROCESSING_ERROR, "%s", plain_error_message());
+        set_error(SEQUENCE_PROCESSING_ERROR, "%s", error_description());
         return (SequencePipeLineResult) {};
     }
     list_destroy(&list);

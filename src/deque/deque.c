@@ -89,12 +89,12 @@ Deque* deque_from(Collection collection, const DequeOptions* options) {
     Deque* deque; Error error;
 
     if ((error = attempt(deque = deque_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(deque_add_all_last(deque, collection)))) {
         deque_destroy(&deque);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return deque;
@@ -146,7 +146,7 @@ void deque_add_all_first(Deque* deque, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     if (!ensure_capacity(deque, deque->size + collection_size(collection))) {
@@ -166,7 +166,7 @@ void deque_add_all_last(Deque* deque, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     if (!ensure_capacity(deque, deque->size + collection_size(collection))) {
@@ -329,7 +329,7 @@ bool deque_contains_all(const Deque* deque, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -356,7 +356,7 @@ Deque* deque_clone(const Deque* deque) {
          .memory_alloc = deque->memory_alloc,
          .memory_dealloc = deque->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     for (int i = 0; i < deque->size; i++) {

@@ -91,24 +91,18 @@ uint8 error_value(Error error);
 const char* error_to_string(Error error);
 
 /**
- * @brief Retrieves the formatted error message of the last captured error.
+ * @brief Retrieves the error message of the last captured error.
  *
- * This message may include contextual information such as function names
- * or additional details supplied when the error was raised.
- *
- * @return formatted error message
+ * @return error message
  */
 const char* error_message(void);
 
 /**
- * @brief Retrieves the plain error message of the last captured error.
+ * @brief Retrieves the error description of the last captured error.
  *
- * Unlike error_message, this returns only the base error description
- * without additional context.
- *
- * @return plain error message
+ * @return error description
  */
-const char* plain_error_message(void);
+const char* error_description(void);
 
 /**
  * @brief Executes an expression while isolating and capturing any raised error.
@@ -154,28 +148,16 @@ void isolate_error(void);
 Error capture_error(void);
 
 /**
- * @brief Sets an error with a formatted message.
- *
- * This macro reports an error using the provided message.
+ * @brief Sets an error.
  *
  * @param error the error code to raise
  * @param message optional additional context message
  * @param ... optional format arguments
  */
-#define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "no additional details available")
+#define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "")
 
-#define set_error_(error, message, ...) set_plain_error(error, "%s: "message, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
+#define set_error_(error, message, ...) set_error(error, message __VA_OPT__(, ) __VA_ARGS__)
 
-/**
- * @brief Sets an error with a formatted message.
- *
- * This function records the given error and formats the provided message
- * using printf-style formatting.
- *
- * @param error the error code to raise
- * @param error_message_format format string
- * @param ... format arguments
- */
-void set_plain_error(Error error, const char* error_message_format, ...);
+void (set_error)(Error error, const char* message, ...);
 
 #endif

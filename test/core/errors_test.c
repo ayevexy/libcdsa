@@ -61,7 +61,7 @@ static int arithmetic_mean(int values[], int count) {
     int result; Error error;
     if ((error = attempt(result = divide(sum, count)))) {
         // Additional context
-        set_error(error, "Arithmetic Mean can't be calculated with zero values.\n\tDetails: %s", error_message());
+        set_error(error, "Arithmetic Mean can't be calculated with zero values");
     }
     return result;
 }
@@ -72,8 +72,7 @@ void test_nested_attempt_on_fail_catch_error() {
     // then
     TEST_ASSERT_EQUAL(result, -1);
     TEST_ASSERT_EQUAL(error, ARITHMETIC_ERROR);
-    TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Arithmetic Mean can't be calculated with zero values.\n"
-        "\tDetails: ARITHMETIC_ERROR: Cannot divide by zero: 0 / 0", error_message());
+    TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Arithmetic Mean can't be calculated with zero values", error_message());
 }
 
 void test_nested_attempt_on_success_catch_no_error() {
@@ -85,11 +84,18 @@ void test_nested_attempt_on_success_catch_no_error() {
     TEST_ASSERT_EQUAL_STRING("", error_message());
 }
 
-void test_get_plain_error_message() {
+void test_get_error_message() {
     // given
     attempt(divide(10, 0));
     // then
-    TEST_ASSERT_EQUAL_STRING("Cannot divide by zero: 10 / 0", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0", error_message());
+}
+
+void test_get_error_description() {
+    // given
+    attempt(divide(10, 0));
+    // then
+    TEST_ASSERT_EQUAL_STRING("Cannot divide by zero: 10 / 0", error_description());
 }
 
 void test_try_result() {
@@ -123,7 +129,8 @@ int main(void) {
     RUN_TEST(test_attempt_on_success_catch_no_error);
     RUN_TEST(test_nested_attempt_on_fail_catch_error);
     RUN_TEST(test_nested_attempt_on_success_catch_no_error);
-    RUN_TEST(test_get_plain_error_message);
+    RUN_TEST(test_get_error_message);
+    RUN_TEST(test_get_error_description);
     RUN_TEST(test_try_result);
     RUN_TEST(test_error_has_category);
     RUN_TEST(test_error_category);

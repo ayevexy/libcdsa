@@ -116,12 +116,12 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
     LinkedList* linked_list; Error error;
 
     if ((error = attempt(linked_list = linked_list_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(linked_list_add_all_last(linked_list, collection)))) {
         linked_list_destroy(&linked_list);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return linked_list;
@@ -189,7 +189,7 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
     }
     Iterator* iterator; Error error;
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     Node* head = nullptr, * tail = nullptr;
@@ -576,7 +576,7 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -640,7 +640,7 @@ LinkedList* linked_list_clone(const LinkedList* linked_list) {
     LinkedList* new_linked_list; Error error;
 
     if ((error = attempt(new_linked_list = linked_list_sub_list(linked_list, 0, linked_list->size)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return new_linked_list;
@@ -660,7 +660,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
         .memory_alloc = linked_list->memory_alloc,
         .memory_dealloc = linked_list->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     const Node* node = get_node(linked_list, start_index);

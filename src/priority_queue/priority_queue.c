@@ -91,12 +91,12 @@ PriorityQueue* priority_queue_from(Collection collection, const PriorityQueueOpt
     PriorityQueue* priority_queue; Error error;
 
     if ((error = attempt(priority_queue = priority_queue_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(priority_queue_enqueue_all(priority_queue, collection)))) {
         priority_queue_destroy(&priority_queue);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return priority_queue;
@@ -137,7 +137,7 @@ void priority_queue_enqueue_all(PriorityQueue* priority_queue, Collection collec
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     if (!ensure_capacity(priority_queue, priority_queue->size + collection_size(collection))) {
@@ -248,7 +248,7 @@ bool priority_queue_contains_all(const PriorityQueue* priority_queue, Collection
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -276,7 +276,7 @@ PriorityQueue* priority_queue_clone(const PriorityQueue* priority_queue) {
         .memory_alloc = priority_queue->memory_alloc,
         .memory_dealloc = priority_queue->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     for (int i = 0; i < priority_queue->size; i++) {

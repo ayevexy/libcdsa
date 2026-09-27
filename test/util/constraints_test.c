@@ -17,7 +17,7 @@ void test_require_non_null_set_error_on_null() {
     const Error error = attempt(require_non_null(pointer));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
-    TEST_ASSERT_EQUAL_STRING("'pointer' argument must not be null", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("'pointer' argument must not be null", error_description());
 }
 
 void test_require_non_null_dont_set_error_on_not_null() {
@@ -27,7 +27,7 @@ void test_require_non_null_dont_set_error_on_not_null() {
     const Error error = attempt(require_non_null(pointer));
     // then
     TEST_ASSERT_EQUAL(NO_ERROR, error);
-    TEST_ASSERT_EQUAL_STRING("", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("", error_description());
 }
 
 void test_require_non_null_two_pointers() {
@@ -37,7 +37,7 @@ void test_require_non_null_two_pointers() {
     const Error error = attempt(require_non_null(pointer_a, pointer_b));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
-    TEST_ASSERT_EQUAL_STRING("'pointer_b' argument must not be null", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("'pointer_b' argument must not be null", error_description());
 }
 
 void test_require_non_null_four_pointers() {
@@ -48,7 +48,7 @@ void test_require_non_null_four_pointers() {
     const Error error = attempt(require_non_null(pointer_a, pointer_b, pointer_c, pointer_d));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
-    TEST_ASSERT_EQUAL_STRING("'pointer_d' argument must not be null", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("'pointer_d' argument must not be null", error_description());
 }
 
 void test_require_non_null_pointer_to_pointer() {
@@ -59,7 +59,7 @@ void test_require_non_null_pointer_to_pointer() {
     const Error error = attempt(require_non_null(*pointer));
     // then
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
-    TEST_ASSERT_EQUAL_STRING("'*pointer' argument must not be null", plain_error_message());
+    TEST_ASSERT_EQUAL_STRING("'*pointer' argument must not be null", error_description());
 }
 
 int main(void) {

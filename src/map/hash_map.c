@@ -129,12 +129,12 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
     HashMap* hash_map; Error error;
 
     if ((error = attempt(hash_map = hash_map_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(hash_map_put_all(hash_map, entry_collection)))) {
         hash_map_destroy(&hash_map);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return hash_map;
@@ -248,7 +248,7 @@ void hash_map_put_all(HashMap* hash_map, Collection entry_collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(entry_collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'entry collection'", error_description());
         return;
     }
     while (iterator_has_next(iterator)) {
@@ -463,7 +463,7 @@ HashMap* hash_map_clone(const HashMap* hash_map) {
         .memory_alloc = hash_map->memory_alloc,
         .memory_dealloc = hash_map->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     for (int i = 0; i < hash_map->capacity; i++) {

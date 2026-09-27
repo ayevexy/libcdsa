@@ -121,12 +121,12 @@ HashSet* hash_set_from(Collection collection, const HashSetOptions* options) {
     HashSet* hash_set; Error error;
 
     if ((error = attempt(hash_set = hash_set_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(hash_set_add_all(hash_set, collection)))) {
         hash_set_destroy(&hash_set);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return hash_set;
@@ -176,7 +176,7 @@ bool hash_set_add_all(HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool changed = false;
@@ -326,7 +326,7 @@ bool hash_set_contains_all(const HashSet* hash_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -366,7 +366,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
         .memory_alloc = hash_set->memory_alloc,
         .memory_dealloc = hash_set->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     for (int i = 0; i < hash_set->capacity; i++) {

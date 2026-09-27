@@ -135,12 +135,12 @@ TreeSet* tree_set_from(Collection collection, const TreeSetOptions* options) {
     TreeSet* tree_set; Error error;
 
     if ((error = attempt(tree_set = tree_set_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(tree_set_add_all(tree_set, collection)))) {
         tree_set_destroy(&tree_set);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return tree_set;
@@ -203,7 +203,7 @@ bool tree_set_add_all(TreeSet* tree_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool changed = false;
@@ -448,7 +448,7 @@ bool tree_set_contains_all(const TreeSet* tree_set, Collection collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;

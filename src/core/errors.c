@@ -87,7 +87,7 @@ const char* error_message(void) {
     return error_context.message;
 }
 
-const char* plain_error_message(void) {
+const char* error_description(void) {
     for (int i = 0; error_context.message[i] != '\0'; i++) {
         if (error_context.message[i] == ':') {
             return error_context.message + i + 2;
@@ -115,16 +115,20 @@ Error capture_error(void) {
     return error;
 }
 
-void set_plain_error(Error error, const char* error_message_format, ...) {
+void (set_error)(Error error, const char* message, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
     thread_local static char message_copy[MAX_MESSAGE_LENGTH];
     error_context.error = error;
 
-    va_list parameters = {};
-    va_start(parameters, error_message_format);
+    int length = snprintf(message_copy, MAX_MESSAGE_LENGTH, "%s: ", error_to_string(error));
 
-    const int length = vsnprintf(message_copy, MAX_MESSAGE_LENGTH, error_message_format, parameters);
+    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
+
+    va_list parameters = {};
+    va_start(parameters, message);
+
+    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH, message[0] != '\0' ? message : "no additional details available", parameters);
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");

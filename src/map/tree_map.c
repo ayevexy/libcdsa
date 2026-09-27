@@ -141,12 +141,12 @@ TreeMap* tree_map_from(Collection entry_collection, const TreeMapOptions* option
     TreeMap* tree_map; Error error;
 
     if ((error = attempt(tree_map = tree_map_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(tree_map_put_all(tree_map, entry_collection)))) {
         tree_map_destroy(&tree_map);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return tree_map;
@@ -272,7 +272,7 @@ void tree_map_put_all(TreeMap* tree_map, Collection entry_collection) {
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(entry_collection)))) {
-        set_error(error, "%s of 'entry collection'", plain_error_message());
+        set_error(error, "%s of 'entry collection'", error_description());
         return;
     }
     while (iterator_has_next(iterator)) {

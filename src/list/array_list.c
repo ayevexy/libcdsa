@@ -115,12 +115,12 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
     ArrayList* array_list; Error error;
 
     if ((error = attempt(array_list = array_list_new(options)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     if ((error = attempt(array_list_add_all_last(array_list, collection)))) {
         array_list_destroy(&array_list);
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return array_list;
@@ -176,7 +176,7 @@ void array_list_add_all(ArrayList* array_list, int index, Collection collection)
     }
     Iterator* iterator; Error error;
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return;
     }
     if (!ensure_capacity(array_list, array_list->size + collection_size(collection))) {
@@ -546,7 +546,7 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
     Iterator* iterator; Error error;
 
     if ((error = attempt(iterator = collection_iterator(collection)))) {
-        set_error(error, "%s of 'collection'", plain_error_message());
+        set_error(error, "%s of 'collection'", error_description());
         return false;
     }
     bool contains = true;
@@ -629,7 +629,7 @@ ArrayList* array_list_clone(const ArrayList* array_list) {
     ArrayList* new_array_list; Error error;
 
     if ((error = attempt(new_array_list = array_list_sub_list(array_list, 0, array_list->size)))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     return new_array_list;
@@ -652,7 +652,7 @@ ArrayList* array_list_sub_list(const ArrayList* array_list, int start_index, int
         .memory_realloc = array_list->memory_realloc,
         .memory_dealloc = array_list->memory_dealloc
     })))) {
-        set_error(error, "%s", plain_error_message());
+        set_error(error, "%s", error_description());
         return nullptr;
     }
     for (int i = start_index; i < end_index; i++) {

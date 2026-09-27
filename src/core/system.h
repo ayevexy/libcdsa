@@ -255,6 +255,20 @@ int system_process_wait(intptr process_id);
 int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_out);
 
 /**
+ * @brief Returns the current process id.
+ *
+ * @return the current process id
+ */
+intptr system_process_current(void);
+
+/**
+ * @brief Returns the parent process id of the current process.
+ *
+ * @return the parent process id
+ */
+intptr system_process_parent(void);
+
+/**
  * @brief Checks whether a process exists.
  *
  * @param process_id the process id

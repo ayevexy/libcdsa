@@ -341,6 +341,14 @@ int system_process_wait_timeout(intptr process_id, uint64 timeout, bool* timed_o
     return -1;
 }
 
+intptr system_process_current(void) {
+    return getpid();
+}
+
+intptr system_process_parent(void) {
+    return getppid();
+}
+
 bool system_process_is_alive(intptr process_id) {
     if (kill(process_id, 0) == -1) {
         switch (errno) {

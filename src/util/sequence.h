@@ -33,7 +33,7 @@ typedef struct Sequence Sequence;
  * @brief Enumeration of possible sequence errors.
  */
 typedef enum : Error {
-    SEQUENCE_PROCESSING_ERROR = ERROR_BASE(SEQUENCE_CATEGORY)
+    SEQUENCE_PROCESSING_ERROR = ERROR_BASE(SEQUENCE_ERROR_CATEGORY)
 } SequenceError;
 
 /**

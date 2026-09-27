@@ -101,14 +101,14 @@ void test_try_result() {
 }
 
 void test_error_has_category() {
-    TEST_ASSERT_TRUE(error_has_category(NULL_POINTER_ERROR, RUNTIME_CATEGORY));
-    TEST_ASSERT_FALSE(error_has_category(NULL_POINTER_ERROR, FILE_SYSTEM_CATEGORY));
-    TEST_ASSERT_FALSE(error_has_category(NO_ERROR, RUNTIME_CATEGORY));
+    TEST_ASSERT_TRUE(error_has_category(NULL_POINTER_ERROR, RUNTIME_ERROR_CATEGORY));
+    TEST_ASSERT_FALSE(error_has_category(NULL_POINTER_ERROR, FILE_SYSTEM_ERROR_CATEGORY));
+    TEST_ASSERT_FALSE(error_has_category(NO_ERROR, RUNTIME_ERROR_CATEGORY));
 }
 
 void test_error_category() {
-    TEST_ASSERT_TRUE(error_category(NULL_POINTER_ERROR) == RUNTIME_CATEGORY);
-    TEST_ASSERT_FALSE(error_category(NULL_POINTER_ERROR) == FILE_SYSTEM_CATEGORY);
+    TEST_ASSERT_TRUE(error_category(NULL_POINTER_ERROR) == RUNTIME_ERROR_CATEGORY);
+    TEST_ASSERT_FALSE(error_category(NULL_POINTER_ERROR) == FILE_SYSTEM_ERROR_CATEGORY);
 }
 
 void test_error_value() {

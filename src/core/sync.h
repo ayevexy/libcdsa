@@ -10,7 +10,7 @@
  * @brief Enumeration of synchronization errors.
  */
 typedef enum : Error {
-    SYNCHRONIZATION_ERROR = ERROR_BASE(SYNCHRONIZATION_CATEGORY)
+    SYNCHRONIZATION_ERROR = ERROR_BASE(SYNCHRONIZATION_ERROR_CATEGORY)
 } SynchronizationError;
 
 /**

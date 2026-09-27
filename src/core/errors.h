@@ -141,11 +141,12 @@ Error capture_error(void);
  * This macro reports an error using the provided message.
  *
  * @param error the error code to raise
- * @param message additional context message
+ * @param message optional additional context message
  * @param ... optional format arguments
  */
-#define set_error(error, message, ...) \
-    set_plain_error(error, "%s: "message, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
+#define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "no additional details available")
+
+#define set_error_(error, message, ...) set_plain_error(error, "%s: "message, error_to_string(error) __VA_OPT__(, ) __VA_ARGS__)
 
 /**
  * @brief Sets an error with a formatted message.

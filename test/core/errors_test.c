@@ -19,9 +19,9 @@ static void exit_handler(void) {
 void test_set_error_aborts_program() {
     // given
     atexit(exit_handler);
-    // then
+    // when
     set_error(65535);
-    //
+    // then
     TEST_ASSERT_TRUE(false); // Should not be reached...
 }
 
@@ -106,6 +106,16 @@ void test_error_has_category() {
     TEST_ASSERT_FALSE(error_has_category(NO_ERROR, RUNTIME_CATEGORY));
 }
 
+void test_error_category() {
+    TEST_ASSERT_TRUE(error_category(NULL_POINTER_ERROR) == RUNTIME_CATEGORY);
+    TEST_ASSERT_FALSE(error_category(NULL_POINTER_ERROR) == FILE_SYSTEM_CATEGORY);
+}
+
+void test_error_value() {
+    TEST_ASSERT_EQUAL(0, error_value(NULL_POINTER_ERROR));
+    TEST_ASSERT_EQUAL(1, error_value(ARITHMETIC_ERROR));
+}
+
 int main(void) {
     UNITY_BEGIN();
     if (TEST_PROTECT()) RUN_TEST(test_set_error_aborts_program);
@@ -116,5 +126,7 @@ int main(void) {
     RUN_TEST(test_get_plain_error_message);
     RUN_TEST(test_try_result);
     RUN_TEST(test_error_has_category);
+    RUN_TEST(test_error_category);
+    RUN_TEST(test_error_value);
     return UNITY_END();
 }

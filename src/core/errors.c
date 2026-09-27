@@ -55,6 +55,18 @@ bool error_has_category(Error error, ErrorCategory category) {
     return ((error & error_category_mask) >> error_category_shift) == category;
 }
 
+ErrorCategory error_category(Error error) {
+    assert(error != NO_ERROR && "can't retrieve error category of NO_ERROR");
+
+    return (error & error_category_mask) >> error_category_shift;
+}
+
+uint8 error_value(Error error) {
+    assert(error != NO_ERROR && "can't retrieve error value of NO_ERROR");
+
+    return error & error_value_mask;
+}
+
 const char* error_to_string(Error error) {
     if (error == NO_ERROR) {
         return "NO_ERROR";

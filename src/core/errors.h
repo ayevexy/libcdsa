@@ -64,6 +64,24 @@ typedef enum : Error {
 bool error_has_category(Error error, ErrorCategory category);
 
 /**
+ * @brief Returns the category encoded in an error.
+ *
+ * @param error the error
+ *
+ * @return the error category
+ */
+ErrorCategory error_category(Error error);
+
+/**
+ * @brief Returns the value encoded in an error.
+ *
+ * @param error the error
+ *
+ * @return the error value within its category
+ */
+uint8 error_value(Error error);
+
+/**
  * @brief Converts an error to its string representation.
  *
  * @param error the error to be converted

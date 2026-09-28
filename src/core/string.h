@@ -1,20 +1,16 @@
 #ifndef LIBCDSA_STRING_H
 #define LIBCDSA_STRING_H
 
-#include "array.h"
 #include "types.h"
+#include "allocator.h"
+#include "array.h"
 
 /**
- * @brief Internal memory allocation function used internally
- * to allocate String instances. Defaults to `memory_try_alloc()`.
+ * @brief String memory allocator used for string allocations.
+ *
+ * @details By default it points to the `global_memory_allocator`.
  */
-extern void* (*string_memory_alloc)(bytes);
-
-/**
- * @brief Internal memory deallocation function used internally
- * to deallocate String instances. Defaults to `memory_dealloc()`.
- */
-extern void (*string_memory_dealloc)(void*);
+extern Allocator* string_memory_allocator;
 
 /**
  * @brief String type abstraction over c-strings. The String type is immutable
@@ -108,6 +104,13 @@ String (string_static)(struct String string);
 #define string_destroy_1(string) string_destroy(string)
 
 void (string_destroy)(String* string_pointer);
+
+/**
+ * @brief Destroys all previously allocated strings.
+ *
+ * @exception UNSUPPORTED_OPERATION_ERROR If the current string memory allocator does not support the reset operation
+ */
+void string_destroy_all(void);
 
 /**
  * @brief Creates a newly allocated formatted string.

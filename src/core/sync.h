@@ -102,6 +102,70 @@ void monitor_notify(Monitor* monitor);
  */
 void monitor_notify_all(Monitor* monitor);
 
+/**
+ * @brief Represents a semaphore.
+ */
+typedef struct Semaphore Semaphore;
+
+/**
+ * @brief Creates a new semaphore.
+ *
+ * @param permits initial number of available permits
+ *
+ * @return A pointer to the newly created semaphore, or nullptr on failure
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR If permits is negative
+ * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be initialized
+ */
+Semaphore* semaphore_new(int permits);
+
+/**
+ * @brief Destroys a semaphore.
+ *
+ * @param semaphore_pointer pointer to a semaphore pointer
+ *
+ * @exception NULL_POINTER_ERROR if semaphore_pointer or *semaphore_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the semaphore
+ *
+ * @post *semaphore_pointer == nullptr
+ *
+ * @warning The semaphore must not have threads blocked on it.
+ */
+void semaphore_destroy(Semaphore** semaphore_pointer);
+
+/**
+ * @brief Acquires a permit from the semaphore, blocking until one is available.
+ *
+ * @param semaphore the semaphore
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be acquired
+ */
+void semaphore_acquire(Semaphore* semaphore);
+
+/**
+ * @brief Attempts to acquire a permit from the semaphore without blocking
+ *
+ * @param semaphore the semaphore
+ *
+ * @return true if a permit was acquired, or false if no permit is available
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be queried
+ */
+bool semaphore_try_acquire(Semaphore* semaphore);
+
+/**
+ * @brief Releases a permit from the semaphore.
+ *
+ * @param semaphore the semaphore
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be released
+ */
+void semaphore_release(Semaphore* semaphore);
+
 #endif
 
 #endif

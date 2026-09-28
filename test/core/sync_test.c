@@ -6,15 +6,18 @@
 #include "unity.h"
 
 static Monitor* monitor;
+static Semaphore* semaphore;
 static int counter;
 
 void setUp() {
     monitor = monitor_new();
+    semaphore = semaphore_new(0);
     counter = 0;
 }
 
 void tearDown() {
     monitor_destroy(&monitor);
+    semaphore_destroy(&semaphore);
 }
 
 void* synchronized_increment(void*) {
@@ -70,9 +73,41 @@ void test_monitor_wait_notify() {
     TEST_ASSERT_EQUAL(0, counter);
 }
 
+void* acquire_worker(void*) {
+    semaphore_acquire(semaphore);
+    counter++;
+    return nullptr;
+}
+
+void test_semaphore_permits() {
+    // given
+    semaphore_release(semaphore);
+    semaphore_release(semaphore);
+    // then
+    TEST_ASSERT_TRUE(semaphore_try_acquire(semaphore));
+    TEST_ASSERT_TRUE(semaphore_try_acquire(semaphore));
+    TEST_ASSERT_FALSE(semaphore_try_acquire(semaphore));
+    // when
+    semaphore_release(semaphore);
+    // then
+    TEST_ASSERT_TRUE(semaphore_try_acquire(semaphore));
+}
+
+void test_semaphore_blocks_and_unblocks(void) {
+    // given
+    intptr thread_id = system_thread_create(acquire_worker);
+    // when
+    semaphore_release(semaphore);
+    system_thread_join(thread_id);
+    // then
+    TEST_ASSERT_EQUAL(1, counter);
+}
+
 int main(void) {
     RUN_TEST(test_monitor_lock_unlock);
     RUN_TEST(test_monitor_wait_notify);
+    RUN_TEST(test_semaphore_permits);
+    RUN_TEST(test_semaphore_blocks_and_unblocks);
 }
 
 #endif

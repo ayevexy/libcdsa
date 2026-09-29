@@ -80,7 +80,7 @@
  * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
  */
 #define array_destroy(array) (_Generic((array),     \
-    Array(String): string_array_destroy,            \
+    Array(String)*: string_array_destroy,           \
     default: (array_destroy)                        \
 )(*array), *array = nullptr)
 

@@ -97,6 +97,11 @@ const char* error_description(void) {
     return error_context.message;
 }
 
+void error_print(void) {
+    const int location_offset = strlen(error_context.message) + 1;
+    fprintf(stderr, "%s%s", error_context.message, error_context.message + location_offset);
+}
+
 void isolate_error(void) {
     error_context.error = NO_ERROR;
     error_context.message[0] = '\0';
@@ -116,7 +121,7 @@ Error capture_error(void) {
     return error;
 }
 
-void (set_error)(Error error, const char* message, ...) {
+void (set_error)(Error error, const char* location, const char* message, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
     thread_local static char message_copy[MAX_MESSAGE_LENGTH];
@@ -133,10 +138,16 @@ void (set_error)(Error error, const char* message, ...) {
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
-    strcpy(error_context.message, message_copy);
+
+    const int location_offset = length + 1;
+    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH, "\n\tat %s()\n", location);
+
+    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
+
+    memcpy(error_context.message, message_copy, MAX_MESSAGE_LENGTH);
 
     if (error_context.error && error_context.abort && error_context.scope == 0) {
-        fprintf(stderr, "%s\n", error_context.message);
+        fprintf(stderr, "%s%s", error_context.message, error_context.message + location_offset);
         exit(EXIT_FAILURE);
     }
 }

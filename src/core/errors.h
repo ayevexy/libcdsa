@@ -105,6 +105,11 @@ const char* error_message(void);
 const char* error_description(void);
 
 /**
+ * @brief Prints the last captured error and its location.
+ */
+void error_print(void);
+
+/**
  * @brief Executes an expression while isolating and capturing any raised error.
  *
  * This macro clears the current error state, evaluates the given expression,
@@ -156,8 +161,8 @@ Error capture_error(void);
  */
 #define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "")
 
-#define set_error_(error, message, ...) set_error(error, message __VA_OPT__(, ) __VA_ARGS__)
+#define set_error_(error, message, ...) set_error(error, __func__, message __VA_OPT__(, ) __VA_ARGS__)
 
-void (set_error)(Error error, const char* message, ...);
+void (set_error)(Error error, const char* location, const char* message, ...);
 
 #endif

@@ -27,6 +27,19 @@ extern Allocator global_memory_allocator;
 void* (new)(bytes size, const void* source);
 
 /**
+ * @brief Allocate and initialize an object of type `T` on the stack.
+ *
+ * If no initial value is provided, the object will be initialized with
+ * the default values for the type.
+ *
+ * @param T the type of the object to allocate
+ * @param ... optional literal value used to initialize the object
+ *
+ * @return a pointer to the newly allocated object
+ */
+#define ref(T, ...) (&(T){__VA_ARGS__})
+
+/**
  * @brief Deallocate a memory block and set its pointer to nullptr.
  *
  * Frees the memory previously allocated with `new` and

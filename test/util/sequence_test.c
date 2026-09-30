@@ -73,7 +73,7 @@ void test_create_sequence_from_collection() {
 
 void test_create_sequence_of_given_elements() {
     // given
-    Sequence* sequence = sequence_of(&(int){1}, &(int){2}, &(int){3}, &(int){4}, &(int){5});
+    Sequence* sequence = sequence_of(ref(int, 1), ref(int, 2), ref(int, 3), ref(int, 4), ref(int, 5));
     // then
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
@@ -111,7 +111,7 @@ void* int_next(void* number) {
 
 void test_iterate_sequence() {
     // given
-    Sequence* sequence = sequence_iterate(&(int){1}, int_has_next, int_next);
+    Sequence* sequence = sequence_iterate(ref(int, 1), int_has_next, int_next);
     // then
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
@@ -274,7 +274,7 @@ void test_reduce_sequence() {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
-    int* result = sequence_reduce(sequence, &(int){0}, sum);
+    int* result = sequence_reduce(sequence, ref(int), sum);
     // then
     TEST_ASSERT_EQUAL(15, *result);
 }

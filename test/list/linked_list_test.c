@@ -42,7 +42,7 @@ void test_create_linked_list() {
 
 void test_do_not_create_linked_list_with_invalid_options() {
     // when
-    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {}));
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(ref(LinkedListOptions)));
     // then
     TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -66,7 +66,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), &(LinkedListOptions) {}));
+    LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_from(linked_list_to_collection(linked_list), ref(LinkedListOptions)));
     // then
     TEST_ASSERT_NULL(new_linked_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -407,7 +407,7 @@ void test_remove_element_from_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool removed = linked_list_remove_element(linked_list, &(int){3});
+    bool removed = linked_list_remove_element(linked_list, ref(int, 3));
     // then
     int new_values[] = { 1, 2, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(new_values, linked_list);
@@ -419,7 +419,7 @@ void test_remove_element_from_linked_list_nonexistent_element_fails() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool removed = linked_list_remove_element(linked_list, &(int){10});
+    bool removed = linked_list_remove_element(linked_list, ref(int, 10));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_LINKED_LIST(values, linked_list);
     TEST_ASSERT_FALSE(removed);
@@ -671,7 +671,7 @@ void test_linked_list_iterator_replace_element_fails_if_no_previous_or_next_was_
     // and
     Iterator* iterator = linked_list_iterator(linked_list);
     // when
-    Error error = attempt(iterator_set(iterator, &(int){10}));
+    Error error = attempt(iterator_set(iterator, ref(int, 10)));
     // then
     int new_values[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
@@ -1046,7 +1046,7 @@ void test_linked_list_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool contains = linked_list_contains(linked_list, &(int){3});
+    bool contains = linked_list_contains(linked_list, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -1056,7 +1056,7 @@ void test_linked_list_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    bool contains = linked_list_contains(linked_list, &(int){10});
+    bool contains = linked_list_contains(linked_list, ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -1118,7 +1118,7 @@ void test_reduce_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int* result = linked_list_reduce(linked_list, &(int){0}, sum);
+    int* result = linked_list_reduce(linked_list, ref(int), sum);
     // then
     TEST_ASSERT_EQUAL(15, *result);
 }
@@ -1128,7 +1128,7 @@ void test_get_occurrences_of_element_in_linked_list() {
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int count = linked_list_occurrences_of(linked_list, &(int){3});
+    int count = linked_list_occurrences_of(linked_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(3, count);
 }
@@ -1138,7 +1138,7 @@ void test_get_index_of_element_from_linked_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int index = linked_list_index_of(linked_list, &(int){3});
+    int index = linked_list_index_of(linked_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(2, index);
 }
@@ -1148,7 +1148,7 @@ void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int index = linked_list_index_of(linked_list, &(int){10});
+    int index = linked_list_index_of(linked_list, ref(int, 10));
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -1158,7 +1158,7 @@ void test_get_last_index_of_element_from_linked_list() {
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int last_index = linked_list_last_index_of(linked_list, &(int){3});
+    int last_index = linked_list_last_index_of(linked_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(4, last_index);
 }
@@ -1168,7 +1168,7 @@ void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negativ
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_LINKED_LIST(linked_list, values);
     // when
-    int last_index = linked_list_last_index_of(linked_list, &(int){10});
+    int last_index = linked_list_last_index_of(linked_list, ref(int, 10));
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }

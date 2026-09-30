@@ -50,7 +50,7 @@ void test_create_hash_set() {
 
 void test_do_not_create_hash_set_with_invalid_options() {
     // when
-    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_new(&(HashSetOptions) {}));
+    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_new(ref(HashSetOptions)));
     // then
     TEST_ASSERT_NULL(new_hash_set);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -74,7 +74,7 @@ void test_do_not_create_hash_set_with_invalid_options_from_collection() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_from(hash_set_to_collection(hash_set), &(HashSetOptions) {}));
+    HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_from(hash_set_to_collection(hash_set), ref(HashSetOptions)));
     // then
     TEST_ASSERT_NULL(new_hash_set);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -171,11 +171,11 @@ void test_remove_element_from_hash_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool removed = hash_set_remove(hash_set, &(int){3});
+    bool removed = hash_set_remove(hash_set, ref(int, 3));
     // then
     int new_elements[] = { 1, 2, 4, 5 };
     TEST_ASSERT_TRUE(removed);
-    TEST_ASSERT_FALSE(hash_set_contains(hash_set, &(int){3}));
+    TEST_ASSERT_FALSE(hash_set_contains(hash_set, ref(int, 3)));
     TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
 }
 
@@ -184,7 +184,7 @@ void test_do_not_remove_element_from_hash_set_if_not_present() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool removed = hash_set_remove(hash_set, &(int){10});
+    bool removed = hash_set_remove(hash_set,ref(int, 10));
     // then
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_FALSE(removed);
@@ -354,7 +354,7 @@ void test_hash_set_iterator_remove_element() {
     // then
     int new_elements[] = { 1, 2, 3, 4 };
     TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
-    TEST_ASSERT_FALSE(hash_set_contains(hash_set, &(int){5}));
+    TEST_ASSERT_FALSE(hash_set_contains(hash_set, ref(int, 5)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -389,7 +389,7 @@ void test_hash_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
     int new_elements[] = { 1, 2, 3, 4 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
     TEST_ASSERT_HASH_SET_CONTAINS(hash_set, new_elements);
-    TEST_ASSERT_FALSE(hash_set_contains(hash_set, &(int){5}));
+    TEST_ASSERT_FALSE(hash_set_contains(hash_set, ref(int, 5)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -503,7 +503,7 @@ void test_hash_set_contains_element() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool contains = hash_set_contains(hash_set, &(int){3});
+    bool contains = hash_set_contains(hash_set, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -513,7 +513,7 @@ void test_hash_set_does_not_contains_element() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_HASH_SET(hash_set, elements);
     // when
-    bool contains = hash_set_contains(hash_set, &(int){10});
+    bool contains = hash_set_contains(hash_set,ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }

@@ -47,7 +47,7 @@ void test_create_tree_set() {
 
 void test_do_not_create_tree_set_with_invalid_options() {
     // when
-    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions) {}));
+    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_new(ref(TreeSetOptions)));
     // then
     TEST_ASSERT_NULL(new_tree_set);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -71,7 +71,7 @@ void test_do_not_create_tree_set_with_invalid_options_from_collection() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_from(tree_set_to_collection(tree_set), &(TreeSetOptions) {}));
+    TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_from(tree_set_to_collection(tree_set), ref(TreeSetOptions)));
     // then
     TEST_ASSERT_NULL(new_tree_set);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -192,11 +192,11 @@ void test_remove_element_from_tree_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    bool removed = tree_set_remove(tree_set, &(int){3});
+    bool removed = tree_set_remove(tree_set, ref(int, 3));
     // then
     int new_elements[] = { 1, 2, 4, 5 };
     TEST_ASSERT_TRUE(removed);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){3}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 3)));
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
@@ -205,7 +205,7 @@ void test_do_not_remove_element_from_tree_set_if_not_present() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    bool removed = tree_set_remove(tree_set, &(int){10});
+    bool removed = tree_set_remove(tree_set, ref(int, 10));
     // then
     int new_elements[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_FALSE(removed);
@@ -221,7 +221,7 @@ void test_remove_first_element_from_tree_set() {
     // then
     int new_elements[] = { 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(1, *element);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 1)));
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
@@ -242,7 +242,7 @@ void test_remove_last_element_from_tree_set() {
     // then
     int new_elements[] = { 1, 2, 3, 4 };
     TEST_ASSERT_EQUAL(5, *element);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){5}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 5)));
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
 }
 
@@ -425,7 +425,7 @@ void test_tree_set_iterator_remove_element_after_next() {
     // then
     int new_elements[] = { 2, 3, 4, 5 };
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 1)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -442,7 +442,7 @@ void test_tree_set_iterator_remove_element_after_previous() {
     // then
     int new_elements[] = { 1, 2, 3, 4 };
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){5}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 5)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -477,7 +477,7 @@ void test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
     int new_elements[] = { 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
     TEST_ASSERT_TREE_SET_CONTAINS(tree_set, new_elements);
-    TEST_ASSERT_FALSE(tree_set_contains(tree_set, &(int){1}));
+    TEST_ASSERT_FALSE(tree_set_contains(tree_set, ref(int, 1)));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -613,8 +613,8 @@ void test_get_higher_element_from_tree_set() {
     int elements[] = { 1, 2, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* next_greater = tree_set_higher(tree_set, &(int){3});
-    int* no_successor = tree_set_higher(tree_set, &(int){5});
+    int* next_greater = tree_set_higher(tree_set, ref(int, 3));
+    int* no_successor = tree_set_higher(tree_set, ref(int, 5));
     // then
     TEST_ASSERT_EQUAL(4, *next_greater);
     TEST_ASSERT_NULL(no_successor);
@@ -625,9 +625,9 @@ void test_get_ceiling_element_from_tree_set() {
     int elements[] = { 1, 2, 3, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* exact_match = tree_set_ceiling(tree_set, &(int){5});
-    int* next_greater = tree_set_ceiling(tree_set, &(int){4});
-    int* no_successor = tree_set_ceiling(tree_set, &(int){6});
+    int* exact_match = tree_set_ceiling(tree_set, ref(int, 5));
+    int* next_greater = tree_set_ceiling(tree_set, ref(int, 4));
+    int* no_successor = tree_set_ceiling(tree_set, ref(int, 6));
     // then
     TEST_ASSERT_EQUAL(5, *exact_match);
     TEST_ASSERT_EQUAL(5, *next_greater);
@@ -639,9 +639,9 @@ void test_get_floor_element_from_tree_set() {
     int elements[] = { 1, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* exact_match = tree_set_floor(tree_set, &(int){1});
-    int* next_least = tree_set_floor(tree_set, &(int){2});
-    int* no_predecessor = tree_set_floor(tree_set, &(int){0});
+    int* exact_match = tree_set_floor(tree_set, ref(int, 1));
+    int* next_least = tree_set_floor(tree_set, ref(int, 2));
+    int* no_predecessor = tree_set_floor(tree_set, ref(int, 0));
     // then
     TEST_ASSERT_EQUAL(1, *exact_match);
     TEST_ASSERT_EQUAL(1, *next_least);
@@ -653,8 +653,8 @@ void test_get_lower_element_from_tree_set() {
     int elements[] = { 1, 2, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    int* next_least = tree_set_lower(tree_set, &(int){3});
-    int* no_predecessor = tree_set_lower(tree_set, &(int){1});
+    int* next_least = tree_set_lower(tree_set, ref(int, 3));
+    int* no_predecessor = tree_set_lower(tree_set, ref(int, 1));
     // then
     TEST_ASSERT_EQUAL(2, *next_least);
     TEST_ASSERT_NULL(no_predecessor);
@@ -665,7 +665,7 @@ void test_tree_set_contains_element() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    bool contains = tree_set_contains(tree_set, &(int){3});
+    bool contains = tree_set_contains(tree_set, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -675,7 +675,7 @@ void test_tree_set_does_not_contains_element() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    bool contains = tree_set_contains(tree_set, &(int){10});
+    bool contains = tree_set_contains(tree_set, ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -714,7 +714,7 @@ void test_create_head_set_from_tree_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    TreeSet* new_tree_set = tree_set_head_set(tree_set, &(int){3});
+    TreeSet* new_tree_set = tree_set_head_set(tree_set, ref(int, 3));
     // then
     int new_elements[] = { 1, 2, 3 };
     TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
@@ -725,7 +725,7 @@ void test_create_tail_set_from_tree_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    TreeSet* new_tree_set = tree_set_tail_set(tree_set, &(int){3});
+    TreeSet* new_tree_set = tree_set_tail_set(tree_set, ref(int, 3));
     // then
     int new_elements[] = { 3, 4, 5 };
     TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
@@ -736,7 +736,7 @@ void test_create_sub_set_of_tree_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    TreeSet* new_tree_set = tree_set_sub_set(tree_set, &(int){2}, &(int){5});
+    TreeSet* new_tree_set = tree_set_sub_set(tree_set, ref(int, 2), ref(int, 5));
     // then
     int new_elements[] = { 2, 3, 4 };
     TEST_ASSERT_TREE_SET_CONTAINS(new_tree_set, new_elements);
@@ -747,7 +747,7 @@ void test_create_empty_sub_set_of_tree_set() {
     int elements[] = { 1, 2, 3, 4, 5 };
     POPULATE_TREE_SET(tree_set, elements);
     // when
-    TreeSet* new_tree_set = tree_set_sub_set(tree_set, &(int){3}, &(int){3});
+    TreeSet* new_tree_set = tree_set_sub_set(tree_set, ref(int, 3), ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(0, tree_set_size(new_tree_set));
 }
@@ -764,15 +764,15 @@ static void sub_set_inexistent_element_test_helper(int* start_element, int* end_
 }
 
 void test_create_sub_set_inexistent_end_element_fails() {
-    sub_set_inexistent_element_test_helper(&(int){1}, &(int){6});
+    sub_set_inexistent_element_test_helper(ref(int, 1), ref(int, 6));
 }
 
 void test_create_sub_set_inexistent_start_element_fails() {
-    sub_set_inexistent_element_test_helper(&(int){0}, &(int){5});
+    sub_set_inexistent_element_test_helper(ref(int, 0), ref(int, 5));
 }
 
 void test_create_sub_set_start_element_greater_than_end_element_fails() {
-    sub_set_inexistent_element_test_helper(&(int){5}, &(int){3});
+    sub_set_inexistent_element_test_helper(ref(int, 5), ref(int, 3));
 }
 
 void test_clone_tree_set() {

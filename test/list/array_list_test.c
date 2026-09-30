@@ -45,7 +45,7 @@ void test_create_array_list() {
 
 void test_do_not_create_array_list_with_invalid_options() {
     // when
-    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(&(ArrayListOptions) {}));
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_new(ref(ArrayListOptions)));
     // then
     TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -69,7 +69,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), &(ArrayListOptions) {}));
+    ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), ref(ArrayListOptions)));
     // then
     TEST_ASSERT_NULL(new_array_list);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -422,7 +422,7 @@ void test_remove_element_from_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool removed = array_list_remove_element(array_list, &(int){3});
+    bool removed = array_list_remove_element(array_list, ref(int, 3));
     // then
     int new_values[] = { 1, 2, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
@@ -434,7 +434,7 @@ void test_remove_element_from_array_list_nonexistent_element_fails() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool removed = array_list_remove_element(array_list, &(int){10});
+    bool removed = array_list_remove_element(array_list, ref(int, 10));
     // then
     TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
     TEST_ASSERT_FALSE(removed);
@@ -733,7 +733,7 @@ void test_array_list_iterator_replace_element_fails_if_no_previous_or_next_was_c
     // and
     Iterator* iterator = array_list_iterator(array_list);
     // when
-    Error error = attempt(iterator_set(iterator, &(int){10}));
+    Error error = attempt(iterator_set(iterator, ref(int, 10)));
     // then
     int new_values[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
@@ -1108,7 +1108,7 @@ void test_array_list_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool contains = array_list_contains(array_list, &(int){3});
+    bool contains = array_list_contains(array_list, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -1118,7 +1118,7 @@ void test_array_list_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    bool contains = array_list_contains(array_list, &(int){10});
+    bool contains = array_list_contains(array_list, ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }
@@ -1180,7 +1180,7 @@ void test_reduce_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int* result = array_list_reduce(array_list, &(int){0}, sum);
+    int* result = array_list_reduce(array_list, ref(int), sum);
     // then
     TEST_ASSERT_EQUAL(15, *result);
 }
@@ -1190,7 +1190,7 @@ void test_get_occurrences_of_element_in_array_list() {
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int count = array_list_occurrences_of(array_list, &(int){3});
+    int count = array_list_occurrences_of(array_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(3, count);
 }
@@ -1200,7 +1200,7 @@ void test_get_index_of_element_from_array_list() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_of(array_list, &(int){3});
+    int index = array_list_index_of(array_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(2, index);
 }
@@ -1210,7 +1210,7 @@ void test_get_index_of_nonexistent_element_from_array_list_returns_negative_one(
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_index_of(array_list, &(int){10});
+    int index = array_list_index_of(array_list, ref(int, 10));
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }
@@ -1220,7 +1220,7 @@ void test_get_last_index_of_element_from_array_list() {
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int last_index = array_list_last_index_of(array_list, &(int){3});
+    int last_index = array_list_last_index_of(array_list, ref(int, 3));
     // then
     TEST_ASSERT_EQUAL(4, last_index);
 }
@@ -1230,7 +1230,7 @@ void test_get_last_index_of_nonexistent_element_from_array_list_returns_negative
     int values[] = { 1, 2, 3, 3, 3, 4, 5 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int last_index = array_list_last_index_of(array_list, &(int){10});
+    int last_index = array_list_last_index_of(array_list, ref(int, 10));
     // then
     TEST_ASSERT_EQUAL(-1, last_index);
 }
@@ -1240,7 +1240,7 @@ void test_binary_search_element_of_array_list() {
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){9}, int_pointer_value_compare);
+    int index = array_list_binary_search(array_list, ref(int, 9), int_pointer_value_compare);
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
@@ -1250,7 +1250,7 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
     int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     POPULATE_ARRAY_LIST(array_list, values);
     // when
-    int index = array_list_binary_search(array_list, &(int){42}, int_pointer_value_compare);
+    int index = array_list_binary_search(array_list, ref(int, 42), int_pointer_value_compare);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

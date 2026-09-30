@@ -44,7 +44,7 @@ void test_create_priority_queue() {
 
 void test_do_not_create_priority_queue_with_invalid_options() {
     // when
-    PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_new(&(PriorityQueueOptions) {}));
+    PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_new(ref(PriorityQueueOptions)));
     // then
     TEST_ASSERT_NULL(new_priority_queue);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -69,7 +69,7 @@ void test_do_not_create_priority_queue_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_from(priority_queue_to_collection(priority_queue), &(PriorityQueueOptions) {}));
+    PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_from(priority_queue_to_collection(priority_queue), ref(PriorityQueueOptions)));
     // then
     TEST_ASSERT_NULL(new_priority_queue);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -354,7 +354,7 @@ void test_priority_queue_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    bool contains = priority_queue_contains(priority_queue, &(int){3});
+    bool contains = priority_queue_contains(priority_queue, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -364,7 +364,7 @@ void test_priority_queue_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_PRIORITY_QUEUE(priority_queue, values);
     // when
-    bool contains = priority_queue_contains(priority_queue, &(int){10});
+    bool contains = priority_queue_contains(priority_queue, ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }

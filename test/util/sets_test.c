@@ -68,8 +68,8 @@ void test_set_union() {
     TEST_ASSERT_EQUAL(9, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){6}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 1)));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 6)));
 }
 
 void test_set_intersection() {
@@ -90,8 +90,8 @@ void test_set_intersection() {
     TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){2}));
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){4}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 2)));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 4)));
 }
 
 void test_set_difference() {
@@ -111,8 +111,8 @@ void test_set_difference() {
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){5}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 1)));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 5)));
 }
 
 void test_set_symmetric_difference() {
@@ -134,8 +134,8 @@ void test_set_symmetric_difference() {
     TEST_ASSERT_EQUAL(6, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){1}));
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){0}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 1)));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 0)));
 }
 
 void test_set_is_subset() {
@@ -211,8 +211,8 @@ void test_set_chained_operations_passing_set_view_as_argument() {
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
     // and
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){2}));
-    TEST_ASSERT_TRUE(set_view_contains(&new_set, &(int){3}));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 2)));
+    TEST_ASSERT_TRUE(set_view_contains(&new_set, ref(int, 3)));
 }
 
 int main(void) {

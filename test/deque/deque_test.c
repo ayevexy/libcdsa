@@ -43,7 +43,7 @@ void test_create_deque() {
 
 void test_do_not_create_deque_with_invalid_options() {
     // when
-    Deque* new_deque; Error error = attempt(new_deque = deque_new(&(DequeOptions) {}));
+    Deque* new_deque; Error error = attempt(new_deque = deque_new(ref(DequeOptions)));
     // then
     TEST_ASSERT_NULL(new_deque);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -67,7 +67,7 @@ void test_do_not_create_deque_with_invalid_options_from_collection() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_DEQUE(deque, values);
     // when
-    Deque* new_deque; Error error = attempt(new_deque = deque_from(deque_to_collection(deque), &(DequeOptions) {}));
+    Deque* new_deque; Error error = attempt(new_deque = deque_from(deque_to_collection(deque), ref(DequeOptions)));
     // then
     TEST_ASSERT_NULL(new_deque);
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
@@ -487,7 +487,7 @@ void test_deque_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_DEQUE(deque, values);
     // when
-    bool contains = deque_contains(deque, &(int){3});
+    bool contains = deque_contains(deque, ref(int, 3));
     // then
     TEST_ASSERT_TRUE(contains);
 }
@@ -497,7 +497,7 @@ void test_deque_does_not_contains_element() {
     int values[] = { 1, 2, 3, 4, 5 };
     POPULATE_DEQUE(deque, values);
     // when
-    bool contains = deque_contains(deque, &(int){10});
+    bool contains = deque_contains(deque, ref(int, 10));
     // then
     TEST_ASSERT_FALSE(contains);
 }

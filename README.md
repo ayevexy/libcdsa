@@ -480,16 +480,16 @@ typedef struct {
 } Point;
 
 int main() {
-    int* number = new(int, 10);
+    int* number = new(int, 10); // heap allocated
+    int* local = ref(int, 20); // stack allocated
     Point* point = new(Point, .x = 10, .y = 20);
 
     printf("%d\n", *number); // 10
+    printf("%d\n", *local); // 20
     printf("x: %f, y: %f\n", point->x, point->y); // x: 10, y: 20
 
     delete(number);
     delete(point);
-    
-    return 0;
 }
 ```
 

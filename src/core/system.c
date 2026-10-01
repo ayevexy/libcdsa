@@ -185,6 +185,12 @@ const char* system_platform_architecture(void) {
 #include <sys/wait.h>
 #include <fcntl.h>
 
+const Error PROCESS_CREATION_ERROR      = ERROR("PROCESS_CREATION_ERROR");
+const Error PROCESS_EXECUTION_ERROR     = ERROR("PROCESS_EXECUTION_ERROR");
+const Error PROCESS_NOT_FOUND_ERROR     = ERROR("PROCESS_NOT_FOUND_ERROR");
+const Error PROCESS_ACCESS_DENIED_ERROR = ERROR("PROCESS_ACCESS_DENIED_ERROR");
+const Error PROCESS_INTERRUPTED_ERROR   = ERROR("PROCESS_INTERRUPTED_ERROR");
+
 static void system_process_set_creation_error(int error) {
     switch (error) {
         case EAGAIN:  set_error(PROCESS_CREATION_ERROR, "unable to create process due to limited resources");          break;
@@ -387,20 +393,12 @@ void system_process_kill(intptr process_id) {
     system_process_signal(process_id, SIGKILL);
 }
 
-const char* process_error_to_string(uint8 error) {
-    static const char* error_strings[] = {
-        "PROCESS_CREATION_ERROR",
-        "PROCESS_EXECUTION_ERROR",
-        "PROCESS_NOT_FOUND_ERROR",
-        "PROCESS_ACCESS_DENIED_ERROR",
-        "PROCESS_INTERRUPTED_ERROR"
-    };
-    return error < sizeof(error_strings) / sizeof(error_strings[0])
-        ? error_strings[error]
-        : "UNKNOWN_ERROR";
-}
-
 #include <pthread.h>
+
+const Error THREAD_CREATION_ERROR      = ERROR("THREAD_CREATION_ERROR");
+const Error THREAD_NOT_FOUND_ERROR     = ERROR("THREAD_NOT_FOUND_ERROR");
+const Error THREAD_ILLEGAL_STATE_ERROR = ERROR("THREAD_ILLEGAL_STATE_ERROR");
+const Error THREAD_DEADLOCK_ERROR      = ERROR("THREAD_DEADLOCK_ERROR");
 
 intptr (system_thread_create)(void* (*routine)(void*), void* argument) {
     if (require_non_null(routine)) return -1;
@@ -471,18 +469,6 @@ void system_thread_sleep(uint64 milliseconds) {
         .tv_nsec = (milliseconds % 1000) * 1000000
     };
     while (nanosleep(&remaining, &remaining) == -1 && errno == EINTR) {}
-}
-
-const char* thread_error_to_string(uint8 error) {
-    static const char* error_strings[] = {
-        "THREAD_CREATION_ERROR",
-        "THREAD_NOT_FOUND_ERROR",
-        "THREAD_ILLEGAL_STATE_ERROR",
-        "THREAD_DEADLOCK_ERROR"
-    };
-    return error < sizeof(error_strings) / sizeof(error_strings[0])
-        ? error_strings[error]
-        : "UNKNOWN_ERROR";
 }
 
 #endif

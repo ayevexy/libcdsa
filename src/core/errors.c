@@ -6,10 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define error_category_shift 8
-#define error_category_mask 0xFF00
-#define error_value_mask 0x00FF
-
 constexpr int MAX_MESSAGE_LENGTH = 256;
 
 typedef struct {
@@ -21,68 +17,15 @@ typedef struct {
 
 thread_local static ErrorContext error_context = { .abort = true };
 
-static const char* runtime_error_to_string(uint8 error) {
-    static const char* error_strings[] = {
-        "NULL_POINTER_ERROR",
-        "ARITHMETIC_ERROR",
-        "INDEX_OUT_OF_BOUNDS_ERROR",
-        "NO_SUCH_ELEMENT_ERROR",
-        "ILLEGAL_ARGUMENT_ERROR",
-        "ILLEGAL_STATE_ERROR",
-        "UNSUPPORTED_OPERATION_ERROR",
-        "CONCURRENT_MODIFICATION_ERROR",
-        "MEMORY_ALLOCATION_ERROR"
-    };
-    return error < sizeof(error_strings) / sizeof(error_strings[0])
-        ? error_strings[error]
-        : "UNKNOWN_ERROR";
-}
-
-extern const char* file_system_error_to_string(uint8);
-
-extern const char* process_error_to_string(uint8);
-
-extern const char* thread_error_to_string(uint8);
-
-extern const char* sequence_error_to_string(uint8);
-
-extern const char* synchronization_error_to_string(uint8);
-
-bool error_has_category(Error error, ErrorCategory category) {
-    if (error == NO_ERROR) {
-        return false;
-    }
-    return ((error & error_category_mask) >> error_category_shift) == category;
-}
-
-ErrorCategory error_category(Error error) {
-    assert(error != NO_ERROR && "can't retrieve error category of NO_ERROR");
-
-    return (error & error_category_mask) >> error_category_shift;
-}
-
-uint8 error_value(Error error) {
-    assert(error != NO_ERROR && "can't retrieve error value of NO_ERROR");
-
-    return error & error_value_mask;
-}
-
-const char* error_to_string(Error error) {
-    if (error == NO_ERROR) {
-        return "NO_ERROR";
-    }
-    const uint8 category = (error & error_category_mask) >> error_category_shift;
-    const uint8 value = error & error_value_mask;
-    switch (category) {
-        case RUNTIME_ERROR_CATEGORY:          return runtime_error_to_string(value);
-        case FILE_SYSTEM_ERROR_CATEGORY:      return file_system_error_to_string(value);
-        case PROCESS_ERROR_CATEGORY:          return process_error_to_string(value);
-        case THREAD_ERROR_CATEGORY:           return thread_error_to_string(value);
-        case SEQUENCE_ERROR_CATEGORY:         return sequence_error_to_string(value);
-        case SYNCHRONIZATION_ERROR_CATEGORY:  return synchronization_error_to_string(value);
-        default:                              return "UNKNOWN_ERROR";
-    }
-}
+const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR");
+const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR");
+const Error INDEX_OUT_OF_BOUNDS_ERROR     = ERROR("INDEX_OUT_OF_BOUNDS_ERROR");
+const Error NO_SUCH_ELEMENT_ERROR         = ERROR("NO_SUCH_ELEMENT_ERROR");
+const Error ILLEGAL_ARGUMENT_ERROR        = ERROR("ILLEGAL_ARGUMENT_ERROR");
+const Error ILLEGAL_STATE_ERROR           = ERROR("ILLEGAL_STATE_ERROR");
+const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR");
+const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR");
+const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR");
 
 const char* error_message(void) {
     return error_context.message;
@@ -127,7 +70,7 @@ void (set_error)(Error error, const char* location, const char* message, ...) {
     thread_local static char message_copy[MAX_MESSAGE_LENGTH];
     error_context.error = error;
 
-    int length = snprintf(message_copy, MAX_MESSAGE_LENGTH, "%s: ", error_to_string(error));
+    int length = snprintf(message_copy, MAX_MESSAGE_LENGTH, "%s: ", error->name);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
 

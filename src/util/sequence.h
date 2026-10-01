@@ -30,11 +30,9 @@
 typedef struct Sequence Sequence;
 
 /**
- * @brief Enumeration of possible sequence errors.
+ * @brief Sequence processing error constant.
  */
-typedef enum : Error {
-    SEQUENCE_PROCESSING_ERROR = ERROR_BASE(SEQUENCE_ERROR_CATEGORY)
-} SequenceError;
+extern const Error SEQUENCE_PROCESSING_ERROR;
 
 /**
  * @brief Creates a sequence from an existing collection.

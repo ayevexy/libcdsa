@@ -12,16 +12,14 @@
 typedef struct File File;
 
 /**
- * @brief Enumeration of possible file system errors.
+ * @brief File system error constants.
  */
-typedef enum : Error {
-    FILE_SYSTEM_ERROR = ERROR_BASE(FILE_SYSTEM_ERROR_CATEGORY),
-    FILE_INPUT_OUTPUT_ERROR,
-    FILE_NOT_FOUND_ERROR,
-    FILE_ALREADY_EXISTS_ERROR,
-    FILE_ACCESS_DENIED_ERROR,
-    FILE_DIRECTORY_NOT_EMPTY_ERROR
-} FileSystemError;
+extern const Error FILE_SYSTEM_ERROR;
+extern const Error FILE_INPUT_OUTPUT_ERROR;
+extern const Error FILE_NOT_FOUND_ERROR;
+extern const Error FILE_ALREADY_EXISTS_ERROR;
+extern const Error FILE_ACCESS_DENIED_ERROR;
+extern const Error FILE_DIRECTORY_NOT_EMPTY_ERROR;
 
 /**
  * @brief Creates a file.

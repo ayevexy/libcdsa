@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include "unity.h"
 
+// Custom error type
+static const Error UNKNOWN_ERROR = ERROR("UNKNOWN_ERROR");
+
 void setUp() {
 
 }
@@ -20,7 +23,7 @@ void test_set_error_aborts_program() {
     // given
     atexit(exit_handler);
     // when
-    set_error(65535);
+    set_error(UNKNOWN_ERROR);
     // then
     TEST_ASSERT_TRUE(false); // Should not be reached...
 }
@@ -106,22 +109,6 @@ void test_try_result() {
     TEST_ASSERT_EQUAL(result.error, ARITHMETIC_ERROR);
 }
 
-void test_error_has_category() {
-    TEST_ASSERT_TRUE(error_has_category(NULL_POINTER_ERROR, RUNTIME_ERROR_CATEGORY));
-    TEST_ASSERT_FALSE(error_has_category(NULL_POINTER_ERROR, FILE_SYSTEM_ERROR_CATEGORY));
-    TEST_ASSERT_FALSE(error_has_category(NO_ERROR, RUNTIME_ERROR_CATEGORY));
-}
-
-void test_error_category() {
-    TEST_ASSERT_TRUE(error_category(NULL_POINTER_ERROR) == RUNTIME_ERROR_CATEGORY);
-    TEST_ASSERT_FALSE(error_category(NULL_POINTER_ERROR) == FILE_SYSTEM_ERROR_CATEGORY);
-}
-
-void test_error_value() {
-    TEST_ASSERT_EQUAL(0, error_value(NULL_POINTER_ERROR));
-    TEST_ASSERT_EQUAL(1, error_value(ARITHMETIC_ERROR));
-}
-
 int main(void) {
     UNITY_BEGIN();
     if (TEST_PROTECT()) RUN_TEST(test_set_error_aborts_program);
@@ -132,8 +119,5 @@ int main(void) {
     RUN_TEST(test_get_error_message);
     RUN_TEST(test_get_error_description);
     RUN_TEST(test_try_result);
-    RUN_TEST(test_error_has_category);
-    RUN_TEST(test_error_category);
-    RUN_TEST(test_error_value);
     return UNITY_END();
 }

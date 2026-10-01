@@ -1,94 +1,35 @@
 #ifndef LIBCDSA_ERRORS_H
 #define LIBCDSA_ERRORS_H
 
-#include "types.h"
+/**
+ * @brief Represents an error.
+ */
+typedef struct Error {
+    const char* name;
+} * Error;
 
 /**
- * @brief Error code.
+ * @brief Creates an error with the specified name.
  *
- * Encodes an error category and error value.
- *
- * @note The upper 8 bits identify the error category and the lower 8 bits identify the specific error.
+ * @param name the error name
  */
-typedef uint16 Error;
+#define ERROR(name) (&(struct Error) { (name) })
 
 /** Constant expression defining the absence of an error. */
-constexpr Error NO_ERROR = 0;
+constexpr Error NO_ERROR = nullptr;
 
 /**
- * @brief Enumeration of error categories.
+ * @brief Common runtime error constants.
  */
-typedef enum : uint8 {
-    RUNTIME_ERROR_CATEGORY = 1,
-    FILE_SYSTEM_ERROR_CATEGORY,
-    PROCESS_ERROR_CATEGORY,
-    THREAD_ERROR_CATEGORY,
-    SEQUENCE_ERROR_CATEGORY,
-    SYNCHRONIZATION_ERROR_CATEGORY
-} ErrorCategory;
-
-/**
- * @brief Creates the base value for an error category.
- *
- * @param category the error category
- *
- * @return the category encoded in the upper 8 bits
- *
- * @note Intended for the first member of an error enum.
- */
-#define ERROR_BASE(category) ((category) << 8)
-
-/**
- * @brief Enumeration of common runtime errors.
- */
-typedef enum : Error {
-    NULL_POINTER_ERROR = ERROR_BASE(RUNTIME_ERROR_CATEGORY),
-    ARITHMETIC_ERROR,
-    INDEX_OUT_OF_BOUNDS_ERROR,
-    NO_SUCH_ELEMENT_ERROR,
-    ILLEGAL_ARGUMENT_ERROR,
-    ILLEGAL_STATE_ERROR,
-    UNSUPPORTED_OPERATION_ERROR,
-    CONCURRENT_MODIFICATION_ERROR,
-    MEMORY_ALLOCATION_ERROR
-} RuntimeError;
-
-/**
- * @brief Checks whether an error belongs to a specific category.
- *
- * @param error the error
- * @param category the error category
- *
- * @return true if the error belongs to the category, false otherwise
- */
-bool error_has_category(Error error, ErrorCategory category);
-
-/**
- * @brief Returns the category encoded in an error.
- *
- * @param error the error
- *
- * @return the error category
- */
-ErrorCategory error_category(Error error);
-
-/**
- * @brief Returns the value encoded in an error.
- *
- * @param error the error
- *
- * @return the error value within its category
- */
-uint8 error_value(Error error);
-
-/**
- * @brief Converts an error to its string representation.
- *
- * @param error the error to be converted
- *
- * @return the string representation of the error
- */
-const char* error_to_string(Error error);
+extern const Error NULL_POINTER_ERROR;
+extern const Error ARITHMETIC_ERROR;
+extern const Error INDEX_OUT_OF_BOUNDS_ERROR;
+extern const Error NO_SUCH_ELEMENT_ERROR;
+extern const Error ILLEGAL_ARGUMENT_ERROR;
+extern const Error ILLEGAL_STATE_ERROR;
+extern const Error UNSUPPORTED_OPERATION_ERROR;
+extern const Error CONCURRENT_MODIFICATION_ERROR;
+extern const Error MEMORY_ALLOCATION_ERROR;
 
 /**
  * @brief Retrieves the error message of the last captured error.

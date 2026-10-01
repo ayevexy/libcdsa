@@ -7,11 +7,9 @@
 #include "errors.h"
 
 /**
- * @brief Enumeration of synchronization errors.
+ * @brief Synchronization error constant.
  */
-typedef enum : Error {
-    SYNCHRONIZATION_ERROR = ERROR_BASE(SYNCHRONIZATION_ERROR_CATEGORY)
-} SynchronizationError;
+extern const Error SYNCHRONIZATION_ERROR;
 
 /**
  * @brief Represents a monitor.

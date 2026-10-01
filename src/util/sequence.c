@@ -96,6 +96,8 @@ struct Sequence {
     SequencePipeline pipeline;
 };
 
+const Error SEQUENCE_PROCESSING_ERROR = ERROR("SEQUENCE_PROCESSING_ERROR");
+
 typedef struct IterationContextOptions IterationContextOptions;
 
 static SequencePipeLineResult process_sequence_pipeline(Sequence*);
@@ -621,13 +623,4 @@ static void iterator_destroy_internal(void* raw_iteration_context) {
         array_destroy(&iteration_context->elements);
     }
     memory_dealloc(iteration_context);
-}
-
-const char* sequence_error_to_string(uint8 error) {
-    static const char* error_strings[] = {
-        "SEQUENCE_PROCESSING_ERROR"
-    };
-    return error < sizeof(error_strings) / sizeof(error_strings[0])
-        ? error_strings[error]
-        : "UNKNOWN_ERROR";
 }

@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+const Error SYNCHRONIZATION_ERROR = ERROR("SYNCHRONIZATION_ERROR");
+
 struct Monitor {
     pthread_mutex_t mutex;
     pthread_cond_t condition;
@@ -194,15 +196,6 @@ void semaphore_release(Semaphore* semaphore) {
     if (status != 0) {
         set_error(SYNCHRONIZATION_ERROR, "failed to release semaphore");
     }
-}
-
-const char* synchronization_error_to_string(uint8 error) {
-    static const char* error_strings[] = {
-        "SYNCHRONIZATION_ERROR",
-    };
-    return error < sizeof(error_strings) / sizeof(error_strings[0])
-        ? error_strings[error]
-        : "UNKNOWN_ERROR";
 }
 
 #endif

@@ -196,15 +196,13 @@ const char* system_platform_architecture(void);
 #ifdef __linux__
 
 /**
- * @brief Enumeration of possible process errors.
+ * @brief Process error constants.
  */
-typedef enum : Error {
-    PROCESS_CREATION_ERROR = ERROR_BASE(PROCESS_ERROR_CATEGORY),
-    PROCESS_EXECUTION_ERROR,
-    PROCESS_NOT_FOUND_ERROR,
-    PROCESS_ACCESS_DENIED_ERROR,
-    PROCESS_INTERRUPTED_ERROR,
-} ProcessError;
+extern const Error PROCESS_CREATION_ERROR;
+extern const Error PROCESS_EXECUTION_ERROR;
+extern const Error PROCESS_NOT_FOUND_ERROR;
+extern const Error PROCESS_ACCESS_DENIED_ERROR;
+extern const Error PROCESS_INTERRUPTED_ERROR;
 
 /**
  * @brief Creates an operating system process.
@@ -330,14 +328,12 @@ void system_process_terminate(intptr process_id);
 void system_process_kill(intptr process_id);
 
 /**
- * @brief Enumeration of possible thread errors.
+ * @brief Thread error constants.
  */
-typedef enum : Error {
-    THREAD_CREATION_ERROR = ERROR_BASE(THREAD_ERROR_CATEGORY),
-    THREAD_NOT_FOUND_ERROR,
-    THREAD_ILLEGAL_STATE_ERROR,
-    THREAD_DEADLOCK_ERROR
-} ThreadError;
+extern const Error THREAD_CREATION_ERROR;
+extern const Error THREAD_NOT_FOUND_ERROR;
+extern const Error THREAD_ILLEGAL_STATE_ERROR;
+extern const Error THREAD_DEADLOCK_ERROR;
 
 /**
  * @brief Creates a thread.

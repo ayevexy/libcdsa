@@ -362,51 +362,42 @@ int main() {
 #include "core/errors.h"
 #include <stdio.h>
 
+// custom application error
+static const Error INVALID_OPERATION_ERROR = ERROR("INVALID_OPERATION_ERROR");
+
 int divide(int a, int b) {
     if (b == 0) {
+        // use a library-provided error constant
         set_error(ARITHMETIC_ERROR, "Cannot divide by zero: %d / %d", a, b);
         return -1;
     }
     return a / b;
 }
 
-int main() {
-    int result; Error error = attempt(result = divide(10, 0));
+int main(void) {
+    // attempt() returns the error while preserving the function's return value
+    int value; Error error = attempt(value = divide(10, 0));
 
     if (error) {
-        printf("An error occurred, continuing execution... details: %s\n", error_message());
-    }
+        error_print(); // ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0
+    }                  //       at divide()
 
-    divide(-1, 0); // ARITHMETIC_ERROR: Cannot divide by zero: -1 / 0
+    printf("value: %d\n", value); // value: -1
 
-    printf("Unreachable");
-    
-    return 0;
-}
-```
+    // try() wraps the return value and error in a Result
+    Result(int) result = try(divide(5, 0));
 
-```c++
-#include "core/errors.h"
-#include <stdio.h>
+    // the error can also be compared
+    if (result.error == ARITHMETIC_ERROR) {
+        error_print(); // ARITHMETIC_ERROR: Cannot divide by zero: 5 / 0
+    }                  //       at divide()
 
-int divide(int a, int b) {
-    if (b == 0) {
-        set_error(ARITHMETIC_ERROR, "Cannot divide by zero: %d / %d", a, b);
-        return -1;
-    }
-    return a / b;
-}
+    printf("result value: %d\n", result.value); // result value: -1
 
-int main() {
-    Result(int) result = try(divide(10, 0));
+    // set a custom error (message is optional)
+    set_error(INVALID_OPERATION_ERROR); // INVALID_OPERATION_ERROR: no additional details available
+                                        //      at main()
 
-    if (result.error) {
-        printf("%s\n", error_message()); // ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0
-        return 1;
-    }
-
-    printf("result value: %d\n", result.value); // Unreachable
-    
     return 0;
 }
 ```

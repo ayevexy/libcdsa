@@ -604,6 +604,56 @@ int main() {
 }
 ```
 
+```c++
+#include "util/allocators.h"
+
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    // an arena allocates memory from a fixed-size region
+    MemoryArena* arena = memory_arena_new(1024);
+
+    char* message = memory_arena_alloc(arena, 32);
+    int* numbers = memory_arena_alloc(arena, 4 * sizeof(int));
+
+    strcpy(message, "Hello from the arena!");
+
+    for (int i = 0; i < 4; i++) {
+        numbers[i] = i + 1;
+    }
+
+    printf("Arena: %s\n", message); // Arena: Hello from the arena!
+
+    printf("Arena numbers: %d %d %d %d\n", numbers[0], numbers[1], numbers[2], numbers[3]);
+    // Arena numbers: 1 2 3 4
+
+    // reset reuses the arena without destroying it
+    memory_arena_reset(arena);
+
+    // a pool provides a fixed number of equally-sized blocks
+    MemoryPool* pool = memory_pool_new(4, 32); // 4 blocks of 32 bytes
+
+    char* block_1 = memory_pool_alloc(pool);
+    char* block_2 = memory_pool_alloc(pool);
+
+    strcpy(block_1, "First pool block");
+    strcpy(block_2, "Second pool block");
+
+    printf("Pool: %s\n", block_1); // Pool: First pool block
+    printf("Pool: %s\n", block_2); // Pool: Second pool block
+
+    // individual blocks can be returned to the pool
+    memory_pool_dealloc(pool, block_1);
+    memory_pool_dealloc(pool, block_2);
+
+    memory_arena_destroy(&arena);
+    memory_pool_destroy(&pool);
+
+    return 0;
+}
+```
+
 ### Documentation
 
 Each data structure and utility is documented in its corresponding header file within the `src` folder.

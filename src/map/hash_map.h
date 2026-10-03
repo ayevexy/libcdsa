@@ -1,16 +1,18 @@
 #ifndef LIBCDSA_HASH_MAP_H
 #define LIBCDSA_HASH_MAP_H
 
+#include "map_entry.h"
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
 #include "core/pointer.h"
+
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"
-#include "util/map_entry.h"
 
 /**
  * A hash map is a generic dynamic associative data structure that maps keys to values

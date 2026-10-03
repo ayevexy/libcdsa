@@ -164,6 +164,25 @@ bool semaphore_try_acquire(Semaphore* semaphore);
  */
 void semaphore_release(Semaphore* semaphore);
 
+/**
+ * @brief Declares the state required for one-time initialization.
+ *
+ * @param callback initialization callback associated with the state
+ */
+#define DEFINE_ONCE(callback) static int once_##callback;
+
+/**
+ * @brief Executes an initialization callback once.
+ *
+ * The callback is executed at most once for the state declared by
+ * DEFINE_ONCE().
+ *
+ * @param callback initialization callback to execute
+ */
+#define initialize_once(callback) once_call(&once_##callback, (callback))
+
+void once_call(int* once, void (*callback)(void));
+
 #endif
 
 #endif

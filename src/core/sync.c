@@ -198,4 +198,8 @@ void semaphore_release(Semaphore* semaphore) {
     }
 }
 
+void once_call(int* once, void (*callback)(void)) {
+    pthread_once(once, callback);
+}
+
 #endif

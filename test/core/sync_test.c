@@ -93,7 +93,7 @@ void test_semaphore_permits() {
     TEST_ASSERT_TRUE(semaphore_try_acquire(semaphore));
 }
 
-void test_semaphore_blocks_and_unblocks(void) {
+void test_semaphore_blocks_and_unblocks() {
     // given
     intptr thread_id = system_thread_create(acquire_worker);
     // when
@@ -103,11 +103,29 @@ void test_semaphore_blocks_and_unblocks(void) {
     TEST_ASSERT_EQUAL(1, counter);
 }
 
+DEFINE_ONCE(initializer);
+
+void initializer() {
+    counter++;
+}
+
+void test_initialize_once(void) {
+    // given
+    initialize_once(initializer);
+    // when
+    initialize_once(initializer);
+    initialize_once(initializer);
+    initialize_once(initializer);
+    // then
+    TEST_ASSERT_EQUAL(1, counter);
+}
+
 int main(void) {
     RUN_TEST(test_monitor_lock_unlock);
     RUN_TEST(test_monitor_wait_notify);
     RUN_TEST(test_semaphore_permits);
     RUN_TEST(test_semaphore_blocks_and_unblocks);
+    RUN_TEST(test_initialize_once);
 }
 
 #endif

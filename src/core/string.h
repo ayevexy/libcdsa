@@ -2,7 +2,7 @@
 #define LIBCDSA_STRING_H
 
 #include "types.h"
-#include "allocator.h"
+#include "memory.h"
 #include "array.h"
 
 /**

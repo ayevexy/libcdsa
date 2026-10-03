@@ -1,8 +1,40 @@
 #ifndef LIBCDSA_MEMORY_H
 #define LIBCDSA_MEMORY_H
 
-#include "allocator.h"
 #include "types.h"
+
+/**
+ * @brief Allocator abstraction.
+ *
+ * Provides a flexible and uniform way to manage memory.
+ */
+typedef struct {
+    void* storage;
+    void* (*alloc)(bytes, void*);
+    void* (*realloc)(void*, bytes, void*);
+    void (*dealloc)(void*, void*);
+    void (*reset)(void*);
+} Allocator;
+
+[[maybe_unused]]
+static inline void* allocator_alloc(const Allocator* allocator, bytes size) {
+    return allocator->alloc(size, allocator->storage);
+}
+
+[[maybe_unused]]
+static inline void* allocator_realloc(const Allocator* allocator, void* pointer, bytes size) {
+    return allocator->realloc(pointer, size, allocator->storage);
+}
+
+[[maybe_unused]]
+static inline void allocator_dealloc(const Allocator* allocator, void* pointer) {
+    allocator->dealloc(pointer, allocator->storage);
+}
+
+[[maybe_unused]]
+static inline void allocator_reset(const Allocator* allocator) {
+    allocator->reset(allocator->storage);
+}
 
 /**
  * @brief Global memory allocator instance used by default for memory management.

@@ -71,6 +71,19 @@
 #define array_length(array) (array_length)(array)
 
 /**
+ * @brief Creates a copy of an array.
+ *
+ * @param array the array to copy
+ *
+ * @return a newly allocated copy of the array
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
+ */
+Array(void) array_copy(const Array(void) array);
+
+/**
  * @brief Destroys a previously created array.
  *
  * @param array pointer to the array

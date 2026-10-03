@@ -43,6 +43,10 @@ int (array_length)(const void* array) {
     return array_storage(array)->length;
 }
 
+Array(void) array_copy(const Array(void) array) {
+    return array_create(array_length(array), array_storage(array)->element_size, array_storage(array)->data);
+}
+
 void (array_destroy)(void* array) {
     memory_dealloc(array_storage(array));
 }

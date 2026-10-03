@@ -81,6 +81,20 @@ void test_get_array_length() {
     TEST_ASSERT_EQUAL_INT(5, length);
 }
 
+void test_copy_array() {
+    // given
+    const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
+    // when
+    const Array(int) copy_ints = array_copy(ints);
+    // then
+    TEST_ASSERT_EQUAL(array_length(ints), array_length(copy_ints));
+    TEST_ASSERT_EQUAL(ints[0], copy_ints[0]);
+    TEST_ASSERT_EQUAL(ints[1], copy_ints[1]);
+    TEST_ASSERT_EQUAL(ints[2], copy_ints[2]);
+    TEST_ASSERT_EQUAL(ints[3], copy_ints[3]);
+    TEST_ASSERT_EQUAL(ints[4], copy_ints[4]);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_array_new);
@@ -88,5 +102,6 @@ int main(void) {
     RUN_TEST(test_get_array_element);
     RUN_TEST(test_set_array_element);
     RUN_TEST(test_get_array_length);
+    RUN_TEST(test_copy_array);
     return UNITY_END();
 }

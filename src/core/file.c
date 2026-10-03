@@ -4,7 +4,7 @@
 
 #include "errors.h"
 #include "memory.h"
-#include "util/constraints.h"
+#include "constraints.h"
 
 #include <stdio.h>
 #include <stdarg.h>

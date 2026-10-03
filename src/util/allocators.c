@@ -1,7 +1,7 @@
 #include "allocators.h"
 
 #include "core/errors.h"
-#include "util/constraints.h"
+#include "core/constraints.h"
 
 struct MemoryArena {
     Allocator self;

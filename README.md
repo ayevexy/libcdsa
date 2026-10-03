@@ -55,7 +55,7 @@ Also, there is some other utilities which may be useful:
 
 - [Algorithms](src/util/algorithms.h): Algorithms related enumerations.
 - [Collection](src/util/collection.h): Collection view abstraction.
-- [Constraints](src/util/constraints.h): Pre-condition checks.
+- [Constraints](src/core/constraints.h): Pre-condition checks.
 - [Errors](src/core/errors.h): Built-in custom error handling system used by the library.
 - [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
 - [Functions](src/util/functions.h): Functions typedefs and default implementations.

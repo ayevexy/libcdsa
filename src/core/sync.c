@@ -3,7 +3,7 @@
 #ifdef __linux__
 
 #include "memory.h"
-#include "util/constraints.h"
+#include "constraints.h"
 
 #include <errno.h>
 #include <pthread.h>

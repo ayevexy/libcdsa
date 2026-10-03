@@ -1,6 +1,6 @@
 #include "tree_map.h"
 
-#include "util/constraints.h"
+#include "core/constraints.h"
 #include <string.h>
 
 typedef enum {

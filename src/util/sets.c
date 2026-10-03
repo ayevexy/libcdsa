@@ -2,7 +2,7 @@
 
 #include "core/errors.h"
 #include "core/memory.h"
-#include "constraints.h"
+#include "core/constraints.h"
 #include <assert.h>
 
 typedef enum {

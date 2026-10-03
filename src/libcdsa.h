@@ -24,6 +24,9 @@
 /** @brief Error handling mechanism */
 #include "core/errors.h"
 
+/** @brief Validation and constraint utilities */
+#include "core/constraints.h"
+
 /** @brief Memory management abstractions */
 #include "core/memory.h"
 
@@ -86,9 +89,6 @@
 
 /** @brief Collection abstraction view */
 #include "util/collection.h"
-
-/** @brief Validation and constraint utilities */
-#include "util/constraints.h"
 
 /** @brief for-each iteration macro utility */
 #include "util/for_each.h"

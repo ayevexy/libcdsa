@@ -1,6 +1,6 @@
 #include "linked_list.h"
 
-#include "util/constraints.h"
+#include "core/constraints.h"
 
 typedef struct Node {
     void* element;

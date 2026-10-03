@@ -1,7 +1,7 @@
 #ifndef LIBCDSA_CONSTRAINTS_H
 #define LIBCDSA_CONSTRAINTS_H
 
-#include "core/errors.h"
+#include "errors.h"
 
 /**
  * @brief Verifies that one or more pointers are not null

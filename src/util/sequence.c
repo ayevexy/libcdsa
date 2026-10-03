@@ -1,9 +1,10 @@
 #include "sequence.h"
 
 #include "core/memory.h"
+#include "core/constraints.h"
 #include "list/list.h"
 #include "set/set.h"
-#include "constraints.h"
+
 #include <assert.h>
 
 constexpr int OPERATION_LIMIT = 15;

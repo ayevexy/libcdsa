@@ -1,7 +1,8 @@
 #include "system.h"
 
 #include "file.h"
-#include "util/constraints.h"
+#include "constraints.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>

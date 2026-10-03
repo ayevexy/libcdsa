@@ -81,6 +81,19 @@ void test_get_array_length() {
     TEST_ASSERT_EQUAL_INT(5, length);
 }
 
+void test_array_equals() {
+    // given
+    const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
+    const Array(int) same_ints = array_of(int, 1, 2, 3, 4, 5);
+    const Array(int) diff_ints = array_of(int, 6, 7, 8, 9, 10);
+    // when
+    bool equals = array_equals(ints, same_ints);
+    bool unequals = array_equals(ints, diff_ints);
+    // then
+    TEST_ASSERT_TRUE(equals);
+    TEST_ASSERT_FALSE(unequals);
+}
+
 void test_copy_array() {
     // given
     const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
@@ -102,6 +115,7 @@ int main(void) {
     RUN_TEST(test_get_array_element);
     RUN_TEST(test_set_array_element);
     RUN_TEST(test_get_array_length);
+    RUN_TEST(test_array_equals);
     RUN_TEST(test_copy_array);
     return UNITY_END();
 }

@@ -43,6 +43,18 @@ int (array_length)(const void* array) {
     return array_storage(array)->length;
 }
 
+bool array_equals(const Array(void) array, const Array(void) other) {
+    if (array_length(array) != array_length(other)){
+        return false;
+    }
+    if (array_storage(array)->element_size != array_storage(other)->element_size) {
+        return false;
+    }
+    const bytes size = array_length(array) * array_storage(array)->element_size;
+
+    return memory_compare(array, other, size) == 0;
+}
+
 Array(void) array_copy(const Array(void) array) {
     return array_create(array_length(array), array_storage(array)->element_size, array_storage(array)->data);
 }

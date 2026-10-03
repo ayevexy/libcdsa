@@ -71,6 +71,16 @@
 #define array_length(array) (array_length)(array)
 
 /**
+ * @brief Checks whether two arrays have equal byte representations.
+ *
+ * @param array the first array
+ * @param other the second array
+ *
+ * @return true if the arrays have equal byte representations, false otherwise
+ */
+bool array_equals(const Array(void) array, const Array(void) other);
+
+/**
  * @brief Creates a copy of an array.
  *
  * @param array the array to copy

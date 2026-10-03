@@ -114,4 +114,7 @@
 /** @brief Sequence API */
 #include "util/sequence.h"
 
+/** @brief Custom memory allocators */
+#include "util/allocators.h"
+
 #endif

@@ -40,6 +40,7 @@ add_library(${PROJECT_NAME}
         src/core/system.c
         src/core/sync.c
         src/util/sequence.c
+        src/util/allocators.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

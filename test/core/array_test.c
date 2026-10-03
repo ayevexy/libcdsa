@@ -41,6 +41,19 @@ void test_array_of() {
     TEST_ASSERT_NULL(ints);
 }
 
+void test_fill_array() {
+    // given
+    Array(int) ints = array_new(5, int);
+    // when
+    array_fill(ints, 10);
+    // then
+    TEST_ASSERT_EQUAL_INT(10, ints[0]);
+    TEST_ASSERT_EQUAL_INT(10, ints[1]);
+    TEST_ASSERT_EQUAL_INT(10, ints[2]);
+    TEST_ASSERT_EQUAL_INT(10, ints[3]);
+    TEST_ASSERT_EQUAL_INT(10, ints[4]);
+}
+
 void test_get_array_element() {
     // given
     const Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
@@ -112,6 +125,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_array_new);
     RUN_TEST(test_array_of);
+    RUN_TEST(test_fill_array);
     RUN_TEST(test_get_array_element);
     RUN_TEST(test_set_array_element);
     RUN_TEST(test_get_array_length);

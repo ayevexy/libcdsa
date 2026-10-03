@@ -18,6 +18,9 @@
 /** @brief Type aliases */
 #include "core/types.h"
 
+/** @brief Utility macros */
+#include "core/macros.h"
+
 /** @brief Error handling mechanism */
 #include "core/errors.h"
 

@@ -2,8 +2,8 @@
 #define LIBCDSA_SYSTEM_H
 
 #include "types.h"
+#include "macros.h"
 #include "errors.h"
-#include "array.h"
 #include "string.h"
 
 typedef struct File File;

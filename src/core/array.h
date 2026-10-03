@@ -2,6 +2,7 @@
 #define LIBCDSA_ARRAY_H
 
 #include "types.h"
+#include "macros.h"
 
 /**
  * @brief Defines a heap allocated array of type T.
@@ -35,6 +36,21 @@
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define array_of(T, ...) array_create(count_args(__VA_ARGS__), sizeof(T), (T[]){__VA_ARGS__})
+
+/**
+ * @brief Fills an array with the provided value.
+ *
+ * @param array the array
+ * @param value the value
+ */
+#define array_fill(array, value) \
+    array_fill_(array, value, concat(fill_index_, __LINE__))
+
+#define array_fill_(array, value, index)                            \
+    do {                                                            \
+        for (int index = 0; index < array_length(array); index++)   \
+            (array)[index] = (value);                               \
+    } while (false)
 
 /**
  * @brief Retrieves an element of the array by its index (checking bounds).
@@ -108,10 +124,6 @@ Array(void) array_copy(const Array(void) array);
 )(*array), *array = nullptr)
 
 /*------------------------------------------------------------------------------------------------*/
-
-#define count_args(...) dispatch_count_args(0 __VA_OPT__(,) __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-
-#define dispatch_count_args(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
 
 void* array_create(int, bytes, const void*);
 

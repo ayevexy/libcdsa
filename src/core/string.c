@@ -54,7 +54,7 @@ String (string_ref)(struct String string) {
 
 String (string_static)(struct String string) {
     constexpr int STRING_POOL_CAPACITY = 256;
-    static _Alignas(struct String) uchar string_pool[STRING_POOL_CAPACITY * sizeof(struct String)];
+    static alignas(struct String) uchar string_pool[STRING_POOL_CAPACITY * sizeof(struct String)];
     static int string_pool_size = 0;
 
     if (require_non_null(string.data)) return nullptr;

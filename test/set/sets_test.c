@@ -1,5 +1,5 @@
 #include "set/hash_set.h"
-#include "util/sets.h" // should be included after any set
+#include "set/sets.h"
 
 #include "core/memory.h"
 #include "core/errors.h"

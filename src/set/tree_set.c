@@ -1,7 +1,7 @@
 #include "tree_set.h"
 
+#include "sets.h"
 #include "core/constraints.h"
-#include "util/sets.h"
 #include <string.h>
 
 typedef enum {

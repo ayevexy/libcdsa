@@ -75,6 +75,9 @@
 /** @brief Set compile-time dispatch abstraction */
 #include "set/set.h"
 
+/** @brief Mathematical set operations */
+#include "set/sets.h"
+
 /** @brief Double-ended queue implemented with a resizable array. */
 #include "deque/deque.h"
 
@@ -107,9 +110,6 @@
 
 /** @brief Pair (two-value tuple) container */
 #include "util/pair.h"
-
-/** @brief Mathematical set operations */
-#include "util/sets.h"
 
 /** @brief Sequence API */
 #include "util/sequence.h"

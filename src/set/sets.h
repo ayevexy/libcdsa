@@ -1,9 +1,9 @@
 #ifndef LIBCDSA_SETS_H
 #define LIBCDSA_SETS_H
 
-#include "iterator.h"
-#include "collection.h"
-#include "pair.h"
+#include "util/iterator.h"
+#include "util/collection.h"
+#include "util/pair.h"
 
 /**
  * @file sets.h

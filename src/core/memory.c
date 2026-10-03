@@ -73,3 +73,23 @@ void* memory_try_realloc(void* pointer, bytes size) {
 void memory_dealloc(void* pointer) {
     allocator_dealloc(&global_memory_allocator, pointer);
 }
+
+void* memory_copy(const void* source, void* destination, bytes size) {
+    return memcpy(destination, source, size);
+}
+
+void* memory_move(const void* source, void* destination, bytes size) {
+    return memmove(destination, source, size);
+}
+
+void* memory_set(void* pointer, int value, bytes size) {
+    return memset(pointer, value, size);
+}
+
+int memory_compare(const void* first, const void* second, bytes size) {
+    return memcmp(first, second, size);
+}
+
+const void* memory_find(const void* pointer, byte value, bytes size) {
+    return memchr(pointer, value, size);
+}

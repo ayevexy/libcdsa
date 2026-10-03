@@ -100,4 +100,60 @@ void* memory_try_realloc(void* pointer, bytes size);
  */
 void memory_dealloc(void* pointer);
 
+/**
+ * @brief Copies a block of memory.
+ *
+ * @param source the source memory
+ * @param destination the destination memory
+ * @param size the number of bytes to copy
+ *
+ * @return the destination pointer
+ */
+void* memory_copy(const void* source, void* destination, bytes size);
+
+/**
+ * @brief Moves a block of memory.
+ *
+ * @param source the source memory
+ * @param destination the destination memory
+ * @param size the number of bytes to move
+ *
+ * @return the destination pointer
+ */
+void* memory_move(const void* source, void* destination, bytes size);
+
+/**
+ * @brief Sets a block of memory to a value.
+ *
+ * @param pointer the memory block
+ * @param value the value to set
+ * @param size the number of bytes to set
+ *
+ * @return the pointer to the memory block
+ */
+void* memory_set(void* pointer, int value, bytes size);
+
+/**
+ * @brief Compares two blocks of memory.
+ *
+ * @param first the first memory block
+ * @param second the second memory block
+ * @param size the number of bytes to compare
+ *
+ * @return a negative value, zero, or a positive value if the first block is
+ * less than, equal to, or greater than the second block, respectively
+ */
+int memory_compare(const void* first, const void* second, bytes size);
+
+/**
+ * @brief Finds a byte in a block of memory.
+ *
+ * @param pointer the memory block
+ * @param value the byte to find
+ * @param size the number of bytes to search
+ *
+ * @return a pointer to the first occurrence of the byte, or nullptr if not found
+ */
+const void* memory_find(const void* pointer, byte value, bytes size);
+
 #endif

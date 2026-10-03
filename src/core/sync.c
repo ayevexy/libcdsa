@@ -198,6 +198,57 @@ void semaphore_release(Semaphore* semaphore) {
     }
 }
 
+struct Barrier {
+    pthread_barrier_t barrier;
+};
+
+Barrier* barrier_new(int count) {
+    if (count <= 0) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "count can't be zero or negative");
+        return nullptr;
+    }
+
+    Barrier* barrier = memory_try_alloc(sizeof(Barrier));
+
+    if (!barrier) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'barrier'");
+        return nullptr;
+    }
+
+    const int status = pthread_barrier_init(&barrier->barrier, nullptr, count);
+
+    if (status != 0) {
+        memory_dealloc(barrier);
+        set_error(SYNCHRONIZATION_ERROR, "failed to initialize barrier");
+        return nullptr;
+    }
+    return barrier;
+}
+
+void barrier_destroy(Barrier** barrier_pointer) {
+    if (require_non_null(barrier_pointer, *barrier_pointer)) return;
+    Barrier* barrier = *barrier_pointer;
+
+    const int status = pthread_barrier_destroy(&barrier->barrier);
+    if (status != 0) {
+        set_error(SYNCHRONIZATION_ERROR, "failed to destroy barrier");
+        return;
+    }
+    memory_dealloc(barrier);
+    *barrier_pointer = nullptr;
+}
+
+void barrier_wait(Barrier* barrier) {
+    if (require_non_null(barrier)) return;
+
+    const int status = pthread_barrier_wait(&barrier->barrier);
+
+    if (status == 0 || status == PTHREAD_BARRIER_SERIAL_THREAD) {
+        return;
+    }
+    set_error(SYNCHRONIZATION_ERROR, "failed to wait for barrier");
+}
+
 void once_call(int* once, void (*callback)(void)) {
     pthread_once(once, callback);
 }

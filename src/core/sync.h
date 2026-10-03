@@ -165,6 +165,48 @@ bool semaphore_try_acquire(Semaphore* semaphore);
 void semaphore_release(Semaphore* semaphore);
 
 /**
+ * @brief Represents a barrier.
+ */
+typedef struct Barrier Barrier;
+
+/**
+ * @brief Creates a barrier for the specified number of threads.
+ *
+ * @param count number of threads that must reach the barrier before they are released
+ *
+ * @return A new barrier, or nullptr on failure
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR If count is zero or negative
+ * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
+ * @exception SYNCHRONIZATION_ERROR If the barrier cannot be initialized
+ */
+Barrier* barrier_new(int count);
+
+/**
+ * @brief Destroys a barrier.
+ *
+ * @param barrier_pointer pointer to a barrier pointer
+ *
+ * @exception NULL_POINTER_ERROR if barrier_pointer or *barrier_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the barrier
+ *
+ * @post *barrier_pointer == nullptr
+ */
+void barrier_destroy(Barrier** barrier_pointer);
+
+/**
+ * @brief Waits until all threads reach the barrier.
+ *
+ * The barrier is reusable after all waiting threads have been released
+ *
+ * @param barrier barrier to wait on
+ *
+ * @exception NULL_POINTER_ERROR If barrier is null
+ * @exception SYNCHRONIZATION_ERROR If waiting on the barrier fails
+ */
+void barrier_wait(Barrier* barrier);
+
+/**
  * @brief Declares the state required for one-time initialization.
  *
  * @param callback initialization callback associated with the state

@@ -7,17 +7,20 @@
 
 static Monitor* monitor;
 static Semaphore* semaphore;
+static Barrier* barrier;
 static int counter;
 
 void setUp() {
     monitor = monitor_new();
     semaphore = semaphore_new(0);
+    barrier = barrier_new(3);
     counter = 0;
 }
 
 void tearDown() {
     monitor_destroy(&monitor);
     semaphore_destroy(&semaphore);
+    barrier_destroy(&barrier);
 }
 
 void* synchronized_increment(void*) {
@@ -103,6 +106,25 @@ void test_semaphore_blocks_and_unblocks() {
     TEST_ASSERT_EQUAL(1, counter);
 }
 
+void* barrier_work(void*) {
+    barrier_wait(barrier);
+    counter++;
+    return nullptr;
+}
+
+void test_barrier() {
+    // given
+    intptr thread_id_1 = system_thread_create(barrier_work);
+    intptr thread_id_2 = system_thread_create(barrier_work);
+    // when
+    barrier_wait(barrier);
+    // and
+    system_thread_join(thread_id_1);
+    system_thread_join(thread_id_2);
+    // then
+    TEST_ASSERT_EQUAL(2, counter);
+}
+
 DEFINE_ONCE(initializer);
 
 void initializer() {
@@ -125,6 +147,7 @@ int main(void) {
     RUN_TEST(test_monitor_wait_notify);
     RUN_TEST(test_semaphore_permits);
     RUN_TEST(test_semaphore_blocks_and_unblocks);
+    RUN_TEST(test_barrier);
     RUN_TEST(test_initialize_once);
 }
 

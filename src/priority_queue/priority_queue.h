@@ -6,9 +6,9 @@
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
+#include "core/pointer.h"
 #include "util/iterator.h"
 #include "util/functions.h"
-#include "util/pointer.h"
 #include "util/collection.h"
 
 /**

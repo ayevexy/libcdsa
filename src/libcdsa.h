@@ -36,6 +36,9 @@
 /** @brief String implementation */
 #include "core/string.h"
 
+/** @brief Pointer functions */
+#include "core/pointer.h"
+
 /** @brief Simple file handling abstraction */
 #include "core/file.h"
 
@@ -95,9 +98,6 @@
 
 /** @brief Function types and utilities */
 #include "util/functions.h"
-
-/** @brief Pointer functions */
-#include "util/pointer.h"
 
 /** @brief Iterator abstraction */
 #include "util/iterator.h"

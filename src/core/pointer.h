@@ -1,8 +1,8 @@
 #ifndef LIBCDSA_POINTER_H
 #define LIBCDSA_POINTER_H
 
-#include "core/string.h"
-#include "core/types.h"
+#include "types.h"
+#include "string.h"
 
 /**
  * @brief Calculate a hash value of a pointer by its memory address.

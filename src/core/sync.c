@@ -11,6 +11,106 @@
 
 const Error SYNCHRONIZATION_ERROR = ERROR("SYNCHRONIZATION_ERROR");
 
+struct Lock {
+    pthread_mutex_t mutex;
+    pthread_rwlock_t rwlock;
+};
+
+Lock* lock_new(void) {
+    Lock* lock = memory_try_alloc(sizeof(Lock));
+
+    if (!lock) {
+        set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'lock'");
+        return nullptr;
+    }
+
+    int status = pthread_mutex_init(&lock->mutex, nullptr);
+
+    if (status != 0) {
+        memory_dealloc(&lock);
+        set_error(SYNCHRONIZATION_ERROR, "failed to initialize lock");
+        return nullptr;
+    }
+
+    status = pthread_rwlock_init(&lock->rwlock, nullptr);
+
+    if (status != 0) {
+        pthread_mutex_destroy(&lock->mutex);
+        memory_dealloc(&lock);
+        set_error(SYNCHRONIZATION_ERROR, "failed to initialize lock");
+        return nullptr;
+    }
+    return lock;
+}
+
+void lock_destroy(Lock** lock_pointer) {
+    if (require_non_null(lock_pointer, *lock_pointer)) return;
+    Lock* lock = *lock_pointer;
+
+    const int mutex_status = pthread_mutex_destroy(&lock->mutex);
+    const int rwlock_status = pthread_rwlock_destroy(&lock->rwlock);
+
+    if (mutex_status != 0 || rwlock_status != 0) {
+        set_error(SYNCHRONIZATION_ERROR, "failed to destroy lock");
+        return;
+    }
+    memory_dealloc(lock);
+    *lock_pointer = nullptr;
+}
+
+void (lock_lock)(Lock* lock, LockMode mode) {
+    if (require_non_null(lock)) return;
+    int status = 0;
+
+    switch (mode) {
+        case SIMPLE_LOCK: status = pthread_mutex_lock(&lock->mutex); break;
+        case READ_LOCK: status = pthread_rwlock_rdlock(&lock->rwlock); break;
+        case WRITE_LOCK: status = pthread_rwlock_wrlock(&lock->rwlock); break;
+
+        default: set_error(ILLEGAL_ARGUMENT_ERROR, "invalid lock mode"); return;
+    }
+    if (status != 0) {
+        set_error(SYNCHRONIZATION_ERROR, "failed to lock");
+    }
+}
+
+bool (lock_try_lock)(Lock* lock, LockMode mode) {
+    if (require_non_null(lock)) return false;
+    int status = 0;
+
+    switch (mode) {
+        case SIMPLE_LOCK: status = pthread_mutex_trylock(&lock->mutex); break;
+        case READ_LOCK: status = pthread_rwlock_tryrdlock(&lock->rwlock); break;
+        case WRITE_LOCK: status = pthread_rwlock_trywrlock(&lock->rwlock); break;
+
+        default: set_error(ILLEGAL_ARGUMENT_ERROR, "invalid lock mode"); return false;
+    }
+    if (status == 0) {
+        return true;
+    }
+    if (status == EBUSY) {
+        return false;
+    }
+    set_error(SYNCHRONIZATION_ERROR, "failed to try-lock");
+    return false;
+}
+
+void (lock_unlock)(Lock* lock, LockMode mode) {
+    if (require_non_null(lock)) return;
+    int status = 0;
+
+    switch (mode) {
+        case SIMPLE_LOCK: status = pthread_mutex_unlock(&lock->mutex); break;
+        case READ_LOCK:
+        case WRITE_LOCK: status = pthread_rwlock_unlock(&lock->rwlock); break;
+
+        default: set_error(ILLEGAL_ARGUMENT_ERROR, "invalid lock mode"); return;
+    }
+    if (status != 0) {
+        set_error(SYNCHRONIZATION_ERROR, "failed to unlock");
+    }
+}
+
 struct Monitor {
     pthread_mutex_t mutex;
     pthread_cond_t condition;

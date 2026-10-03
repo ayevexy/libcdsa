@@ -3,13 +3,98 @@
 
 #ifdef __linux__
 
-#include "types.h"
 #include "errors.h"
 
 /**
  * @brief Synchronization error constant.
  */
 extern const Error SYNCHRONIZATION_ERROR;
+
+/**
+ * @brief Represents a lock.
+ */
+typedef struct Lock Lock;
+
+/**
+ * @brief Creates a new lock.
+ *
+ * @return A pointer to the newly created lock or nullptr on failure
+ *
+ * @exception MEMORY_ALLOCATION_ERROR If failed to allocate memory
+ * @exception SYNCHRONIZATION_ERROR If failed to initialize the lock
+ */
+Lock* lock_new(void);
+
+/**
+ * @brief Destroys a lock.
+ *
+ * @param lock_pointer pointer to a lock pointer
+ *
+ * @exception NULL_POINTER_ERROR if lock_pointer or *lock_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the lock
+ *
+ * @post *lock_pointer == nullptr
+ */
+void lock_destroy(Lock** lock_pointer);
+
+/**
+ * @brief Lock modes.
+ */
+typedef enum {
+    SIMPLE_LOCK,
+    READ_LOCK,
+    WRITE_LOCK
+} LockMode;
+
+/**
+ * @brief Acquires a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If the lock could not be acquired
+ */
+#define lock_lock(lock, ...) lock_lock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_lock_(lock, mode, ...) lock_lock(lock, mode)
+
+void (lock_lock)(Lock* lock, LockMode mode);
+
+/**
+ * @brief Attempts to acquire a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @return true if the lock was successfully acquired, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If an error occurs
+ */
+#define lock_try_lock(lock, ...) lock_try_lock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_try_lock_(lock, mode, ...) lock_try_lock(lock, mode)
+
+bool (lock_try_lock)(Lock* lock, LockMode mode);
+
+/**
+ * @brief Releases a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If the lock could not be released
+ */
+#define lock_unlock(lock, ...) lock_unlock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_unlock_(lock, mode, ...) lock_unlock(lock, mode)
+
+void (lock_unlock)(Lock* lock, LockMode mode);
 
 /**
  * @brief Represents a monitor.

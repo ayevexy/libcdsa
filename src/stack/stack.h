@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_STACK_H
 #define LIBCDSA_STACK_H
 
+/**
+ * @file stack.h
+ * @brief LIFO stack implemented with a resizable array.
+ */
+
 #include "deque/deque.h"
 
 /**

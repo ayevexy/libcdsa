@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_FOR_EACH_H
 #define LIBCDSA_FOR_EACH_H
 
+/**
+ * @file for_each.h
+ * @brief for-each iteration macro utility.
+ */
+
 #include "collection.h"
 #include "iterator.h"
 

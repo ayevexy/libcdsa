@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_QUEUE_H
 #define LIBCDSA_QUEUE_H
 
+/**
+ * @file queue.h
+ * @brief FIFO queue implemented with a resizable array.
+ */
+
 #include "deque/deque.h"
 
 /**

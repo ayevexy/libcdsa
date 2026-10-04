@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_ARRAY_LIST_H
 #define LIBCDSA_ARRAY_LIST_H
 
+/**
+ * @file array_list.h
+ * @brief Dynamic array-based list implementation.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

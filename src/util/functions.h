@@ -2,6 +2,7 @@
 #define LIBCDSA_FUNCTIONS_H
 
 /**
+ * @file functions.h
  * @brief Generic function pointer types for functional-style operations.
  */
 

@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_COLLECTION_H
 #define LIBCDSA_COLLECTION_H
 
+/**
+ * @file collection.h
+ * @brief Collection abstraction view.
+ */
+
 #include "core/array.h"
 #include "functions.h"
 #include "iterator.h"

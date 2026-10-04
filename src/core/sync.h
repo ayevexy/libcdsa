@@ -3,6 +3,11 @@
 
 #ifdef __linux__
 
+/**
+ * @file sync.h
+ * @brief Thread synchronization abstractions.
+ */
+
 #include "errors.h"
 
 /**

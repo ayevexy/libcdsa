@@ -2,6 +2,11 @@
 #define LIBCDSA_ALGORITHMS_H
 
 /**
+ * @file algorithms.h
+ * @brief Algorithm-related enumerations.
+ */
+
+/**
  * @brief Enumeration of supported sorting algorithms.
  *
  * These values specify which sorting strategy should be used by

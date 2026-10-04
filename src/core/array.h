@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_ARRAY_H
 #define LIBCDSA_ARRAY_H
 
+/**
+ * @file array.h
+ * @brief Array implementation.
+ */
+
 #include "types.h"
 #include "macros.h"
 

@@ -1,11 +1,15 @@
 #ifndef LIBCDSA_SET_H
 #define LIBCDSA_SET_H
 
+/**
+ * @file set.h
+ * @brief Set compile-time dispatch abstraction.
+ */
+
 #include "hash_set.h"
 #include "tree_set.h"
 
 /**
- * @file set.h
  * @brief A thin abstraction layer that provides compile-time dispatch for set types
  *        (HashSet and TreeSet).
  *

@@ -2,6 +2,11 @@
 #define LIBCDSA_MACROS_H
 
 /**
+ * @file macros.h
+ * @brief Utility macros.
+ */
+
+/**
  * @brief Concatenates two tokens.
  */
 #define concat(a, b) concat_(a, b)

@@ -2,6 +2,11 @@
 #define LIBCDSA_OPTIONAL_H
 
 /**
+ * @file optional.h
+ * @brief Optional value container.
+ */
+
+/**
  * @brief A container object which may or may not contain a value.
  */
 typedef struct {

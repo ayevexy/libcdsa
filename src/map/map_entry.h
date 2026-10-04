@@ -2,7 +2,12 @@
 #define LIBCDSA_MAP_ENTRY_H
 
 /**
- * An entry of a map, containing the key-value pair.
+ * @file map_entry.h
+ * @brief A map entry.
+ */
+
+/**
+ * @brief An entry of a map, containing the key-value pair.
  */
 typedef struct {
     const void* key;

@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_MEMORY_H
 #define LIBCDSA_MEMORY_H
 
+/**
+ * @file memory.h
+ * @brief Memory management abstractions.
+ */
+
 #include "types.h"
 
 /**

@@ -1,14 +1,14 @@
 #ifndef LIBCDSA_SETS_H
 #define LIBCDSA_SETS_H
 
-#include "util/iterator.h"
-#include "util/collection.h"
-#include "util/pair.h"
-
 /**
  * @file sets.h
  * @brief Common mathematical set operations and set view abstraction.
  */
+
+#include "util/iterator.h"
+#include "util/collection.h"
+#include "util/pair.h"
 
 /**
  * @brief Set view abstraction.

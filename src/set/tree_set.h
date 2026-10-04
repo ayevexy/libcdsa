@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_TREE_SET_H
 #define LIBCDSA_TREE_SET_H
 
+/**
+ * @file tree_set.h
+ * @brief Self-balancing binary tree based set implementation.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_SEQUENCE_H
 #define LIBCDSA_SEQUENCE_H
 
+/**
+ * @file sequence.h
+ * @brief Sequence API.
+ */
+
 #include "core/errors.h"
 #include "core/array.h"
 #include "algorithms.h"

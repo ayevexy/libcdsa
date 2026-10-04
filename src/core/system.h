@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_SYSTEM_H
 #define LIBCDSA_SYSTEM_H
 
+/**
+ * @file system.h
+ * @brief Runtime System abstraction.
+ */
+
 #include "types.h"
 #include "macros.h"
 #include "errors.h"

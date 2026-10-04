@@ -15,7 +15,7 @@
 /** @brief Version information macros */
 #include "core/version.h"
 
-/** @brief Type aliases */
+/** @brief Optioned type aliases for existing c types */
 #include "core/types.h"
 
 /** @brief Utility macros */
@@ -57,6 +57,9 @@
 /** @brief List compile-time dispatch abstraction */
 #include "list/list.h"
 
+/** @brief A map entry */
+#include "map/map_entry.h"
+
 /** @brief Hash table based map implementation */
 #include "map/hash_map.h"
 
@@ -75,19 +78,19 @@
 /** @brief Set compile-time dispatch abstraction */
 #include "set/set.h"
 
-/** @brief Mathematical set operations */
+/** @brief Common mathematical set operations and set view abstraction */
 #include "set/sets.h"
 
-/** @brief Double-ended queue implemented with a resizable array. */
+/** @brief Double-ended queue implemented with a resizable array */
 #include "deque/deque.h"
 
-/** @brief LIFO stack implemented with a resizable array. */
+/** @brief LIFO stack implemented with a resizable array */
 #include "stack/stack.h"
 
-/** @brief FIFO queue implemented with a resizable array. */
+/** @brief FIFO queue implemented with a resizable array */
 #include "queue/queue.h"
 
-/** @brief heap based priority queue implementation */
+/** @brief Heap based priority queue implementation */
 #include "priority_queue/priority_queue.h"
 
 /** @brief Algorithm-related enumerations */
@@ -99,7 +102,7 @@
 /** @brief for-each iteration macro utility */
 #include "util/for_each.h"
 
-/** @brief Function types and utilities */
+/** @brief Generic function pointer types for functional-style operations */
 #include "util/functions.h"
 
 /** @brief Iterator abstraction */

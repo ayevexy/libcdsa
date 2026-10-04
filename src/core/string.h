@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_STRING_H
 #define LIBCDSA_STRING_H
 
+/**
+ * @file string.h
+ * @brief String implementation.
+ */
+
 #include "types.h"
 #include "memory.h"
 #include "array.h"

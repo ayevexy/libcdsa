@@ -2,6 +2,11 @@
 #define LIBCDSA_ERRORS_H
 
 /**
+ * @file errors.h
+ * @brief Error handling mechanism.
+ */
+
+/**
  * @brief Represents an error.
  */
 typedef struct Error {

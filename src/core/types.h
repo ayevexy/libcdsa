@@ -1,13 +1,13 @@
 #ifndef LIBCDSA_TYPES_H
 #define LIBCDSA_TYPES_H
 
-#include <stddef.h>
-#include <stdint.h>
-
 /**
  * @file types.h
  * @brief Optioned type aliases for existing c types.
  */
+
+#include <stddef.h>
+#include <stdint.h>
 
 typedef uint8_t byte;
 typedef size_t bytes;

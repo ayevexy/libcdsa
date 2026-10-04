@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_ALLOCATORS_H
 #define LIBCDSA_ALLOCATORS_H
 
+/**
+ * @file allocators.h
+ * @brief Custom memory allocators.
+ */
+
 #include "core/types.h"
 #include "core/memory.h"
 

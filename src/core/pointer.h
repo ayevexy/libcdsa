@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_POINTER_H
 #define LIBCDSA_POINTER_H
 
+/**
+ * @file pointer.h
+ * @brief Pointer functions.
+ */
+
 #include "types.h"
 #include "string.h"
 

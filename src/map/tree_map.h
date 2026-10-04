@@ -1,15 +1,18 @@
 #ifndef LIBCDSA_TREE_MAP_H
 #define LIBCDSA_TREE_MAP_H
 
-#include "map_entry.h"
+/**
+ * @file tree_map.h
+ * @brief Self-balancing binary tree based map implementation.
+ */
 
+#include "map_entry.h"
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
 #include "core/pointer.h"
-
 #include "util/iterator.h"
 #include "util/functions.h"
 #include "util/collection.h"

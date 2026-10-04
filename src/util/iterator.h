@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_ITERATOR_H
 #define LIBCDSA_ITERATOR_H
 
+/**
+ * @file iterator.h
+ * @brief Iterator abstraction.
+ */
+
 #include "functions.h"
 
 /**

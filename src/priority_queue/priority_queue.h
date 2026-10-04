@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_PRIORITY_QUEUE_H
 #define LIBCDSA_PRIORITY_QUEUE_H
 
+/**
+ * @file priority_queue.h
+ * @brief Heap based priority queue implementation.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

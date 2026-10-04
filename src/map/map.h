@@ -1,11 +1,15 @@
 #ifndef LIBCDSA_MAP_H
 #define LIBCDSA_MAP_H
 
+/**
+ * @file map.h
+ * @brief Map compile-time dispatch abstraction.
+ */
+
 #include "hash_map.h"
 #include "tree_map.h"
 
 /**
- * @file map.h
  * @brief A thin abstraction layer that provides compile-time dispatch for map types
  *        (HashMap and TreeMap).
  *

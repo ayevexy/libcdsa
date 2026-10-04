@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_DEQUE_H
 #define LIBCDSA_DEQUE_H
 
+/**
+ * @file deque.h
+ * @brief Double-ended queue implemented with a resizable array.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

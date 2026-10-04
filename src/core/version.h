@@ -2,6 +2,7 @@
 #define LIBCDSA_VERSION_H
 
 /**
+ * @file version.h
  * @brief Version information macros.
  */
 

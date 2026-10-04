@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_LINKED_LIST_H
 #define LIBCDSA_LINKED_LIST_H
 
+/**
+ * @file linked_list.h
+ * @brief Doubly-linked list implementation.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

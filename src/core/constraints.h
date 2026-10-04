@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_CONSTRAINTS_H
 #define LIBCDSA_CONSTRAINTS_H
 
+/**
+ * @file constraints.h
+ * @brief Validation and constraint utilities.
+ */
+
 #include "errors.h"
 
 /**

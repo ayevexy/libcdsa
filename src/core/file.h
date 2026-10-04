@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_FILE_H
 #define LIBCDSA_FILE_H
 
+/**
+ * @file file.h
+ * @brief Simple file handling abstraction.
+ */
+
 #include "types.h"
 #include "errors.h"
 #include "array.h"

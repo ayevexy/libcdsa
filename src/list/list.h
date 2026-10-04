@@ -1,11 +1,15 @@
 #ifndef LIBCDSA_LIST_H
 #define LIBCDSA_LIST_H
 
+/**
+ * @file list.h
+ * @brief List compile-time dispatch abstraction.
+ */
+
 #include "array_list.h"
 #include "linked_list.h"
 
 /**
- * @file list.h
  * @brief A thin abstraction layer that provides compile-time dispatch for list types
  *        (ArrayList and LinkedList).
  *

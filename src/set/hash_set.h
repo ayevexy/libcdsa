@@ -1,6 +1,11 @@
 #ifndef LIBCDSA_HASH_SET_H
 #define LIBCDSA_HASH_SET_H
 
+/**
+ * @file hash_set.h
+ * @brief Hash based set implementation.
+ */
+
 #include "core/types.h"
 #include "core/errors.h"
 #include "core/memory.h"

@@ -29,6 +29,7 @@ typedef float float32; // not guaranteed
 typedef double float64; // not guaranteed
 
 typedef unsigned char uchar;
+typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 

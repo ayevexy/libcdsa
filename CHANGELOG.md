@@ -7,6 +7,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.9]() — 2026-10-04
+
+A major update introducing the new Synchronization API, custom allocators, and improvements to the Errors API, along with other features, improvements, and bug fixes.
+
+### ✨ Features
+- Added support for custom errors through the new `ERROR()` macro:
+  - Custom errors can be defined with `ERROR("ERROR_NAME")`.
+  - Custom errors can be used anywhere a regular `Error` is accepted.
+- Added the `error_print()` operation (`core/errors.h`).
+- Added the `core/macros.h` module with common utility macros:
+  - `concat()`, `stringify()`, and `count_args()`.
+- Added the `util/allocators.h` module with the following functionalities:
+  - `MemoryArena`, `memory_arena_new()`, `memory_arena_alloc()`, `memory_arena_reset()`, etc.
+  - `MemoryPool`, `memory_pool_new()`, `memory_pool_alloc()`, `memory_pool_dealloc()`, etc.
+- Added the `core/sync.h` module with the following functionalities:
+  - `Lock`, `lock_new()`, `lock_lock()`, `lock_unlock()`, etc., providing simple lock and read-write locking mechanisms.
+  - `Monitor`, `monitor_new()`, `monitor_wait()`, `monitor_notify()`, `monitor_notify_all()`, etc.
+  - `Semaphore`, `semaphore_new()`, `semaphore_acquire()`, `semaphore_release()`, etc.
+  - `Barrier`, `barrier_new()`, `barrier_wait()`, etc.
+  - `DEFINE_ONCE()` and `initialize_once()` for thread-safe one-time initialization.
+- Added the following missing functionalities to `core/system.h`:
+  - `system_random()` to generate random numbers.
+  - `system_process_current()` to get the current process ID.
+  - `system_process_parent()` to get the parent process ID.
+  - `system_thread_yield()` to yield execution of the current thread.
+- Added the following operations to `core/memory.h`:
+  - `ref()` to create stack-allocated objects and pair with `new()`.
+  - `memory_copy()`, `memory_move()`, `memory_set()`, `memory_compare()`, and `memory_find()`.
+- Added `array_fill()`, `array_equals()`, and `array_copy()` operations to `core/array.h`.
+- Added the optional `string_destroy_all()` operation (`core/string.h`).
+
+### ✏️ Changes
+- Redesigned the error handling mechanism to decouple errors from their representation and allow extensibility (`core/errors.h`):
+  - Made the `message` parameter of `set_error()` optional; when omitted, a default message is used.
+  - Renamed `error_plain_message()` to `error_description()`.
+  - Internalized `set_plain_error()` into `set_error()`.
+  - Made `set_error()` track the function where the error occurred.
+  - Removed the `ErrorCategory` enum.
+  - Removed the `error_has_category()` operation.
+  - Replaced `Error`'s underlying `uint16` representation with a struct containing the error name.
+  - Defined `Error` as a pointer to the `Error` struct via `typedef`.
+  - Replaced error enum constants with `const Error` variables.
+  - Stored each error's string representation directly in the `Error` struct.
+  - Removed `error_to_string()`, as the string representation is now directly available through `Error`.
+- Replaced `string_memory_alloc()` and `string_memory_dealloc()` with `string_memory_allocator` (`core/string.h`).
+- Merged `core/allocator.h` into `core/memory.h`.
+- Moved `constraints.h` and `pointer.h` from `util/` to `core/`.
+- Moved `map_entry.h` back to `map/`.
+- Moved `sets.h` from `util/` to `set/`.
+
+### 🪲 Bug Fixes
+- Fixed a memory leak in `array_destroy()` when destroying arrays of `String`; previously, allocated string memory was not freed.
+
+### 🧪 Testing
+- Added the missing test suite for the `core/memory.h` module.
+
+### 📚 Documentation
+- Introduced the Synchronization and Allocators APIs in the README's features and usage sections.
+- Updated the Error API usage example.
+
+### ⚙️ Notes
+- Some functionality is currently available only on Linux systems and may not be implemented on Windows in the future.
+
+---
+
 ## 🎉 [v1.0.0-beta.8]() — 2026-09-20
 
 A major update introducing the new System and File APIs, along with categorized error handling.

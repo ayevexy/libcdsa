@@ -5,15 +5,17 @@
  * @brief Represents an error.
  */
 typedef struct Error {
-    const char* name;
+    const char* const name;
+    const char* const description;
 } * Error;
 
 /**
- * @brief Creates an error with the specified name.
+ * @brief Creates an error with the specified name and description.
  *
  * @param name the error name
+ * @param ... the error description (optional)
  */
-#define ERROR(name) (&(struct Error) { (name) })
+#define ERROR(name, ...) (&(struct Error) { (name) __VA_OPT__(,) __VA_ARGS__ })
 
 /** Constant expression defining the absence of an error. */
 constexpr Error NO_ERROR = nullptr;

@@ -17,15 +17,15 @@ typedef struct {
 
 thread_local static ErrorContext error_context = { .abort = true };
 
-const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR");
-const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR");
-const Error INDEX_OUT_OF_BOUNDS_ERROR     = ERROR("INDEX_OUT_OF_BOUNDS_ERROR");
-const Error NO_SUCH_ELEMENT_ERROR         = ERROR("NO_SUCH_ELEMENT_ERROR");
-const Error ILLEGAL_ARGUMENT_ERROR        = ERROR("ILLEGAL_ARGUMENT_ERROR");
-const Error ILLEGAL_STATE_ERROR           = ERROR("ILLEGAL_STATE_ERROR");
-const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR");
-const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR");
-const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR");
+const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR", "a null pointer was provided");
+const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR", "an arithmetic operation could not be completed");
+const Error INDEX_OUT_OF_BOUNDS_ERROR     = ERROR("INDEX_OUT_OF_BOUNDS_ERROR", "an index is outside the valid range");
+const Error NO_SUCH_ELEMENT_ERROR         = ERROR("NO_SUCH_ELEMENT_ERROR", "the requested element does not exist");
+const Error ILLEGAL_ARGUMENT_ERROR        = ERROR("ILLEGAL_ARGUMENT_ERROR", "an invalid argument was provided");
+const Error ILLEGAL_STATE_ERROR           = ERROR("ILLEGAL_STATE_ERROR", "an operation was attempted in an invalid state");
+const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR", "the requested operation is not supported");
+const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR", "a collection was modified while it was being iterated");
+const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR", "a memory allocation operation failed");
 
 const char* error_message(void) {
     return error_context.message;
@@ -77,7 +77,9 @@ void (set_error)(Error error, const char* location, const char* message, ...) {
     va_list parameters = {};
     va_start(parameters, message);
 
-    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH, message[0] != '\0' ? message : "no additional details available", parameters);
+    message = message[0] != '\0' ? message : error->description ? error->description : "no additional details are available";
+
+    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH, message, parameters);
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");

@@ -186,11 +186,11 @@ const char* system_platform_architecture(void) {
 #include <sys/wait.h>
 #include <fcntl.h>
 
-const Error PROCESS_CREATION_ERROR      = ERROR("PROCESS_CREATION_ERROR");
-const Error PROCESS_EXECUTION_ERROR     = ERROR("PROCESS_EXECUTION_ERROR");
-const Error PROCESS_NOT_FOUND_ERROR     = ERROR("PROCESS_NOT_FOUND_ERROR");
-const Error PROCESS_ACCESS_DENIED_ERROR = ERROR("PROCESS_ACCESS_DENIED_ERROR");
-const Error PROCESS_INTERRUPTED_ERROR   = ERROR("PROCESS_INTERRUPTED_ERROR");
+const Error PROCESS_CREATION_ERROR      = ERROR("PROCESS_CREATION_ERROR", "a process could not be created");
+const Error PROCESS_EXECUTION_ERROR     = ERROR("PROCESS_EXECUTION_ERROR", "a process could not be executed");
+const Error PROCESS_NOT_FOUND_ERROR     = ERROR("PROCESS_NOT_FOUND_ERROR", "the specified process does not exist");
+const Error PROCESS_ACCESS_DENIED_ERROR = ERROR("PROCESS_ACCESS_DENIED_ERROR", "access to the specified process or process executable was denied");
+const Error PROCESS_INTERRUPTED_ERROR   = ERROR("PROCESS_INTERRUPTED_ERROR", "the running process was interrupted");
 
 static void system_process_set_creation_error(int error) {
     switch (error) {
@@ -396,10 +396,10 @@ void system_process_kill(intptr process_id) {
 
 #include <pthread.h>
 
-const Error THREAD_CREATION_ERROR      = ERROR("THREAD_CREATION_ERROR");
-const Error THREAD_NOT_FOUND_ERROR     = ERROR("THREAD_NOT_FOUND_ERROR");
-const Error THREAD_ILLEGAL_STATE_ERROR = ERROR("THREAD_ILLEGAL_STATE_ERROR");
-const Error THREAD_DEADLOCK_ERROR      = ERROR("THREAD_DEADLOCK_ERROR");
+const Error THREAD_CREATION_ERROR      = ERROR("THREAD_CREATION_ERROR", "a thread could not be created");
+const Error THREAD_NOT_FOUND_ERROR     = ERROR("THREAD_NOT_FOUND_ERROR", "the specified thread does not exist");
+const Error THREAD_ILLEGAL_STATE_ERROR = ERROR("THREAD_ILLEGAL_STATE_ERROR", "the thread is in an invalid state for the requested operation");
+const Error THREAD_DEADLOCK_ERROR      = ERROR("THREAD_DEADLOCK_ERROR", "the requested operation would result in a deadlock");
 
 intptr (system_thread_create)(void* (*routine)(void*), void* argument) {
     if (require_non_null(routine)) return -1;

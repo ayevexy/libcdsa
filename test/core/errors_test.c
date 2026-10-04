@@ -4,7 +4,7 @@
 #include "unity.h"
 
 // Custom error type
-static const Error UNKNOWN_ERROR = ERROR("UNKNOWN_ERROR");
+static const Error UNKNOWN_ERROR = ERROR("UNKNOWN_ERROR", "the cause could not be determined");
 
 void setUp() {
 

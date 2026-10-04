@@ -15,12 +15,12 @@ struct File {
     FILE* self;
 };
 
-const Error FILE_SYSTEM_ERROR              = ERROR("FILE_SYSTEM_ERROR");
-const Error FILE_INPUT_OUTPUT_ERROR        = ERROR("FILE_INPUT_OUTPUT_ERROR");
-const Error FILE_NOT_FOUND_ERROR           = ERROR("FILE_NOT_FOUND_ERROR");
-const Error FILE_ALREADY_EXISTS_ERROR      = ERROR("FILE_ALREADY_EXISTS_ERROR");
-const Error FILE_ACCESS_DENIED_ERROR       = ERROR("FILE_ACCESS_DENIED_ERROR");
-const Error FILE_DIRECTORY_NOT_EMPTY_ERROR = ERROR("FILE_DIRECTORY_NOT_EMPTY_ERROR");
+const Error FILE_SYSTEM_ERROR              = ERROR("FILE_SYSTEM_ERROR", "an error occurred in the file system");
+const Error FILE_INPUT_OUTPUT_ERROR        = ERROR("FILE_INPUT_OUTPUT_ERROR", "a file input or output operation failed");
+const Error FILE_NOT_FOUND_ERROR           = ERROR("FILE_NOT_FOUND_ERROR", "the requested file or directory does not exist");
+const Error FILE_ALREADY_EXISTS_ERROR      = ERROR("FILE_ALREADY_EXISTS_ERROR", "the specified file or directory already exists");
+const Error FILE_ACCESS_DENIED_ERROR       = ERROR("FILE_ACCESS_DENIED_ERROR", "access to the specified file or directory was denied");
+const Error FILE_DIRECTORY_NOT_EMPTY_ERROR = ERROR("FILE_DIRECTORY_NOT_EMPTY_ERROR", "the specified directory is not empty");
 
 static void file_set_error(int error) {
     switch (error) {

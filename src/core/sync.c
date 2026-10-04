@@ -9,7 +9,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-const Error SYNCHRONIZATION_ERROR = ERROR("SYNCHRONIZATION_ERROR");
+const Error SYNCHRONIZATION_ERROR = ERROR("SYNCHRONIZATION_ERROR", "an error occurred in the underlying synchronization mechanism");
 
 struct Lock {
     pthread_mutex_t mutex;

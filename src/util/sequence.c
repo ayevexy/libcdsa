@@ -97,7 +97,7 @@ struct Sequence {
     SequencePipeline pipeline;
 };
 
-const Error SEQUENCE_PROCESSING_ERROR = ERROR("SEQUENCE_PROCESSING_ERROR");
+const Error SEQUENCE_PROCESSING_ERROR = ERROR("SEQUENCE_PROCESSING_ERROR", "an error occurred while processing the sequence pipeline");
 
 typedef struct IterationContextOptions IterationContextOptions;
 

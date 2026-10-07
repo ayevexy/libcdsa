@@ -1,6 +1,5 @@
 #include "hash_set.h"
 
-#include "sets.h"
 #include "core/constraints.h"
 #include <string.h>
 
@@ -31,7 +30,6 @@ struct HashSet {
         void (*memory_dealloc)(void*);
     };
     int modification_count;
-    SetView view;
 };
 
 static int next_power_of_two(int x);
@@ -70,12 +68,6 @@ static Iterator* collection_iterator_internal(const void*);
 
 static bool collection_contains_internal(const void*, const void*);
 
-static int set_view_size_internal(const void*);
-
-static Iterator* set_view_iterator_internal(const void*);
-
-static bool set_view_contains_internal(const void*, const void*);
-
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
@@ -108,11 +100,6 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->memory_alloc = options->memory_alloc;
     hash_set->memory_dealloc = options->memory_dealloc;
     hash_set->modification_count = 0;
-    hash_set->view.sets.first = hash_set;
-    hash_set->view.sets.second = nullptr;
-    hash_set->view.size = set_view_size_internal;
-    hash_set->view.iterator = set_view_iterator_internal;
-    hash_set->view.contains = set_view_contains_internal;
     return hash_set;
 }
 
@@ -636,20 +623,4 @@ static Iterator* collection_iterator_internal(const void* hash_set) {
 
 static bool collection_contains_internal(const void* hash_set, const void* element) {
     return hash_set_contains(hash_set, element);
-}
-
-static int set_view_size_internal(const void* hash_set) {
-    return hash_set_size(((Pair*) hash_set)->first);
-}
-
-static Iterator* set_view_iterator_internal(const void* hash_set) {
-    return hash_set_iterator(((Pair*) hash_set)->first);
-}
-
-static bool set_view_contains_internal(const void* hash_set, const void* element) {
-    return hash_set_contains(((Pair*) hash_set)->first, element);
-}
-
-SetView* hash_set_view(const HashSet* hash_set) {
-    return hash_set ? (SetView*) &hash_set->view : nullptr;
 }

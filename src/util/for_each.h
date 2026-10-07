@@ -30,7 +30,6 @@
     collection_case_tree_set                                    \
     collection_case_deque                                       \
     collection_case_priority_queue                              \
-    collection_case_set_view                                    \
     Collection: collection_iterator                             \
 )(collection)
 
@@ -82,10 +81,4 @@
 #   define collection_case_priority_queue PriorityQueue*: priority_queue_iterator,
 #else
 #   define collection_case_priority_queue
-#endif
-
-#ifdef LIBCDSA_SETS_H
-#   define collection_case_set_view SetView*: set_view_iterator,
-#else
-#   define collection_case_set_view
 #endif

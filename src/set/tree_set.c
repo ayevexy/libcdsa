@@ -1,6 +1,5 @@
 #include "tree_set.h"
 
-#include "sets.h"
 #include "core/constraints.h"
 #include <string.h>
 
@@ -30,7 +29,6 @@ struct TreeSet {
         void (*memory_dealloc)(void*);
     };
     int modification_count;
-    SetView view;
 };
 
 static TreeSet* create_tree_set_like(const TreeSet*);
@@ -85,12 +83,6 @@ static Iterator* collection_iterator_internal(const void*);
 
 static bool collection_contains_internal(const void*, const void*);
 
-static int set_view_size_internal(const void*);
-
-static Iterator* set_view_iterator_internal(const void*);
-
-static bool set_view_contains_internal(const void*, const void*);
-
 TreeSet* tree_set_new(const TreeSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (!options->destruct || !options->compare || !options->to_string
@@ -122,11 +114,6 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
     tree_set->memory_alloc = options->memory_alloc;
     tree_set->memory_dealloc = options->memory_dealloc;
     tree_set->modification_count = 0;
-    tree_set->view.sets.first = tree_set;
-    tree_set->view.sets.second = nullptr;
-    tree_set->view.size = set_view_size_internal;
-    tree_set->view.iterator = set_view_iterator_internal;
-    tree_set->view.contains = set_view_contains_internal;
     return tree_set;
 }
 
@@ -1002,20 +989,4 @@ static Iterator* collection_iterator_internal(const void* tree_set) {
 
 static bool collection_contains_internal(const void* tree_set, const void* element) {
     return tree_set_contains(tree_set, element);
-}
-
-static int set_view_size_internal(const void* tree_set) {
-    return tree_set_size(((Pair*) tree_set)->first);
-}
-
-static Iterator* set_view_iterator_internal(const void* tree_set) {
-    return tree_set_iterator(((Pair*) tree_set)->first);
-}
-
-static bool set_view_contains_internal(const void* tree_set, const void* element) {
-    return tree_set_contains(((Pair*) tree_set)->first, element);
-}
-
-SetView* tree_set_view(const TreeSet* tree_set) {
-    return tree_set ? (SetView*) &tree_set->view : nullptr;
 }

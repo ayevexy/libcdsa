@@ -78,7 +78,7 @@
 /** @brief Set compile-time dispatch abstraction */
 #include "set/set.h"
 
-/** @brief Common mathematical set operations and set view abstraction */
+/** @brief Common mathematical set operations */
 #include "set/sets.h"
 
 /** @brief Double-ended queue implemented with a resizable array */

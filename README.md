@@ -64,7 +64,7 @@ Also, there is some other utilities which may be useful:
 - [Memory](src/core/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
-- [Sets](src/set/sets.h): Common mathematical set operations and set view abstraction.
+- [Sets](src/set/sets.h): Common mathematical set operations.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
@@ -306,26 +306,32 @@ static int int_pointer_value_compare(const void* a, const void* b) {
     return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
 }
 
+#define INT_HASH_SET_OPTIONS \
+    DEFAULT_HASH_SET_OPTIONS(.hash = int_hash, .equals = int_pointer_value_equals)
+
+#define INT_TREE_SET_OPTIONS \
+    DEFAULT_TREE_SET_OPTIONS(.compare = int_pointer_value_compare)
+
 int main() {
-    HashSet* set_a = set_new(DEFAULT_HASH_SET_OPTIONS(.hash = int_hash, .equals = int_pointer_value_equals));
+    HashSet* set_a = set_new(INT_HASH_SET_OPTIONS);
     set_add(set_a, &(int){1});
     set_add(set_a, &(int){2});
     set_add(set_a, &(int){3});
 
-    TreeSet* set_b = set_new(DEFAULT_TREE_SET_OPTIONS(.compare = int_pointer_value_compare));
+    TreeSet* set_b = set_new(INT_TREE_SET_OPTIONS);
     set_add(set_b, &(int){3});
     set_add(set_b, &(int){4});
     set_add(set_b, &(int){5});
 
-    SetView union_set = sets_union(set_a, set_b); // 1, 2, 3, 4, 5
-    SetView intersection_set = sets_intersection(set_a, set_b); // 3
-    SetView difference_set = sets_difference(set_a, set_b); // 1, 2
+    TreeSet* union_set = sets_union(set_a, set_b, set_new(INT_TREE_SET_OPTIONS)); // 1, 2, 3, 4, 5
+    HashSet* intersection_set = sets_intersection(set_a, set_b, set_new(INT_HASH_SET_OPTIONS)); // 3
+    TreeSet* difference_set = sets_difference(set_a, set_b, set_new(INT_TREE_SET_OPTIONS)); // 1, 2
 
-    for_each (int* e, &union_set) printf("%d ", *e); // 1, 2, 3, 4, 5
+    for_each (int* e, union_set) printf("%d ", *e); // 1, 2, 3, 4, 5
     printf("\n");
-    for_each (int* e, &intersection_set) printf("%d ", *e); // 3
+    for_each (int* e, intersection_set) printf("%d ", *e); // 3
     printf("\n");
-    for_each (int* e, &difference_set) printf("%d ", *e); // 1, 2
+    for_each (int* e, difference_set) printf("%d ", *e); // 1, 2
 
     set_destroy(&set_a);
     set_destroy(&set_b);

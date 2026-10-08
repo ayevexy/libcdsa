@@ -64,7 +64,6 @@ Also, there is some other utilities which may be useful:
 - [Memory](src/core/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
 - [Pair](src/util/pair.h): Container type which contains two values.
-- [Sets](src/set/sets.h): Common mathematical set operations.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
@@ -290,7 +289,6 @@ int main() {
 
 ```c++
 #include "set/set.h"
-#include "set/sets.h"
 #include "util/for_each.h"
 #include <stdio.h>
 

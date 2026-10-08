@@ -75,11 +75,8 @@
 /** @brief Self-balancing binary tree based set implementation */
 #include "set/tree_set.h"
 
-/** @brief Set compile-time dispatch abstraction */
+/** @brief Set compile-time dispatch abstraction and common mathematical set operations */
 #include "set/set.h"
-
-/** @brief Common mathematical set operations */
-#include "set/sets.h"
 
 /** @brief Double-ended queue implemented with a resizable array */
 #include "deque/deque.h"

@@ -624,3 +624,41 @@ static Iterator* collection_iterator_internal(const void* hash_set) {
 static bool collection_contains_internal(const void* hash_set, const void* element) {
     return hash_set_contains(hash_set, element);
 }
+
+HashSet* hash_set_union(Collection set_a, Collection set_b, HashSet* result_set) {
+    hash_set_add_all(result_set, set_a);
+    hash_set_add_all(result_set, set_b);
+    return result_set;
+}
+
+HashSet* hash_set_intersection(Collection set_a, Collection set_b, HashSet* result_set) {
+    hash_set_add_all(result_set, set_a);
+    hash_set_retain_all(result_set, set_b);
+    return result_set;
+}
+
+HashSet* hash_set_difference(Collection set_a, Collection set_b, HashSet* result_set) {
+    hash_set_add_all(result_set, set_a);
+    hash_set_remove_all(result_set, set_b);
+    return result_set;
+}
+
+HashSet* hash_set_symmetric_difference(Collection set_a, Collection set_b, HashSet* result_set) {
+    HashSet* temporary; Error error = attempt(temporary = hash_set_clone(result_set));
+
+    if (error) {
+        set_error(error, error_description());
+        return nullptr;
+    }
+
+    hash_set_add_all(result_set, set_a);
+    hash_set_add_all(result_set, set_b);
+
+    hash_set_add_all(temporary, set_a);
+    hash_set_retain_all(temporary, set_b);
+
+    hash_set_remove_all(result_set, hash_set_to_collection(temporary));
+
+    hash_set_destroy(&temporary);
+    return result_set;
+}

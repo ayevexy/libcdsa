@@ -123,6 +123,14 @@ void test_collection_to_array() {
     array_destroy(&elements);
 }
 
+void test_collection_as() {
+    // given
+    Collection collection = array_list_to_collection(array_list);
+    // then
+    TEST_ASSERT_EQUAL(array_list, collection_as(collection, ARRAY_LIST));
+    TEST_ASSERT_EQUAL(TYPE_MISMATCH_ERROR, attempt(collection_as(collection, LINKED_LIST)));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_collection_for_each);
@@ -130,5 +138,6 @@ int main(void) {
     RUN_TEST(test_empty_collection_contains_all_elements_of_empty_collection);
     RUN_TEST(test_collection_does_not_contains_all_elements);
     RUN_TEST(test_collection_to_array);
+    RUN_TEST(test_collection_as);
     return UNITY_END();
 }

@@ -38,6 +38,18 @@ typedef struct {
 } Collection;
 
 /**
+ * @brief Retrieves the underlying data structure if its type matches the expected type.
+ *
+ * @param collection the collection
+ * @param type the expected type
+ *
+ * @return the underlying data structure
+ *
+ * @exception TYPE_MISMATCH_ERROR if the collection type does not match the expected type
+ */
+void* collection_as(Collection collection, CollectionType type);
+
+/**
  * @brief Retrieves the current size of the collection.
  *
  * @param collection the collection
@@ -61,6 +73,8 @@ bool collection_is_empty(Collection collection);
  * @param collection the collection
  *
  * @return pointer to a newly created Iterator
+ *
+ * @exception MEMORY_ALLOCATION_ERROR If creation of the collection iterator fails
  */
 Iterator* collection_iterator(Collection collection);
 

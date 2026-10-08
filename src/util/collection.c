@@ -2,6 +2,30 @@
 
 #include "core/errors.h"
 
+static const char* collection_type_to_string(const CollectionType type) {
+    static const char* names[] = {
+        "ARRAY_LIST",
+        "LINKED_LIST",
+        "HASH_MAP",
+        "TREE_MAP",
+        "HASH_SET",
+        "TREE_SET",
+        "DEQUE",
+        "STACK",
+        "QUEUE",
+        "PRIORITY_QUEUE"
+    };
+    return type >= ARRAY_LIST && type <= PRIORITY_QUEUE ? names[type] : "UNKNOWN";
+}
+
+void* collection_as(Collection collection, CollectionType type) {
+    if (collection.type != type) {
+        set_error(TYPE_MISMATCH_ERROR, "expected %s, received %s", collection_type_to_string(collection.type), collection_type_to_string(type));
+        return nullptr;
+    }
+    return (void*) collection.data_structure;
+}
+
 int collection_size(Collection collection) {
     return collection.size(collection.data_structure);
 }

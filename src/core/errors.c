@@ -23,6 +23,7 @@ const Error INDEX_OUT_OF_BOUNDS_ERROR     = ERROR("INDEX_OUT_OF_BOUNDS_ERROR", "
 const Error NO_SUCH_ELEMENT_ERROR         = ERROR("NO_SUCH_ELEMENT_ERROR", "the requested element does not exist");
 const Error ILLEGAL_ARGUMENT_ERROR        = ERROR("ILLEGAL_ARGUMENT_ERROR", "an invalid argument was provided");
 const Error ILLEGAL_STATE_ERROR           = ERROR("ILLEGAL_STATE_ERROR", "an operation was attempted in an invalid state");
+const Error TYPE_MISMATCH_ERROR           = ERROR("TYPE_MISMATCH_ERROR", "the actual type does not match the expected type");
 const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR", "the requested operation is not supported");
 const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR", "a collection was modified while it was being iterated");
 const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR", "a memory allocation operation failed");

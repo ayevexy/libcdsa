@@ -34,6 +34,7 @@ extern const Error INDEX_OUT_OF_BOUNDS_ERROR;
 extern const Error NO_SUCH_ELEMENT_ERROR;
 extern const Error ILLEGAL_ARGUMENT_ERROR;
 extern const Error ILLEGAL_STATE_ERROR;
+extern const Error TYPE_MISMATCH_ERROR;
 extern const Error UNSUPPORTED_OPERATION_ERROR;
 extern const Error CONCURRENT_MODIFICATION_ERROR;
 extern const Error MEMORY_ALLOCATION_ERROR;

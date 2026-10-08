@@ -50,6 +50,29 @@ typedef struct {
 void* collection_as(Collection collection, CollectionType type);
 
 /**
+ * @brief Adds an element to the collection.
+ *
+ * For map collections, the element is used as the key and its value is set to nullptr.
+ *
+ * @param collection the collection
+ * @param element element to add
+ *
+ * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
+ */
+void collection_add(Collection collection, const void* element);
+
+/**
+ * @brief Removes the specified element (if present) of the collection.
+ *
+ * If the underlying data structure does not support removing a specific element,
+ * its default removal operation is performed instead.
+ *
+ * @param collection the collection
+ * @param element element to remove
+ */
+void collection_remove(Collection collection, const void* element);
+
+/**
  * @brief Retrieves the current size of the collection.
  *
  * @param collection the collection
@@ -97,6 +120,13 @@ bool collection_equals(Collection collection, Collection other_collection);
  * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
 void collection_for_each(Collection collection, Consumer action);
+
+/**
+ * @brief Removes all elements from the collection.
+ *
+ * @param collection the collection
+ */
+void collection_clear(Collection collection);
 
 /**
  * @brief Checks whether an element is present in the collection.

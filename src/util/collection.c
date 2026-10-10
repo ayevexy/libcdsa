@@ -154,3 +154,19 @@ Array(void*) collection_to_array(Collection collection) {
     }
     return elements;
 }
+
+String collection_to_string(Collection collection) {
+    switch (collection.type) {
+        case ARRAY_LIST:      return array_list_to_string((ArrayList*) collection.data_structure);
+        case LINKED_LIST:     return linked_list_to_string((LinkedList*) collection.data_structure);
+        case HASH_MAP:        return hash_map_to_string((HashMap*) collection.data_structure);
+        case TREE_MAP:        return tree_map_to_string((TreeMap*) collection.data_structure);
+        case HASH_SET:        return hash_set_to_string((HashSet*) collection.data_structure);
+        case TREE_SET:        return tree_set_to_string((TreeSet*) collection.data_structure);
+        case DEQUE:           return deque_to_string((Deque*) collection.data_structure);
+        case STACK:           return stack_to_string((Stack*) collection.data_structure);
+        case QUEUE:           return queue_to_string((Queue*) collection.data_structure);
+        case PRIORITY_QUEUE:  return priority_queue_to_string((PriorityQueue*) collection.data_structure);
+        default:              unreachable();
+    }
+}

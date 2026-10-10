@@ -7,6 +7,7 @@
  */
 
 #include "core/array.h"
+#include "core/string.h"
 #include "functions.h"
 #include "iterator.h"
 
@@ -162,5 +163,18 @@ bool collection_contains_all(Collection collection, Collection other_collection)
  * @note the created array must be freed manually (by `array_destroy()`)
  */
 Array(void*) collection_to_array(Collection collection);
+
+/**
+ * @brief Converts the collection  to a string representation.
+ *
+ * @param collection the collection
+ *
+ * @return a newly allocated string
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note the created string must be freed manually
+ */
+String collection_to_string(Collection collection);
 
 #endif

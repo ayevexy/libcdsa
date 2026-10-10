@@ -1,7 +1,6 @@
 #include "tree_set.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 typedef enum {
     RED, BLACK
@@ -102,7 +101,7 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_set'");
         return nullptr;
     }
-    memset(sentinel, 0, sizeof(Node));
+    memory_set(sentinel, 0, sizeof(Node));
     sentinel->color = BLACK;
 
     tree_set->root = sentinel;

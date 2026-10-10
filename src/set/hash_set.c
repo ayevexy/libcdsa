@@ -1,7 +1,6 @@
 #include "hash_set.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -89,7 +88,7 @@ HashSet* hash_set_new(const HashSetOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_set'");
         return nullptr;
     }
-    memset(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
+    memory_set(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
     hash_set->size = 0;
     hash_set->threshold = compute_threshold(hash_set->capacity, options->load_factor);
     hash_set->load_factor = options->load_factor;
@@ -292,7 +291,7 @@ void hash_set_for_each(HashSet* hash_set, Consumer action) {
 void hash_set_clear(HashSet* hash_set) {
     if (require_non_null(hash_set)) return;
     destroy_nodes(hash_set);
-    memset(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
+    memory_set(hash_set->buckets, 0, hash_set->capacity * sizeof(Node*));
     hash_set->size = 0;
     hash_set->modification_count++;
 }
@@ -433,7 +432,7 @@ static bool ensure_capacity(HashSet* hash_set) {
     if (!buckets) {
         return false;
     }
-    memset(buckets, 0, new_capacity * sizeof(Node*));
+    memory_set(buckets, 0, new_capacity * sizeof(Node*));
     for (int i = 0; i < hash_set->capacity; i++) {
        for (Node* node = hash_set->buckets[i], * next; node; node = next) {
             const int index = hash_set->hash(node->element) & (new_capacity - 1);

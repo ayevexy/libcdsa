@@ -1,7 +1,6 @@
 #include "tree_map.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 typedef enum {
     RED, BLACK
@@ -119,7 +118,7 @@ TreeMap* tree_map_new(const TreeMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_map'");
         return nullptr;
     }
-    memset(sentinel, 0, sizeof(Entry));
+    memory_set(sentinel, 0, sizeof(Entry));
     sentinel->color = BLACK;
 
     tree_map->root = sentinel;

@@ -1,7 +1,6 @@
 #include "array_list.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -736,7 +735,7 @@ static bool resize(ArrayList* array_list, int new_capacity) {
     } else {
         elements = array_list->memory_alloc(new_capacity * sizeof(void*));
         if (!elements) return false;
-        memcpy(elements, array_list->elements, array_list->size * sizeof(void*));
+        memory_copy(array_list->elements, elements, array_list->size * sizeof(void*));
         array_list->memory_dealloc(array_list->elements);
     }
     array_list->elements = elements;

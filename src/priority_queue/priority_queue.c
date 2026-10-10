@@ -1,7 +1,6 @@
 #include "priority_queue.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 10;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -351,7 +350,7 @@ static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {
     if (!elements) {
         return false;
     }
-    memcpy(elements, priority_queue->elements, priority_queue->size * sizeof(void*));
+    memory_copy(priority_queue->elements, elements, priority_queue->size * sizeof(void*));
     priority_queue->memory_dealloc(priority_queue->elements);
     priority_queue->elements = elements;
     priority_queue->capacity = new_capacity;

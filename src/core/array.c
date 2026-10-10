@@ -2,7 +2,6 @@
 
 #include "memory.h"
 #include "errors.h"
-#include <string.h>
 
 typedef struct {
     int length;
@@ -24,9 +23,9 @@ void* array_create(int length, bytes element_size, const void* source) {
     array->length = length;
     array->element_size = element_size;
     if (source) {
-        memcpy(array->data, source, length * element_size);
+        memory_copy(source, array->data, length * element_size);
     } else {
-        memset(array->data, 0, length * element_size);
+        memory_set(array->data, 0, length * element_size);
     }
     return array->data;
 }

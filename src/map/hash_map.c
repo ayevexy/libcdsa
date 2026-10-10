@@ -1,7 +1,6 @@
 #include "hash_map.h"
 
 #include "core/constraints.h"
-#include <string.h>
 
 constexpr int MIN_CAPACITY = 8;
 constexpr int MAX_CAPACITY = 1'073'741'824;
@@ -107,7 +106,7 @@ HashMap* hash_map_new(const HashMapOptions* options) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_map'");
         return nullptr;
     }
-    memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
+    memory_set(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
     hash_map->threshold = compute_threshold(hash_map->capacity, options->load_factor);
     hash_map->load_factor = options->load_factor;
@@ -385,7 +384,7 @@ void hash_map_for_each(HashMap* hash_map, BiConsumer action) {
 void hash_map_clear(HashMap* hash_map) {
     if (require_non_null(hash_map)) return;
     destroy_entries(hash_map);
-    memset(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
+    memory_set(hash_map->buckets, 0, hash_map->capacity * sizeof(Entry*));
     hash_map->size = 0;
     hash_map->modification_count++;
 }
@@ -531,7 +530,7 @@ static bool ensure_capacity(HashMap* hash_map) {
     if (!buckets) {
         return false;
     }
-    memset(buckets, 0, new_capacity * sizeof(Entry*));
+    memory_set(buckets, 0, new_capacity * sizeof(Entry*));
     for (int i = 0; i < hash_map->capacity; i++) {
         for (Entry* entry = hash_map->buckets[i], * next; entry; entry = next) {
             const int index = entry->hash & (new_capacity - 1);

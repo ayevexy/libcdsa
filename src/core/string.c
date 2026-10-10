@@ -34,7 +34,7 @@ String (string_new)(struct String string) {
     }
     new_string->length = string.length;
     new_string->data = new_string->buffer;
-    memcpy(new_string->buffer, string.data, string.length);
+    memory_copy(string.data, new_string->buffer, string.length);
     new_string->buffer[new_string->length] = '\0';
     return new_string;
 }
@@ -250,7 +250,7 @@ String (string_trim_start)(struct String string) {
     }
     new_string->length = new_length;
     new_string->data = new_string->buffer;
-    memcpy(new_string->buffer, string.data + start, string.length - start);
+    memory_copy(string.data + start, new_string->buffer, string.length - start);
     new_string->buffer[new_length] = '\0';
     return new_string;
 }
@@ -271,7 +271,7 @@ String (string_trim_end)(struct String string) {
     }
     new_string->length = new_length;
     new_string->data = new_string->buffer;
-    memcpy(new_string->buffer, string.data, end);
+    memory_copy(string.data, new_string->buffer, end);
     new_string->buffer[new_length] = '\0';
     return new_string;
 }
@@ -293,7 +293,7 @@ String (string_substring)(struct String string, int start, int length) {
     }
     new_string->length = new_length;
     new_string->data = new_string->buffer;
-    memcpy(new_string->buffer, string.data + start, new_length);
+    memory_copy(string.data + start, new_string->buffer, new_length);
     new_string->buffer[new_length] = '\0';
     return new_string;
 }
@@ -310,8 +310,8 @@ String (string_concat)(struct String string, struct String other_string) {
     }
     new_string->length = length;
     new_string->data = new_string->buffer;
-    memcpy(new_string->buffer, string.data, string.length);
-    memcpy(new_string->buffer + string.length, other_string.data, other_string.length);
+    memory_copy(string.data, new_string->buffer, string.length);
+    memory_copy(other_string.data, new_string->buffer + string.length, other_string.length);
     new_string->buffer[length] = '\0';
     return new_string;
 }
@@ -362,7 +362,7 @@ String (string_replace_substring)(struct String string, struct String target, st
 
     while (input_index < string.length) {
         if (input_index <= string.length - target.length && memcmp(string.data + input_index, target.data, target.length) == 0) {
-            memcpy(new_string->buffer + output_index, replacement.data, replacement.length);
+            memory_copy(replacement.data, new_string->buffer + output_index, replacement.length);
             output_index += replacement.length;
             input_index += target.length;
         } else {
@@ -391,7 +391,7 @@ String (string_repeat)(struct String string, int times) {
     new_string->data = new_string->buffer;
 
     for (int i = 0, offset = 0; i < times; i++) {
-        memcpy(new_string->buffer + offset, string.data, string.length);
+        memory_copy(string.data, new_string->buffer + offset, string.length);
         offset += string.length;
     }
     new_string->buffer[length] = '\0';
@@ -427,10 +427,10 @@ String (string_join)(struct String separator, ...) {
         const struct String string = va_arg(parameters, struct String);
         if (!string.data) break;
 
-        memcpy(new_string->buffer + offset, string.data, string.length);
+        memory_copy(string.data, new_string->buffer + offset, string.length);
 
         if (offset + string.length + separator.length != total_length) {
-            memcpy(new_string->buffer + offset + string.length, separator.data, separator.length);
+            memory_copy(separator.data, new_string->buffer + offset + string.length, separator.length);
         }
         offset += string.length + separator.length;
     }
@@ -462,7 +462,7 @@ Array(String) (string_split)(struct String string, char delimiter) {
                 return nullptr;
             }
             new_string->data = new_string->buffer;
-            memcpy(new_string->buffer, string.data + start, i - start);
+            memory_copy(string.data + start, new_string->buffer, i - start);
             new_string->length = i - start;
             new_string->buffer[new_string->length] = '\0';
             strings[index++] = new_string;
@@ -622,7 +622,7 @@ void (string_builder_append)(StringBuilder* builder, struct String string) {
         builder->buffer = new_buffer;
         builder->capacity = builder->capacity * GROWN_FACTOR;
     }
-    memcpy(builder->buffer + builder->length, string.data, string.length);
+    memory_copy(string.data, builder->buffer + builder->length, string.length);
     builder->length += string.length;
     builder->buffer[builder->length] = '\0';
 }
@@ -643,8 +643,8 @@ void (string_builder_insert)(StringBuilder* builder, int index, struct String st
         builder->buffer = buffer;
         builder->capacity = builder->capacity * GROWN_FACTOR;
     }
-    memmove(builder->buffer + index + string.length, builder->buffer + index, builder->length);
-    memmove(builder->buffer + index, string.data, string.length);
+    memory_move(builder->buffer + index, builder->buffer + index + string.length, builder->length);
+    memory_move(string.data, builder->buffer + index, string.length);
     builder->length += string.length;
     builder->buffer[builder->length] = '\0';
 }

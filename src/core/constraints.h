@@ -96,13 +96,10 @@
     require((index) >= 0 && (index) < (size), INDEX_OUT_OF_BOUNDS_ERROR, "'" #index "' out of bounds for '" #size "'")
 
 /**
- * @brief Internal implementation of the require_* constraint macros.
+ * @brief Checks a condition and sets an error if it is not satisfied.
  *
- * @warning This macro is intended for internal use only. Prefer the
- * specialized require_* macros.
- *
- * Sets the specified error with the provided message if the condition
- * is false.
+ * @warning This macro is intended for implementing and extending the
+ * `require_*` constraint macros, not for direct use.
  *
  * @param condition the condition that must be true
  * @param error the error to set if the condition is false

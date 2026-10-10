@@ -19,6 +19,7 @@ thread_local static ErrorContext error_context = { .abort = true };
 
 const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR", "a null pointer was provided");
 const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR", "an arithmetic operation could not be completed");
+const Error NUMBER_FORMAT_ERROR           = ERROR("NUMBER_FORMAT_ERROR", "the string does not represent a valid number");
 const Error INDEX_OUT_OF_BOUNDS_ERROR     = ERROR("INDEX_OUT_OF_BOUNDS_ERROR", "an index is outside the valid range");
 const Error NO_SUCH_ELEMENT_ERROR         = ERROR("NO_SUCH_ELEMENT_ERROR", "the requested element does not exist");
 const Error ILLEGAL_ARGUMENT_ERROR        = ERROR("ILLEGAL_ARGUMENT_ERROR", "an invalid argument was provided");

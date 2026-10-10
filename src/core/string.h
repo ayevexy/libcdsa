@@ -610,6 +610,160 @@ String string_value_of_double(double value);
 String string_value_of_long_double(long double value);
 
 /**
+ * @brief Converts a string to a `short`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_short(string) string_to_short(dispatch_string_type(string))
+
+short (string_to_short)(struct String string);
+
+/**
+ * @brief Converts a string to an `ushort`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_ushort(string) string_to_ushort(dispatch_string_type(string))
+
+ushort (string_to_ushort)(struct String string);
+
+/**
+ * @brief Converts a string to an `int`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_int(string) string_to_int(dispatch_string_type(string))
+
+int (string_to_int)(struct String string);
+
+/**
+ * @brief Converts a string to a `uint`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_uint(string) string_to_uint(dispatch_string_type(string))
+
+uint (string_to_uint)(struct String string);
+
+/**
+ * @brief Converts a string to a `long`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_long(string) string_to_long(dispatch_string_type(string))
+
+long (string_to_long)(struct String string);
+
+/**
+ * @brief Converts a string to an `ulong`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_ulong(string) string_to_ulong(dispatch_string_type(string))
+
+ulong (string_to_ulong)(struct String string);
+
+/**
+ * @brief Converts a string to a `long long`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_long_long(string) string_to_long_long(dispatch_string_type(string))
+
+long long (string_to_long_long)(struct String string);
+
+/**
+ * @brief Converts a string to an `unsigned long long`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_ulong_long(string) string_to_ulong_long(dispatch_string_type(string))
+
+unsigned long long (string_to_ulong_long)(struct String string);
+
+/**
+ * @brief Converts a string to a `float`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_float(string) string_to_float(dispatch_string_type(string))
+
+float (string_to_float)(struct String string);
+
+/**
+ * @brief Converts a string to a `double`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_double(string) string_to_double(dispatch_string_type(string))
+
+double (string_to_double)(struct String string);
+
+/**
+ * @brief Converts a string to a `long double`.
+ *
+ * @param string the string to convert
+ *
+ * @return the converted value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
+ */
+#define string_to_long_double(string) string_to_long_double(dispatch_string_type(string))
+
+long double (string_to_long_double)(struct String string);
+
+/**
  * @brief String hash function to be used in containers.
  *
  * @param raw_string the string

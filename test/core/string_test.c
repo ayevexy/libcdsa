@@ -515,17 +515,72 @@ void test_string_to_lowercase() {
 void test_string_value_of() {
     TEST_ASSERT_EQUAL_STRING("true", string_value_of(true)->data);
     TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10)->data);
+
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((short) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned short) 10)->data);
+
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((int) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned int) 10)->data);
+
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((long) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long) 10)->data);
+
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((long long) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long long) 10)->data);
+
     TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((float) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((double) 10)->data);
     TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10)->data);
+}
+
+void test_string_to_number() {
+    TEST_ASSERT_EQUAL(-10, string_to_short("-10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_short("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_short("1'000'000")));
+
+    TEST_ASSERT_EQUAL(10, string_to_ushort("10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ushort("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ushort("-10")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ushort("1'000'000")));
+
+    TEST_ASSERT_EQUAL(-10, string_to_int("-10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_int("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_int("1'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL(10, string_to_uint("10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_uint("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_uint("-10")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_uint("1'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL(-10, string_to_long("-10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long("1'000'000'000'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL(10, string_to_ulong("10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong("-10")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong("1'000'000'000'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL(-10, string_to_long_long("-10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_long("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_long("1'000'000'000'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL(10, string_to_ulong_long("10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("-10")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("1'000'000'000'000'000'000'000")));
+
+    TEST_ASSERT_EQUAL_FLOAT(-10.0f, string_to_float("-10.0"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_float("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_float("1.0e1000")));
+
+    TEST_ASSERT_EQUAL_FLOAT(-10.0, string_to_double("-10.0"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_double("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_double("1.0e10000")));
+
+    TEST_ASSERT_EQUAL_FLOAT(-10.0L, string_to_long_double("-10.0"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_double("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_double("1.0e10000")));
 }
 
 /* --------------------------------------------------------------------------------- */
@@ -668,6 +723,7 @@ int main(void) {
     RUN_TEST(test_string_to_uppercase);
     RUN_TEST(test_string_to_lowercase);
     RUN_TEST(test_string_value_of);
+    RUN_TEST(test_string_to_number);
     /* ---------------------------------------------------- */
     RUN_TEST(test_create_and_destroy_string_builder);
     RUN_TEST(test_string_builder_append);

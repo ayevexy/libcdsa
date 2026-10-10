@@ -30,6 +30,7 @@ constexpr Error NO_ERROR = nullptr;
  */
 extern const Error NULL_POINTER_ERROR;
 extern const Error ARITHMETIC_ERROR;
+extern const Error NUMBER_FORMAT_ERROR;
 extern const Error INDEX_OUT_OF_BOUNDS_ERROR;
 extern const Error NO_SUCH_ELEMENT_ERROR;
 extern const Error ILLEGAL_ARGUMENT_ERROR;

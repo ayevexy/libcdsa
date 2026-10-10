@@ -7,6 +7,9 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
 
 Allocator* string_memory_allocator = &global_memory_allocator;
 
@@ -545,6 +548,146 @@ DEFINE_STRING_VALUE_OF(string_value_of_double, double, "%f")
 DEFINE_STRING_VALUE_OF(string_value_of_long_double, long double, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
+
+static long parse_long(const char* string, long min, long max) {
+    if (require_non_null(string)) return 0;
+
+    errno = 0;
+    char *end;
+    const long value = strtol(string, &end, 10);
+
+    if (errno == ERANGE || end == string || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string);
+        return 0;
+    }
+    if (value < min || value > max) {
+        set_error(NUMBER_FORMAT_ERROR, "number is out of range '%s'", string);
+        return 0;
+    }
+    return value;
+}
+
+static ulong parse_ulong(const char* string, ulong max) {
+    if (require_non_null(string)) return 0;
+
+    if (string[0] == '-') {
+        set_error(NUMBER_FORMAT_ERROR, "number is out of range '%s'", string);
+        return 0;
+    }
+
+    errno = 0;
+    char *end;
+    const ulong value = strtoul(string, &end, 10);
+
+    if (errno == ERANGE || end == string || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string);
+        return 0;
+    }
+    if (value > max) {
+        set_error(NUMBER_FORMAT_ERROR, "number is out of range '%s'", string);
+        return 0;
+    }
+    return value;
+}
+
+short (string_to_short)(struct String string) {
+    return parse_long(string.data, SHRT_MIN, SHRT_MAX);
+}
+
+ushort (string_to_ushort)(struct String string) {
+    return parse_ulong(string.data, USHRT_MAX);
+}
+
+int (string_to_int)(struct String string) {
+    return parse_long(string.data, INT_MIN, INT_MAX);
+}
+
+uint (string_to_uint)(struct String string) {
+    return parse_ulong(string.data, UINT_MAX);
+}
+
+long (string_to_long)(struct String string) {
+    return parse_long(string.data, LONG_MIN, LONG_MAX);
+}
+
+ulong (string_to_ulong)(struct String string) {
+    return parse_ulong(string.data, ULONG_MAX);
+}
+
+long long (string_to_long_long)(struct String string) {
+    if (require_non_null(string.data)) return 0;
+
+    errno = 0;
+    char *end;
+    const long long value = strtoll(string.data, &end, 10);
+
+    if (errno == ERANGE || end == string.data || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
+        return 0;
+    }
+    return value;
+}
+
+unsigned long long (string_to_ulong_long)(struct String string) {
+    if (require_non_null(string.data)) return 0;
+
+    if (string.data[0] == '-') {
+        set_error(NUMBER_FORMAT_ERROR, "number is out of range '%s'", string.data);
+        return 0;
+    }
+
+    errno = 0;
+    char *end;
+    const unsigned long long value = strtoull(string.data, &end, 10);
+
+    if (errno == ERANGE || end == string.data || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
+        return 0;
+    }
+    return value;
+}
+
+float (string_to_float)(struct String string) {
+    if (require_non_null(string.data)) return 0;
+
+    errno = 0;
+    char *end;
+    const float value = strtof(string.data, &end);
+
+    if (errno == ERANGE || end == string.data || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
+        return 0.0f;
+    }
+    return value;
+}
+
+double (string_to_double)(struct String string) {
+    if (require_non_null(string.data)) return 0;
+
+    errno = 0;
+    char *end;
+    const double value = strtod(string.data, &end);
+
+    if (errno == ERANGE || end == string.data || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
+        return 0.0;
+    }
+    return value;
+}
+
+long double (string_to_long_double)(struct String string) {
+    if (require_non_null(string.data)) return 0;
+
+    errno = 0;
+    char *end;
+    const long double value = strtold(string.data, &end);
+
+    if (errno == ERANGE || end == string.data || *end != '\0') {
+        set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
+        return 0.0L;
+    }
+    return value;
+}
 
 uint64 string_hash_callback(const void* raw_string) {
     const char* string = ((String) raw_string)->data;

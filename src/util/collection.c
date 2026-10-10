@@ -81,7 +81,22 @@ Iterator* collection_iterator(Collection collection) {
 }
 
 bool collection_equals(Collection collection, Collection other_collection) {
-    return collection.data_structure == other_collection.data_structure;
+    if (collection.type != other_collection.type) {
+        return false;
+    }
+    switch (collection.type) {
+        case ARRAY_LIST:      return array_list_equals((ArrayList*) collection.data_structure, (ArrayList*) other_collection.data_structure);
+        case LINKED_LIST:     return linked_list_equals((LinkedList*) collection.data_structure, (LinkedList*) other_collection.data_structure);
+        case HASH_MAP:        return hash_map_equals((HashMap*) collection.data_structure, (HashMap*) other_collection.data_structure);
+        case TREE_MAP:        return tree_map_equals((TreeMap*) collection.data_structure, (TreeMap*) other_collection.data_structure);
+        case HASH_SET:        return hash_set_equals((HashSet*) collection.data_structure, (HashSet*) other_collection.data_structure);
+        case TREE_SET:        return tree_set_equals((TreeSet*) collection.data_structure, (TreeSet*) other_collection.data_structure);
+        case DEQUE:           return deque_equals((Deque*) collection.data_structure, (Deque*) other_collection.data_structure);
+        case STACK:           return stack_equals((Stack*) collection.data_structure, (Stack*) other_collection.data_structure);
+        case QUEUE:           return queue_equals((Queue*) collection.data_structure, (Queue*) other_collection.data_structure);
+        case PRIORITY_QUEUE:  return priority_queue_equals((PriorityQueue*) collection.data_structure, (PriorityQueue*) other_collection.data_structure);
+        default:              unreachable();
+    }
 }
 
 void collection_for_each(Collection collection, Consumer action) {

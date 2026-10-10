@@ -109,6 +109,8 @@ Iterator* collection_iterator(Collection collection);
  * @param other_collection second collection
  *
  * @return true if equals, false otherwise
+ *
+ * @note Equality is determined by the appropriate equals function for the underlying data structures.
  */
 bool collection_equals(Collection collection, Collection other_collection);
 

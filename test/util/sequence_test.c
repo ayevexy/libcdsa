@@ -1,7 +1,6 @@
 #include "util/sequence.h"
 
 #include "list/list.h"
-#include "core/memory.h"
 
 #include "unity.h"
 #include "../test_utilities.h"
@@ -374,6 +373,22 @@ void test_convert_empty_sequence_to_array() {
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
 }
 
+void test_collect_sequence() {
+    // given
+    Sequence* sequence = sequence_from(list_to_collection(list));
+    // when
+    LinkedList* other_list = sequence_collect(sequence, list_to_collection(list_new(DEFAULT_LINKED_LIST_OPTIONS())));
+    // then
+    TEST_ASSERT_EQUAL(list_size(list), list_size(other_list));
+    TEST_ASSERT_EQUAL(list_get(list, 0), list_get(other_list, 0));
+    TEST_ASSERT_EQUAL(list_get(list, 1), list_get(other_list, 1));
+    TEST_ASSERT_EQUAL(list_get(list, 2), list_get(other_list, 2));
+    TEST_ASSERT_EQUAL(list_get(list, 3), list_get(other_list, 3));
+    TEST_ASSERT_EQUAL(list_get(list, 4), list_get(other_list, 4));
+    // clean up
+    list_destroy(&other_list);
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_sequence_from_collection);
@@ -403,5 +418,6 @@ int main(void) {
     RUN_TEST(test_count_sequence);
     RUN_TEST(test_convert_sequence_to_array);
     RUN_TEST(test_convert_empty_sequence_to_array);
+    RUN_TEST(test_collect_sequence);
     return UNITY_END();
 }

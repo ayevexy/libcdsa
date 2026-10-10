@@ -418,4 +418,22 @@ int sequence_count(Sequence* sequence);
  */
 Array(void*) sequence_to_array(Sequence* sequence);
 
+/**
+ * @brief Appends the 'collect' operation and processes the sequence pipeline.
+ *
+ * The collect operation adds the processed sequence elements to the specified
+ * collection.
+ *
+ * @param sequence the sequence
+ * @param collection the destination collection
+ *
+ * @return the underlying data structure of the collection
+ *
+ * @exception NULL_POINTER_ERROR if sequence is null
+ * @exception SEQUENCE_PROCESSING_ERROR if an error occurs during pipeline processing
+ *
+ * @note This is a terminal operation.
+ */
+void* sequence_collect(Sequence* sequence, Collection collection);
+
 #endif

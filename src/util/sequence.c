@@ -32,7 +32,8 @@ typedef enum {
     ANY_MATCH,
     NONE_MATCH,
     COUNT,
-    TO_ARRAY
+    TO_ARRAY,
+    COLLECT
 } TerminalOperationType;
 
 typedef struct {
@@ -60,6 +61,7 @@ typedef struct {
         struct { int count; int matches; Predicate test; } match;
         struct { int count; } count;
         struct { ArrayList* list; } to_array;
+        struct { void* data_structure; CollectionType type; } collect;
     };
 } TerminalOperation;
 
@@ -69,6 +71,7 @@ typedef union {
     bool match;
     int count;
     Array(void*) array;
+    void* data_structure;
 } SequencePipeLineResult;
 
 typedef enum {
@@ -130,6 +133,8 @@ static void operation_find(TerminalOperation*, void*);
 static void operation_match(TerminalOperation*, void*);
 
 static void operation_to_array(Sequence*, TerminalOperation*, void*);
+
+static void operation_collect(Sequence*, TerminalOperation*, void*);
 
 static Iterator* create_iterator(IterationContextOptions);
 
@@ -367,6 +372,13 @@ Array(void*) sequence_to_array(Sequence* sequence) {
     return process_sequence_pipeline(sequence).array;
 }
 
+void* sequence_collect(Sequence* sequence, Collection collection) {
+    if (require_non_null(sequence)) return nullptr;
+    sequence->pipeline.terminal_operation = (TerminalOperation) { .type = COLLECT, .collect = { (void*) collection.data_structure, collection.type } } ;
+
+    return process_sequence_pipeline(sequence).data_structure;
+}
+
 static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
     while (true) {
         if (sequence->pipeline.state == PENDING) {
@@ -451,6 +463,7 @@ static SequencePipeLineResult pipeline_result(Sequence* sequence) {
         case ANY_MATCH:   return (SequencePipeLineResult) { .match = operation.match.matches > 0 };
         case NONE_MATCH:  return (SequencePipeLineResult) { .match = operation.match.matches == 0 };
         case TO_ARRAY:    return pipeline_result_array(sequence, &operation);
+        case COLLECT:     return (SequencePipeLineResult) { .data_structure = operation.collect.data_structure };
     }
     assert(!"unreachable code");
 }
@@ -518,6 +531,7 @@ static void execute_terminal_operation(Sequence* sequence, void* element) {
         case ANY_MATCH:   operation_match(operation, element);               break;
         case NONE_MATCH:  operation_match(operation, element);               break;
         case TO_ARRAY:    operation_to_array(sequence, operation, element);  break;
+        case COLLECT:     operation_collect(sequence, operation, element);   break;
     }
 }
 
@@ -556,6 +570,17 @@ static void operation_match(TerminalOperation* operation, void* element) {
 
 static void operation_to_array(Sequence* sequence, TerminalOperation* operation, void* element) {
     Error error = attempt(list_add_last(operation->to_array.list, element));
+    if (error) {
+        sequence->pipeline.state = ABORTED;
+    }
+}
+
+static void operation_collect(Sequence* sequence, TerminalOperation* operation, void* element) {
+    Collection collection = {
+        .type = operation->collect.type,
+        .data_structure = operation->collect.data_structure
+    };
+    Error error = attempt(collection_add(collection, element));
     if (error) {
         sequence->pipeline.state = ABORTED;
     }

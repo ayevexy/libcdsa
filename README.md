@@ -491,6 +491,33 @@ int main() {
 ```
 
 ```c++
+#include "core/constraints.h"
+#include <stdio.h>
+
+// custom constraint
+#define require_different_accounts(source, destination) \
+    require((source) != (destination), ILLEGAL_ARGUMENT_ERROR, "source and destination accounts must be different")
+
+bool transfer(int source_account_id, int destination_account_id, double amount) {
+    if (require_positive(amount)) return false;
+    if (require_different_accounts(source_account_id, destination_account_id)) return false;
+
+    printf("Transferred $%.2f from account %d to account %d\n",
+           amount, source_account_id, destination_account_id);
+
+    return true;
+}
+
+int main(void) {
+    transfer(1001, 2002, 50.00); // Transferred $50.00 from account 1001 to account 2002
+    transfer(1001, 1001, 25.00); // ILLEGAL_ARGUMENT_ERROR: source and destination accounts must be different
+    transfer(1001, 2002, -10.00); // ILLEGAL_ARGUMENT_ERROR: 'amount' must be greater than zero
+
+    return 0;
+}
+```
+
+```c++
 #include "core/file.h"
 #include <stdio.h>
 

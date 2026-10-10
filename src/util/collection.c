@@ -38,73 +38,33 @@ void* collection_as(Collection collection, CollectionType type) {
 
 void collection_add(Collection collection, const void *element) {
     switch (collection.type) {
-        case ARRAY_LIST:
-            array_list_add_last((ArrayList *) collection.data_structure, element);
-            break;
-        case LINKED_LIST:
-            linked_list_add_last((LinkedList *) collection.data_structure, element);
-            break;
-        case HASH_MAP:
-            hash_map_put((HashMap *) collection.data_structure, element, nullptr);
-            break;
-        case TREE_MAP:
-            tree_map_put((TreeMap *) collection.data_structure, element, nullptr);
-            break;
-        case HASH_SET:
-            hash_set_add((HashSet *) collection.data_structure, element);
-            break;
-        case TREE_SET:
-            tree_set_add((TreeSet *) collection.data_structure, element);
-            break;
-        case DEQUE:
-            deque_add_last((Deque *) collection.data_structure, element);
-            break;
-        case STACK:
-            stack_push((Stack *) collection.data_structure, element);
-            break;
-        case QUEUE:
-            queue_enqueue((Queue*) collection.data_structure, element);
-            break;
-        case PRIORITY_QUEUE:
-            priority_queue_enqueue((PriorityQueue*) collection.data_structure, element);
-            break;
-        default: unreachable();
+        case ARRAY_LIST:      array_list_add_last((ArrayList*) collection.data_structure, element);         break;
+        case LINKED_LIST:     linked_list_add_last((LinkedList*) collection.data_structure, element);       break;
+        case HASH_MAP:        hash_map_put((HashMap*) collection.data_structure, element, nullptr);         break;
+        case TREE_MAP:        tree_map_put((TreeMap*) collection.data_structure, element, nullptr);         break;
+        case HASH_SET:        hash_set_add((HashSet*) collection.data_structure, element);                  break;
+        case TREE_SET:        tree_set_add((TreeSet*) collection.data_structure, element);                  break;
+        case DEQUE:           deque_add_last((Deque*) collection.data_structure, element);                  break;
+        case STACK:           stack_push((Stack*) collection.data_structure, element);                      break;
+        case QUEUE:           queue_enqueue((Queue*) collection.data_structure, element);                   break;
+        case PRIORITY_QUEUE:  priority_queue_enqueue((PriorityQueue*) collection.data_structure, element);  break;
+        default:              unreachable();
     }
 }
 
 void collection_remove(Collection collection, const void *element) {
     switch (collection.type) {
-        case ARRAY_LIST:
-            array_list_remove_element((ArrayList *) collection.data_structure, element);
-            break;
-        case LINKED_LIST:
-            linked_list_remove_element((LinkedList *) collection.data_structure, element);
-            break;
-        case HASH_MAP:
-            hash_map_remove((HashMap *) collection.data_structure, element);
-            break;
-        case TREE_MAP:
-            tree_map_remove((TreeMap *) collection.data_structure, element);
-            break;
-        case HASH_SET:
-            hash_set_remove((HashSet *) collection.data_structure, element);
-            break;
-        case TREE_SET:
-            tree_set_remove((TreeSet *) collection.data_structure, element);
-            break;
-        case DEQUE:
-            deque_remove_first((Deque *) collection.data_structure);
-            break;
-        case STACK:
-            stack_pop((Stack *) collection.data_structure);
-            break;
-        case QUEUE:
-            queue_dequeue((Queue *) collection.data_structure);
-            break;
-        case PRIORITY_QUEUE:
-            priority_queue_dequeue((PriorityQueue *) collection.data_structure);
-            break;
-        default: unreachable();
+        case ARRAY_LIST:      array_list_remove_element((ArrayList*) collection.data_structure, element);    break;
+        case LINKED_LIST:     linked_list_remove_element((LinkedList*) collection.data_structure, element);  break;
+        case HASH_MAP:        hash_map_remove((HashMap*) collection.data_structure, element);                break;
+        case TREE_MAP:        tree_map_remove((TreeMap*) collection.data_structure, element);                break;
+        case HASH_SET:        hash_set_remove((HashSet*) collection.data_structure, element);                break;
+        case TREE_SET:        tree_set_remove((TreeSet*) collection.data_structure, element);                break;
+        case DEQUE:           deque_remove_first((Deque*) collection.data_structure);                        break;
+        case STACK:           stack_pop((Stack*) collection.data_structure);                                 break;
+        case QUEUE:           queue_dequeue((Queue*) collection.data_structure);                             break;
+        case PRIORITY_QUEUE:  priority_queue_dequeue((PriorityQueue*) collection.data_structure);            break;
+        default:              unreachable();
     }
 }
 
@@ -139,37 +99,17 @@ void collection_for_each(Collection collection, Consumer action) {
 
 void collection_clear(Collection collection) {
     switch (collection.type) {
-        case ARRAY_LIST:
-            array_list_clear((ArrayList *) collection.data_structure);
-            break;
-        case LINKED_LIST:
-            linked_list_clear((LinkedList *) collection.data_structure);
-            break;
-        case HASH_MAP:
-            hash_map_clear((HashMap *) collection.data_structure);
-            break;
-        case TREE_MAP:
-            tree_map_clear((TreeMap *) collection.data_structure);
-            break;
-        case HASH_SET:
-            hash_set_clear((HashSet *) collection.data_structure);
-            break;
-        case TREE_SET:
-            tree_set_clear((TreeSet *) collection.data_structure);
-            break;
-        case DEQUE:
-            deque_clear((Deque *) collection.data_structure);
-            break;
-        case STACK:
-            stack_clear((Stack *) collection.data_structure);
-            break;
-        case QUEUE:
-            queue_clear((Queue *) collection.data_structure);
-            break;
-        case PRIORITY_QUEUE:
-            priority_queue_clear((PriorityQueue *) collection.data_structure);
-            break;
-        default: unreachable();
+        case ARRAY_LIST:      array_list_clear((ArrayList*) collection.data_structure);          break;
+        case LINKED_LIST:     linked_list_clear((LinkedList*) collection.data_structure);        break;
+        case HASH_MAP:        hash_map_clear((HashMap*) collection.data_structure);              break;
+        case TREE_MAP:        tree_map_clear((TreeMap*) collection.data_structure);              break;
+        case HASH_SET:        hash_set_clear((HashSet*) collection.data_structure);              break;
+        case TREE_SET:        tree_set_clear((TreeSet*) collection.data_structure);              break;
+        case DEQUE:           deque_clear((Deque*) collection.data_structure);                   break;
+        case STACK:           stack_clear((Stack*) collection.data_structure);                   break;
+        case QUEUE:           queue_clear((Queue*) collection.data_structure);                   break;
+        case PRIORITY_QUEUE:  priority_queue_clear((PriorityQueue*) collection.data_structure);  break;
+        default:              unreachable();
     }
 }
 

@@ -373,7 +373,6 @@ static const Error INVALID_OPERATION_ERROR = ERROR("INVALID_OPERATION_ERROR");
 
 int divide(int a, int b) {
     if (b == 0) {
-        // use a library-provided error constant
         set_error(ARITHMETIC_ERROR, "Cannot divide by zero: %d / %d", a, b);
         return -1;
     }
@@ -381,7 +380,6 @@ int divide(int a, int b) {
 }
 
 int main(void) {
-    // attempt() returns the error while preserving the function's return value
     int value; Error error = attempt(value = divide(10, 0));
 
     if (error) {
@@ -390,20 +388,17 @@ int main(void) {
 
     printf("value: %d\n", value); // value: -1
 
-    // try() wraps the return value and error in a Result
     Result(int) result = try(divide(5, 0));
 
-    // the error can also be compared
     if (result.error == ARITHMETIC_ERROR) {
         error_print(); // ARITHMETIC_ERROR: Cannot divide by zero: 5 / 0
     }                  //       at divide()
-
+    
     printf("result value: %d\n", result.value); // result value: -1
-
-    // set a custom error (message is optional)
+    
     set_error(INVALID_OPERATION_ERROR); // INVALID_OPERATION_ERROR: no additional details available
                                         //      at main()
-
+    printf("unreachable");
     return 0;
 }
 ```

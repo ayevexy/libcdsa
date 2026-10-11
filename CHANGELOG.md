@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.10]() — 2026-10-11
+
+A major update enhancing the Errors API, simplifying set operations, expanding collection utilities, and extending constraints.
+
+### ✨ Features
+- Added an optional description field to `Error` and default descriptions to all built-in errors (`core/errors.h`).
+- Added the `TYPE_MISMATCH_ERROR` and `NUMBER_FORMAT_ERROR` error constants.
+- Added `require_positive()`, `require_non_negative()`, `require_in_range()` and `require_in_bounds()` constraint functions (`core/constraints.h`).
+- Added the `require()` base macro for defining custom constraints (`core/constraints.h`).
+- Added the missing `ushort` type alias (`core/types.h`).
+- Added `collection_as()`, `collection_add()`, `collection_remove()`, `collection_clear()` and `collection_to_string()` operations (`util/collection.h`).
+- Added string-to-number conversion functions (`core/string.h`).
+- Added the `sequence_collect()` terminal operation (`util/sequence.h`).
+
+### ✏️ Changes
+- Redesigned the set operations API (`sets/sets.h`):
+  - Removed the `SetView` abstraction.
+  - Added a `result_set` parameter to all set operations.
+  - Changed all set operations to return `result_set` directly.
+- Merged `set/sets.h` into `set/set.h`.
+- Split `set/sets.c` into `set/hash_set.c` and `set/tree_set.c`.
+
+### 🪲 Bug Fixes
+- Fixed `collection_equals()` to delegate equality comparisons to the underlying data structure.
+- Added missing `map/map_entry.h` include to the `libcdsa.h` master header.
+
+### 📚 Documentation
+- Added missing `@file` documentation sections to header files.
+- Added usage example for `constraints.h` to the README.
+- Simplified the error-handling example in the README.
+
+---
+
 ## 🎉 [v1.0.0-beta.9]() — 2026-10-04
 
 A major update introducing the new Synchronization API, custom allocators, and improvements to the Errors API, along with other features, improvements, and bug fixes.

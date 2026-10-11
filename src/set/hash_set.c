@@ -2,10 +2,10 @@
 
 #include "core/constraints.h"
 
-constexpr int MIN_CAPACITY = 8;
-constexpr int MAX_CAPACITY = 1'073'741'824;
-constexpr float MIN_LOAD_FACTOR = 0.5;
-constexpr int GROWN_FACTOR = 2;
+static constexpr int MIN_CAPACITY = 8;
+static constexpr int MAX_CAPACITY = 1'073'741'824;
+static constexpr float MIN_LOAD_FACTOR = 0.5;
+static constexpr int GROWN_FACTOR = 2;
 
 typedef struct Node {
     void* element;

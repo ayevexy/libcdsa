@@ -7,8 +7,8 @@
 
 #include <assert.h>
 
-constexpr int OPERATION_LIMIT = 15;
-constexpr int SORT_OPERATION_LIMIT = 5;
+static constexpr int OPERATION_LIMIT = 15;
+static constexpr int SORT_OPERATION_LIMIT = 5;
 
 typedef enum {
     FILTER,

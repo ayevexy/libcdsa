@@ -2,9 +2,9 @@
 
 #include "core/constraints.h"
 
-constexpr int MIN_CAPACITY = 10;
-constexpr int MAX_CAPACITY = 1'073'741'824;
-constexpr float MIN_GROWTH_FACTOR = 1.10f;
+static constexpr int MIN_CAPACITY = 10;
+static constexpr int MAX_CAPACITY = 1'073'741'824;
+static constexpr float MIN_GROWTH_FACTOR = 1.10f;
 
 struct PriorityQueue {
     void** elements;

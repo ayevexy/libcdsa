@@ -25,7 +25,7 @@ static void string_memory_dealloc(void* pointer) {
     allocator_dealloc(string_memory_allocator, pointer);
 }
 
-constexpr int NULL_TERMINATOR = 1;
+static constexpr int NULL_TERMINATOR = 1;
 
 String (string_new)(struct String string) {
     if (require_non_null(string.data)) return nullptr;
@@ -735,8 +735,8 @@ void string_array_destroy(Array(String) strings) {
 
 /* --------------------------------------------------------------------------------- */
 
-constexpr int INITIAL_CAPACITY = 10;
-constexpr int GROWN_FACTOR = 2;
+static constexpr int INITIAL_CAPACITY = 10;
+static constexpr int GROWN_FACTOR = 2;
 
 StringBuilder* string_builder_init(StringBuilder* builder) {
     if (require_non_null(builder)) return nullptr;

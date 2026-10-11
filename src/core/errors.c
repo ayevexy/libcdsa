@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-constexpr int MAX_MESSAGE_LENGTH = 256;
+static constexpr int MAX_MESSAGE_LENGTH = 256;
 
 typedef struct {
     Error error;

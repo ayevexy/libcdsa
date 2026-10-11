@@ -2,9 +2,9 @@
 
 #include "core/constraints.h"
 
-constexpr int MIN_CAPACITY = 8;
-constexpr int MAX_CAPACITY = 1'073'741'824;
-constexpr int GROWTH_FACTOR = 2;
+static constexpr int MIN_CAPACITY = 8;
+static constexpr int MAX_CAPACITY = 1'073'741'824;
+static constexpr int GROWTH_FACTOR = 2;
 
 struct Deque {
     void** elements;

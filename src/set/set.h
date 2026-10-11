@@ -88,6 +88,7 @@
  *
  * @return a set containing the resulting union
  *
+ * @exception NULL_POINTER_ERROR If result is null
  * @exception MEMORY_ALLOCATION_ERROR If failed to add elements in the result set
  */
 #define sets_union(set_a, set_b, result) _Generic((result),     \
@@ -108,6 +109,7 @@ extern TreeSet* tree_set_union(Collection set_a, Collection set_b, TreeSet* resu
  *
  * @return a set containing the intersection
  *
+ * @exception NULL_POINTER_ERROR If result is null
  * @exception MEMORY_ALLOCATION_ERROR If failed to add elements in the result set
  */
 #define sets_intersection(set_a, set_b, result) _Generic((result),  \
@@ -128,6 +130,7 @@ extern TreeSet* tree_set_intersection(Collection set_a, Collection set_b, TreeSe
  *
  * @return a set containing the difference
  *
+ * @exception NULL_POINTER_ERROR If result is null
  * @exception MEMORY_ALLOCATION_ERROR If failed to add elements in the result set
  */
 #define sets_difference(set_a, set_b, result) _Generic((result),  \
@@ -148,6 +151,7 @@ extern TreeSet* tree_set_difference(Collection set_a, Collection set_b, TreeSet*
  *
  * @return a set containing the symmetric difference
  *
+ * @exception NULL_POINTER_ERROR If result is null
  * @exception MEMORY_ALLOCATION_ERROR If failed to add elements in the result set
  */
 #define sets_symmetric_difference(set_a, set_b, result) _Generic((result),  \

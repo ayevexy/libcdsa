@@ -991,24 +991,35 @@ static bool collection_contains_internal(const void* tree_set, const void* eleme
 }
 
 TreeSet* tree_set_union(Collection set_a, Collection set_b, TreeSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     tree_set_add_all(result_set, set_a);
     tree_set_add_all(result_set, set_b);
+
     return result_set;
 }
 
 TreeSet* tree_set_intersection(Collection set_a, Collection set_b, TreeSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     tree_set_add_all(result_set, set_a);
     tree_set_retain_all(result_set, set_b);
+
     return result_set;
 }
 
 TreeSet* tree_set_difference(Collection set_a, Collection set_b, TreeSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     tree_set_add_all(result_set, set_a);
     tree_set_remove_all(result_set, set_b);
+
     return result_set;
 }
 
 TreeSet* tree_set_symmetric_difference(Collection set_a, Collection set_b, TreeSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     TreeSet* temporary; Error error = attempt(temporary = tree_set_clone(result_set));
 
     if (error) {

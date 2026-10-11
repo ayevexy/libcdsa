@@ -625,24 +625,35 @@ static bool collection_contains_internal(const void* hash_set, const void* eleme
 }
 
 HashSet* hash_set_union(Collection set_a, Collection set_b, HashSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     hash_set_add_all(result_set, set_a);
     hash_set_add_all(result_set, set_b);
+
     return result_set;
 }
 
 HashSet* hash_set_intersection(Collection set_a, Collection set_b, HashSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     hash_set_add_all(result_set, set_a);
     hash_set_retain_all(result_set, set_b);
+
     return result_set;
 }
 
 HashSet* hash_set_difference(Collection set_a, Collection set_b, HashSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     hash_set_add_all(result_set, set_a);
     hash_set_remove_all(result_set, set_b);
+
     return result_set;
 }
 
 HashSet* hash_set_symmetric_difference(Collection set_a, Collection set_b, HashSet* result_set) {
+    if (require_non_null(result_set)) return nullptr;
+
     HashSet* temporary; Error error = attempt(temporary = hash_set_clone(result_set));
 
     if (error) {

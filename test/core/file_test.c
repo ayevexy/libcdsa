@@ -104,6 +104,7 @@ void test_file_read_line_and_write_string() {
     TEST_ASSERT_EQUAL_STRING("Hello World!\n", string_data(string));
     TEST_ASSERT_EQUAL(chars, 13);
     // clean up
+    string_destroy(&string);
     file_close(file);
     file_delete(file_name);
 }

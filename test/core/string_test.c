@@ -464,6 +464,7 @@ void test_string_split() {
     TEST_ASSERT_EQUAL_STRING("!!!", strings[2]->data);
     TEST_ASSERT_EQUAL(strlen("!!!"), strings[2]->length);
     // clean up
+    string_destroy(&string);
     array_destroy(&strings);
 }
 
@@ -476,6 +477,7 @@ void test_string_split_single_word() {
     TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
     TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
     // clean up
+    string_destroy(&string);
     array_destroy(&strings);
 }
 
@@ -487,6 +489,7 @@ void test_string_split_empty() {
     // then
     TEST_ASSERT_EQUAL_STRING_LEN("", strings[0]->data, strings[0]->length);
     // clean up
+    string_destroy(&string);
     array_destroy(&strings);
 }
 
@@ -512,6 +515,7 @@ void test_string_to_lowercase() {
     string_destroy(&string, &lowercase);
 }
 
+// String cleanup is intentionally omitted for simplicity.
 void test_string_value_of() {
     TEST_ASSERT_EQUAL_STRING("true", string_value_of(true)->data);
     TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10)->data);
@@ -650,6 +654,8 @@ static void insert_index_out_of_bounds_test_helper(int index) {
     // then
     TEST_ASSERT_EQUAL_STRING("", sb->buffer);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
+    // clean up
+    string_builder_destroy(&sb);
 }
 
 void test_string_builder_insert_index_above_bounds_fails() {

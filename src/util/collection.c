@@ -167,6 +167,7 @@ Array(void*) collection_to_array(Collection collection) {
     for (int i = 0; iterator_has_next(iterator); i++) {
         elements[i] = iterator_next(iterator);
     }
+    iterator_destroy(&iterator);
     return elements;
 }
 

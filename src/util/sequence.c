@@ -5,8 +5,6 @@
 #include "list/list.h"
 #include "set/set.h"
 
-#include <assert.h>
-
 static constexpr int OPERATION_LIMIT = 15;
 static constexpr int SORT_OPERATION_LIMIT = 5;
 
@@ -464,8 +462,8 @@ static SequencePipeLineResult pipeline_result(Sequence* sequence) {
         case NONE_MATCH:  return (SequencePipeLineResult) { .match = operation.match.matches == 0 };
         case TO_ARRAY:    return pipeline_result_array(sequence, &operation);
         case COLLECT:     return (SequencePipeLineResult) { .data_structure = operation.collect.data_structure };
+        default:          unreachable();
     }
-    assert(!"unreachable code");
 }
 
 static SequencePipeLineResult pipeline_result_array(Sequence* sequence, TerminalOperation* operation) {

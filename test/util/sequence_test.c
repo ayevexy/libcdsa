@@ -68,6 +68,8 @@ void test_create_sequence_from_collection() {
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_create_sequence_of_given_elements() {
@@ -77,6 +79,8 @@ void test_create_sequence_of_given_elements() {
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_create_empty_sequence() {
@@ -98,23 +102,34 @@ void test_generate_sequence() {
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    for (int i = 0; i < array_length(elements); i++) {
+        delete(elements[i]);
+    }
+    array_destroy(&elements);
 }
 
 bool int_has_next(const void* number) {
-    return *(int*) number <= 5;
+    return number && *(const int*) number <= 5;
 }
 
 void* int_next(void* number) {
-    return new(int, *(int*) number + 1);
+    int value = *(int*) number;
+    return value < 5 ? new(int, value + 1) : nullptr; // avoids allocating an extra element that would be rejected by the predicate
 }
 
 void test_iterate_sequence() {
     // given
-    Sequence* sequence = sequence_iterate(ref(int, 1), int_has_next, int_next);
+    Sequence* sequence = sequence_iterate(new(int, 1), int_has_next, int_next);
     // then
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    for (int i = 0; i < array_length(elements); i++) {
+        delete(elements[i]);
+    }
+    array_destroy(&elements);
 }
 
 void test_filter_sequence() {
@@ -135,6 +150,11 @@ void test_map_sequence() {
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 2, 4, 6, 8, 10 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    for (int i = 0; i < array_length(elements); i++) {
+        delete(elements[i]);
+    }
+    array_destroy(&elements);
 }
 
 void test_peek_sequence() {
@@ -146,6 +166,8 @@ void test_peek_sequence() {
     Array(void*) elements = sequence_to_array(sequence);
     int expected[] = { 2, 3, 4, 5, 6 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_limit_n_elements_of_sequence() {
@@ -158,6 +180,8 @@ void test_limit_n_elements_of_sequence() {
     int expected[] = { 1, 2, 3 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(3, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_skip_n_elements_of_sequence() {
@@ -170,6 +194,8 @@ void test_skip_n_elements_of_sequence() {
     int expected[] = { 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(2, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_take_elements_of_sequence_while_predicate_is_truth() {
@@ -182,6 +208,8 @@ void test_take_elements_of_sequence_while_predicate_is_truth() {
     int expected[] = { 1, 2, 3 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(3, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_drop_elements_of_sequence_while_predicate_is_truth() {
@@ -194,6 +222,8 @@ void test_drop_elements_of_sequence_while_predicate_is_truth() {
     int expected[] = { 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(2, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_filter_distinct_elements_of_sequence() {
@@ -209,6 +239,8 @@ void test_filter_distinct_elements_of_sequence() {
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(5, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_sort_elements_of_sequence() {
@@ -227,6 +259,8 @@ void test_sort_elements_of_sequence() {
     int expected[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(10, array_length(elements));
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_chain_sequence_operations() {
@@ -254,6 +288,11 @@ void test_chain_sequence_operations() {
     int expected[] = { 22, 18, 14, 10, 6 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
     TEST_ASSERT_EQUAL(5, array_length(elements));
+    // clean up
+    for (int i = 0; i < array_length(elements); i++) {
+        delete(elements[i]);
+    }
+    array_destroy(&elements);
 }
 
 void test_apply_action_for_each_element_of_sequence() {
@@ -361,6 +400,8 @@ void test_convert_sequence_to_array() {
     // then
     int expected[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_convert_empty_sequence_to_array() {
@@ -371,6 +412,8 @@ void test_convert_empty_sequence_to_array() {
     // then
     int expected[] = {};
     TEST_ASSERT_ARRAY_EQUALS(expected, elements);
+    // clean up
+    array_destroy(&elements);
 }
 
 void test_collect_sequence() {

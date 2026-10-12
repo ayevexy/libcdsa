@@ -77,6 +77,16 @@ void* (new)(bytes size, const void* source);
 #define ref(T, ...) (&(T){__VA_ARGS__})
 
 /**
+ * @brief Cast a pointer to type T and dereference it.
+ *
+ * @param T the type to cast the pointer to
+ * @param pointer the pointer to cast and dereference
+ *
+ * @return the value pointed to, interpreted as type T
+ */
+#define deref(T, pointer) (*(T*) (pointer))
+
+/**
  * @brief Deallocate a memory block and set its pointer to nullptr.
  *
  * Frees the memory previously allocated with `new` and

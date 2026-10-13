@@ -156,6 +156,17 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 void array_list_destroy(ArrayList** array_list_pointer);
 
 /**
+ * @brief Retrieves the element destruct function.
+ *
+ * @param array_list pointer to an array list
+ *
+ * @return the destruct function
+ *
+ * @exception NULL_POINTER_ERROR if array_list is null
+ */
+void (*array_list_destructor(ArrayList* array_list))(void*);
+
+/**
  * @brief Changes the element destruct function.
  *
  * @param array_list pointer to an array list

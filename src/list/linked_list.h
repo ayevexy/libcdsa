@@ -145,6 +145,17 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 void linked_list_destroy(LinkedList** linked_list_pointer);
 
 /**
+ * @brief Retrieves the element destruct function.
+ *
+ * @param linked_list pointer to a linked list
+ *
+ * @return the destruct function
+ *
+ * @exception NULL_POINTER_ERROR if linked_list is null
+ */
+void (*linked_list_destructor(LinkedList* linked_list))(void*);
+
+/**
  * @brief Changes the element destruct function.
  *
  * @param linked_list pointer to a linked list

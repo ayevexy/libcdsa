@@ -41,6 +41,8 @@
 #define list_destroy(list) \
     _Generic((list), ArrayList**: array_list_destroy, LinkedList**: linked_list_destroy)(list)
 
+#define list_destructor(...) LIST_DISPATCH(destructor, __VA_ARGS__)
+
 #define list_change_destructor(...) LIST_DISPATCH(change_destructor, __VA_ARGS__)
 
 #define list_add(...) LIST_DISPATCH(add, __VA_ARGS__)

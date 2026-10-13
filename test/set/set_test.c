@@ -33,7 +33,7 @@
 
 #define TEST_ASSERT_SET_CONTAINS_ELEMENTS(set, T, ...)          \
     do {                                                        \
-        auto array = (T[]){__VA_ARGS__};;                       \
+        auto array = (T[]){__VA_ARGS__};                        \
         int length = count_args(__VA_ARGS__);                   \
         for (int i = 0; i < length; i++) {                      \
             TEST_ASSERT_TRUE(set_contains(set, &array[i]));     \
@@ -42,7 +42,7 @@
 
 #define TEST_ASSERT_SET_DO_NOT_CONTAINS_ELEMENTS(set, T, ...)   \
     do {                                                        \
-        auto array = (T[]){__VA_ARGS__};;                       \
+        auto array = (T[]){__VA_ARGS__};                        \
         int length = count_args(__VA_ARGS__);                   \
         for (int i = 0; i < length; i++) {                      \
             TEST_ASSERT_FALSE(set_contains(set, &array[i]));    \
@@ -95,7 +95,7 @@ void test_sets_intersection() {
 void test_sets_difference() {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
-    POPULATE_SET(set_b, int, 0, 2, 3, 4, 6);;
+    POPULATE_SET(set_b, int, 0, 2, 3, 4, 6);
     // when
     HashSet* difference_set = sets_difference(set_a, set_b, set_new(INT_HASH_SET_OPTIONS));
     // then

@@ -22,7 +22,7 @@
 
 #define TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, T, ...)                \
     do {                                                                            \
-        auto array = (T[]){__VA_ARGS__};;                                           \
+        auto array = (T[]){__VA_ARGS__};                                            \
         int length = count_args(__VA_ARGS__);                                       \
         TEST_ASSERT_EQUAL(length, linked_list_size(linked_list));                   \
         for (int i = 0; i < length; i++) {                                          \

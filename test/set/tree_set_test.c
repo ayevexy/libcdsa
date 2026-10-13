@@ -22,7 +22,7 @@
 
 #define TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(tree_set, T, ...)        \
     do {                                                                \
-        auto array = (T[]){__VA_ARGS__};;                               \
+        auto array = (T[]){__VA_ARGS__};                                \
         int length = count_args(__VA_ARGS__);                           \
         for (int i = 0; i < length; i++) {                              \
             TEST_ASSERT_TRUE(tree_set_contains(tree_set, &array[i]));   \
@@ -31,7 +31,7 @@
 
 #define TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, T, ...)     \
     do {                                                                    \
-        auto array = (T[]){__VA_ARGS__};;                                   \
+        auto array = (T[]){__VA_ARGS__};                                    \
         int length = count_args(__VA_ARGS__);                               \
         for (int i = 0; i < length; i++) {                                  \
             TEST_ASSERT_FALSE(tree_set_contains(tree_set, &array[i]));      \
@@ -599,7 +599,7 @@ void test_clear_tree_set() {
 
 void test_get_higher_element_from_tree_set() {
     // given
-    POPULATE_TREE_SET(tree_set, int, 1, 2, 4, 5);;
+    POPULATE_TREE_SET(tree_set, int, 1, 2, 4, 5);
     // when
     int* next_greater = tree_set_higher(tree_set, ref(int, 3));
     int* no_successor = tree_set_higher(tree_set, ref(int, 5));

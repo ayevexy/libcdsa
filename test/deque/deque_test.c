@@ -27,7 +27,7 @@
         if (destructor == delete) {                         \
             deque_change_destructor(deque, noop_destruct);  \
         }                                                   \
-        auto array = (T[]){__VA_ARGS__};;                   \
+        auto array = (T[]){__VA_ARGS__};                    \
         int length = count_args(__VA_ARGS__);               \
         TEST_ASSERT_EQUAL(length, deque_size(deque));       \
         void* elements[length];                             \

@@ -27,7 +27,7 @@
 
 #define TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, T, ...)              \
     do {                                                                        \
-        auto array = (T[]){__VA_ARGS__};;                                       \
+        auto array = (T[]){__VA_ARGS__};                                        \
         int length = count_args(__VA_ARGS__);                                   \
         TEST_ASSERT_EQUAL(length, array_list_size(array_list));                 \
         for (int i = 0; i < length; i++) {                                      \

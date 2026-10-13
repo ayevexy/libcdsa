@@ -8,7 +8,7 @@
 
 #define TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(array, T, ...)    \
     do {                                                            \
-        auto array_ = (T[]){__VA_ARGS__};;                          \
+        auto array_ = (T[]){__VA_ARGS__};                           \
         int length = count_args(__VA_ARGS__);                       \
         for (int i = 0; i < length; i++) {                          \
             TEST_ASSERT_EQUAL(*(int*) array[i], array_[i]);         \

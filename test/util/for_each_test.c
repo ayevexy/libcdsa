@@ -5,6 +5,17 @@
 
 #include "unity.h"
 
+#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
+    .initial_capacity = 10,                             \
+    .growth_factor = 2.0f,                              \
+    .destruct = delete,                                 \
+    .equals = int_pointer_value_equals,                 \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = memory_try_alloc,                   \
+    .memory_realloc = memory_try_realloc,               \
+    .memory_dealloc = memory_dealloc                    \
+}
+
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
@@ -17,11 +28,7 @@
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .destruct = delete,
-        .equals = int_pointer_value_equals,
-        .to_string = int_pointer_value_to_string
-    ));
+    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
 }
 
 void tearDown() {

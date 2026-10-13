@@ -5,6 +5,26 @@
 
 #include "unity.h"
 
+#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
+    .initial_capacity = 10,                             \
+    .growth_factor = 2.0f,                              \
+    .destruct = delete,                                 \
+    .equals = int_pointer_value_equals,                 \
+    .to_string = int_pointer_value_to_string,           \
+    .memory_alloc = memory_try_alloc,                   \
+    .memory_realloc = memory_try_realloc,               \
+    .memory_dealloc = memory_dealloc                    \
+}
+
+#define POPULATE_LIST(list, T, ...)                     \
+    do {                                                \
+        auto array = (T[]){__VA_ARGS__};                \
+        int length = count_args(__VA_ARGS__);           \
+        for (int i = 0; i < length; i++) {              \
+            list_add_last(list, new(int, array[i]));    \
+        }                                               \
+    } while (false)
+
 static bool is_less_or_equal_3(const void* number) {
     return *(int*) number <= 3;
 }
@@ -38,20 +58,10 @@ static ArrayList* list;
 static ArrayList* empty_list;
 
 void setUp() {
-    list = list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .destruct = delete,
-        .equals = int_pointer_value_equals,
-        .to_string = int_pointer_value_to_string
-    ));
-    empty_list = list_new(DEFAULT_ARRAY_LIST_OPTIONS(
-        .equals = int_pointer_value_equals,
-        .to_string = int_pointer_value_to_string
-    ));
-    list_add_last(list, new(int, 1));
-    list_add_last(list, new(int, 2));
-    list_add_last(list, new(int, 3));
-    list_add_last(list, new(int, 4));
-    list_add_last(list, new(int, 5));
+    list = list_new(INT_ARRAY_LIST_OPTIONS);
+    empty_list = list_new(INT_ARRAY_LIST_OPTIONS);
+
+    POPULATE_LIST(list, int, 1, 2, 3, 4, 5);
 }
 
 void tearDown() {
@@ -245,11 +255,9 @@ void test_filter_distinct_elements_of_sequence() {
 
 void test_sort_elements_of_sequence() {
     // given
-    list_add(list, 1, new(int, 6));
-    list_add(list, 0, new(int, 7));
-    list_add(list, 3, new(int, 8));
-    list_add(list, 2, new(int, 9));
-    list_add(list, 4, new(int, 10));
+    list_clear(list);
+    // and
+    POPULATE_LIST(list, int, 1, 4, 3, 5, 2, 10, 6, 7, 9, 8);
     // and
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -265,15 +273,9 @@ void test_sort_elements_of_sequence() {
 
 void test_chain_sequence_operations() {
     // given
-    list_add(list, 1, new(int, 6));
-    list_add(list, 1, new(int, 6));
-    list_add(list, 0, new(int, 7));
-    list_add(list, 3, new(int, 8));
-    list_add(list, 3, new(int, 8));
-    list_add(list, 2, new(int, 9));
-    list_add(list, 4, new(int, 10));
-    list_add(list, 4, new(int, 10));
-    list_swap(list, 8, 9);
+    list_clear(list);
+    // and
+    POPULATE_LIST(list, int, 7, 1, 9, 6, 10, 10, 8, 8, 2, 6, 3, 4, 5);
     // and
     Sequence* sequence = sequence_from(list_to_collection(list)); // 7, 1, 9, 6, 6, 10, 10, 8, 8, 2, 3, 5, 4
     // when

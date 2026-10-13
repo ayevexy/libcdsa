@@ -1,12 +1,9 @@
 #include "list/array_list.h"
 
-#include "core/errors.h"
-#include "core/memory.h"
-
-#include "unity.h"
 #include "../test_utilities.h"
+#include "unity.h"
 
-#define INT_ARRAY_LIST_OPTIONS() &(ArrayListOptions) {  \
+#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
     .initial_capacity = 10,                             \
     .growth_factor = 2.0f,                              \
     .destruct = noop_destruct,                          \
@@ -17,25 +14,33 @@
     .memory_dealloc = memory_dealloc                    \
 }
 
-#define POPULATE_ARRAY_LIST(array_list, array)                  \
-    for (int i = 0; i < SIZE(array); i++) {                     \
-        array_list_add_last(array_list, new(int, array[i]));    \
-    }
+#define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
+    do {                                                            \
+        auto array = (T[]){__VA_ARGS__};                            \
+        int length = count_args(__VA_ARGS__);                       \
+        for (int i = 0; i < length; i++) {                          \
+            array_list_add_last(array_list, new(int, array[i]));    \
+        }                                                           \
+    } while (false)
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)               \
-    for (int i = 0; i < SIZE(array); i++) {                                     \
-        TEST_ASSERT_EQUAL(array[i], *(int*) array_list_get(array_list, i));     \
-    }                                                                           \
-    TEST_ASSERT_EQUAL(SIZE(array), array_list_size(array_list));
+#define TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, T, ...)              \
+    do {                                                                        \
+        auto array = (T[]){__VA_ARGS__};;                                       \
+        int length = count_args(__VA_ARGS__);                                   \
+        TEST_ASSERT_EQUAL(length, array_list_size(array_list));                 \
+        for (int i = 0; i < length; i++) {                                      \
+            TEST_ASSERT_EQUAL(array[i], *(T*) array_list_get(array_list, i));   \
+        }                                                                       \
+    } while (false)
 
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    array_list_change_destructor(array_list, delete);
 }
 
 void tearDown() {
-    array_list_change_destructor(array_list, delete);
     array_list_destroy(&array_list);
 }
 
@@ -53,21 +58,19 @@ void test_do_not_create_array_list_with_invalid_options() {
 
 void test_create_array_list_from_collection() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
-    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), INT_ARRAY_LIST_OPTIONS);
     // then
     TEST_ASSERT_NOT_NULL(new_array_list);
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, new_array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(new_array_list, int, 1, 2, 3, 4, 5);
     // clean up
     array_list_destroy(&new_array_list);
 }
 
 void test_do_not_create_array_list_with_invalid_options_from_collection() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     ArrayList* new_array_list; Error error = attempt(new_array_list = array_list_from(array_list_to_collection(array_list), ref(ArrayListOptions)));
     // then
@@ -77,7 +80,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
 
 void test_destroy_array_list_set_it_to_null() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // when
     array_list_destroy(&new_array_list);
     // then
@@ -95,35 +98,30 @@ void test_destroy_null_array_list_fails() {
 
 void test_add_element_at_index_to_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_add(array_list, 2, new(int, 10));
     // then
-    int new_values[] = { 1, 2, 10, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 10, 3, 4, 5);
 }
 
 void test_add_element_at_index_to_array_list_exceeding_capacity_resize_it() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     array_list_add(array_list, 5, new(int, 100));
     // then
-    int new_values[] = { 1, 2, 3, 4, 5, 100, 6, 7, 8, 9, 10 };
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5, 100, 6, 7, 8, 9, 10);
 }
 
 static void add_index_out_of_bounds_test_helper(int index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
-    Error error = attempt(array_list_add(array_list, index, new(int, 10)));
+    Error error = attempt(array_list_add(array_list, index, ref(int, 10)));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
@@ -137,84 +135,67 @@ void test_add_element_at_index_to_array_list_negative_index_fails() {
 
 void test_add_element_at_beginning_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_add_first(array_list, new(int, 10));
     // then
-    int new_values[] = { 10, 1, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 10, 1, 2, 3, 4, 5);
 }
 
 void test_add_element_at_end_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_add_last(array_list, new(int, 10));
     // then
-    int new_values[] = { 1, 2, 3, 4, 5, 10 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5, 10);
 }
 
 void test_add_all_elements_from_collection_at_index_in_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 10, 20, 30 };
-    POPULATE_ARRAY_LIST(existing_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
     // when
     array_list_add_all(array_list, 2, array_list_to_collection(existing_array_list));
     // then
-    int new_values[] = { 1, 2, 10, 20, 30, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 10, 20, 30, 3, 4, 5);
     // clean up
     array_list_destroy(&existing_array_list);
 }
 
 void test_add_all_elements_from_collection_at_beginning_of_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 10, 20, 30 };
-    POPULATE_ARRAY_LIST(existing_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
     // when
     array_list_add_all_first(array_list, array_list_to_collection(existing_array_list));
     // then
-    int new_values[] = { 10, 20, 30, 1, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 10, 20, 30, 1, 2, 3, 4, 5);
     // clean up
     array_list_destroy(&existing_array_list);
 }
 
 void test_add_all_elements_from_collection_at_end_of_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 10, 20, 30 };
-    POPULATE_ARRAY_LIST(existing_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
     // when
     array_list_add_all_last(array_list, array_list_to_collection(existing_array_list));
     // then
-    int new_values[] = { 1, 2, 3, 4, 5, 10, 20, 30 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5, 10, 20, 30);
     // clean up
     array_list_destroy(&existing_array_list);
 }
 
 void test_get_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_get(array_list, 2);
     // then
@@ -241,8 +222,7 @@ void test_get_element_from_array_list_negative_index_fails() {
 
 void test_get_first_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_get_first(array_list);
     // then
@@ -259,8 +239,7 @@ void test_get_first_element_from_empty_array_list_fails() {
 
 void test_get_last_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_get_last(array_list);
     // then
@@ -277,24 +256,35 @@ void test_get_last_element_from_empty_array_list_fails() {
 
 void test_set_element_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    // when
+    array_list_set(array_list, 2, new(int, 10));
+    // then
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 10, 4, 5);
+}
+
+void test_set_element_of_array_list_no_destruct() {
+    // given
+    array_list_change_destructor(array_list, noop_destruct);
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* old_value = array_list_set(array_list, 2, new(int, 10));
     // then
-    int new_values[] = { 1, 2, 10, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 10, 4, 5);
     TEST_ASSERT_EQUAL(3, *old_value);
+    // clean up
+    delete(old_value);
+    array_list_change_destructor(array_list, delete);
 }
 
 static void set_index_out_of_bounds_test_helper(int index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
-    int* old_value; Error error = attempt(old_value = array_list_set(array_list, index, new(int, 10)));
+    int* old_value; Error error = attempt(old_value = array_list_set(array_list, index, ref(int, 10)));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_NULL(old_value);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
@@ -309,23 +299,20 @@ void test_set_element_of_array_list_negative_index_fails() {
 
 void test_swap_elements_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_swap(array_list, 1, 3);
     // then
-    int swaped_values[] = { 1, 4, 3, 2, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(swaped_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 4, 3, 2, 5);
 }
 
 static void swap_elements_of_array_list_index_out_of_bounds_test_helper(int index_a, int index_b) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Error error = attempt(array_list_swap(array_list, index_a, index_b));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
@@ -347,24 +334,35 @@ void test_swap_elements_of_array_list_negative_index_b_fails() {
 
 void test_remove_element_by_index_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    // when
+    array_list_remove(array_list, 2);
+    // then
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 4, 5);
+}
+
+void test_remove_element_by_index_from_array_list_no_destruct() {
+    // given
+    array_list_change_destructor(array_list, noop_destruct);
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_remove(array_list, 2);
     // then
-    int new_values[] = { 1, 2, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 4, 5);
     TEST_ASSERT_EQUAL(3, *element);
+    // clean up
+    delete(element);
+    array_list_change_destructor(array_list, delete);
 }
 
 static void remove_index_out_of_bounds_test_helper(int index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element; Error error = attempt(element = array_list_remove(array_list, index));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_NULL(element);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
@@ -379,14 +377,26 @@ void test_remove_element_by_index_from_array_list_negative_index_fails() {
 
 void test_remove_first_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    // when
+    array_list_remove_first(array_list);
+    // then
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5);
+}
+
+void test_remove_first_element_from_array_list_no_destruct() {
+    // given
+    array_list_change_destructor(array_list, noop_destruct);
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_remove_first(array_list);
     // then
-    int new_values[] = { 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(1, *element);
+    // clean up
+    delete(element);
+    array_list_change_destructor(array_list, delete);
 }
 
 void test_remove_first_element_from_empty_array_list_fails() {
@@ -399,14 +409,26 @@ void test_remove_first_element_from_empty_array_list_fails() {
 
 void test_remove_last_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    // when
+    array_list_remove_last(array_list);
+    // then
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4);
+}
+
+void test_remove_last_element_from_array_list_no_destruct() {
+    // given
+    array_list_change_destructor(array_list, noop_destruct);
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* element = array_list_remove_last(array_list);
     // then
-    int new_values[] = { 1, 2, 3, 4 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4);
     TEST_ASSERT_EQUAL(5, *element);
+    // clean up
+    delete(element);
+    array_list_change_destructor(array_list, delete);
 }
 
 void test_remove_last_element_from_empty_array_list_fails() {
@@ -419,41 +441,34 @@ void test_remove_last_element_from_empty_array_list_fails() {
 
 void test_remove_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     bool removed = array_list_remove_element(array_list, ref(int, 3));
     // then
-    int new_values[] = { 1, 2, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 4, 5);
     TEST_ASSERT_TRUE(removed);
 }
 
 void test_remove_element_from_array_list_nonexistent_element_fails() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     bool removed = array_list_remove_element(array_list, ref(int, 10));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_FALSE(removed);
 }
 
 void test_remove_all_elements_from_array_list_matching_collection() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int sub_values[] = { 2, 3, 4 };
-    POPULATE_ARRAY_LIST(new_array_list, sub_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
     // when
     int count = array_list_remove_all(array_list, array_list_to_collection(new_array_list));
     // then
-    int new_values[] = { 1, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 5);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
     array_list_change_destructor(new_array_list, delete);
@@ -462,24 +477,21 @@ void test_remove_all_elements_from_array_list_matching_collection() {
 
 void test_remove_elements_in_range_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int count = array_list_remove_range(array_list, 1, 4);
     // then
-    int new_values[] = { 1, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 5);
     TEST_ASSERT_EQUAL(3, count);
 }
 
 static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int count; Error error = attempt(count = array_list_remove_range(array_list, start_index, end_index));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(0, count);
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
@@ -502,13 +514,11 @@ static bool is_odd(const void* element) {
 
 void test_remove_elements_from_array_list_matching_predicate() {
     // given
-    int values[] = { 1, 2, 3, 3, 4, 5 }; // the duplicated 3 ensure it will not be skipped
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 3, 4, 5); // the duplicated 3 ensure it will not be skipped
     // when
     int count = array_list_remove_if(array_list, is_odd);
     // then
-    int new_values[] = { 2, 4 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 4);
     TEST_ASSERT_EQUAL(4, count);
 }
 
@@ -518,28 +528,23 @@ static void* replace_by_2_times_original(void* element) {
 
 void test_replace_all_elements_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_replace_all(array_list, replace_by_2_times_original);
     // then
-    int new_values[] = { 2, 4, 6, 8, 10 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 4, 6, 8, 10);
 }
 
 void test_retain_all_elements_from_collection_in_array_list() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int new_values[] = { 2, 4 }; // empty value between `2` and `4` to ensure `3` will not be skipped
-    POPULATE_ARRAY_LIST(new_array_list, new_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 4); // empty value between `2` and `4` to ensure `3` will not be skipped
     // when
     int count = array_list_retain_all(array_list, array_list_to_collection(new_array_list));
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 4);
     TEST_ASSERT_EQUAL(3, count);
     // clean up
     array_list_change_destructor(new_array_list, delete);
@@ -548,18 +553,16 @@ void test_retain_all_elements_from_collection_in_array_list() {
 
 void test_get_array_list_size() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int size = array_list_size(array_list);
     // then
-    TEST_ASSERT_EQUAL(size, SIZE(values));
+    TEST_ASSERT_EQUAL(size, 5);
 }
 
 void test_trim_array_list_capacity_to_match_size() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
     // and
     array_list_remove_range(array_list, 0, 5);
     // when
@@ -567,7 +570,7 @@ void test_trim_array_list_capacity_to_match_size() {
     // then
     TEST_ASSERT_EQUAL(10, array_list_capacity(array_list));
     // and
-    POPULATE_ARRAY_LIST(array_list, values); // (check if the array list will grow correctly)
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11); // (check if the array list will grow correctly)
     TEST_ASSERT_EQUAL(20, array_list_capacity(array_list));
 }
 
@@ -581,8 +584,7 @@ void test_trim_array_list_capacity_to_minimum_capacity_for_size_less_than_2() {
 
 void test_get_array_list_capacity() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
     // when
     int capacity = array_list_capacity(array_list);
     // then
@@ -621,8 +623,7 @@ void test_array_list_is_not_empty() {
 
 void test_array_list_iterator_forward_iteration() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     // then
@@ -649,8 +650,7 @@ void test_array_list_iterator_forward_iteration() {
 
 void test_array_list_iterator_backward_iteration() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     // and
@@ -679,8 +679,7 @@ void test_array_list_iterator_backward_iteration() {
 
 void test_array_list_iterator_detects_concurrent_modification() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Iterator* iterator = array_list_iterator(array_list);
     array_list_remove_last(array_list);
@@ -696,88 +695,77 @@ void test_array_list_iterator_detects_concurrent_modification() {
 
 void test_array_list_iterator_insert_element() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     iterator_next(iterator);
     // when
     iterator_add(iterator, new(int, 10));
     // then
-    int new_values[] = { 1, 10, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 10, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_replace_element() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     iterator_next(iterator);
     // when
     iterator_set(iterator, new(int, 10));
     // then
-    int new_values[] = { 10, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 10, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_replace_element_fails_if_no_previous_or_next_was_called() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     // when
     Error error = attempt(iterator_set(iterator, ref(int, 10)));
     // then
-    int new_values[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_remove_element() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     iterator_next(iterator);
     // when
     iterator_remove(iterator);
     // then
-    int new_values[] = { 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_remove_element_fails_if_no_previous_or_next_was_called() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     // when
     Error error = attempt(iterator_remove(iterator));
     // then
-    int new_values[] = { 1, 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     iterator_next(iterator);
@@ -785,17 +773,15 @@ void test_array_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
     // when
     Error error = attempt(iterator_remove(iterator));
     // then
-    int new_values[] = { 2, 3, 4, 5 };
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5);
     // clean up
     iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_reset() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // and
     Iterator* iterator = array_list_iterator(array_list);
     iterator_advance(iterator, 3);
@@ -809,13 +795,14 @@ void test_array_list_iterator_reset() {
 
 void test_array_list_iterator_at_specified_position() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Iterator* iterator = array_list_iterator_at(array_list, 3);
     // then
     TEST_ASSERT_TRUE(iterator_has_previous(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_previous(iterator));
+    // clean up
+    iterator_destroy(&iterator);
 }
 
 void test_array_list_iterator_at_invalid_position_fails() {
@@ -831,8 +818,7 @@ void test_array_list_iterator_at_invalid_position_fails() {
 
 void test_array_list_is_equal_to_it_self() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     bool equals = array_list_equals(array_list, array_list);
     // then
@@ -841,11 +827,10 @@ void test_array_list_is_equal_to_it_self() {
 
 void test_array_list_is_equal_to_another_array_list() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    POPULATE_ARRAY_LIST(other_array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(other_array_list, int, 1, 2, 3, 4, 5);
     // when
     bool equals = array_list_equals(array_list, other_array_list);
     // then
@@ -857,12 +842,11 @@ void test_array_list_is_equal_to_another_array_list() {
 
 void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(other_array_list, int, 1, 2, 3, 4, 5);
     // and
-    POPULATE_ARRAY_LIST(other_array_list, values);
     array_list_add_last(other_array_list, new(int, 10));
     // when
     bool equals = array_list_equals(array_list, other_array_list);
@@ -875,13 +859,10 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
 
 void test_array_list_is_not_equal_to_another_array_list_with_different_elements() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 2, 3, 4, 5, 6 };
-    POPULATE_ARRAY_LIST(other_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(other_array_list, int, 2, 3, 4, 5, 6);
     // when
     bool equals = array_list_equals(array_list, other_array_list);
     // then
@@ -897,24 +878,20 @@ static void action_add_one(void* element) {
 
 void test_perform_action_for_each_element_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_for_each(array_list, action_add_one);
     // then
-    int new_values[] = { 2, 3, 4, 5, 6 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5, 6);
 }
 
 static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
     // given
-    int values[] = { 3, 1, 4, 2, 6, 7, 8, 10, 9, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 3, 1, 4, 2, 6, 7, 8, 10, 9, 5);
     // when
     array_list_sort(array_list, int_pointer_value_compare, sorting_algorithm);
     // then
-    int sorted_values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sorted_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
 
 void test_bubble_sort_array_list() {
@@ -944,74 +921,61 @@ static int random_number(void) {
 
 void test_durstenfeld_shuffle_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     array_list_shuffle(array_list, random_number, DURSTENFELD_SHUFFLE);
     // then
-    int shuffled_values[] = { 7, 6, 9, 8, 10, 5, 4, 3, 2, 1 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 7, 6, 9, 8, 10, 5, 4, 3, 2, 1);
 }
 
 void test_sattolo_shuffle_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     array_list_shuffle(array_list, random_number, SATTOLO_SHUFFLE);
     // then
-    int shuffled_values[] = { 2, 8, 6, 7, 9, 4, 10, 5, 3, 1 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 8, 6, 7, 9, 4, 10, 5, 3, 1);
 }
 
 void test_naive_shuffle_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     array_list_shuffle(array_list, random_number, NAIVE_SHUFFLE);
     // then
-    int shuffled_values[] = { 3, 4, 5, 6, 7, 8, 1, 2, 9, 10 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(shuffled_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 3, 4, 5, 6, 7, 8, 1, 2, 9, 10);
 }
 
 void test_reverse_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_reverse(array_list);
     // then
-    int reversed_values[] = { 5, 4, 3, 2, 1 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(reversed_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 5, 4, 3, 2, 1);
 }
 
 void test_rotate_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_rotate(array_list, 2);
     // then
-    int rotated_values[] = { 4, 5, 1, 2, 3 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(rotated_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 4, 5, 1, 2, 3);
 }
 
 void test_rotate_array_list_backward() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     array_list_rotate(array_list, -2);
     // then
-    int rotated_values[] = { 3, 4, 5, 1, 2 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(rotated_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 3, 4, 5, 1, 2);
 }
 
 void test_clear_array_list() {
     // given
-    int values[] = { 1, 2, 3 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3);
     // when
     array_list_clear(array_list);
     // then
@@ -1023,8 +987,7 @@ void test_clear_array_list() {
 
 void test_find_element_matching_predicate_in_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Optional result = array_list_find(array_list, is_odd);
     // then
@@ -1034,8 +997,7 @@ void test_find_element_matching_predicate_in_array_list() {
 
 void test_find_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
     // given
-    int values[] = { 2, 4, 6, 8, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 2, 4, 6, 8, 10);
     // when
     Optional result = array_list_find(array_list, is_odd);
     // then
@@ -1044,8 +1006,7 @@ void test_find_element_matching_predicate_in_array_list_nonexistent_element_retu
 
 void test_find_last_element_matching_predicate_in_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Optional result = array_list_find_last(array_list, is_odd);
     // then
@@ -1055,8 +1016,7 @@ void test_find_last_element_matching_predicate_in_array_list() {
 
 void test_find_last_element_matching_predicate_in_array_list_nonexistent_element_returns_null() {
     // given
-    int values[] = { 2, 4, 6, 8, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 2, 4, 6, 8, 10);
     // when
     Optional result = array_list_find_last(array_list, is_odd);
     // then
@@ -1065,8 +1025,7 @@ void test_find_last_element_matching_predicate_in_array_list_nonexistent_element
 
 void test_get_index_matching_predicate_in_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int index = array_list_index_where(array_list, is_odd);
     // then
@@ -1075,8 +1034,7 @@ void test_get_index_matching_predicate_in_array_list() {
 
 void test_get_index_matching_predicate_in_array_list_no_matching_returns_negative_one() {
     // given
-    int values[] = { 2, 4, 6, 8, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 2, 4, 6, 8, 10);
     // when
     int index = array_list_index_where(array_list, is_odd);
     // then
@@ -1085,8 +1043,7 @@ void test_get_index_matching_predicate_in_array_list_no_matching_returns_negativ
 
 void test_get_last_index_matching_predicate_in_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int index = array_list_last_index_where(array_list, is_odd);
     // then
@@ -1095,8 +1052,7 @@ void test_get_last_index_matching_predicate_in_array_list() {
 
 void test_get_last_index_matching_predicate_in_array_list_no_matching_returns_negative_one() {
     // given
-    int values[] = { 2, 4, 6, 8, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 2, 4, 6, 8, 10);
     // when
     int index = array_list_last_index_where(array_list, is_odd);
     // then
@@ -1105,8 +1061,7 @@ void test_get_last_index_matching_predicate_in_array_list_no_matching_returns_ne
 
 void test_array_list_contains_element() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     bool contains = array_list_contains(array_list, ref(int, 3));
     // then
@@ -1115,8 +1070,7 @@ void test_array_list_contains_element() {
 
 void test_array_list_does_not_contains_element() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     bool contains = array_list_contains(array_list, ref(int, 10));
     // then
@@ -1125,13 +1079,10 @@ void test_array_list_does_not_contains_element() {
 
 void test_array_list_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 2, 3, 4};
-    POPULATE_ARRAY_LIST(new_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
@@ -1143,7 +1094,7 @@ void test_array_list_contains_all_elements() {
 
 void test_empty_array_list_contains_all_elements_of_empty_collection() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
@@ -1154,13 +1105,10 @@ void test_empty_array_list_contains_all_elements_of_empty_collection() {
 
 void test_array_list_does_not_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 2, 10, 4};
-    POPULATE_ARRAY_LIST(new_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 10, 4);
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
@@ -1177,8 +1125,7 @@ static void* sum(void* result, void* next) {
 
 void test_reduce_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int* result = array_list_reduce(array_list, ref(int), sum);
     // then
@@ -1187,8 +1134,7 @@ void test_reduce_array_list() {
 
 void test_get_occurrences_of_element_in_array_list() {
     // given
-    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
     int count = array_list_occurrences_of(array_list, ref(int, 3));
     // then
@@ -1197,8 +1143,7 @@ void test_get_occurrences_of_element_in_array_list() {
 
 void test_get_index_of_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int index = array_list_index_of(array_list, ref(int, 3));
     // then
@@ -1207,8 +1152,7 @@ void test_get_index_of_element_from_array_list() {
 
 void test_get_index_of_nonexistent_element_from_array_list_returns_negative_one() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     int index = array_list_index_of(array_list, ref(int, 10));
     // then
@@ -1217,8 +1161,7 @@ void test_get_index_of_nonexistent_element_from_array_list_returns_negative_one(
 
 void test_get_last_index_of_element_from_array_list() {
     // given
-    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
     int last_index = array_list_last_index_of(array_list, ref(int, 3));
     // then
@@ -1227,8 +1170,7 @@ void test_get_last_index_of_element_from_array_list() {
 
 void test_get_last_index_of_nonexistent_element_from_array_list_returns_negative_one() {
     // given
-    int values[] = { 1, 2, 3, 3, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
     int last_index = array_list_last_index_of(array_list, ref(int, 10));
     // then
@@ -1237,8 +1179,7 @@ void test_get_last_index_of_nonexistent_element_from_array_list_returns_negative
 
 void test_binary_search_element_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     int index = array_list_binary_search(array_list, ref(int, 9), int_pointer_value_compare);
     // then
@@ -1247,8 +1188,7 @@ void test_binary_search_element_of_array_list() {
 
 void test_binary_search_nonexistent_element_of_array_list_returns_negative_one() {
     // given
-    int values[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
     int index = array_list_binary_search(array_list, ref(int, 42), int_pointer_value_compare);
     // then
@@ -1257,25 +1197,22 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
 
 void test_clone_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     ArrayList* copy_array_list = array_list_clone(array_list);
     // then
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(values, copy_array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(copy_array_list, int, 1, 2, 3, 4, 5);
     // clean up
     array_list_destroy(&copy_array_list);
 }
 
 void test_create_sub_list_of_array_list() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     ArrayList* new_array_list = array_list_sub_list(array_list, 1, 4);
     // then
-    int sub_list_values[] = { 2, 3, 4 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(sub_list_values, new_array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(new_array_list, int, 2, 3, 4);
     // clean up
     array_list_destroy(&new_array_list);
 }
@@ -1291,8 +1228,7 @@ void test_create_empty_sub_list_of_array_list() {
 
 static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_index) {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     ArrayList* sub_list; Error error = attempt(sub_list = array_list_sub_list(array_list, start_index, end_index));
     // then
@@ -1314,8 +1250,7 @@ void test_create_sub_list_start_index_greater_than_end_index_fails() {
 
 void test_convert_array_list_to_collection() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Collection collection = array_list_to_collection(array_list);
     // then
@@ -1326,12 +1261,14 @@ void test_convert_array_list_to_collection() {
     Iterator* iter_a = array_list_iterator(array_list);
     Iterator* iter_b = collection_iterator(collection);
     TEST_ASSERT_EQUAL(iterator_next(iter_a), iterator_next(iter_b));
+    // clean up
+    iterator_destroy(&iter_a);
+    iterator_destroy(&iter_b);
 }
 
 void test_convert_array_list_to_array() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Array(void*) elements = array_list_to_array(array_list);
     // then
@@ -1342,8 +1279,7 @@ void test_convert_array_list_to_array() {
 
 void test_get_array_list_string_representation() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     String string = array_list_to_string(array_list);
     // then
@@ -1392,6 +1328,7 @@ int main(void) {
     RUN_TEST(test_get_last_element_from_empty_array_list_fails);
 
     RUN_TEST(test_set_element_of_array_list);
+    RUN_TEST(test_set_element_of_array_list_no_destruct);
     RUN_TEST(test_set_element_of_array_list_index_above_bounds_fails);
     RUN_TEST(test_set_element_of_array_list_negative_index_fails);
 
@@ -1402,11 +1339,14 @@ int main(void) {
     RUN_TEST(test_swap_elements_of_array_list_negative_index_b_fails);
 
     RUN_TEST(test_remove_element_by_index_from_array_list);
+    RUN_TEST(test_remove_element_by_index_from_array_list_no_destruct);
     RUN_TEST(test_remove_element_by_index_from_array_list_index_above_bounds_fails);
     RUN_TEST(test_remove_element_by_index_from_array_list_negative_index_fails);
     RUN_TEST(test_remove_first_element_from_array_list);
+    RUN_TEST(test_remove_first_element_from_array_list_no_destruct);
     RUN_TEST(test_remove_first_element_from_empty_array_list_fails);
     RUN_TEST(test_remove_last_element_from_array_list);
+    RUN_TEST(test_remove_last_element_from_array_list_no_destruct);
     RUN_TEST(test_remove_last_element_from_empty_array_list_fails);
 
     RUN_TEST(test_remove_element_from_array_list);

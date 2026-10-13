@@ -175,7 +175,9 @@ void* priority_queue_dequeue(PriorityQueue* priority_queue) {
     void* element = priority_queue->elements[0];
     priority_queue->elements[0] = priority_queue->elements[priority_queue->size - 1];
     priority_queue->elements[priority_queue->size - 1] = element;
+
     element = priority_queue->elements[priority_queue->size - 1];
+    priority_queue->destruct(element);
 
     priority_queue->size--;
     priority_queue->modification_count++;

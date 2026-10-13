@@ -175,6 +175,17 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 void hash_map_destroy(HashMap** hash_map_pointer);
 
 /**
+ * @brief Retrieves the key destruct function.
+ *
+ * @param hash_map pointer to a hash map
+ *
+ * @return the key destruct function
+ *
+ * @exception NULL_POINTER_ERROR if hash_map is null
+ */
+void (*hash_map_key_destructor(HashMap* hash_map))(void*);
+
+/**
  * @brief Changes the key destruct function.
  *
  * @param hash_map pointer to a hash map
@@ -183,6 +194,17 @@ void hash_map_destroy(HashMap** hash_map_pointer);
  * @exception NULL_POINTER_ERROR if hash_map or destruct is null
  */
 void hash_map_change_key_destructor(HashMap* hash_map, void(*destruct)(void*));
+
+/**
+ * @brief Retrieves the value destruct function.
+ *
+ * @param hash_map pointer to a hash map
+ *
+ * @return the value destruct function
+ *
+ * @exception NULL_POINTER_ERROR if hash_map is null
+ */
+void (*hash_map_value_destructor(HashMap* hash_map))(void*);
 
 /**
  * @brief Changes the value destruct function.

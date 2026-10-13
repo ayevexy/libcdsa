@@ -156,6 +156,17 @@ TreeMap* tree_map_from(Collection entry_collection, const TreeMapOptions* option
 void tree_map_destroy(TreeMap** tree_map_pointer);
 
 /**
+ * @brief Retrieves the key destruct function.
+ *
+ * @param tree_map pointer to a tree map
+ *
+ * @return the key destruct function
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
+void (*tree_map_key_destructor(TreeMap* tree_map))(void*);
+
+/**
  * @brief Changes the key destruct function.
  *
  * @param tree_map pointer to a tree map
@@ -164,6 +175,17 @@ void tree_map_destroy(TreeMap** tree_map_pointer);
  * @exception NULL_POINTER_ERROR if tree_map or destruct is null
  */
 void tree_map_change_key_destructor(TreeMap* tree_map, void(*destruct)(void*));
+
+/**
+ * @brief Retrieves the value destruct function.
+ *
+ * @param tree_map pointer to a tree map
+ *
+ * @return the value destruct function
+ *
+ * @exception NULL_POINTER_ERROR if tree_map is null
+ */
+void (*tree_map_value_destructor(TreeMap* tree_map))(void*);
 
 /**
  * @brief Changes the value destruct function.

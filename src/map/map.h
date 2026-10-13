@@ -41,7 +41,11 @@
 #define map_destroy(map) \
     _Generic((map), HashMap**: hash_map_destroy, TreeMap**: tree_map_destroy)(map)
 
+#define map_key_destructor(...) MAP_DISPATCH(key_destructor, __VA_ARGS__)
+
 #define map_change_key_destructor(...) MAP_DISPATCH(change_key_destructor, __VA_ARGS__)
+
+#define map_value_destructor(...) MAP_DISPATCH(value_destructor, __VA_ARGS__)
 
 #define map_change_value_destructor(...) MAP_DISPATCH(change_value_destructor, __VA_ARGS__)
 

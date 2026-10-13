@@ -41,6 +41,8 @@
 #define set_destroy(set) \
     _Generic((set), HashSet**: hash_set_destroy, TreeSet**: tree_set_destroy)(set)
 
+#define set_destructor(...) SET_DISPATCH(destructor, __VA_ARGS__)
+
 #define set_change_destructor(...) SET_DISPATCH(change_destructor, __VA_ARGS__)
 
 #define set_add(...) SET_DISPATCH(add, __VA_ARGS__)

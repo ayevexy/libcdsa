@@ -127,6 +127,11 @@ void hash_set_destroy(HashSet** hash_set_pointer) {
     *hash_set_pointer = nullptr;
 }
 
+void (*hash_set_destructor(HashSet* hash_set))(void*) {
+    if (require_non_null(hash_set)) return nullptr;
+    return hash_set->destruct;
+}
+
 void hash_set_change_destructor(HashSet* hash_set, void (*destruct)(void*)) {
     if (require_non_null(hash_set, destruct)) return;
     hash_set->destruct = destruct;

@@ -81,6 +81,19 @@ static inline void stack_destroy(Stack** stack_pointer) {
 }
 
 /**
+ * @brief Retrieves the element destruct function.
+ *
+ * @param stack pointer to a stack
+ *
+ * @return the destruct function
+ *
+ * @exception NULL_POINTER_ERROR if stack is null
+ */
+static inline void (*stack_destructor(Stack* stack))(void*) {
+    return deque_destructor(stack);
+}
+
+/**
  * @brief Changes the element destruct function.
  *
  * @param stack pointer to a stack

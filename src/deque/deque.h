@@ -146,6 +146,17 @@ Deque* deque_from(Collection collection, const DequeOptions* options);
 void deque_destroy(Deque** deque_pointer);
 
 /**
+ * @brief Retrieves the element destruct function.
+ *
+ * @param deque pointer to a deque
+ *
+ * @return the destruct function
+ *
+ * @exception NULL_POINTER_ERROR if deque is null
+ */
+void (*deque_destructor(Deque* deque))(void*);
+
+/**
  * @brief Changes the element destruct function.
  *
  * @param deque pointer to a deque

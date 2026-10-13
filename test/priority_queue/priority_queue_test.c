@@ -452,8 +452,7 @@ void test_convert_priority_queue_to_array() {
     // when
     Array(void*) elements = priority_queue_to_array(priority_queue);
     // then
-    int new_values[] = { 5, 4, 2, 1, 3 }; // order is not guaranteed
-    TEST_ASSERT_ARRAY_EQUALS(new_values, elements);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(elements, int, 5, 4, 2, 1, 3); // order is not guaranteed
     // clean up
     array_destroy(&elements);
 }

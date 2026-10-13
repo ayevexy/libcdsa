@@ -811,8 +811,7 @@ void test_convert_tree_set_to_array() {
     // when
     Array(void*) element_array = tree_set_to_array(tree_set);
     // then
-    int new_elements[] = { 1, 2, 3, 4, 5 };
-    TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(element_array, int, 1, 2, 3, 4, 5);
     // clean up
     array_destroy(&element_array);
 }

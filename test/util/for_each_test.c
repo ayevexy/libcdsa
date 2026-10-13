@@ -1,14 +1,18 @@
 #include "list/array_list.h"
-#include "util/for_each.h" // should be included after all data structures
-#include "core/memory.h"
 
-#include "unity.h"
+#include "util/for_each.h" // should be included after all data structures
 #include "../test_utilities.h"
 
-#define POPULATE_ARRAY_LIST(array_list, array)                  \
-    for (int i = 0; i < SIZE(array); i++) {                     \
-        array_list_add_last(array_list, new(int, array[i]));    \
-    }
+#include "unity.h"
+
+#define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
+    do {                                                            \
+        auto array = (T[]){__VA_ARGS__};                            \
+        int length = count_args(__VA_ARGS__);                       \
+        for (int i = 0; i < length; i++) {                          \
+            array_list_add_last(array_list, new(int, array[i]));    \
+        }                                                           \
+    } while (false)
 
 static ArrayList* array_list;
 
@@ -26,14 +30,15 @@ void tearDown() {
 
 void test_iterate_through_data_structure() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 }, new_values[5], count = 0;
-    POPULATE_ARRAY_LIST(array_list, values);
+    int* new_values[5], count = 0;
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     for_each (int* element, array_list) {
-        new_values[count++] = *element;
+        new_values[count++] = element;
     }
     // then
-    TEST_ASSERT_ARRAY_EQUALS(new_values, (int**) &values);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(new_values, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(5, count);
 }
 
@@ -50,14 +55,15 @@ void test_iterate_through_empty_data_structure() {
 
 void test_iterate_through_collection_view() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 }, new_values[5], count = 0;
-    POPULATE_ARRAY_LIST(array_list, values);
+    int* new_values[5], count = 0;
+    // and
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     for_each (int* element, array_list_to_collection(array_list)) {
-        new_values[count++] = *element;
+        new_values[count++] = element;
     }
     // then
-    TEST_ASSERT_ARRAY_EQUALS(new_values, (int**) &values);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(new_values, int, 1, 2, 3, 4, 5);
     TEST_ASSERT_EQUAL(5, count);
 }
 

@@ -1253,7 +1253,7 @@ void test_convert_linked_list_to_array() {
     // when
     Array(void*) elements = linked_list_to_array(linked_list);
     // then
-    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(elements, int, 1, 2, 3, 4, 5);
     // clean up
     array_destroy(&elements);
 }

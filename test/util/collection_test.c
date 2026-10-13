@@ -1,10 +1,9 @@
 #include "util/collection.h"
 
-#include "core/memory.h"
 #include "list/array_list.h"
+#include "../test_utilities.h"
 
 #include "unity.h"
-#include "../test_utilities.h"
 
 #define INT_ARRAY_LIST_OPTIONS() &(ArrayListOptions) {  \
     .initial_capacity = 10,                             \
@@ -17,16 +16,24 @@
     .memory_dealloc = memory_dealloc                    \
 }
 
-#define POPULATE_ARRAY_LIST(array_list, array)                  \
-    for (int i = 0; i < SIZE(array); i++) {                     \
-        array_list_add_last(array_list, new(int, array[i]));    \
-    }
+#define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
+    do {                                                            \
+        auto array = (T[]){__VA_ARGS__};                            \
+        int length = count_args(__VA_ARGS__);                       \
+        for (int i = 0; i < length; i++) {                          \
+            array_list_add_last(array_list, new(int, array[i]));    \
+        }                                                           \
+    } while (false)
 
-#define TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(array, array_list)               \
-    for (int i = 0; i < SIZE(array); i++) {                                     \
-        TEST_ASSERT_EQUAL(array[i], *(int*) array_list_get(array_list, i));     \
-    }                                                                           \
-    TEST_ASSERT_EQUAL(SIZE(array), array_list_size(array_list));
+#define TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, T, ...)              \
+    do {                                                                        \
+        auto array = (T[]){__VA_ARGS__};;                                       \
+        int length = count_args(__VA_ARGS__);                                   \
+        TEST_ASSERT_EQUAL(length, array_list_size(array_list));                 \
+        for (int i = 0; i < length; i++) {                                      \
+            TEST_ASSERT_EQUAL(array[i], *(T*) array_list_get(array_list, i));   \
+        }                                                                       \
+    } while (false)
 
 static ArrayList* array_list;
 
@@ -48,26 +55,21 @@ static void action_add_one(void* element) {
 
 void test_collection_for_each() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int,  1, 2, 3, 4, 5);
     // and
     Collection collection = array_list_to_collection(array_list);
     // when
     collection_for_each(collection, action_add_one);
     // then
-    int new_values[] = { 2, 3, 4, 5, 6 };
-    TEST_ASSERT_ARRAY_EQUALS_TO_ARRAY_LIST(new_values, array_list);
+    TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5, 6);
 }
 
 void test_collection_contains_all_elements() {
     // given
     ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 2, 3, 4};
-    POPULATE_ARRAY_LIST(new_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
     // and
     Collection collection = array_list_to_collection(array_list);
     // when
@@ -82,6 +84,7 @@ void test_collection_contains_all_elements() {
 void test_empty_collection_contains_all_elements_of_empty_collection() {
     // given
     ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
+    // and
     Collection collection = array_list_to_collection(array_list);
     // when
     bool contains_all = collection_contains_all(collection, array_list_to_collection(new_array_list));
@@ -95,11 +98,8 @@ void test_collection_does_not_contains_all_elements() {
     // given
     ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS());
     // and
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
-    // and
-    int other_values[] = { 2, 10, 4};
-    POPULATE_ARRAY_LIST(new_array_list, other_values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
+    POPULATE_ARRAY_LIST(new_array_list, int, 2, 10, 4);
     // and
     Collection collection = array_list_to_collection(array_list);
     // when
@@ -113,12 +113,11 @@ void test_collection_does_not_contains_all_elements() {
 
 void test_collection_to_array() {
     // given
-    int values[] = { 1, 2, 3, 4, 5 };
-    POPULATE_ARRAY_LIST(array_list, values);
+    POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
     Array(void*) elements = collection_to_array(array_list_to_collection(array_list));
     // then
-    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(elements, int, 1, 2, 3, 4, 5);
     // clean up
     array_destroy(&elements);
 }

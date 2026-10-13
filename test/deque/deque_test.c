@@ -584,7 +584,7 @@ void test_convert_deque_to_array() {
     // when
     Array(void*) elements = deque_to_array(deque);
     // then
-    TEST_ASSERT_ARRAY_EQUALS(values, elements);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(elements, int, 1, 2, 3, 4, 5);
     // clean up
     array_destroy(&elements);
 }

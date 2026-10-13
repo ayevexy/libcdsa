@@ -1,15 +1,19 @@
 #ifndef LIBCDSA_TEST_UTILITIES_H
 #define LIBCDSA_TEST_UTILITIES_H
 
-#include "core/string.h"
 #include "core/types.h"
+#include "core/string.h"
 
 #define SIZE(array) (sizeof(array) / sizeof(array[0]))
 
-#define TEST_ASSERT_ARRAY_EQUALS(array_a, array_b)              \
-    for (int i = 0; i < SIZE(array_a); i++) {                   \
-        TEST_ASSERT_EQUAL(array_a[i], *(int*) array_b[i]);      \
-    }
+#define TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(array, T, ...)    \
+    do {                                                            \
+        auto array_ = (T[]){__VA_ARGS__};;                          \
+        int length = count_args(__VA_ARGS__);                       \
+        for (int i = 0; i < length; i++) {                          \
+            TEST_ASSERT_EQUAL(*(int*) array[i], array_[i]);         \
+        }                                                           \
+    } while (false)
 
 static inline bool int_pointer_value_equals(const void* a, const void* b) {
     return *(int*) a == *(int*) b;

@@ -601,8 +601,7 @@ void test_convert_hash_set_to_array() {
     // when
     Array(void*) element_array = hash_set_to_array(hash_set);
     // then
-    int new_elements[] = { 5, 1, 2, 3, 4 };
-    TEST_ASSERT_ARRAY_EQUALS(new_elements, element_array);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(element_array, int, 5, 1, 2, 3, 4);
     // clean up
     array_destroy(&element_array);
 }

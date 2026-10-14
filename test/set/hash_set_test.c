@@ -17,7 +17,7 @@
 #define POPULATE_HASH_SET(hash_set, T, ...)                 \
     do {                                                    \
         auto array = (T[]){__VA_ARGS__};                    \
-        int length = count_args(__VA_ARGS__);               \
+        int length = COUNT_ARGS(__VA_ARGS__);               \
         for (int i = 0; i < length; i++) {                  \
             hash_set_add(hash_set, new(int, array[i]));     \
         }                                                   \
@@ -26,7 +26,7 @@
 #define TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, T, ...)        \
     do {                                                                \
         auto array = (T[]){__VA_ARGS__};                                \
-        int length = count_args(__VA_ARGS__);                           \
+        int length = COUNT_ARGS(__VA_ARGS__);                           \
         for (int i = 0; i < length; i++) {                              \
             TEST_ASSERT_TRUE(hash_set_contains(hash_set, &array[i]));   \
         }                                                               \
@@ -35,7 +35,7 @@
 #define TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, T, ...)     \
     do {                                                                    \
         auto array = (T[]){__VA_ARGS__};                                    \
-        int length = count_args(__VA_ARGS__);                               \
+        int length = COUNT_ARGS(__VA_ARGS__);                               \
         for (int i = 0; i < length; i++) {                                  \
             TEST_ASSERT_FALSE(hash_set_contains(hash_set, &array[i]));      \
         }                                                                   \

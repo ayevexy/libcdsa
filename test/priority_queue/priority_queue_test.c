@@ -16,7 +16,7 @@
 #define POPULATE_PRIORITY_QUEUE(priority_queue, T, ...)                     \
     do {                                                                    \
         auto array = (T[]){__VA_ARGS__};                                    \
-        int length = count_args(__VA_ARGS__);                               \
+        int length = COUNT_ARGS(__VA_ARGS__);                               \
         for (int i = 0; i < length; i++) {                                  \
             priority_queue_enqueue(priority_queue, new(int, array[i]));     \
         }                                                                   \
@@ -29,7 +29,7 @@
             priority_queue_change_destructor(priority_queue, noop_destruct);    \
         }                                                                       \
         auto array = (T[]){__VA_ARGS__};                                        \
-        int length = count_args(__VA_ARGS__);                                   \
+        int length = COUNT_ARGS(__VA_ARGS__);                                   \
         TEST_ASSERT_EQUAL(length, priority_queue_size(priority_queue));         \
         void* elements[length];                                                 \
         for (int i = 0; i < length; i++) {                                      \

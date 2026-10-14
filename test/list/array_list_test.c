@@ -17,7 +17,7 @@
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
-        int length = count_args(__VA_ARGS__);                       \
+        int length = COUNT_ARGS(__VA_ARGS__);                       \
         for (int i = 0; i < length; i++) {                          \
             array_list_add_last(array_list, new(int, array[i]));    \
         }                                                           \
@@ -26,7 +26,7 @@
 #define TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, T, ...)              \
     do {                                                                        \
         auto array = (T[]){__VA_ARGS__};                                        \
-        int length = count_args(__VA_ARGS__);                                   \
+        int length = COUNT_ARGS(__VA_ARGS__);                                   \
         TEST_ASSERT_EQUAL(length, array_list_size(array_list));                 \
         for (int i = 0; i < length; i++) {                                      \
             TEST_ASSERT_EQUAL(array[i], *(T*) array_list_get(array_list, i));   \

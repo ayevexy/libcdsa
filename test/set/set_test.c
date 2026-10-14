@@ -25,7 +25,7 @@
 #define POPULATE_SET(set, T, ...)               \
     do {                                        \
         auto array = (T[]){__VA_ARGS__};        \
-        int length = count_args(__VA_ARGS__);   \
+        int length = COUNT_ARGS(__VA_ARGS__);   \
         for (int i = 0; i < length; i++) {      \
             set_add(set, new(int, array[i]));   \
         }                                       \
@@ -34,7 +34,7 @@
 #define TEST_ASSERT_SET_CONTAINS_ELEMENTS(set, T, ...)          \
     do {                                                        \
         auto array = (T[]){__VA_ARGS__};                        \
-        int length = count_args(__VA_ARGS__);                   \
+        int length = COUNT_ARGS(__VA_ARGS__);                   \
         for (int i = 0; i < length; i++) {                      \
             TEST_ASSERT_TRUE(set_contains(set, &array[i]));     \
         }                                                       \
@@ -43,7 +43,7 @@
 #define TEST_ASSERT_SET_DO_NOT_CONTAINS_ELEMENTS(set, T, ...)   \
     do {                                                        \
         auto array = (T[]){__VA_ARGS__};                        \
-        int length = count_args(__VA_ARGS__);                   \
+        int length = COUNT_ARGS(__VA_ARGS__);                   \
         for (int i = 0; i < length; i++) {                      \
             TEST_ASSERT_FALSE(set_contains(set, &array[i]));    \
         }                                                       \

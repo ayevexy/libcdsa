@@ -14,7 +14,7 @@
 #define POPULATE_LINKED_LIST(linked_list, T, ...)                   \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
-        int length = count_args(__VA_ARGS__);                       \
+        int length = COUNT_ARGS(__VA_ARGS__);                       \
         for (int i = 0; i < length; i++) {                          \
             linked_list_add_last(linked_list, new(int, array[i]));  \
         }                                                           \
@@ -23,7 +23,7 @@
 #define TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, T, ...)                \
     do {                                                                            \
         auto array = (T[]){__VA_ARGS__};                                            \
-        int length = count_args(__VA_ARGS__);                                       \
+        int length = COUNT_ARGS(__VA_ARGS__);                                       \
         TEST_ASSERT_EQUAL(length, linked_list_size(linked_list));                   \
         for (int i = 0; i < length; i++) {                                          \
             TEST_ASSERT_EQUAL(array[i], *(T*) linked_list_get(linked_list, i));     \

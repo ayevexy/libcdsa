@@ -15,7 +15,7 @@
 #define POPULATE_DEQUE(deque, T, ...)                   \
     do {                                                \
         auto array = (T[]){__VA_ARGS__};                \
-        int length = count_args(__VA_ARGS__);           \
+        int length = COUNT_ARGS(__VA_ARGS__);           \
         for (int i = 0; i < length; i++) {              \
             deque_add_last(deque, new(int, array[i]));  \
     }                                                   \
@@ -28,7 +28,7 @@
             deque_change_destructor(deque, noop_destruct);  \
         }                                                   \
         auto array = (T[]){__VA_ARGS__};                    \
-        int length = count_args(__VA_ARGS__);               \
+        int length = COUNT_ARGS(__VA_ARGS__);               \
         TEST_ASSERT_EQUAL(length, deque_size(deque));       \
         void* elements[length];                             \
         for (int i = 0; i < length; i++) {                  \

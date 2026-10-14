@@ -14,7 +14,7 @@
 #define POPULATE_TREE_SET(tree_set, T, ...)                 \
     do {                                                    \
         auto array = (T[]){__VA_ARGS__};                    \
-        int length = count_args(__VA_ARGS__);               \
+        int length = COUNT_ARGS(__VA_ARGS__);               \
         for (int i = 0; i < length; i++) {                  \
             tree_set_add(tree_set, new(int, array[i]));     \
         }                                                   \
@@ -23,7 +23,7 @@
 #define TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(tree_set, T, ...)        \
     do {                                                                \
         auto array = (T[]){__VA_ARGS__};                                \
-        int length = count_args(__VA_ARGS__);                           \
+        int length = COUNT_ARGS(__VA_ARGS__);                           \
         for (int i = 0; i < length; i++) {                              \
             TEST_ASSERT_TRUE(tree_set_contains(tree_set, &array[i]));   \
         }                                                               \
@@ -32,7 +32,7 @@
 #define TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, T, ...)     \
     do {                                                                    \
         auto array = (T[]){__VA_ARGS__};                                    \
-        int length = count_args(__VA_ARGS__);                               \
+        int length = COUNT_ARGS(__VA_ARGS__);                               \
         for (int i = 0; i < length; i++) {                                  \
             TEST_ASSERT_FALSE(tree_set_contains(tree_set, &array[i]));      \
         }                                                                   \

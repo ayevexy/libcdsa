@@ -41,11 +41,11 @@
         }                                                                           \
     } while (false)
 
-#define TEST_ASSERT_EQUAL_ENTRY(_key, _value, entry)        \
+#define TEST_ASSERT_ENTRY_EQUALS(key_, value_, entry)       \
     do {                                                    \
-        MapEntry* _entry = (entry);                         \
-        TEST_ASSERT_EQUAL(_key, *(char*) _entry->key);      \
-        TEST_ASSERT_EQUAL(_value, *(int*) _entry->value);   \
+        MapEntry* entry_ = (entry);                         \
+        TEST_ASSERT_EQUAL(key_, *(char*) entry_->key);      \
+        TEST_ASSERT_EQUAL(value_, *(int*) entry_->value);   \
     } while (false)
 
 static HashMap* hash_map;
@@ -610,19 +610,19 @@ void test_hash_map_iterator_forward_iteration() {
     Iterator* iterator = hash_map_iterator(hash_map);
     // then
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('a', 1, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('b', 2, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('c', 3, iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
@@ -725,7 +725,7 @@ void test_hash_map_iterator_reset() {
     // when
     iterator_reset(iterator);
     // then
-    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -914,11 +914,11 @@ void test_get_hash_map_entries() {
     Collection entries_2 = hash_map_entries(hash_map);
     // then
     Iterator* iterator = collection_iterator(entries_2); // iteration order is not guaranteed
-    TEST_ASSERT_EQUAL_ENTRY('d', 4, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('e', 5, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('a', 1, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('b', 2, iterator_next(iterator));
-    TEST_ASSERT_EQUAL_ENTRY('c', 3, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('a', 1, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('b', 2, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('c', 3, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }

@@ -292,23 +292,23 @@ int main() {
 #include "util/for_each.h"
 #include <stdio.h>
 
-static inline uint64 int_hash(const void* number) {
+static inline uint64 int_hash_generic(const void* number) {
     return *(int*) number * 0x9e3779b97f4a7c15ULL;
 }
 
-static bool int_pointer_value_equals(const void* a, const void* b) {
+static bool int_equals_generic(const void* a, const void* b) {
     return *(int*) a == *(int*) b;
 }
 
-static int int_pointer_value_compare(const void* a, const void* b) {
+static int int_compare_generic(const void* a, const void* b) {
     return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
 }
 
 #define INT_HASH_SET_OPTIONS \
-    DEFAULT_HASH_SET_OPTIONS(.hash = int_hash, .equals = int_pointer_value_equals)
+    DEFAULT_HASH_SET_OPTIONS(.hash = int_hash_generic, .equals = int_equals_generic)
 
 #define INT_TREE_SET_OPTIONS \
-    DEFAULT_TREE_SET_OPTIONS(.compare = int_pointer_value_compare)
+    DEFAULT_TREE_SET_OPTIONS(.compare = int_compare_generic)
 
 int main() {
     HashSet* set_a = set_new(INT_HASH_SET_OPTIONS);

@@ -58,6 +58,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
         -Werror
 )
 
+option(ENABLE_SANITIZERS "Enable sanitizers" OFF)
+
+if(ENABLE_SANITIZERS AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer -g)
+    add_link_options(-fsanitize=address,undefined)
+endif()
+
 # ---- Installation ----
 
 # Describe Package

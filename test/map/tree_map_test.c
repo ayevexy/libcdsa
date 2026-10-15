@@ -5,11 +5,11 @@
 
 #define CHAR_INT_TREE_MAP_OPTIONS &(TreeMapOptions) {   \
     .key_destruct = noop_destruct,                      \
-    .key_compare = char_pointer_value_compare,          \
-    .key_to_string = char_pointer_value_to_string,      \
+    .key_compare = char_compare_generic,                \
+    .key_to_string = char_to_string_generic,            \
     .value_destruct = noop_destruct,                    \
-    .value_equals = int_pointer_value_equals,           \
-    .value_to_string = int_pointer_value_to_string,     \
+    .value_equals = int_equals_generic,                 \
+    .value_to_string = int_to_string_generic,           \
     .memory_alloc = memory_try_alloc,                   \
     .memory_dealloc = memory_dealloc                    \
 }

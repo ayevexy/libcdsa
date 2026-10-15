@@ -6,10 +6,10 @@
 #define INT_HASH_SET_OPTIONS &(HashSetOptions) {    \
     .initial_capacity = 16,                         \
     .load_factor = 0.75f,                           \
-    .hash = char_hash,                              \
+    .hash = char_hash_generic,                      \
     .destruct = noop_destruct,                      \
-    .equals = int_pointer_value_equals,             \
-    .to_string = int_pointer_value_to_string,       \
+    .equals = int_equals_generic,                   \
+    .to_string = int_to_string_generic,             \
     .memory_alloc = memory_try_alloc,               \
     .memory_dealloc = memory_dealloc                \
 }

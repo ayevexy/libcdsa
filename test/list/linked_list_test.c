@@ -5,8 +5,8 @@
 
 #define INT_LINKED_LIST_OPTIONS &(LinkedListOptions) {  \
     .destruct = noop_destruct,                          \
-    .equals = int_pointer_value_equals,                 \
-    .to_string = int_pointer_value_to_string,           \
+    .equals = int_equals_generic,                       \
+    .to_string = int_to_string_generic,                 \
     .memory_alloc = memory_try_alloc,                   \
     .memory_dealloc = memory_dealloc,                   \
 }
@@ -830,7 +830,7 @@ static void sort_linked_list_test_helper(SortingAlgorithm sorting_algorithm) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 3, 1, 4, 2, 6, 7, 8, 10, 9, 5);
     // when
-    linked_list_sort(linked_list, int_pointer_value_compare, sorting_algorithm);
+    linked_list_sort(linked_list, int_compare_generic, sorting_algorithm);
     // then
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }

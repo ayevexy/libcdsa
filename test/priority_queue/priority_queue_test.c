@@ -7,8 +7,8 @@
     .initial_capacity = 10,                                     \
     .growth_factor = 2.0f,                                      \
     .destruct = noop_destruct,                                  \
-    .compare = int_pointer_value_compare,                       \
-    .to_string = int_pointer_value_to_string,                   \
+    .compare = int_compare_generic,                             \
+    .to_string = int_to_string_generic,                         \
     .memory_alloc = memory_try_alloc,                           \
     .memory_dealloc = memory_dealloc                            \
 }

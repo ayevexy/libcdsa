@@ -6,13 +6,13 @@
 #define CHAR_INT_HASH_MAP_OPTIONS &(HashMapOptions) {   \
     .initial_capacity = 16,                             \
     .load_factor = 0.75f,                               \
-    .hash = char_hash,                                  \
+    .hash = char_hash_generic,                          \
     .key_destruct = noop_destruct,                      \
-    .key_equals = char_pointer_value_equals,            \
-    .key_to_string = char_pointer_value_to_string,      \
+    .key_equals = char_equals_generic,                  \
+    .key_to_string = char_to_string_generic,            \
     .value_destruct = noop_destruct,                    \
-    .value_equals = int_pointer_value_equals,           \
-    .value_to_string = int_pointer_value_to_string,     \
+    .value_equals = int_equals_generic,                 \
+    .value_to_string = int_to_string_generic,           \
     .memory_alloc = memory_try_alloc,                   \
     .memory_dealloc = memory_dealloc                    \
 }

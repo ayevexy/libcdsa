@@ -6,8 +6,8 @@
 #define INT_DEQUE_OPTIONS &(DequeOptions) {     \
     .initial_capacity = 8,                      \
     .destruct = noop_destruct,                  \
-    .equals = int_pointer_value_equals,         \
-    .to_string = int_pointer_value_to_string,   \
+    .equals = int_equals_generic,               \
+    .to_string = int_to_string_generic,         \
     .memory_alloc = memory_try_alloc,           \
     .memory_dealloc = memory_dealloc            \
 }

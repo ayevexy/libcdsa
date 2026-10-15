@@ -7,8 +7,8 @@
     .initial_capacity = 10,                             \
     .growth_factor = 2.0f,                              \
     .destruct = noop_destruct,                          \
-    .equals = int_pointer_value_equals,                 \
-    .to_string = int_pointer_value_to_string,           \
+    .equals = int_equals_generic,                       \
+    .to_string = int_to_string_generic,                 \
     .memory_alloc = memory_try_alloc,                   \
     .memory_realloc = memory_try_realloc,               \
     .memory_dealloc = memory_dealloc                    \
@@ -889,7 +889,7 @@ static void sort_array_list_test_helper(SortingAlgorithm sorting_algorithm) {
     // given
     POPULATE_ARRAY_LIST(array_list, int, 3, 1, 4, 2, 6, 7, 8, 10, 9, 5);
     // when
-    array_list_sort(array_list, int_pointer_value_compare, sorting_algorithm);
+    array_list_sort(array_list, int_compare_generic, sorting_algorithm);
     // then
     TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
@@ -1181,7 +1181,7 @@ void test_binary_search_element_of_array_list() {
     // given
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
-    int index = array_list_binary_search(array_list, ref(int, 9), int_pointer_value_compare);
+    int index = array_list_binary_search(array_list, ref(int, 9), int_compare_generic);
     // then
     TEST_ASSERT_EQUAL(8, index);
 }
@@ -1190,7 +1190,7 @@ void test_binary_search_nonexistent_element_of_array_list_returns_negative_one()
     // given
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
-    int index = array_list_binary_search(array_list, ref(int, 42), int_pointer_value_compare);
+    int index = array_list_binary_search(array_list, ref(int, 42), int_compare_generic);
     // then
     TEST_ASSERT_EQUAL(-1, index);
 }

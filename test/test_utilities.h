@@ -9,8 +9,6 @@
 
 #define COUNT_ARGS_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, NAME, ...) NAME
 
-#define SIZE(array) (sizeof(array) / sizeof(array[0]))
-
 #define TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(array, T, ...)    \
     do {                                                            \
         auto array_ = (T[]){__VA_ARGS__};                           \
@@ -20,37 +18,37 @@
         }                                                           \
     } while (false)
 
-static inline bool int_pointer_value_equals(const void* a, const void* b) {
+static inline bool int_equals_generic(const void* a, const void* b) {
     return *(int*) a == *(int*) b;
 }
 
-static inline bool char_pointer_value_equals(const void* a, const void* b) {
+static inline bool char_equals_generic(const void* a, const void* b) {
     return *(char*) a == *(char*) b;
 }
 
-static inline int int_pointer_value_compare(const void* a, const void* b) {
+static inline int int_compare_generic(const void* a, const void* b) {
     return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
 }
 
-static inline int int_pointer_value_compare_reversed(const void* a, const void* b) {
-    return int_pointer_value_compare(b, a);
+static inline int int_compare_reversed_generic(const void* a, const void* b) {
+    return int_compare_generic(b, a);
 }
 
-static inline int char_pointer_value_compare(const void* a, const void* b) {
+static inline int char_compare_generic(const void* a, const void* b) {
     return (*(char*) a > *(char*) b) - (*(char*) a < *(char*) b);
 }
 
-static inline String int_pointer_value_to_string(const void* value) {
+static inline String int_to_string_generic(const void* value) {
     return string_format("%d", *(int*) value);
 }
 
-static inline String char_pointer_value_to_string(const void* value) {
+static inline String char_to_string_generic(const void* value) {
     return string_format("%c", *(char*) value);
 }
 
 typedef struct { char key; int value; } CharIntEntry;
 
-static inline uint64 char_hash(const void *character) {
+static inline uint64 char_hash_generic(const void *character) {
     return *(const uchar*) character % 5;
 }
 

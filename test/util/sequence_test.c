@@ -9,8 +9,8 @@
     .initial_capacity = 10,                             \
     .growth_factor = 2.0f,                              \
     .destruct = delete,                                 \
-    .equals = int_pointer_value_equals,                 \
-    .to_string = int_pointer_value_to_string,           \
+    .equals = int_equals_generic,                       \
+    .to_string = int_to_string_generic,                 \
     .memory_alloc = memory_try_alloc,                   \
     .memory_realloc = memory_try_realloc,               \
     .memory_dealloc = memory_dealloc                    \
@@ -243,7 +243,7 @@ void test_filter_distinct_elements_of_sequence() {
     // and
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
-    sequence_distinct(sequence, int_pointer_value_equals);
+    sequence_distinct(sequence, int_equals_generic);
     // and
     Array(void*) elements = sequence_to_array(sequence);
     // then
@@ -261,7 +261,7 @@ void test_sort_elements_of_sequence() {
     // and
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
-    sequence_sort(sequence, int_pointer_value_compare, QUICK_SORT);
+    sequence_sort(sequence, int_compare_generic, QUICK_SORT);
     // and
     Array(void*) elements = sequence_to_array(sequence);
     // then
@@ -280,10 +280,10 @@ void test_chain_sequence_operations() {
     Sequence* sequence = sequence_from(list_to_collection(list)); // 7, 1, 9, 6, 6, 10, 10, 8, 8, 2, 3, 5, 4
     // when
     sequence_filter(sequence, is_even); // 6, 6, 10, 10, 8, 8, 2, 4
-    sequence_sort(sequence, int_pointer_value_compare, QUICK_SORT); // 2, 4, 6, 6, 8, 8, 10, 10
+    sequence_sort(sequence, int_compare_generic, QUICK_SORT); // 2, 4, 6, 6, 8, 8, 10, 10
     sequence_peek(sequence, add_one); // 3, 5, 7, 7, 9, 9, 11, 11
-    sequence_distinct(sequence, int_pointer_value_equals); // 3, 5, 7, 9, 11
-    sequence_sort(sequence, int_pointer_value_compare_reversed, MERGE_SORT); // 11, 9, 7, 5, 3
+    sequence_distinct(sequence, int_equals_generic); // 3, 5, 7, 9, 11
+    sequence_sort(sequence, int_compare_reversed_generic, MERGE_SORT); // 11, 9, 7, 5, 3
     sequence_map(sequence, replace_by_two_times); // 22, 18, 14, 10, 6
     // and
     Array(void*) elements = sequence_to_array(sequence);
@@ -342,7 +342,7 @@ void test_find_max_element_of_sequence() {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
-    Optional result = sequence_max(sequence, int_pointer_value_compare);
+    Optional result = sequence_max(sequence, int_compare_generic);
     // then
     TEST_ASSERT_TRUE(result.present);
     TEST_ASSERT_EQUAL(5, *(int*) result.value);
@@ -352,7 +352,7 @@ void test_find_min_element_of_sequence() {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
-    Optional result = sequence_min(sequence, int_pointer_value_compare);
+    Optional result = sequence_min(sequence, int_compare_generic);
     // then
     TEST_ASSERT_TRUE(result.present);
     TEST_ASSERT_EQUAL(1, *(int*) result.value);

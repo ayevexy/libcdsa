@@ -81,13 +81,13 @@ void (set_error)(Error error, const char* location, const char* message, ...) {
 
     message = message[0] != '\0' ? message : error->description ? error->description : "no additional details are available";
 
-    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH, message, parameters);
+    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH - length, message, parameters);
     va_end(parameters);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
 
     const int location_offset = length + 1;
-    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH, "\n\tat %s()\n", location);
+    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH - location_offset, "\n\tat %s()\n", location);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
 

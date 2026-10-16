@@ -22,6 +22,7 @@ include(FetchContent)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_library(${PROJECT_NAME}
+        src/util/iterator.c
         src/util/collection.c
         src/deque/deque.c
         src/priority_queue/priority_queue.c

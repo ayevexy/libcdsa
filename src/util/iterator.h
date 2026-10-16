@@ -37,11 +37,10 @@ typedef struct {
  * @param iterator pointer to an Iterator
  *
  * @return true if more elements are available, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR if iterator is null
  */
-static inline bool iterator_has_next(const Iterator* iterator) {
-    return iterator->has_next(iterator->iteration_context);
-}
-
+bool iterator_has_next(const Iterator* iterator);
 /**
  * @brief Retrieves the next element from the iterator.
  *
@@ -49,30 +48,25 @@ static inline bool iterator_has_next(const Iterator* iterator) {
  *
  * @return pointer to the next element
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  */
-static inline void* iterator_next(Iterator* iterator) {
-    return iterator->next(iterator->iteration_context);
-}
+void* iterator_next(Iterator* iterator);
 
 /**
- * @brief Advances the iterator n-times and retrieves the current element.
+ * @brief Advances the iterator n-times or until no more elements are available.
  *
  * @param iterator pointer to an Iterator
  * @param count how many times the iterator will advance
  *
- * @return pointer to the retrieved element
+ * @return number of elements traversed
  *
- * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception NULL_POINTER_ERROR if iterator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if count is negative
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  */
-static inline void* iterator_advance(Iterator* iterator, int count) {
-    for (int i = 0; i < count - 1; i++) {
-        iterator_next(iterator);
-    }
-    return count > 0 ? iterator_next(iterator) : nullptr;
-}
+int iterator_advance(Iterator* iterator, int count);
 
 /**
  * @brief Checks whether more previous elements are available.
@@ -81,11 +75,10 @@ static inline void* iterator_advance(Iterator* iterator, int count) {
  *
  * @return true if more elements are available, false otherwise
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
-static inline bool iterator_has_previous(const Iterator* iterator) {
-    return iterator->has_previous(iterator->iteration_context);
-}
+bool iterator_has_previous(const Iterator* iterator);
 
 /**
  * @brief Retrieves the previous element from the iterator.
@@ -94,32 +87,58 @@ static inline bool iterator_has_previous(const Iterator* iterator) {
  *
  * @return pointer to the previous element
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
-static inline void* iterator_previous(Iterator* iterator) {
-    return iterator->previous(iterator->iteration_context);
-}
+void* iterator_previous(Iterator* iterator);
 
 /**
- * @brief Retreats the iterator n-times and retrieves the current element.
+ * @brief Retreats the iterator n-times or until no more elements are available.
  *
  * @param iterator pointer to an Iterator
  * @param count how many times the iterator will retreat
  *
- * @return pointer to the retrieved element
+ * @return number of elements traversed
  *
- * @exception NO_SUCH_ELEMENT_ERROR if no more elements are available
+ * @exception NULL_POINTER_ERROR if iterator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if count is negative
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support backward traversal
  */
-static inline void* iterator_retreat(Iterator* iterator, int count) {
-    for (int i = 0; i < count - 1; i++) {
-        iterator_previous(iterator);
-    }
-    return count > 0 ? iterator_previous(iterator) : nullptr;
-}
+int iterator_retreat(Iterator* iterator, int count);
+
+/**
+ * @brief Advances the iterator by the given number of steps and retrieves the element at that position.
+ *
+ * @param iterator pointer to an Iterator
+ * @param position the number of steps from the current position
+ *
+ * @return pointer to the element at that position
+ *
+ * @exception NULL_POINTER_ERROR if iterator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if position is negative
+ * @exception NO_SUCH_ELEMENT_ERROR if no element exists at that position
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ */
+void* iterator_element(Iterator* iterator, int position);
+
+/**
+ * @brief Advances the iterator by the given number of steps and retrieves the element at that position
+ * or the default value if no element exists.
+ *
+ * @param iterator pointer to an Iterator
+ * @param position the number of steps from the current position
+ * @param default_value the default value
+ *
+ * @return pointer to the element at that position or the default value
+ *
+ * @exception NULL_POINTER_ERROR if iterator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if position is negative
+ * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
+ */
+void* iterator_element_or_default(Iterator* iterator, int position, void* default_value);
 
 /**
  * @brief Add the specified element to the underlying data structure (at the specified position if possible) represented by the iterator.
@@ -127,12 +146,11 @@ static inline void* iterator_retreat(Iterator* iterator, int count) {
  * @param iterator pointer to an Iterator
  * @param element the element to be added
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
-static inline void iterator_add(Iterator* iterator, const void* element) {
-    iterator->add(iterator->iteration_context, element);
-}
+void iterator_add(Iterator* iterator, const void* element);
 
 /**
  * @brief Replaces the last element returned from the iterator.
@@ -140,59 +158,64 @@ static inline void iterator_add(Iterator* iterator, const void* element) {
  * @param iterator pointer to an Iterator
  * @param element the new element
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
-static inline void iterator_set(Iterator* iterator, const void* element) {
-    iterator->set(iterator->iteration_context, element);
-}
+void iterator_set(Iterator* iterator, const void* element);
 
 /**
  * @brief Removes the last element returned by the iterator.
  *
  * @param iterator pointer to an Iterator
  *
+ * @exception NULL_POINTER_ERROR if iterator is null
  * @exception ILLEGAL_STATE_ERROR if neither next nor previous have been called, or remove or add have been called after the last call to next or previous
  * @exception CONCURRENT_MODIFICATION_ERROR if the referenced collection was modified after iterator creation
  * @exception UNSUPPORTED_OPERATION_ERROR if the iterator don't support mutability
  */
-static inline void iterator_remove(Iterator* iterator) {
-    iterator->remove(iterator->iteration_context);
-}
+void iterator_remove(Iterator* iterator);
 
 /**
- * @brief Resets the iterator to its initial position.
+ * @brief Resets the iterator to its initial state.
  *
  * @param iterator pointer to an Iterator
+ *
+ * @exception NULL_POINTER_ERROR if iterator is null
  */
-static inline void iterator_reset(Iterator* iterator) {
-    iterator->reset(iterator->iteration_context);
-}
+void iterator_reset(Iterator* iterator);
+
+/**
+ * @brief Returns the number of elements remaining in the iterator, exhausting it in the process.
+ *
+ * @param iterator pointer to an Iterator
+ *
+ * @return the number of remaining elements
+ *
+ * @exception NULL_POINTER_ERROR if iterator is null
+ */
+int iterator_size(Iterator* iterator);
 
 /**
  * @brief Iterate through the remaining elements of the iterator applying the action function to each element.
  *
  * @param iterator pointer to an Iterator
  * @param action the action to perform
+ *
+ * @exception NULL_POINTER_ERROR if iterator or action is null
  */
-static inline void iterator_for_each_remaining(Iterator* iterator, Consumer action) {
-    while (iterator_has_next(iterator)) {
-        action(iterator_next(iterator));
-    }
-}
+void iterator_for_each_remaining(Iterator* iterator, Consumer action);
 
 /**
  * @brief Destroys the iterator and releases its resources.
  *
  * @param iterator_pointer pointer to an Iterator*
  *
+ * @exception NULL_POINTER_ERROR if iterator_pointer or *iterator_pointer is null
+ *
  * @post *iterator_pointer == nullptr
  */
-static inline void iterator_destroy(Iterator** iterator_pointer) {
-    const Iterator* iterator = *iterator_pointer;
-    iterator->destroy(iterator->iteration_context);
-    *iterator_pointer = nullptr;
-}
+void iterator_destroy(Iterator** iterator_pointer);
 
 #endif

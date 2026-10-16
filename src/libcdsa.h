@@ -108,9 +108,6 @@
 /** @brief Optional value container */
 #include "util/optional.h"
 
-/** @brief Pair (two-value tuple) container */
-#include "util/pair.h"
-
 /** @brief Sequence API */
 #include "util/sequence.h"
 

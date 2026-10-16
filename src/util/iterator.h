@@ -41,6 +41,7 @@ typedef struct {
  * @exception NULL_POINTER_ERROR if iterator is null
  */
 bool iterator_has_next(const Iterator* iterator);
+
 /**
  * @brief Retrieves the next element from the iterator.
  *

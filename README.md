@@ -63,7 +63,6 @@ Also, there is some other utilities which may be useful:
 - [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
 - [Memory](src/core/memory.h): Memory management abstractions.
 - [Optional](src/util/optional.h): Container type which may or may not contain a value.
-- [Pair](src/util/pair.h): Container type which contains two values.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.

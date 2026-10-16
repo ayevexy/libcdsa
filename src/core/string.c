@@ -689,7 +689,7 @@ long double (string_to_long_double)(struct String string) {
     return value;
 }
 
-uint64 string_hash_callback(const void* raw_string) {
+uint64 string_hash_generic(const void* raw_string) {
     const char* string = ((String) raw_string)->data;
     uint64 hash = 5381;
     for (int c = *string; c != '\0'; c = *++string) {
@@ -698,19 +698,19 @@ uint64 string_hash_callback(const void* raw_string) {
     return hash;
 }
 
-bool string_equals_callback(const void* string, const void* other_string) {
+bool string_equals_generic(const void* string, const void* other_string) {
     return (string_equals)(*((String) string), *((String) other_string));
 }
 
-int string_compare_callback(const void* string, const void* other_string) {
+int string_compare_generic(const void* string, const void* other_string) {
     return (string_compare)(*((String) string), *((String) other_string));
 }
 
-void string_destroy_callback(void* string) {
+void string_destroy_generic(void* string) {
     string_memory_dealloc(string);
 }
 
-String string_to_string_callback(const void* string) {
+String string_to_string_generic(const void* string) {
     return string;
 }
 

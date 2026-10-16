@@ -770,7 +770,7 @@ long double (string_to_long_double)(struct String string);
  *
  * @return the hashed value
  */
-uint64 string_hash_callback(const void* raw_string);
+uint64 string_hash_generic(const void* raw_string);
 
 /**
  * @brief String equality function to be used in containers (case-sensitive).
@@ -780,7 +780,7 @@ uint64 string_hash_callback(const void* raw_string);
  *
  * @return true if equal, false otherwise
  */
-bool string_equals_callback(const void* string, const void* other_string);
+bool string_equals_generic(const void* string, const void* other_string);
 
 /**
  * @brief String comparator function to be used in containers (case-sensitive).
@@ -790,14 +790,14 @@ bool string_equals_callback(const void* string, const void* other_string);
  *
  * @return 0 if equal; negative if the first string is less; positive if greater
  */
-int string_compare_callback(const void* string, const void* other_string);
+int string_compare_generic(const void* string, const void* other_string);
 
 /**
  * @brief String destructor function to be used in containers.
  *
  * @param string the string
  */
-void string_destroy_callback(void* string);
+void string_destroy_generic(void* string);
 
 /**
  * @brief String to string function to be used in containers.
@@ -806,7 +806,7 @@ void string_destroy_callback(void* string);
  *
  * @return the string
  */
-String string_to_string_callback(const void* string);
+String string_to_string_generic(const void* string);
 
 /* --------------------------------------------------------------------------------- */
 

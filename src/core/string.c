@@ -110,6 +110,17 @@ String (string_format)(struct String format, ...) {
     return string;
 }
 
+uint64 (string_hash)(struct String string) {
+    if (require_non_null(string.data)) return -1;
+
+    const char* data = string.data;
+    uint64 hash = 5381;
+    for (int c = *data; c != '\0'; c = *++data) {
+        hash = hash * 33 + c;
+    }
+    return hash;
+}
+
 char (string_char_at)(struct String string, int index) {
     if (require_non_null(string.data)) return '\0';
     if (index < 0 || index >= string.length) {
@@ -689,13 +700,8 @@ long double (string_to_long_double)(struct String string) {
     return value;
 }
 
-uint64 string_hash_generic(const void* raw_string) {
-    const char* string = ((String) raw_string)->data;
-    uint64 hash = 5381;
-    for (int c = *string; c != '\0'; c = *++string) {
-        hash = hash * 33 + c;
-    }
-    return hash;
+uint64 string_hash_generic(const void* string) {
+    return (string_hash)(*((String) string));
 }
 
 bool string_equals_generic(const void* string, const void* other_string) {

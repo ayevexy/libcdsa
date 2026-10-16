@@ -68,6 +68,17 @@ void test_create_formatted_string() {
     string_destroy(&format, &string);
 }
 
+void test_hash_string() {
+    // given
+    String string = string_ref("Hello World!");
+    // when
+    uint64 hash = string_hash(string);
+    // then
+    TEST_ASSERT_EQUAL(-4851993680078561086, hash);
+    // clean up
+    string_destroy(&string);
+}
+
 void test_get_char_at_index_from_string() {
     // given
     String string = string_ref("Hello World!");
@@ -690,6 +701,7 @@ int main(void) {
     RUN_TEST(test_create_static_string);
     RUN_TEST(test_destroy_string);
     RUN_TEST(test_create_formatted_string);
+    RUN_TEST(test_hash_string);
     RUN_TEST(test_get_char_at_index_from_string);
     RUN_TEST(test_get_char_from_string_index_above_bounds_fails);
     RUN_TEST(test_get_char_from_string_negative_index_fails);

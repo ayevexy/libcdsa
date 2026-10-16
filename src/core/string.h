@@ -133,6 +133,19 @@ void string_destroy_all(void);
 String (string_format)(struct String format, ...);
 
 /**
+ * @brief Calculates the hash value of a string.
+ *
+ * @param string the string
+ *
+ * @return the hashed value
+ *
+ * @exception NULL_POINTER_ERROR if string.data is null
+ */
+#define string_hash(string) string_hash(dispatch_string_type(string))
+
+uint64 (string_hash)(struct String string);
+
+/**
  * @brief Retrieves the character at the specified position of the string.
  *
  * @param string the string

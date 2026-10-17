@@ -28,6 +28,7 @@ const Error TYPE_MISMATCH_ERROR           = ERROR("TYPE_MISMATCH_ERROR", "the ac
 const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR", "the requested operation is not supported");
 const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR", "a collection was modified while it was being iterated");
 const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR", "a memory allocation operation failed");
+const Error INPUT_OUTPUT_ERROR            = ERROR("INPUT_OUTPUT_ERROR", "an input/output operation failed");
 
 const char* error_message(void) {
     return error_context.message;

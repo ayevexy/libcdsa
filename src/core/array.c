@@ -1,63 +1,81 @@
 #include "array.h"
 
-#include "memory.h"
 #include "errors.h"
+#include "memory.h"
+#include "constraints.h"
 
 typedef struct {
     int length;
     bytes element_size;
     alignas(max_align_t) uchar data[];
-} ArrayStorage;
+} Array;
 
-static ArrayStorage* array_storage(const void* array) {
-    return ((ArrayStorage*)((char*)(array) - offsetof(ArrayStorage, data)));
+static Array* array_self(const void* array) {
+    return ((Array*)((char*)(array) - offsetof(Array, data)));
 }
 
 void* array_create(int length, bytes element_size, const void* source) {
-    const bytes size = sizeof(ArrayStorage) + length * element_size;
-    ArrayStorage* array = memory_try_alloc(size);
+    if (require_positive(length)) return nullptr;
+
+    const bytes size = sizeof(Array) + length * element_size;
+
+    Array* array = memory_try_alloc(size);
+
     if (!array) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate %zu bytes", size);
         return nullptr;
     }
+
     array->length = length;
     array->element_size = element_size;
+
     if (source) {
         memory_copy(source, array->data, length * element_size);
     } else {
         memory_set(array->data, 0, length * element_size);
     }
+
     return array->data;
 }
 
 bool array_check_bounds(const void* array, int index) {
+    if (require_non_null(array)) return false;
+
     if (index < 0 || index >= array_length(array)) {
-        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_storage(array)->length);
+        set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, array_self(array)->length);
         return false;
     }
     return true;
 }
 
 int (array_length)(const void* array) {
-    return array_storage(array)->length;
+    if (require_non_null(array)) return -1;
+
+    return array_self(array)->length;
 }
 
 bool array_equals(const Array(void) array, const Array(void) other) {
+    if (require_non_null(array, other)) return false;
+
     if (array_length(array) != array_length(other)){
         return false;
     }
-    if (array_storage(array)->element_size != array_storage(other)->element_size) {
+    if (array_self(array)->element_size != array_self(other)->element_size) {
         return false;
     }
-    const bytes size = array_length(array) * array_storage(array)->element_size;
+    const bytes size = array_length(array) * array_self(array)->element_size;
 
     return memory_compare(array, other, size) == 0;
 }
 
 Array(void) array_copy(const Array(void) array) {
-    return array_create(array_length(array), array_storage(array)->element_size, array_storage(array)->data);
+    if (require_non_null(array)) return nullptr;
+
+    return array_create(array_length(array), array_self(array)->element_size, array_self(array)->data);
 }
 
 void (array_destroy)(void* array) {
-    memory_dealloc(array_storage(array));
+    if (require_non_null(array)) return;
+
+    memory_dealloc(array_self(array));
 }

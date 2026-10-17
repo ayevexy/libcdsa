@@ -26,6 +26,7 @@
  *
  * @return a newly created array
  *
+ * @exception ILLEGAL_ARGUMENT_ERROR if length is zero or negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define array_new(length, T) array_create(length, sizeof(T), nullptr)
@@ -65,6 +66,7 @@
  *
  * @return the element
  *
+ * @exception NULL_POINTER_ERROR if array is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array.length
  */
 #define array_get(array, index) (array_check_bounds(array, index) ? array[index] : (typeof(*array)){0})
@@ -76,6 +78,7 @@
  * @param index the index
  * @param ... the new value
  *
+ * @exception NULL_POINTER_ERROR if array is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= array.length
  */
 #define array_set(array, index, ...) (array_check_bounds(array, index) ? (array[index] = __VA_ARGS__, (void) 0) : (void) 0)
@@ -87,6 +90,8 @@
  *
  * @return the array length
  *
+ * @exception NULL_POINTER_ERROR if array is null
+ *
  * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
  */
 #define array_length(array) (array_length)(array)
@@ -96,6 +101,8 @@
  *
  * @param array the first array
  * @param other the second array
+ *
+ * @exception NULL_POINTER_ERROR if array or other is null
  *
  * @return true if the arrays have equal byte representations, false otherwise
  */
@@ -108,6 +115,7 @@ bool array_equals(const Array(void) array, const Array(void) other);
  *
  * @return a newly allocated copy of the array
  *
+ * @exception NULL_POINTER_ERROR if array is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
  * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
@@ -117,9 +125,11 @@ Array(void) array_copy(const Array(void) array);
 /**
  * @brief Destroys a previously created array.
  *
- * @param array pointer to the array
+ * @param array pointer to an Array(T)*
  *
- * @post array == nullptr
+ * @exception NULL_POINTER_ERROR if *array is null
+ *
+ * @post *array == nullptr
  *
  * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
  */

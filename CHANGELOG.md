@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.11]() — 2026-10-18
+
+### ✨ Features
+- Added the `deref()` operation (`core/memory.h`).
+- Added the `<collection>_destructor()` operation to all collection types.
+- Added the `string_hash()` operation (`core/string.h`).
+- Added the `INPUT_OUTPUT_ERROR` error constant (`core/errors.h`).
+- Added `iterator_element()`, `iterator_element_or_default()` and `iterator_size()` operations to `util/iterator.h`.
+- Added the `of_nullable()`, `is_present()`, `is_empty()`, `get()`, `or_else()`, `if_present()`, `transform()`, and `keep_if()` operations to `util/optional.h`.
+
+### ✏️ Changes
+- Increased `count_args()` argument limit to 15 (`core/macros.h`).
+- Enhanced the Iterator API:
+  - Created source file for function definitions.
+  - Added function arguments null checks.
+  - `iterator_advance()` and `iterator_retreat()` now return the number of elements traversed and prevent `NO_SUCH_ELEMENT_ERROR`.
+- Removed `util/pair.h` module.
+- Renamed `string_<operation>_callback()` functions to `string_<operation>_generic()` in `core/string.h`.
+- Added missing null checks and argument validation to `core/array.h`.
+
+### 🪲 Bug Fixes
+- Fixed memory leaks in `priority_queue.h` and `collection.h`:
+  - Added missing `destruct()` call in `dequeue()` operation.
+  - Added missing `iterator_destroy()` call in `collection_to_array()` operation.
+- Prevented the possibility of a message buffer overflow by miscalculation in `set_error()` (`core/errors.h`).
+
+### 🧪 Testing
+- Improved readability of all unit tests.
+- Corrected all relevant memory leaks in unit tests.
+- Added missing test suite for the `util/iterator.h` module.
+
+### ⚙️ Build
+- Added sanitizer flags to compiler and link options in `CMakeLists.txt`.
+
+---
+
 ## 🎉 [v1.0.0-beta.10]() — 2026-10-11
 
 A major update enhancing the Errors API, simplifying set operations, expanding collection utilities, and extending constraints.

@@ -26,7 +26,7 @@
  *
  * @return a newly created array
  *
- * @exception ILLEGAL_ARGUMENT_ERROR if length is zero or negative
+ * @exception ILLEGAL_ARGUMENT_ERROR if length is negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
 #define array_new(length, T) array_create(length, sizeof(T), nullptr)

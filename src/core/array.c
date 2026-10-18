@@ -15,7 +15,7 @@ static Array* array_self(const void* array) {
 }
 
 void* array_create(int length, bytes element_size, const void* source) {
-    if (require_positive(length)) return nullptr;
+    if (require_non_negative(length)) return nullptr;
 
     const bytes size = sizeof(Array) + length * element_size;
 

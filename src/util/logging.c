@@ -209,6 +209,19 @@ static bool logger_format_location(const char* file, int line, const char* funct
 }
 
 static bool logger_format_message(const char* message, va_list parameters) {
+    if (logger.options.timestamp || logger.options.level || logger.options.module || logger.options.location) {
+
+        logger.offset += snprintf(logger.buffer + logger.offset, BUFFER_SIZE - logger.offset,
+            "%s:%s ",
+            logger.options.colors ? TEXT_COLOR : "",
+            logger.options.colors ? END_COLOR : ""
+        );
+
+        if (logger.offset <= 0 || logger.offset >= BUFFER_SIZE) {
+            return false;
+        }
+    }
+
     logger.offset += vsnprintf(logger.buffer + logger.offset, BUFFER_SIZE - logger.offset, message, parameters);
 
     return logger.offset >= 0 && logger.offset < BUFFER_SIZE;

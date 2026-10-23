@@ -122,12 +122,12 @@ static bool logger_format_timestamp() {
 
 static bool logger_format_level(LogLevel level) {
     static const char* log_level_names[] = {
-        [LOG_TRACE] = "[TRACE]",
-        [LOG_DEBUG] = "[DEBUG]",
-        [LOG_INFO]  = "[INFO]",
-        [LOG_WARN]  = "[WARN]",
-        [LOG_ERROR] = "[ERROR]",
-        [LOG_FATAL] = "[FATAL]"
+        [LOG_TRACE] = "TRACE",
+        [LOG_DEBUG] = "DEBUG",
+        [LOG_INFO]  = "INFO",
+        [LOG_WARN]  = "WARN",
+        [LOG_ERROR] = "ERROR",
+        [LOG_FATAL] = "FATAL"
     };
 
     static const char* log_level_colors[] = {
@@ -144,9 +144,9 @@ static bool logger_format_level(LogLevel level) {
     }
 
     logger.offset += snprintf(logger.buffer + logger.offset, BUFFER_SIZE - logger.offset,
-        "%s%-*s%s ",
+        "%s[%-*s]%s ",
         logger.options.colors ? log_level_colors[level] : "",
-        logger.options.padding ? 7 : 0,
+        logger.options.padding ? 5 : 0,
         log_level_names[level],
         logger.options.colors ? END_COLOR : ""
     );
@@ -202,7 +202,7 @@ static bool logger_format_location(const char* file, int line, const char* funct
         TEXT_COLOR "[" END_COLOR
         "%-*s"
         TEXT_COLOR "] " END_COLOR,
-        logger.options.padding ? (logger.options.colors ? 68 : 48) : 0, location_buffer
+        logger.options.padding ? (logger.options.colors ? 64 : 44) : 0, location_buffer
     );
 
     return logger.offset >= 0 && logger.offset < BUFFER_SIZE;

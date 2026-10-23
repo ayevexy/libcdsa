@@ -236,11 +236,12 @@ int file_read_char(File* file) {
 String (file_read_line)(File* file, char* buffer, bytes size) {
     if (require_non_null(file, buffer)) return nullptr;
 
-    if (!fgets(buffer, (int) size, file->self) && ferror(file->self)) {
+    const char* line = fgets(buffer, (int) size, file->self);
+    if (!line && ferror(file->self)) {
         file_set_error(errno);
         return nullptr;
     }
-    return string_new(buffer);
+    return line ? string_new(line) : nullptr;
 }
 
 bytes file_write(File* file, const void* buffer, bytes size) {

@@ -100,9 +100,11 @@ void test_file_read_line_and_write_string() {
     file_rewind(file);
     // when
     String string = file_read_line(file);
+    String end_of_file = file_read_line(file);
     // then
     TEST_ASSERT_EQUAL_STRING("Hello World!\n", string_data(string));
     TEST_ASSERT_EQUAL(chars, 13);
+    TEST_ASSERT_NULL(end_of_file);
     // clean up
     string_destroy(&string);
     file_close(file);

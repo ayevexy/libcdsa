@@ -153,7 +153,7 @@ int file_read_char(File* file);
  * @param file the file to read from
  * @param ... optional buffer size
  *
- * @return the string containing the line, or nullptr if the operation fails
+ * @return the line as a string, or nullptr on EOF or failure
  *
  * @exception NULL_POINTER_ERROR if file is null
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs

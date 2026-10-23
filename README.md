@@ -72,6 +72,7 @@ Also, there is some other utilities which may be useful:
 - [System](src/core/system.h): Runtime system abstraction.
 - [Sync](src/core/sync.h): Thread synchronization abstractions.
 - [Allocators](src/util/allocators.h): Custom memory allocators.
+- [Logging](src/util/logging.h): Simple logging utility.
 
 ### Limitations
 
@@ -675,6 +676,35 @@ int main(void) {
     memory_arena_destroy(&arena);
     memory_pool_destroy(&pool);
 
+    return 0;
+}
+```
+
+```c++
+#include "util/logging.h"
+
+#undef LOG_MODULE
+#define LOG_MODULE "main"
+
+int main(void) {
+    logger_initialize(nullptr);
+
+    logger_trace("Entering function...");
+    logger_debug("Variable value: %d", 42);
+    logger_info("Nothing happened...");
+    logger_warn("Something unexpected happened...");
+    logger_error("An operation failed...");
+    logger_fatal("Unrecoverable error occurred...");
+
+    // Output:
+    // [2026-10-22 19:26:59] [TRACE] [main] [main.c:9 main()] Entering function...
+    // [2026-10-22 19:26:59] [DEBUG] [main] [main.c:10 main()] Variable value: 42
+    // [2026-10-22 19:26:59] [INFO] [main] [main.c:11 main()] Nothing happened...
+    // [2026-10-22 19:26:59] [WARN] [main] [main.c:12 main()] Something unexpected happened...
+    // [2026-10-22 19:26:59] [ERROR] [main] [main.c:13 main()] An operation failed...
+    // [2026-10-22 19:26:59] [FATAL] [main] [main.c:14 main()] Unrecoverable error occurred...
+
+    logger_finalize();
     return 0;
 }
 ```

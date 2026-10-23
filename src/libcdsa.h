@@ -114,4 +114,7 @@
 /** @brief Custom memory allocators */
 #include "util/allocators.h"
 
+/** @brief Simple logging utility */
+#include "util/logging.h"
+
 #endif

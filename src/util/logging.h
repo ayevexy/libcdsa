@@ -21,6 +21,14 @@ typedef enum {
 } LogLevel;
 
 /**
+ * @brief Represents the logger's output destinations.
+ */
+typedef struct {
+    bool console;
+    const char* file_name;
+} LoggerOutput;
+
+/**
  * @brief Logger output format options.
  */
 typedef struct {
@@ -45,13 +53,13 @@ typedef struct {
 #endif
 
 /**
- * @brief Initializes the logger.
+ * @brief Initializes the logger with the specified output destinations.
  *
- * @param file_name the name of the file to write log messages to, or nullptr to use the `stdout`
+ * @param output the output destinations
  *
  * @return true on successful initialization, false otherwise
  */
-bool logger_initialize(const char* file_name);
+bool logger_initialize(LoggerOutput output);
 
 /**
  * @brief Finalizes the logger and releases its resources.
@@ -76,8 +84,8 @@ void logger_change_level(LogLevel level);
  * @brief Pointer to the logger's formatting options.
  *
  * Modify its members to customize log message formatting.
- * All options are enabled by default, except `colors` and `padding`,
- * which are disabled by default when logging to a file.
+ *
+ * @note All options are enabled by default.
  */
 extern LoggerOptions* const logger_options;
 

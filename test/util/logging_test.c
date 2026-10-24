@@ -9,7 +9,10 @@
 #define LOG_MODULE "util.logging_test"
 
 void setUp() {
-    const bool success = logger_initialize("log_file.txt");
+    const bool success = logger_initialize((LoggerOutput) {
+        .console = true,
+        .file_name = "log_file.txt"
+    });
     TEST_ASSERT_TRUE(success);
 
     logger_change_level(LOG_ALL);
@@ -160,7 +163,10 @@ void test_logger_off() {
 void test_logger_log_pretty() {
     // given
     logger_finalize();
-    logger_initialize(nullptr);
+    logger_initialize((LoggerOutput) {
+        .console = true,
+        .file_name = "log_file.txt"
+    });
     // and
     *logger_options = (LoggerOptions) {
         .timestamp = true,

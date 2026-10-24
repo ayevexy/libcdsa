@@ -27,6 +27,7 @@ typedef struct {
 #ifdef __linux__
     pthread_mutex_t mutex;
 #endif
+    bool console;
     FILE* file;
     LogLevel level;
     LoggerOptions options;
@@ -36,6 +37,7 @@ static Logger logger = {
     .initialized = false,
     .buffer = "",
     .offset = 0,
+    .console = false,
     .file = nullptr,
     .level = LOG_ALL,
     .options = {
@@ -48,24 +50,21 @@ static Logger logger = {
     }
 };
 
-bool logger_initialize(const char* file_name) {
+bool logger_initialize(LoggerOutput output) {
     if (logger.initialized) {
         return false;
     }
-    if (file_name) {
-        logger.file = fopen(file_name, "a");
+    if (output.file_name) {
+        logger.file = fopen(output.file_name, "a");
         if (!logger.file) {
             return false;
         }
-        logger.options.colors = false;
-        logger.options.padding = false;
-    } else {
-        logger.file = stdout;
     }
 #ifdef __linux__
     pthread_mutex_init(&logger.mutex, nullptr);
 #endif
     logger.initialized = true;
+    logger.console = output.console;
     return true;
 }
 
@@ -227,6 +226,17 @@ static bool logger_format_message(const char* message, va_list parameters) {
     return logger.offset >= 0 && logger.offset < BUFFER_SIZE;
 }
 
+static bool logger_write_log(LogLevel level) {
+    bool written = false;
+    if (logger.console) {
+        written = fprintf(stdout, "%s\n", logger.buffer) > 0;
+    }
+    if (logger.file) {
+        written = fprintf(logger.file, "%s\n", logger.buffer) > 0 && level >= LOG_ERROR ? fflush(logger.file) == 0 : true;
+    }
+    return written;
+}
+
 static bool logger_log_internal(LogLevel level, const char* module, const char* file, int line, const char* function, const char* message, va_list parameters) {
     if (level < LOG_TRACE || level >= LOG_OFF || logger.level == LOG_OFF || level < logger.level) {
         return false;
@@ -244,8 +254,7 @@ static bool logger_log_internal(LogLevel level, const char* module, const char* 
         && logger_format_module(module)
         && logger_format_location(file, line, function)
         && logger_format_message(message, parameters)
-        && fprintf(logger.file, "%s\n", logger.buffer) > 0
-        && level >= LOG_ERROR ? fflush(logger.file) == 0 : true;
+        && logger_write_log(level);
 }
 
 bool logger_log(LogLevel level, const char* module, const char* file, int line, const char* function, const char* message, ...) {

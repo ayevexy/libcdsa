@@ -41,6 +41,24 @@ void test_memory_new_and_delete() {
     TEST_ASSERT_NULL(c);
 }
 
+void test_memory_clone_and_delete() {
+    // given
+    Point p = { 10, 20 };
+    Point* q = &p;
+    // when
+    Point* r = clone(&p);
+    Point* s = clone(q);
+    // then
+    TEST_ASSERT(10 == r->x && 20 == r->y);
+    TEST_ASSERT(10 == s->x && 20 == s->y);
+    // clean up
+    delete(r);
+    delete(s);
+    // then
+    TEST_ASSERT_NULL(r);
+    TEST_ASSERT_NULL(s);
+}
+
 void test_memory_ref() {
     // when
     int* n = ref(int);
@@ -59,6 +77,7 @@ void test_memory_ref() {
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_memory_new_and_delete);
+    RUN_TEST(test_memory_clone_and_delete);
     RUN_TEST(test_memory_ref);
     return UNITY_END();
 }

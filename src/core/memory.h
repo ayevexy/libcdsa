@@ -61,7 +61,16 @@ extern Allocator global_memory_allocator;
  */
 #define new(T, ...) ((T*) (new)(sizeof(T), &(T){__VA_ARGS__}))
 
-void* (new)(bytes size, const void* source);
+/**
+ * @brief Allocates a shallow copy of an object on the heap.
+ *
+ * @param object pointer to the source object
+ *
+ * @return a pointer to the copied object, or nullptr on failure
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+#define clone(object) ((typeof(*(object))*) (new)(sizeof(*(object)), (object)))
 
 /**
  * @brief Allocate and initialize an object of type `T` on the stack.
@@ -95,8 +104,6 @@ void* (new)(bytes size, const void* source);
  * @param pointer pointer to the memory block
  */
 #define delete(pointer) ((delete)(pointer), pointer = nullptr)
-
-void (delete)(void* pointer);
 
 /**
  * @brief Allocate `size` bytes of memory.
@@ -202,5 +209,11 @@ int memory_compare(const void* first, const void* second, bytes size);
  * @return a pointer to the first occurrence of the byte, or nullptr if not found
  */
 const void* memory_find(const void* pointer, byte value, bytes size);
+
+/*------------------------------------------------------------------------------------------*/
+
+void* (new)(bytes, const void*);
+
+void (delete)(void*);
 
 #endif

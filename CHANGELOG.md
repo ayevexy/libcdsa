@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.11.1]() — 2026-10-25
+
+A minor update introducing the logging utility and fixing the `file_read_line()` bug.
+
+### ✨ Features
+- Introduced the logging utility (`util/logging.h`), featuring:
+  - Lifecycle management: `logger_initialize()` and `logger_finalize()`.
+  - Logging functions: `logger_trace()`, `logger_debug()`, `logger_info()`, `logger_warn()`, `logger_error()` and `logger_fatal()`.
+  - Log-level filtering via `logger_change_level()`.
+  - Output customization through `logger_options`.
+  - Module identification and per-module logging control via the `LOG_MODULE` macro.
+  - Configurable output to the console, a file or both.
+  - Configurable timestamps, log levels, module names, source locations (file, line and function), colors and padding.
+  - Thread-safe logging on Linux systems.
+
+### 🪲 Bug Fixes
+- Fixed `file_read_line()` not returning a `nullptr` at EOF (#3).
+
+### 📚 Documentation
+- Added a usage example for `util/logging.h` to the README.
+
+---
+
 ## 🎉 [v1.0.0-beta.11]() — 2026-10-18
 
 ### ✨ Features

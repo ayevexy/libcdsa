@@ -72,7 +72,7 @@ void logger_finalize(void) {
     if (!logger.initialized) {
         return;
     }
-    if (logger.file && logger.file != stdout) {
+    if (logger.file) {
         fclose(logger.file);
         logger.file = nullptr;
     }

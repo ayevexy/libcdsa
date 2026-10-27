@@ -42,6 +42,7 @@ add_library(${PROJECT_NAME}
         src/util/sequence.c
         src/util/allocators.c
         src/util/logging.c
+        src/util/temporal.c
 )
 
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

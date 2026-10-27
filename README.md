@@ -73,6 +73,7 @@ Also, there is some other utilities which may be useful:
 - [Sync](src/core/sync.h): Thread synchronization abstractions.
 - [Allocators](src/util/allocators.h): Custom memory allocators.
 - [Logging](src/util/logging.h): Simple logging utility.
+- [Temporal](src/util/temporal.h): Date/Time abstractions.
 
 ### Limitations
 

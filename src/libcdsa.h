@@ -117,4 +117,7 @@
 /** @brief Simple logging utility */
 #include "util/logging.h"
 
+/** @brief Temporal API */
+#include "util/temporal.h"
+
 #endif

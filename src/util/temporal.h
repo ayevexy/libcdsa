@@ -329,4 +329,323 @@ String date_time_format(DateTime date_time, const char* format);
  */
 String date_time_to_string(DateTime date_time);
 
+/**
+ * @brief Returns the current local date.
+ *
+ * @return the current date
+ *
+ * @exception DATE_TIME_ERROR if failed to get the current date
+ *
+ * @note This function is thread-safe on Linux.
+ */
+Date date_now(void);
+
+/**
+ * @brief Creates a date from its components.
+ *
+ * @param year the year (1-9999)
+ * @param month the month (1–12)
+ * @param day the day of the month
+ *
+ * @return the created date
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ */
+Date date_of(int year, int month, int day);
+
+/**
+ * @brief Parses a string in the format of YYYY-MM-DD into a date.
+ *
+ * @param string the string to parse
+ *
+ * @return the parsed date
+ *
+ * @exception DATE_TIME_FORMAT_ERROR if failed to parse the string
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ */
+#define date_parse(string) date_parse(dispatch_string_type(string))
+
+Date (date_parse)(struct String string);
+
+/**
+ * @brief Returns the day of the week.
+ *
+ * @param date the date
+ *
+ * @return the day of the week
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ */
+WeekDay date_week_day(Date date);
+
+/**
+ * @brief Returns the day of the year, starting 1.
+ *
+ * @param date the date
+ *
+ * @return the day of the year
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ */
+int date_year_day(Date date);
+
+/**
+ * @brief Determines whether the year of a date-time is a leap year.
+ *
+ * @param date the date-time
+ *
+ * @return true if the year is a leap year, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date-time value is invalid
+ */
+bool date_is_leap_year(Date date);
+
+/**
+ * @brief Determines whether one date is after another
+ *
+ * @param date the date being tested
+ * @param other the date to compare against
+ *
+ * @return true if date is later than other, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if date or other is invalid
+ */
+bool date_is_after(Date date, Date other);
+
+/**
+ * @brief Determines whether one date is before another
+ *
+ * @param date the date being tested
+ * @param other the date to compare against
+ *
+ * @return true if date is earlier than other, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if date or other is invalid
+ */
+bool date_is_before(Date date, Date other);
+
+/**
+ * @brief Determines whether two date are equal
+ *
+ * @param date the first date
+ * @param other the second date
+ *
+ * @return true if the dates are equal, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if date or other is invalid
+ */
+bool date_is_equal(Date date, Date other);
+
+/**
+ * @brief Checks whether a date is valid.
+ *
+ * @param date the date
+ *
+ * @return true if valid, false otherwise
+ */
+bool date_is_valid(Date date);
+
+/**
+ * @brief Adds a value to a date.
+ *
+ * @param date the date
+ * @param value the amount to add
+ * @param unit the temporal unit of the amount
+ *
+ * @return the resulting date
+ *
+ * @note When adding years or months, the day is clamped to the last valid
+ *       day of the resulting month if necessary.
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ * @exception DATE_TIME_ERROR if failed to calculate the resulting date
+ */
+Date date_plus(Date date, int value, TimeUnit unit);
+
+/**
+ * @brief Subtracts a value from a date.
+ *
+ * @param date the date
+ * @param value the amount to subtract
+ * @param unit the temporal unit of the amount
+ *
+ * @return the resulting date
+ *
+ * @note When subtracting years or months, the day is clamped to the last valid
+ *       day of the resulting month if necessary.
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ * @exception DATE_TIME_ERROR if failed to calculate the resulting date-time
+ */
+Date date_minus(Date date, int value, TimeUnit unit);
+
+/**
+ * @brief Formats a date using one of the supported formats.
+ *
+ * @param date the date
+ * @param format the format string
+ *
+ * @return the formatted date
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ * @exception NULL_POINTER_ERROR if format is null
+ * @exception DATE_TIME_FORMAT_ERROR if the format is not supported
+ * @exception MEMORY_ALLOCATION_ERROR if string memory allocation fails
+ */
+String date_format(Date date, const char* format);
+
+/**
+ * @brief Converts a date to its default string representation.
+ *
+ * @param date the date
+ *
+ * @return the string representation of the date
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
+ * @exception MEMORY_ALLOCATION_ERROR if string memory allocation fails
+ */
+String date_to_string(Date date);
+
+/**
+ * @brief Returns the current local time.
+ *
+ * @return the current time
+ *
+ * @exception DATE_TIME_ERROR if failed to get the current time
+ *
+ * @note This function is thread-safe on Linux.
+ */
+Time time_now(void);
+
+/**
+ * @brief Creates a time from its components.
+ *
+ * @param hour the hour (0–23)
+ * @param minute the minute (0–59)
+ * @param second the second (0–59)
+ *
+ * @return the created time
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ */
+Time time_of(int hour, int minute, int second);
+
+/**
+ * @brief Parses a string in the format of HH:MM:SS into a time.
+ *
+ * @param string the string to parse
+ *
+ * @return the parsed time
+ *
+ * @exception DATE_TIME_FORMAT_ERROR if failed to parse the string
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ */
+#define time_parse(string) time_parse(dispatch_string_type(string))
+
+Time (time_parse)(struct String string);
+
+/**
+ * @brief Determines whether one time is after another
+ *
+ * @param time the time being tested
+ * @param other the time to compare against
+ *
+ * @return true if time is later than other, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if time or other is invalid
+ */
+bool time_is_after(Time time, Time other);
+
+/**
+ * @brief Determines whether one time is before another
+ *
+ * @param time the time being tested
+ * @param other the time to compare against
+ *
+ * @return true if time is earlier than other, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if time or other is invalid
+ */
+bool time_is_before(Time time, Time other);
+
+/**
+ * @brief Determines whether two time are equal
+ *
+ * @param time the first time
+ * @param other the second time
+ *
+ * @return true if the times are equal, false otherwise
+ *
+ * @exception DATE_TIME_INVALID_ERROR if time or other is invalid
+ */
+bool time_is_equal(Time time, Time other);
+
+/**
+ * @brief Checks whether a time is valid.
+ *
+ * @param time the time
+ *
+ * @return true if valid, false otherwise
+ */
+bool time_is_valid(Time time);
+
+/**
+ * @brief Adds a value to a time.
+ *
+ * @param time the time
+ * @param value the amount to add
+ * @param unit the temporal unit of the amount
+ *
+ * @return the resulting time
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ * @exception DATE_TIME_ERROR if failed to calculate the resulting time
+ */
+Time time_plus(Time time, int value, TimeUnit unit);
+
+/**
+ * @brief Subtracts a value from a time.
+ *
+ * @param time the time
+ * @param value the amount to subtract
+ * @param unit the temporal unit of the amount
+ *
+ * @return the resulting time
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ * @exception DATE_TIME_ERROR if failed to calculate the resulting time-time
+ */
+Time time_minus(Time time, int value, TimeUnit unit);
+
+/**
+ * @brief Formats a time using one of the supported formats.
+ *
+ * @param time the time
+ * @param format the format string
+ *
+ * @return the formatted time
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ * @exception NULL_POINTER_ERROR if format is null
+ * @exception DATE_TIME_FORMAT_ERROR if the format is not supported
+ * @exception MEMORY_ALLOCATION_ERROR if string memory allocation fails
+ */
+String time_format(Time time, const char* format);
+
+/**
+ * @brief Converts a time to its default string representation.
+ *
+ * @param time the time
+ *
+ * @return the string representation of the time
+ *
+ * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
+ * @exception MEMORY_ALLOCATION_ERROR if string memory allocation fails
+ */
+String time_to_string(Time time);
+
 #endif

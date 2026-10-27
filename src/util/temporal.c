@@ -84,7 +84,7 @@ DateTime (date_time_parse)(struct String string) {
 
     if (count != 6 || consumed != string.length) {
         set_error(DATE_TIME_FORMAT_ERROR, "failed to parse date time string '%s'", string.data);
-        return(DateTime) {};
+        return (DateTime) {};
     }
 
     return date_time_of(year, month, day, hour, minute, second);
@@ -311,4 +311,148 @@ String date_time_to_string(DateTime date_time) {
         date_time.year, date_time.month, date_time.day,
         date_time.hour, date_time.minute, date_time.second
     );
+}
+
+Date date_now(void) {
+    return date_time_now().date;
+}
+
+Date date_of(int year, int month, int day) {
+    return date_time_of(year, month, day, 0, 0, 0).date;
+}
+
+Date (date_parse)(struct String string) {
+    int year, month, day, consumed;
+
+    const int count = sscanf(string.data, "%d-%d-%d%n", &year, &month, &day, &consumed);
+
+    if (count != 3 || consumed != string.length) {
+        set_error(DATE_TIME_FORMAT_ERROR, "failed to parse date time string '%s'", string.data);
+        return (Date) {};
+    }
+
+    return date_time_of(year, month, day, 0, 0, 0).date;
+}
+
+WeekDay date_week_day(Date date) {
+    return date_time_week_day(date_time_from(date, TIME_MIDNIGHT));
+}
+
+int date_year_day(Date date) {
+    return date_time_year_day(date_time_from(date, TIME_MIDNIGHT));
+}
+
+bool date_is_leap_year(Date date) {
+    return date_time_is_leap_year(date_time_from(date, TIME_MIDNIGHT));
+}
+
+bool date_is_after(Date date, Date other) {
+    return date_time_is_after(
+        date_time_from(date, TIME_MIDNIGHT),
+        date_time_from(other, TIME_MIDNIGHT)
+    );
+}
+
+bool date_is_before(Date date, Date other) {
+    return date_time_is_before(
+        date_time_from(date, TIME_MIDNIGHT),
+        date_time_from(other, TIME_MIDNIGHT)
+    );
+}
+
+bool date_is_equal(Date date, Date other) {
+    return date_time_is_equal(
+        date_time_from(date, TIME_MIDNIGHT),
+        date_time_from(other, TIME_MIDNIGHT)
+    );
+}
+
+bool date_is_valid(Date date) {
+    return date_time_is_valid(date_time_from(date, TIME_MIDNIGHT));
+}
+
+Date date_plus(Date date, int value, TimeUnit unit) {
+    return date_time_plus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
+}
+
+Date date_minus(Date date, int value, TimeUnit unit) {
+    return date_time_minus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
+}
+
+String date_format(Date date, const char* format) {
+    return date_time_format(date_time_from(date, TIME_MIDNIGHT), format);
+}
+
+String date_to_string(Date date) {
+    return date_time_to_string(date_time_from(date, TIME_MIDNIGHT));
+}
+
+Time time_now(void) {
+    return date_time_now().time;
+}
+
+Time time_of(int hour, int minute, int second) {
+    return date_time_of(1, 1, 1, hour, minute, second).time;
+}
+
+Time (time_parse)(struct String string) {
+    int hour, minute, second, consumed;
+
+    const int count = sscanf(string.data, "%d:%d:%d%n", &hour, &minute, &second, &consumed);
+
+    if (count != 3 || consumed != string.length) {
+        set_error(DATE_TIME_FORMAT_ERROR, "failed to parse date time string '%s'", string.data);
+        return (Time) {};
+    }
+
+    return date_time_of(1, 1, 1, hour, minute, second).time;
+}
+
+bool time_is_after(Time time, Time other) {
+    return date_time_is_after(
+        date_time_from(DATE_MIN, time),
+        date_time_from(DATE_MIN, other)
+    );
+}
+
+bool time_is_before(Time time, Time other) {
+    return date_time_is_before(
+        date_time_from(DATE_MIN, time),
+        date_time_from(DATE_MIN, other)
+    );
+}
+
+bool time_is_equal(Time time, Time other) {
+    return date_time_is_equal(
+        date_time_from(DATE_MIN, time),
+        date_time_from(DATE_MIN, other)
+    );
+}
+
+bool time_is_valid(Time time) {
+    return date_time_is_valid(date_time_from(DATE_MIN, time));
+}
+
+Time time_plus(Time time, int value, TimeUnit unit) {
+    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return (Time) {};
+    }
+    return date_time_plus(date_time_from(DATE_MIN, time), value, unit).time;
+}
+
+Time time_minus(Time time, int value, TimeUnit unit) {
+    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return (Time) {};
+    }
+    return date_time_minus(date_time_from(DATE_MIN, time), value, unit).time;
+}
+
+String time_format(Time time, const char* format) {
+    return date_time_format(date_time_from(DATE_MIN, time), format);
+}
+
+String time_to_string(Time time) {
+    return date_time_to_string(date_time_from(DATE_MIN, time));
 }

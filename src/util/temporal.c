@@ -4,17 +4,12 @@
 #include <time.h>
 #include <stdio.h>
 
-const Error DATE_TIME_ERROR                 = ERROR("DATE_TIME_ERROR", "date/time calculation failed");
-const Error DATE_TIME_INVALID_ERROR         = ERROR("DATE_TIME_INVALID_ERROR", "invalid date/time value");
-const Error DATE_TIME_FORMAT_ERROR          = ERROR("DATE_TIME_FORMAT_ERROR", "invalid date/time format");
+const Error DATE_TIME_ERROR          = ERROR("DATE_TIME_ERROR", "date/time calculation failed");
+const Error DATE_TIME_INVALID_ERROR  = ERROR("DATE_TIME_INVALID_ERROR", "invalid date/time value");
+const Error DATE_TIME_FORMAT_ERROR   = ERROR("DATE_TIME_FORMAT_ERROR", "invalid date/time format");
 
-#define require_valid_date_time(date_time)  require(date_time_is_valid(date_time), DATE_TIME_INVALID_ERROR)
-#define require_is_year(year)               require(year >= 1 && year <= 9999, DATE_TIME_INVALID_ERROR, "invalid year")
-#define require_is_month(month)             require(month >= 1 && month <= 12, DATE_TIME_INVALID_ERROR, "invalid month")
-#define require_is_day(day, month, year)    require(day >= 1 && day <= days_in_month(year, month), DATE_TIME_INVALID_ERROR, "invalid day")
-#define require_is_hour(hour)               require(hour >= 0 && hour <= 23, DATE_TIME_INVALID_ERROR, "invalid hour")
-#define require_is_minute(minute)           require(minute >= 0 && minute <= 59, DATE_TIME_INVALID_ERROR, "invalid minute")
-#define require_is_second(second)           require(second >= 0 && second <= 59, DATE_TIME_INVALID_ERROR, "invalid second")
+#define require_valid_date_time(date_time) \
+    require(date_time_is_valid(date_time), DATE_TIME_INVALID_ERROR)
 
 static bool is_leap_year(int year) {
     return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
@@ -57,6 +52,13 @@ DateTime date_time_now(void) {
         .second = local_time->tm_sec
     };
 }
+
+#define require_is_year(year)             require(year >= 1 && year <= 9999, DATE_TIME_INVALID_ERROR, "invalid year")
+#define require_is_month(month)           require(month >= 1 && month <= 12, DATE_TIME_INVALID_ERROR, "invalid month")
+#define require_is_day(day, month, year)  require(day >= 1 && day <= days_in_month(year, month), DATE_TIME_INVALID_ERROR, "invalid day")
+#define require_is_hour(hour)             require(hour >= 0 && hour <= 23, DATE_TIME_INVALID_ERROR, "invalid hour")
+#define require_is_minute(minute)         require(minute >= 0 && minute <= 59, DATE_TIME_INVALID_ERROR, "invalid minute")
+#define require_is_second(second)         require(second >= 0 && second <= 59, DATE_TIME_INVALID_ERROR, "invalid second")
 
 DateTime date_time_of(int year, int month, int day, int hour, int minute, int second) {
     if (require_is_year(year) || require_is_month(month) || require_is_day(day, month, year)) return (DateTime) {};
@@ -429,27 +431,24 @@ bool date_is_valid(Date date) {
     return date_time_is_valid(date_time_from(date, TIME_MIDNIGHT));
 }
 
+#define require_unit_date(unit) \
+    require(unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY, ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit)
+
 Date date_plus(Date date, int value, TimeUnit unit) {
-    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return (Date) {};
-    }
+    if (require_unit_date(unit)) return (Date) {};
+
     return date_time_plus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
 }
 
 Date date_minus(Date date, int value, TimeUnit unit) {
-    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return (Date) {};
-    }
+    if (require_unit_date(unit)) return (Date) {};
+
     return date_time_minus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
 }
 
 long date_difference(Date date, Date other, TimeUnit unit) {
-    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return -1;
-    }
+    if (require_unit_date(unit)) return -1;
+
     return date_time_difference(
         date_time_from(date, TIME_MIDNIGHT),
         date_time_from(other, TIME_MIDNIGHT),
@@ -513,27 +512,24 @@ bool time_is_valid(Time time) {
     return date_time_is_valid(date_time_from(DATE_MIN, time));
 }
 
+#define require_unit_time(unit) \
+    require(unit == HOUR || unit == MINUTE || unit == SECOND, ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit)
+
 Time time_plus(Time time, int value, TimeUnit unit) {
-    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return (Time) {};
-    }
+    if (require_unit_time(unit)) return (Time) {};
+
     return date_time_plus(date_time_from(DATE_MIN, time), value, unit).time;
 }
 
 Time time_minus(Time time, int value, TimeUnit unit) {
-    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return (Time) {};
-    }
+    if (require_unit_time(unit)) return (Time) {};
+
     return date_time_minus(date_time_from(DATE_MIN, time), value, unit).time;
 }
 
 long time_difference(Time time, Time other, TimeUnit unit) {
-    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
-        return -1;
-    }
+    if (require_unit_time(unit)) return -1;
+
     return date_time_difference(
         date_time_from(DATE_MIN, time),
         date_time_from(DATE_MIN, other),

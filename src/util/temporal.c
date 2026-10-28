@@ -243,6 +243,64 @@ DateTime date_time_minus(DateTime date_time, int value, TimeUnit unit) {
     return date_time_plus(date_time, (-1) * value, unit);
 }
 
+static int64 date_time_to_seconds(DateTime date_time) {
+    int year = date_time.year;
+    const int month = date_time.month;
+
+    year -= month <= 2;
+
+    const int era = year / 400;
+    const int year_of_era = year - era * 400;
+    const int month_of_year = month + (month > 2 ? -3 : 9);
+
+    const int day_of_year = (153 * month_of_year + 2) / 5 + date_time.date.day - 1;
+
+    const int day_of_era = year_of_era * 365 + year_of_era / 4
+                         - year_of_era / 100 + day_of_year;
+
+    return (int64) era * 146097 * 86400
+         + (int64) day_of_era * 86400
+         + date_time.hour * 3600
+         + date_time.minute * 60
+         + date_time.second;
+}
+
+static int date_time_compare(DateTime date_time, DateTime other) {
+    if (date_time_is_after(date_time, other)) return 1;
+    if (date_time_is_before(date_time, other)) return -1;
+    if (date_time_is_equal(date_time, other)) return 0;
+
+    return 0;
+}
+
+long date_time_difference(DateTime date_time, DateTime other, TimeUnit unit) {
+    if (require_valid_date_time(date_time)) return -1;
+    if (require_valid_date_time(other)) return -1;
+
+    if (unit == YEAR || unit == MONTH) {
+        int months = (other.year - date_time.year) * 12 + other.month - date_time.month;
+
+        const DateTime adjusted = date_time_plus(date_time, months, MONTH);
+        const int comparison = date_time_compare(adjusted, other);
+
+        if ((months > 0 && comparison > 0) || (months < 0 && comparison < 0)) {
+            months += months > 0 ? -1 : 1;
+        }
+        return unit == YEAR ? months / 12 : months;
+    }
+
+    const int64 seconds = date_time_to_seconds(other) - date_time_to_seconds(date_time);
+
+    switch (unit) {
+        case WEEK:    return seconds / 604800;
+        case DAY:     return seconds / 86400;
+        case HOUR:    return seconds / 3600;
+        case MINUTE:  return seconds / 60;
+        case SECOND:  return seconds;
+        default:      set_error(ILLEGAL_ARGUMENT_ERROR, "invalid time unit"); return 0;
+    }
+}
+
 String date_time_format(DateTime date_time, const char* format) {
     if (require_valid_date_time(date_time)) return nullptr;
     if (require_non_null(format)) return nullptr;
@@ -387,6 +445,18 @@ Date date_minus(Date date, int value, TimeUnit unit) {
     return date_time_minus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
 }
 
+long date_difference(Date date, Date other, TimeUnit unit) {
+    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return -1;
+    }
+    return date_time_difference(
+        date_time_from(date, TIME_MIDNIGHT),
+        date_time_from(other, TIME_MIDNIGHT),
+        unit
+    );
+}
+
 String date_format(Date date, const char* format) {
     return date_time_format(date_time_from(date, TIME_MIDNIGHT), format);
 }
@@ -457,6 +527,18 @@ Time time_minus(Time time, int value, TimeUnit unit) {
         return (Time) {};
     }
     return date_time_minus(date_time_from(DATE_MIN, time), value, unit).time;
+}
+
+long time_difference(Time time, Time other, TimeUnit unit) {
+    if (unit == YEAR || unit == MONTH || unit == WEEK || unit == DAY) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return -1;
+    }
+    return date_time_difference(
+        date_time_from(DATE_MIN, time),
+        date_time_from(DATE_MIN, other),
+        unit
+    );
 }
 
 String time_format(Time time, const char* format) {

@@ -303,6 +303,20 @@ DateTime date_time_plus(DateTime date_time, int value, TimeUnit unit);
 DateTime date_time_minus(DateTime date_time, int value, TimeUnit unit);
 
 /**
+ * @brief Calculates the difference between two date-times.
+ *
+ * @param date_time the starting date-time
+ * @param other the ending date-time
+ * @param unit the time unit
+ *
+ * @return the difference in the specified unit
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if date_time or other is invalid
+ */
+long date_time_difference(DateTime date_time, DateTime other, TimeUnit unit);
+
+/**
  * @brief Formats a date-time using one of the supported formats.
  *
  * @param date_time the date-time
@@ -482,6 +496,20 @@ Date date_plus(Date date, int value, TimeUnit unit);
 Date date_minus(Date date, int value, TimeUnit unit);
 
 /**
+ * @brief Calculates the difference between two dates.
+ *
+ * @param date the starting date
+ * @param other the ending date
+ * @param unit the time unit
+ *
+ * @return the difference in the specified unit
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if date or other is invalid
+ */
+long date_difference(Date date, Date other, TimeUnit unit);
+
+/**
  * @brief Formats a date using one of the supported formats.
  *
  * @param date the date
@@ -620,6 +648,20 @@ Time time_plus(Time time, int value, TimeUnit unit);
  * @exception DATE_TIME_ERROR if failed to calculate the resulting time-time
  */
 Time time_minus(Time time, int value, TimeUnit unit);
+
+/**
+ * @brief Calculates the difference between two times.
+ *
+ * @param time the starting time
+ * @param other the ending time
+ * @param unit the time unit
+ *
+ * @return the difference in the specified unit
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR if the time unit is invalid
+ * @exception DATE_TIME_INVALID_ERROR if time or other is invalid
+ */
+long time_difference(Time time, Time other, TimeUnit unit);
 
 /**
  * @brief Formats a time using one of the supported formats.

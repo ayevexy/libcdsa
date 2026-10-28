@@ -165,6 +165,28 @@ void test_date_time_minus() {
     TEST_ASSERT_DATE_TIME(2026, 10, 21, 22, 23, 30, date_time_minus(date_time, 3, DAY));
 }
 
+void test_date_time_difference() {
+    // given
+    DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
+    DateTime other = date_time_of(2000, 5, 19, 11, 47, 10);
+    // then
+    TEST_ASSERT_EQUAL(-26, date_time_difference(date_time, other, YEAR));
+    TEST_ASSERT_EQUAL(-317, date_time_difference(date_time, other, MONTH));
+    TEST_ASSERT_EQUAL(-1379, date_time_difference(date_time, other, WEEK));
+    TEST_ASSERT_EQUAL(-9'654, date_time_difference(date_time, other, DAY));
+    TEST_ASSERT_EQUAL(-231'706, date_time_difference(date_time, other, HOUR));
+    TEST_ASSERT_EQUAL(-13'902'396, date_time_difference(date_time, other, MINUTE));
+    TEST_ASSERT_EQUAL(-834'143'780, date_time_difference(date_time, other, SECOND));
+    // and
+    TEST_ASSERT_EQUAL(26, date_time_difference(other, date_time, YEAR));
+    TEST_ASSERT_EQUAL(317, date_time_difference(other, date_time, MONTH));
+    TEST_ASSERT_EQUAL(1379, date_time_difference(other, date_time, WEEK));
+    TEST_ASSERT_EQUAL(9'654, date_time_difference(other, date_time, DAY));
+    TEST_ASSERT_EQUAL(231'706, date_time_difference(other, date_time, HOUR));
+    TEST_ASSERT_EQUAL(13'902'396, date_time_difference(other, date_time, MINUTE));
+    TEST_ASSERT_EQUAL(834'143'780, date_time_difference(other, date_time, SECOND));
+}
+
 void test_date_time_format() {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
@@ -204,6 +226,7 @@ int main(void) {
     RUN_TEST(test_date_time_is_equal);
     RUN_TEST(test_date_time_plus);
     RUN_TEST(test_date_time_minus);
+    RUN_TEST(test_date_time_difference);
     RUN_TEST(test_date_time_to_string);
     RUN_TEST(test_date_time_format);
     return UNITY_END();

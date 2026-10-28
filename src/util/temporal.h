@@ -115,25 +115,25 @@ extern const Error DATE_TIME_FORMAT_ERROR;
 /**
  * @brief Supported date/time formats.
  */
-#define ISO_8601_DATE_TIME_FORMAT        "%Y-%m-%dT%H:%M:%S"          // 2026-10-25T17:30:45
-#define ISO_DATE_TIME_FORMAT             "%Y-%m-%d %H:%M:%S"          // 2026-10-25 17:30:45
-#define US_DATE_TIME_FORMAT              "%m/%d/%Y %H:%M:%S"          // 10/25/2026 17:30:45
-#define EUROPEAN_DATE_TIME_FORMAT        "%d/%m/%Y %H:%M:%S"          // 25/10/2026 17:30:45
-#define ASCTIME_DATE_TIME_FORMAT         "%a %b %d %H:%M:%S %Y"       // Sun Oct 25 17:30:45 2026
-#define FULL_DATE_TIME_FORMAT            "%A, %B %d, %Y %H:%M:%S"     // Sunday, October 25, 2026 17:30:45
+#define ISO_8601_DATE_TIME_FORMAT        "%04Y-%m-%dT%H:%M:%S"          // 2026-10-25T17:30:45
+#define ISO_DATE_TIME_FORMAT             "%04Y-%m-%d %H:%M:%S"          // 2026-10-25 17:30:45
+#define US_DATE_TIME_FORMAT              "%m/%d/%04Y %H:%M:%S"          // 10/25/2026 17:30:45
+#define EUROPEAN_DATE_TIME_FORMAT        "%d/%m/%04Y %H:%M:%S"          // 25/10/2026 17:30:45
+#define ASCTIME_DATE_TIME_FORMAT         "%a %b %d %H:%M:%S %04Y"       // Sun Oct 25 17:30:45 2026
+#define FULL_DATE_TIME_FORMAT            "%A, %B %d, %04Y %H:%M:%S"     // Sunday, October 25, 2026 17:30:45
 
-#define US_AM_PM_DATE_TIME_FORMAT        "%m/%d/%Y %I:%M:%S %p"       // 10/25/2026 05:30:45 PM
-#define EUROPEAN_AM_PM_DATE_TIME_FORMAT  "%d/%m/%Y %I:%M:%S %p"       // 25/10/2026 05:30:45 PM
-#define FULL_AM_PM_DATE_TIME_FORMAT      "%A, %B %d, %Y %I:%M:%S %p"  // Sunday, October 25, 2026 05:30:45 PM
+#define US_AM_PM_DATE_TIME_FORMAT        "%m/%d/%04Y %I:%M:%S %p"       // 10/25/2026 05:30:45 PM
+#define EUROPEAN_AM_PM_DATE_TIME_FORMAT  "%d/%m/%04Y %I:%M:%S %p"       // 25/10/2026 05:30:45 PM
+#define FULL_AM_PM_DATE_TIME_FORMAT      "%A, %B %d, %04Y %I:%M:%S %p"  // Sunday, October 25, 2026 05:30:45 PM
 
-#define ISO_DATE_FORMAT                  "%Y-%m-%d"                   // 2026-10-25
-#define US_DATE_FORMAT                   "%m/%d/%Y"                   // 10/25/2026
-#define EUROPEAN_DATE_FORMAT             "%d/%m/%Y"                   // 25/10/2026
-#define ASCTIME_DATE_FORMAT              "%a %b %d %Y"                // Sun Oct 25 2026
-#define FULL_DATE_FORMAT                 "%A, %B %d, %Y"              // Sunday, October 25, 2026
+#define ISO_DATE_FORMAT                  "%04Y-%m-%d"                   // 2026-10-25
+#define US_DATE_FORMAT                   "%m/%d/%04Y"                   // 10/25/2026
+#define EUROPEAN_DATE_FORMAT             "%d/%m/%04Y"                   // 25/10/2026
+#define ASCTIME_DATE_FORMAT              "%a %b %d %04Y"                // Sun Oct 25 2026
+#define FULL_DATE_FORMAT                 "%A, %B %d, %04Y"              // Sunday, October 25, 2026
 
-#define ISO_TIME_FORMAT                  "%H:%M:%S"                   // 17:30:45
-#define US_TIME_FORMAT                   "%I:%M:%S %p"                // 05:30:45 PM
+#define ISO_TIME_FORMAT                  "%H:%M:%S"                     // 17:30:45
+#define US_TIME_FORMAT                   "%I:%M:%S %p"                  // 05:30:45 PM
 
 /**
  * @brief Returns the current local date and time.

@@ -392,7 +392,9 @@ String date_format(Date date, const char* format) {
 }
 
 String date_to_string(Date date) {
-    return date_time_to_string(date_time_from(date, TIME_MIDNIGHT));
+    if (require_valid_date_time(date_time_from(date, TIME_MIDNIGHT))) return nullptr;
+
+    return string_format("%04d-%02d-%02d", date.year, date.month, date.day);
 }
 
 Time time_now(void) {
@@ -462,5 +464,7 @@ String time_format(Time time, const char* format) {
 }
 
 String time_to_string(Time time) {
-    return date_time_to_string(date_time_from(DATE_MIN, time));
+    if (require_valid_date_time(date_time_from(DATE_MIN, time))) return nullptr;
+
+    return string_format("%02d:%02d:%02d", time.hour, time.minute, time.second);
 }

@@ -372,10 +372,18 @@ bool date_is_valid(Date date) {
 }
 
 Date date_plus(Date date, int value, TimeUnit unit) {
+    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return (Date) {};
+    }
     return date_time_plus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
 }
 
 Date date_minus(Date date, int value, TimeUnit unit) {
+    if (unit == HOUR || unit == MINUTE || unit == SECOND) {
+        set_error(ILLEGAL_ARGUMENT_ERROR, "unsupported unit %d", unit);
+        return (Date) {};
+    }
     return date_time_minus(date_time_from(date, TIME_MIDNIGHT), value, unit).date;
 }
 

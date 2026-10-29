@@ -27,10 +27,28 @@ static void string_memory_dealloc(void* pointer) {
 
 static constexpr int NULL_TERMINATOR = 1;
 
-String (string_new)(struct String string) {
+struct String {
+    int length;
+    const char* data;
+    char buffer[];
+};
+
+StringView string_view_from_string(String string) {
+    return (StringView) { string ? string->length : 0, string ? string->data : nullptr };
+}
+
+StringView string_view_from_raw_string(const char* raw_string) {
+    return (StringView) { strlen(raw_string), (char*) raw_string };
+}
+
+char string_view_ignore_char(char c) {
+    return c;
+}
+
+String (string_new)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -42,10 +60,10 @@ String (string_new)(struct String string) {
     return new_string;
 }
 
-String (string_ref)(struct String string) {
+String (string_ref)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String));
+    String new_string = string_memory_try_alloc(sizeof(struct String));
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -55,7 +73,7 @@ String (string_ref)(struct String string) {
     return new_string;
 }
 
-String (string_static)(struct String string) {
+String (string_static)(StringView string) {
     constexpr int STRING_POOL_CAPACITY = 256;
     static alignas(struct String) uchar string_pool[STRING_POOL_CAPACITY * sizeof(struct String)];
     static int string_pool_size = 0;
@@ -66,7 +84,7 @@ String (string_static)(struct String string) {
         set_error(MEMORY_ALLOCATION_ERROR, "string pool exhausted");
         return nullptr;
     }
-    struct String* new_string = (struct String*) &string_pool[string_pool_size * sizeof(struct String)];
+    String new_string = (String) &string_pool[string_pool_size * sizeof(struct String)];
     new_string->length = string.length;
     new_string->data = string.data;
 
@@ -78,7 +96,7 @@ void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
 
-    string_memory_dealloc((struct String*) string);
+    string_memory_dealloc(string);
     *string_pointer = nullptr;
 }
 
@@ -88,7 +106,7 @@ void string_destroy_all(void) {
     allocator_reset(string_memory_allocator);
 }
 
-String (string_format)(struct String format, ...) {
+String (string_format)(StringView format, ...) {
     if (require_non_null(format.data)) return nullptr;
 
     va_list parameters = {};
@@ -96,7 +114,7 @@ String (string_format)(struct String format, ...) {
     const int length = vsnprintf(nullptr, 0, format.data, parameters);
     va_end(parameters);
 
-    struct String* string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    String string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -110,7 +128,7 @@ String (string_format)(struct String format, ...) {
     return string;
 }
 
-uint64 (string_hash)(struct String string) {
+uint64 (string_hash)(StringView string) {
     if (require_non_null(string.data)) return -1;
 
     const char* data = string.data;
@@ -121,7 +139,7 @@ uint64 (string_hash)(struct String string) {
     return hash;
 }
 
-char (string_char_at)(struct String string, int index) {
+char (string_char_at)(StringView string, int index) {
     if (require_non_null(string.data)) return '\0';
     if (index < 0 || index >= string.length) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, string.length);
@@ -130,20 +148,20 @@ char (string_char_at)(struct String string, int index) {
     return string.data[index];
 }
 
-int (string_length)(struct String string) {
+int (string_length)(StringView string) {
     return string.length;
 }
 
-const char* (string_data)(struct String string) {
+const char* (string_data)(StringView string) {
     return string.data;
 }
 
-bool (string_is_empty)(struct String string) {
+bool (string_is_empty)(StringView string) {
     if (require_non_null(string.data)) return false;
     return string.length == 0;
 }
 
-bool (string_is_blank)(struct String string) {
+bool (string_is_blank)(StringView string) {
     if (require_non_null(string.data)) return false;
     for (int i = 0; i < string.length; i++) {
         if (!isspace((uchar) string.data[i]))
@@ -152,7 +170,7 @@ bool (string_is_blank)(struct String string) {
     return true;
 }
 
-int (string_compare)(struct String string, struct String other_string) {
+int (string_compare)(StringView string, StringView other_string) {
     if (require_non_null(string.data, other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
@@ -161,7 +179,7 @@ int (string_compare)(struct String string, struct String other_string) {
     return strncmp(string.data, other_string.data, string.length);
 }
 
-int (string_compare_ignore_case)(struct String string, struct String other_string) {
+int (string_compare_ignore_case)(StringView string, StringView other_string) {
     if (require_non_null(string.data, other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
@@ -170,15 +188,15 @@ int (string_compare_ignore_case)(struct String string, struct String other_strin
     return strncasecmp(string.data, other_string.data, string.length);
 }
 
-bool (string_equals)(struct String string, struct String other_string) {
+bool (string_equals)(StringView string, StringView other_string) {
     return (string_compare)(string, other_string) == 0;
 }
 
-bool (string_equals_ignore_case)(struct String string, struct String other_string) {
+bool (string_equals_ignore_case)(StringView string, StringView other_string) {
     return (string_compare_ignore_case)(string, other_string) == 0;
 }
 
-int (string_index_of_char)(struct String string, char character) {
+int (string_index_of_char)(StringView string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = 0; i < string.length; i++) {
@@ -187,7 +205,7 @@ int (string_index_of_char)(struct String string, char character) {
     return -1;
 }
 
-int (string_last_index_of_char)(struct String string, char character) {
+int (string_last_index_of_char)(StringView string, char character) {
     if (require_non_null(string.data)) return 0;
 
     for (int i = string.length - 1; i >= 0; i--) {
@@ -196,7 +214,7 @@ int (string_last_index_of_char)(struct String string, char character) {
     return -1;
 }
 
-int (string_index_of_substring)(struct String string, struct String substring) {
+int (string_index_of_substring)(StringView string, StringView substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -210,7 +228,7 @@ int (string_index_of_substring)(struct String string, struct String substring) {
     return -1;
 }
 
-int (string_last_index_of_substring)(struct String string, struct String substring) {
+int (string_last_index_of_substring)(StringView string, StringView substring) {
     if (require_non_null(string.data, substring.data)) return 0;
 
     if (substring.length == 0) return 0;
@@ -224,31 +242,31 @@ int (string_last_index_of_substring)(struct String string, struct String substri
     return -1;
 }
 
-bool (string_contains)(struct String string, struct String substring) {
+bool (string_contains)(StringView string, StringView substring) {
     return string_index_of_substring(string, substring) >= 0;
 }
 
-bool (string_starts_with)(struct String string, struct String prefix) {
+bool (string_starts_with)(StringView string, StringView prefix) {
     if (require_non_null(string.data, prefix.data)) return false;
 
     return string.length >= prefix.length && memcmp(string.data, prefix.data, (bytes) prefix.length) == 0;
 }
 
-bool (string_ends_with)(struct String string, struct String suffix) {
+bool (string_ends_with)(StringView string, StringView suffix) {
     if (require_non_null(string.data, suffix.data)) return false;
 
     return string.length >= suffix.length
         && memcmp(string.data + string.length - suffix.length, suffix.data, (bytes) suffix.length) == 0;
 }
 
-String (string_trim)(struct String string) {
+String (string_trim)(StringView string) {
     String half = (string_trim_end)(string);
     String full = string_trim_start(half);
-    string_memory_dealloc((struct String*) half);
+    string_memory_dealloc(half);
     return full;
 }
 
-String (string_trim_start)(struct String string) {
+String (string_trim_start)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
     int start = 0;
@@ -257,7 +275,7 @@ String (string_trim_start)(struct String string) {
     }
     const int new_length = string.length - start;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -269,7 +287,7 @@ String (string_trim_start)(struct String string) {
     return new_string;
 }
 
-String (string_trim_end)(struct String string) {
+String (string_trim_end)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
     int end = string.length;
@@ -278,7 +296,7 @@ String (string_trim_end)(struct String string) {
     }
     const int new_length = end;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -290,7 +308,7 @@ String (string_trim_end)(struct String string) {
     return new_string;
 }
 
-String (string_substring)(struct String string, int start, int length) {
+String (string_substring)(StringView string, int start, int length) {
     if (require_non_null(string.data)) return nullptr;
 
     if (start < 0 || length < 0 || start > string.length) {
@@ -300,7 +318,7 @@ String (string_substring)(struct String string, int start, int length) {
     const int max_length = string.length - start;
     const int new_length = length > max_length ? max_length : length;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -312,12 +330,12 @@ String (string_substring)(struct String string, int start, int length) {
     return new_string;
 }
 
-String (string_concat)(struct String string, struct String other_string) {
+String (string_concat)(StringView string, StringView other_string) {
     if (require_non_null(string.data, other_string.data)) return nullptr;
 
     const int length = string.length + other_string.length;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -330,10 +348,10 @@ String (string_concat)(struct String string, struct String other_string) {
     return new_string;
 }
 
-String (string_replace_char)(struct String string, char character, char replacement) {
+String (string_replace_char)(StringView string, char character, char replacement) {
     if (require_non_null(string.data)) return nullptr;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -351,7 +369,7 @@ String (string_replace_char)(struct String string, char character, char replacem
     return new_string;
 }
 
-String (string_replace_substring)(struct String string, struct String target, struct String replacement) {
+String (string_replace_substring)(StringView string, StringView target, StringView replacement) {
     if (require_non_null(string.data, target.data, replacement.data)) return nullptr;
     if (target.length == 0) return nullptr;
 
@@ -363,7 +381,7 @@ String (string_replace_substring)(struct String string, struct String target, st
         }
     }
     const int new_length = string.length + count * (replacement.length - target.length);
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + new_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -387,7 +405,7 @@ String (string_replace_substring)(struct String string, struct String target, st
     return new_string;
 }
 
-String (string_repeat)(struct String string, int times) {
+String (string_repeat)(StringView string, int times) {
     if (require_non_null(string.data)) return nullptr;
 
     if (times < 0) {
@@ -396,7 +414,7 @@ String (string_repeat)(struct String string, int times) {
     }
     const int length = string.length * times;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -412,7 +430,7 @@ String (string_repeat)(struct String string, int times) {
     return new_string;
 }
 
-String (string_join)(struct String separator, ...) {
+String (string_join)(StringView separator, ...) {
     if (require_non_null(separator.data)) return nullptr;
 
     va_list parameters = {};
@@ -420,14 +438,14 @@ String (string_join)(struct String separator, ...) {
 
     va_start(parameters, separator);
     while (true) {
-        const struct String string = va_arg(parameters, struct String);
+        const StringView  string = va_arg(parameters, StringView );
         if (!string.data) break;
         total_length += string.length + separator.length;
     }
     total_length -= separator.length;
     va_end(parameters);
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + total_length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + total_length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -438,7 +456,7 @@ String (string_join)(struct String separator, ...) {
     va_start(parameters, separator);
     int offset = 0;
     while (true) {
-        const struct String string = va_arg(parameters, struct String);
+        const StringView  string = va_arg(parameters, StringView );
         if (!string.data) break;
 
         memory_copy(string.data, new_string->buffer + offset, string.length);
@@ -454,7 +472,7 @@ String (string_join)(struct String separator, ...) {
     return new_string;
 }
 
-Array(String) (string_split)(struct String string, char delimiter) {
+Array(String) (string_split)(StringView string, char delimiter) {
     if (require_non_null(string.data)) return nullptr;
     int count = 1;
     for (int i = 0; i < string.length; i++) {
@@ -462,7 +480,7 @@ Array(String) (string_split)(struct String string, char delimiter) {
             count++;
         }
     }
-    Array(String) strings = array_new(count, struct String);
+    Array(String) strings = array_new(count, String);
     if (!strings) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'strings'");
         return nullptr;
@@ -470,7 +488,7 @@ Array(String) (string_split)(struct String string, char delimiter) {
     int index = 0;
     for (int i = 0, start = 0; i <= string.length; i++) {
         if (string.data[i] == delimiter || i == string.length) {
-            struct String* new_string = string_memory_try_alloc(sizeof(struct String) + i - start + NULL_TERMINATOR);
+            String new_string = string_memory_try_alloc(sizeof(struct String) + i - start + NULL_TERMINATOR);
             if (!new_string) {
                 set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
                 return nullptr;
@@ -486,14 +504,14 @@ Array(String) (string_split)(struct String string, char delimiter) {
     return strings;
 }
 
-Array(String) (string_lines)(struct String string) {
+Array(String) (string_lines)(StringView string) {
     return (string_split)(string, '\n');
 }
 
-String (string_to_uppercase)(struct String string) {
+String (string_to_uppercase)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -508,10 +526,10 @@ String (string_to_uppercase)(struct String string) {
     return new_string;
 }
 
-String (string_to_lowercase)(struct String string) {
+String (string_to_lowercase)(StringView string) {
     if (require_non_null(string.data)) return nullptr;
 
-    struct String* new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
+    String new_string = string_memory_try_alloc(sizeof(struct String) + string.length + NULL_TERMINATOR);
     if (!new_string) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new string'");
         return nullptr;
@@ -601,31 +619,31 @@ static ulong parse_ulong(const char* string, ulong max) {
     return value;
 }
 
-short (string_to_short)(struct String string) {
+short (string_to_short)(StringView string) {
     return parse_long(string.data, SHRT_MIN, SHRT_MAX);
 }
 
-ushort (string_to_ushort)(struct String string) {
+ushort (string_to_ushort)(StringView string) {
     return parse_ulong(string.data, USHRT_MAX);
 }
 
-int (string_to_int)(struct String string) {
+int (string_to_int)(StringView string) {
     return parse_long(string.data, INT_MIN, INT_MAX);
 }
 
-uint (string_to_uint)(struct String string) {
+uint (string_to_uint)(StringView string) {
     return parse_ulong(string.data, UINT_MAX);
 }
 
-long (string_to_long)(struct String string) {
+long (string_to_long)(StringView string) {
     return parse_long(string.data, LONG_MIN, LONG_MAX);
 }
 
-ulong (string_to_ulong)(struct String string) {
+ulong (string_to_ulong)(StringView string) {
     return parse_ulong(string.data, ULONG_MAX);
 }
 
-long long (string_to_long_long)(struct String string) {
+long long (string_to_long_long)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
@@ -639,7 +657,7 @@ long long (string_to_long_long)(struct String string) {
     return value;
 }
 
-unsigned long long (string_to_ulong_long)(struct String string) {
+unsigned long long (string_to_ulong_long)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     if (string.data[0] == '-') {
@@ -658,7 +676,7 @@ unsigned long long (string_to_ulong_long)(struct String string) {
     return value;
 }
 
-float (string_to_float)(struct String string) {
+float (string_to_float)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
@@ -672,7 +690,7 @@ float (string_to_float)(struct String string) {
     return value;
 }
 
-double (string_to_double)(struct String string) {
+double (string_to_double)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
@@ -686,7 +704,7 @@ double (string_to_double)(struct String string) {
     return value;
 }
 
-long double (string_to_long_double)(struct String string) {
+long double (string_to_long_double)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
@@ -701,15 +719,15 @@ long double (string_to_long_double)(struct String string) {
 }
 
 uint64 string_hash_generic(const void* string) {
-    return (string_hash)(*((String) string));
+    return string_hash((String) string);
 }
 
 bool string_equals_generic(const void* string, const void* other_string) {
-    return (string_equals)(*((String) string), *((String) other_string));
+    return string_equals((String) string, (String) other_string);
 }
 
 int string_compare_generic(const void* string, const void* other_string) {
-    return (string_compare)(*((String) string), *((String) other_string));
+    return string_compare((String) string, (String) other_string);
 }
 
 void string_destroy_generic(void* string) {
@@ -717,19 +735,7 @@ void string_destroy_generic(void* string) {
 }
 
 String string_to_string_generic(const void* string) {
-    return string;
-}
-
-struct String string_self(String string) {
-    return string ? *string : (struct String) {};
-}
-
-struct String string_raw(const char* raw_string) {
-    return (struct String) { strlen(raw_string), (char*) raw_string };
-}
-
-char char_self(char c) {
-    return c;
+    return (String) string;
 }
 
 void string_array_destroy(Array(String) strings) {
@@ -759,7 +765,7 @@ StringBuilder* string_builder_init(StringBuilder* builder) {
     return builder;
 }
 
-void (string_builder_append)(StringBuilder* builder, struct String string) {
+void (string_builder_append)(StringBuilder* builder, StringView string) {
     if (require_non_null(builder)) return;
 
     if (builder->length + string.length >= builder->capacity) {
@@ -776,7 +782,7 @@ void (string_builder_append)(StringBuilder* builder, struct String string) {
     builder->buffer[builder->length] = '\0';
 }
 
-void (string_builder_insert)(StringBuilder* builder, int index, struct String string) {
+void (string_builder_insert)(StringBuilder* builder, int index, StringView string) {
     if (require_non_null(builder)) return;
 
     if (index < 0 || index > builder->length) {

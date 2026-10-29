@@ -208,9 +208,9 @@ int file_write_char(File* file, int character);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-#define file_write_string(file, string, ...) file_write_string(file, dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+#define file_write_string(file, string, ...) file_write_string(file, string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
-int (file_write_string)(File* file, struct String string, ...);
+int (file_write_string)(File* file, StringView string, ...);
 
 /**
  * @brief Enumeration of file seek origins.

@@ -77,7 +77,7 @@ DateTime date_time_from(Date date, Time time) {
     );
 }
 
-DateTime (date_time_parse)(struct String string) {
+DateTime (date_time_parse)(StringView string) {
     int year, month, day, hour, minute, second, consumed;
 
     const int count = sscanf(string.data, "%d-%d-%dT%d:%d:%d%n",
@@ -381,7 +381,7 @@ Date date_of(int year, int month, int day) {
     return date_time_of(year, month, day, 0, 0, 0).date;
 }
 
-Date (date_parse)(struct String string) {
+Date (date_parse)(StringView string) {
     int year, month, day, consumed;
 
     const int count = sscanf(string.data, "%d-%d-%d%n", &year, &month, &day, &consumed);
@@ -474,7 +474,7 @@ Time time_of(int hour, int minute, int second) {
     return date_time_of(1, 1, 1, hour, minute, second).time;
 }
 
-Time (time_parse)(struct String string) {
+Time (time_parse)(StringView string) {
     int hour, minute, second, consumed;
 
     const int count = sscanf(string.data, "%d:%d:%d%n", &hour, &minute, &second, &consumed);

@@ -97,9 +97,9 @@ String (system_read_line)(char* buffer, bytes size);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-#define system_write(string, ...) system_write(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+#define system_write(string, ...) system_write(string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
-void (system_write)(struct String string, ...);
+void (system_write)(StringView string, ...);
 
 /**
  * @brief Writes a string to the system output stream, then terminates the line.
@@ -110,9 +110,9 @@ void (system_write)(struct String string, ...);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-#define system_write_line(string, ...) system_write_line(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+#define system_write_line(string, ...) system_write_line(string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
-void (system_write_line)(struct String string, ...);
+void (system_write_line)(StringView string, ...);
 
 /**
  * @brief Writes a string to the system error stream.
@@ -123,9 +123,9 @@ void (system_write_line)(struct String string, ...);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-#define system_write_error(string, ...) system_write_error(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+#define system_write_error(string, ...) system_write_error(string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
-void (system_write_error)(struct String string, ...);
+void (system_write_error)(StringView string, ...);
 
 /**
  * @brief Writes a string to the system error stream, then terminates the line.
@@ -136,9 +136,9 @@ void (system_write_error)(struct String string, ...);
  * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
  * @exception FILE_SYSTEM_ERROR if a file system error occurs
  */
-#define system_write_error_line(string, ...) system_write_error_line(dispatch_string_type(string) __VA_OPT__(,) __VA_ARGS__)
+#define system_write_error_line(string, ...) system_write_error_line(string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
-void (system_write_error_line)(struct String string, ...);
+void (system_write_error_line)(StringView string, ...);
 
 /**
  * @brief Retrieves an environment variable value as a string.

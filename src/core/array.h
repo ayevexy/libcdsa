@@ -148,7 +148,7 @@ int (array_length)(const void*);
 
 void (array_destroy)(void*);
 
-typedef struct String const * String;
+typedef struct String * String;
 
 extern void string_array_destroy(Array(String));
 

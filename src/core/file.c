@@ -266,7 +266,7 @@ int file_write_char(File* file, int character) {
     return c;
 }
 
-int (file_write_string)(File* file, struct String string, ...) {
+int (file_write_string)(File* file, StringView string, ...) {
     if (require_non_null(file, string.data)) return -1;
 
     va_list parameters = {};
@@ -281,7 +281,7 @@ int (file_write_string)(File* file, struct String string, ...) {
     return bytes;
 }
 
-int file_write_string_variadic(File* file, struct String string, va_list parameters) {
+int file_write_string_variadic(File* file, StringView string, va_list parameters) {
     if (require_non_null(file, string.data)) return -1;
 
     const int bytes = vfprintf(file->self, string.data, parameters);

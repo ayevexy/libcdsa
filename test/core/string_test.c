@@ -19,8 +19,8 @@ void test_create_new_string() {
     // when
     String string = string_new(raw_string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
-    TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen(raw_string), string_length(string));
     // clean up
     string_destroy(&string);
 }
@@ -31,8 +31,8 @@ void test_create_reference_string() {
     // when
     String string = string_ref(raw_string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
-    TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen(raw_string), string_length(string));
     // clean up
     string_destroy(&string);
 }
@@ -43,8 +43,8 @@ void test_create_static_string() {
     // when
     String string = string_static(raw_string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
-    TEST_ASSERT_EQUAL(strlen(raw_string), string->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen(raw_string), string_length(string));
 }
 
 void test_destroy_string() {
@@ -62,8 +62,8 @@ void test_create_formatted_string() {
     // when
     String string = string_format(format, 3, 0);
     // then
-    TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string->data);
-    TEST_ASSERT_EQUAL(strlen(format->data) - 2, string->length);
+    TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen(string_data(format)) - 2, string_length(string));
     // clean up
     string_destroy(&format, &string);
 }
@@ -320,8 +320,8 @@ void test_string_trim() {
     // when
     String trimmed = string_trim(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", trimmed->data);
-    TEST_ASSERT_EQUAL(strlen("Hello World!"), trimmed->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(trimmed));
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), string_length(trimmed));
     // clean up
     string_destroy(&string, &trimmed);
 }
@@ -332,8 +332,8 @@ void test_string_trim_start() {
     // when
     String trimmed = string_trim_start(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!  ", trimmed->data);
-    TEST_ASSERT_EQUAL(strlen("Hello World!  "), trimmed->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!  ", string_data(trimmed));
+    TEST_ASSERT_EQUAL(strlen("Hello World!  "), string_length(trimmed));
     // clean up
     string_destroy(&string, &trimmed);
 }
@@ -344,8 +344,8 @@ void test_string_trim_end() {
     // when
     String trimmed = string_trim_end(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("  Hello World!", trimmed->data);
-    TEST_ASSERT_EQUAL(strlen("  Hello World!"), trimmed->length);
+    TEST_ASSERT_EQUAL_STRING("  Hello World!", string_data(trimmed));
+    TEST_ASSERT_EQUAL(strlen("  Hello World!"), string_length(trimmed));
     // clean up
     string_destroy(&string, &trimmed);
 }
@@ -356,8 +356,8 @@ void test_string_substring() {
     // when
     String substring = string_substring(string, 1, 4);
     // then
-    TEST_ASSERT_EQUAL_STRING("ello", substring->data);
-    TEST_ASSERT_EQUAL(strlen("ello"), substring->length);
+    TEST_ASSERT_EQUAL_STRING("ello", string_data(substring));
+    TEST_ASSERT_EQUAL(strlen("ello"), string_length(substring));
     // clean up
     string_destroy(&string, &substring);
 }
@@ -393,8 +393,8 @@ void test_string_concat() {
     // when
     String hello_world = string_concat(hello, world);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", hello_world->data);
-    TEST_ASSERT_EQUAL(hello->length + world->length, hello_world->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(hello_world));
+    TEST_ASSERT_EQUAL(string_length(hello) + string_length(world), string_length(hello_world));
     // clean up
     string_destroy(&hello, &world, &hello_world);
 }
@@ -405,7 +405,7 @@ void test_string_replace_char() {
     // when
     String replaced = string_replace(hello, 'o', '0');
     // then
-    TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", replaced->data);
+    TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", string_data(replaced));
     // clean up
     string_destroy(&hello, &replaced);
 }
@@ -416,8 +416,8 @@ void test_string_replace_substring() {
     // when
     String replaced = string_replace(hello, "ll", "123");
     // then
-    TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", replaced->data);
-    TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), replaced->length);
+    TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", string_data(replaced));
+    TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), string_length(replaced));
     // clean up
     string_destroy(&hello, &replaced);
 }
@@ -428,8 +428,8 @@ void test_string_repeat() {
     // when
     String hello_n_times = string_repeat(hello, 3);
     // then
-    TEST_ASSERT_EQUAL_STRING("HelloHelloHello", hello_n_times->data);
-    TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), hello_n_times->length);
+    TEST_ASSERT_EQUAL_STRING("HelloHelloHello", string_data(hello_n_times));
+    TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), string_length(hello_n_times));
     // clean up
     string_destroy(&hello, &hello_n_times);
 }
@@ -454,8 +454,8 @@ void test_string_join() {
     // when
     String full_hello_world = string_join(" ", hello, world, exclamation);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World !!!", full_hello_world->data);
-    TEST_ASSERT_EQUAL(strlen("Hello World !!!"), full_hello_world->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World !!!", string_data(full_hello_world));
+    TEST_ASSERT_EQUAL(strlen("Hello World !!!"), string_length(full_hello_world));
     // clean up
     string_destroy(&hello, &world, &exclamation, &full_hello_world);
 }
@@ -466,14 +466,14 @@ void test_string_split() {
     // when
     Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
-    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
+    TEST_ASSERT_EQUAL_STRING("Hello", string_data(strings[0]));
+    TEST_ASSERT_EQUAL(strlen("Hello"), string_length(strings[0]));
     // and
-    TEST_ASSERT_EQUAL_STRING("World", strings[1]->data);
-    TEST_ASSERT_EQUAL(strlen("World"), strings[1]->length);
+    TEST_ASSERT_EQUAL_STRING("World", string_data(strings[1]));
+    TEST_ASSERT_EQUAL(strlen("World"), string_length(strings[1]));
     // and
-    TEST_ASSERT_EQUAL_STRING("!!!", strings[2]->data);
-    TEST_ASSERT_EQUAL(strlen("!!!"), strings[2]->length);
+    TEST_ASSERT_EQUAL_STRING("!!!", string_data(strings[2]));
+    TEST_ASSERT_EQUAL(strlen("!!!"), string_length(strings[2]));
     // clean up
     string_destroy(&string);
     array_destroy(&strings);
@@ -485,8 +485,8 @@ void test_string_split_single_word() {
     // when
     Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello", strings[0]->data);
-    TEST_ASSERT_EQUAL(strlen("Hello"), strings[0]->length);
+    TEST_ASSERT_EQUAL_STRING("Hello", string_data(strings[0]));
+    TEST_ASSERT_EQUAL(strlen("Hello"), string_length(strings[0]));
     // clean up
     string_destroy(&string);
     array_destroy(&strings);
@@ -498,7 +498,7 @@ void test_string_split_empty() {
     // when
     Array(String) strings = string_split(string, ' ');
     // then
-    TEST_ASSERT_EQUAL_STRING_LEN("", strings[0]->data, strings[0]->length);
+    TEST_ASSERT_EQUAL_STRING_LEN("", string_data(strings[0]), string_length(strings[0]));
     // clean up
     string_destroy(&string);
     array_destroy(&strings);
@@ -510,7 +510,7 @@ void test_string_to_uppercase() {
     // when
     String uppercase = string_to_uppercase(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", uppercase->data);
+    TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", string_data(uppercase));
     // clean up
     string_destroy(&string, &uppercase);
 }
@@ -521,31 +521,31 @@ void test_string_to_lowercase() {
     // when
     String lowercase = string_to_lowercase(string);
     // then
-    TEST_ASSERT_EQUAL_STRING("hello world!", lowercase->data);
+    TEST_ASSERT_EQUAL_STRING("hello world!", string_data(lowercase));
     // clean up
     string_destroy(&string, &lowercase);
 }
 
 // String cleanup is intentionally omitted for simplicity.
 void test_string_value_of() {
-    TEST_ASSERT_EQUAL_STRING("true", string_value_of(true)->data);
-    TEST_ASSERT_EQUAL_STRING("\n", string_value_of((char) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("true", string_data(string_value_of(true)));
+    TEST_ASSERT_EQUAL_STRING("\n", string_data(string_value_of((char) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((short) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned short) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((short) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned short) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((int) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned int) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((int) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned int) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((long) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned long) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((long long) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10", string_value_of((unsigned long long) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((long long) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned long long) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((float) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((double) 10)->data);
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_value_of((long double) 10)->data);
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((float) 10)));
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((double) 10)));
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((long double) 10)));
 }
 
 void test_string_to_number() {
@@ -687,8 +687,8 @@ void test_string_builder_to_string() {
     // when
     String string = string_builder_to_string(sb);
     // then
-    TEST_ASSERT_EQUAL_STRING("Hello World!", string->data);
-    TEST_ASSERT_EQUAL(strlen("Hello World!"), string->length);
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen("Hello World!"), string_length(string));
     // cleanup
     string_destroy(&string);
     string_builder_destroy(&sb);

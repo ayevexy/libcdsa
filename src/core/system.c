@@ -20,7 +20,7 @@ static File* system_output_stream;
 
 static File* system_error_stream;
 
-extern int file_write_string_variadic(File*, struct String, va_list);
+extern int file_write_string_variadic(File*, StringView, va_list);
 
 File* system_input(void) {
     static File system_standard_input_stream;
@@ -75,7 +75,7 @@ String (system_read_line)(char* buffer, bytes size) {
     return (file_read_line)(system_input(), buffer, size);
 }
 
-void (system_write)(struct String string, ...) {
+void (system_write)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
@@ -83,7 +83,7 @@ void (system_write)(struct String string, ...) {
     va_end(parameters);
 }
 
-void (system_write_line)(struct String string, ...) {
+void (system_write_line)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
@@ -93,7 +93,7 @@ void (system_write_line)(struct String string, ...) {
     file_write_char(system_output(), '\n');
 }
 
-void (system_write_error)(struct String string, ...) {
+void (system_write_error)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
@@ -101,7 +101,7 @@ void (system_write_error)(struct String string, ...) {
     va_end(parameters);
 }
 
-void (system_write_error_line)(struct String string, ...) {
+void (system_write_error_line)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 

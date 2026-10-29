@@ -20,16 +20,42 @@ extern Allocator* string_memory_allocator;
 /**
  * @brief String type abstraction over c-strings. The String type is immutable
  * and all operations that would modify a string return a new modified version instead.
- * Accessing its fields directly is discouraged.
+ * The String type is opaque.
  *
  * Memory ownership:
  * - String must be freed using `string_destroy()`, except for strings created by `string_static()`.
  */
-typedef struct String {
-    int length;
-    const char* data;
-    char buffer[]; // internal
-} const * String;
+typedef struct String * String;
+
+/**
+ * @brief A non-owning view of a string, intended for use as a function parameter only.
+ * The view does not manage the lifetime of the underlying character data.
+ */
+typedef struct {
+    const int length;
+    const char* const data;
+} StringView;
+
+/**
+ * @brief Creates a string view.
+ *
+ * @param string the string
+ *
+ * @return the string view
+ */
+#define string_view(string) (_Generic((string),     \
+    String: string_view_from_string,                \
+    const char*: string_view_from_raw_string,       \
+    char*: string_view_from_raw_string,             \
+    int: string_view_ignore_char,                   \
+    char: string_view_ignore_char                   \
+)(string))
+
+StringView string_view_from_string(String string);
+
+StringView string_view_from_raw_string(const char* raw_string);
+
+char string_view_ignore_char(char c);
 
 /**
  * @brief Creates a new allocated string copying another string.
@@ -41,9 +67,9 @@ typedef struct String {
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_new(string) string_new(dispatch_string_type(string))
+#define string_new(string) string_new(string_view(string))
 
-String (string_new)(struct String string);
+String (string_new)(StringView string);
 
 /**
  * @brief Creates a new allocated string that references an existing string.
@@ -55,9 +81,9 @@ String (string_new)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_ref(string) string_ref(dispatch_string_type(string))
+#define string_ref(string) string_ref(string_view(string))
 
-String (string_ref)(struct String string);
+String (string_ref)(StringView string);
 
 /**
  * @brief Returns a static-storage string that references an existing string.
@@ -69,9 +95,9 @@ String (string_ref)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if the string pool is exhausted
  */
-#define string_static(string) string_static(dispatch_string_type(string))
+#define string_static(string) string_static(string_view(string))
 
-String (string_static)(struct String string);
+String (string_static)(StringView string);
 
 /**
  * @brief Destroys previously allocated strings.
@@ -128,9 +154,9 @@ void string_destroy_all(void);
  * @exception NULL_POINTER_ERROR if format.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_format(format, ...) string_format(dispatch_string_type(format), __VA_ARGS__)
+#define string_format(format, ...) string_format(string_view(format), __VA_ARGS__)
 
-String (string_format)(struct String format, ...);
+String (string_format)(StringView format, ...);
 
 /**
  * @brief Calculates the hash value of a string.
@@ -141,9 +167,9 @@ String (string_format)(struct String format, ...);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_hash(string) string_hash(dispatch_string_type(string))
+#define string_hash(string) string_hash(string_view(string))
 
-uint64 (string_hash)(struct String string);
+uint64 (string_hash)(StringView string);
 
 /**
  * @brief Retrieves the character at the specified position of the string.
@@ -156,9 +182,9 @@ uint64 (string_hash)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index >= string.length
  */
-#define string_char_at(string, index) string_char_at(dispatch_string_type(string), index)
+#define string_char_at(string, index) string_char_at(string_view(string), index)
 
-char (string_char_at)(struct String string, int index);
+char (string_char_at)(StringView string, int index);
 
 /**
  * @brief Retrieves the length of a string.
@@ -169,9 +195,9 @@ char (string_char_at)(struct String string, int index);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_length(string) string_length(dispatch_string_type(string))
+#define string_length(string) string_length(string_view(string))
 
-int (string_length)(struct String string);
+int (string_length)(StringView string);
 
 /**
  * @brief Retrieves the data of a string.
@@ -182,9 +208,9 @@ int (string_length)(struct String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_data(string) string_data(dispatch_string_type(string))
+#define string_data(string) string_data(string_view(string))
 
-const char* (string_data)(struct String string);
+const char* (string_data)(StringView string);
 
 /**
  * @brief Checks whether the string is empty.
@@ -195,9 +221,9 @@ const char* (string_data)(struct String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_is_empty(string) string_is_empty(dispatch_string_type(string))
+#define string_is_empty(string) string_is_empty(string_view(string))
 
-bool (string_is_empty)(struct String string);
+bool (string_is_empty)(StringView string);
 
 /**
  * @brief Checks whether the string is blank.
@@ -208,9 +234,9 @@ bool (string_is_empty)(struct String string);
  *
  * @exception NULL_POINTER_ERROR if string.data is null
  */
-#define string_is_blank(string) string_is_blank(dispatch_string_type(string))
+#define string_is_blank(string) string_is_blank(string_view(string))
 
-bool (string_is_blank)(struct String string);
+bool (string_is_blank)(StringView string);
 
 /**
  * @brief Compares two strings lexicographically.
@@ -222,9 +248,9 @@ bool (string_is_blank)(struct String string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_compare(string, other_string) string_compare(dispatch_string_type(string), dispatch_string_type(other_string))
+#define string_compare(string, other_string) string_compare(string_view(string), string_view(other_string))
 
-int (string_compare)(struct String string, struct String other_string);
+int (string_compare)(StringView string, StringView other_string);
 
 /**
  * @brief Compares two strings lexicographically ignoring case.
@@ -236,9 +262,9 @@ int (string_compare)(struct String string, struct String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_compare_ignore_case(string, other_string) string_compare_ignore_case(dispatch_string_type(string), dispatch_string_type(other_string))
+#define string_compare_ignore_case(string, other_string) string_compare_ignore_case(string_view(string), string_view(other_string))
 
-int (string_compare_ignore_case)(struct String string, struct String other_string);
+int (string_compare_ignore_case)(StringView string, StringView other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals.
@@ -250,9 +276,9 @@ int (string_compare_ignore_case)(struct String string, struct String other_strin
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_equals(string, other_string) string_equals(dispatch_string_type(string), dispatch_string_type(other_string))
+#define string_equals(string, other_string) string_equals(string_view(string), string_view(other_string))
 
-bool (string_equals)(struct String string, struct String other_string);
+bool (string_equals)(StringView string, StringView other_string);
 
 /**
  * @brief Checks whether two strings are lexicographically equals ignoring case.
@@ -264,9 +290,9 @@ bool (string_equals)(struct String string, struct String other_string);
  *
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  */
-#define string_equals_ignore_case(string, other_string) string_equals_ignore_case(dispatch_string_type(string), dispatch_string_type(other_string))
+#define string_equals_ignore_case(string, other_string) string_equals_ignore_case(string_view(string), string_view(other_string))
 
-bool (string_equals_ignore_case)(struct String string, struct String other_string);
+bool (string_equals_ignore_case)(StringView string, StringView other_string);
 
 /**
  * @brief Retrieves the index of the first occurrence of the specified character or substring in the string.
@@ -282,11 +308,11 @@ bool (string_equals_ignore_case)(struct String string, struct String other_strin
     char: string_index_of_char,                                 \
     int:  string_index_of_char,                                 \
     default: string_index_of_substring                          \
-)(dispatch_string_type(string), dispatch_string_type(needle))
+)(string_view(string), string_view(needle))
 
-int string_index_of_char(struct String string, char character);
+int string_index_of_char(StringView string, char character);
 
-int string_index_of_substring(struct String string, struct String substring);
+int string_index_of_substring(StringView string, StringView substring);
 
 /**
  * @brief Retrieves the index of the last occurrence of the specified character or substring in the string.
@@ -302,11 +328,11 @@ int string_index_of_substring(struct String string, struct String substring);
     char: string_last_index_of_char,                                \
     int:  string_last_index_of_char,                                \
     default: string_last_index_of_substring                         \
-)(dispatch_string_type(string), dispatch_string_type(needle))
+)(string_view(string), string_view(needle))
 
-int string_last_index_of_char(struct String string, char character);
+int string_last_index_of_char(StringView string, char character);
 
-int string_last_index_of_substring(struct String string, struct String substring);
+int string_last_index_of_substring(StringView string, StringView substring);
 
 /**
  * @brief Checks whether a substring is present in the string.
@@ -318,9 +344,9 @@ int string_last_index_of_substring(struct String string, struct String substring
  *
  * @exception NULL_POINTER_ERROR if string.data || substring.data is null
  */
-#define string_contains(string, substring) string_contains(dispatch_string_type(string), dispatch_string_type(substring))
+#define string_contains(string, substring) string_contains(string_view(string), string_view(substring))
 
-bool (string_contains)(struct String string, struct String substring);
+bool (string_contains)(StringView string, StringView substring);
 
 /**
  * @brief Checks whether a string starts with the specified prefix.
@@ -332,9 +358,9 @@ bool (string_contains)(struct String string, struct String substring);
  *
  * @exception NULL_POINTER_ERROR if string.data || prefix.data is null
  */
-#define string_starts_with(string, prefix) string_starts_with(dispatch_string_type(string), dispatch_string_type(prefix))
+#define string_starts_with(string, prefix) string_starts_with(string_view(string), string_view(prefix))
 
-bool (string_starts_with)(struct String string, struct String prefix);
+bool (string_starts_with)(StringView string, StringView prefix);
 
 /**
  * @brief Checks whether a string ends with the specified suffix.
@@ -346,9 +372,9 @@ bool (string_starts_with)(struct String string, struct String prefix);
  *
  * @exception NULL_POINTER_ERROR if string.data || suffix.data is null
  */
-#define string_ends_with(string, prefix) string_ends_with(dispatch_string_type(string), dispatch_string_type(prefix))
+#define string_ends_with(string, prefix) string_ends_with(string_view(string), string_view(prefix))
 
-bool (string_ends_with)(struct String string, struct String suffix);
+bool (string_ends_with)(StringView string, StringView suffix);
 
 /**
  * @brief Removes all white spaces from both the beginning and the end of the string.
@@ -360,9 +386,9 @@ bool (string_ends_with)(struct String string, struct String suffix);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim(string) string_trim(dispatch_string_type(string))
+#define string_trim(string) string_trim(string_view(string))
 
-String (string_trim)(struct String string);
+String (string_trim)(StringView string);
 
 /**
  * @brief Removes all white spaces from the beginning of the string.
@@ -374,9 +400,9 @@ String (string_trim)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim_start(string) string_trim_start(dispatch_string_type(string))
+#define string_trim_start(string) string_trim_start(string_view(string))
 
-String (string_trim_start)(struct String string);
+String (string_trim_start)(StringView string);
 
 /**
  * @brief Removes all white spaces from the end of the string.
@@ -388,9 +414,9 @@ String (string_trim_start)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_trim_end(string) string_trim_end(dispatch_string_type(string))
+#define string_trim_end(string) string_trim_end(string_view(string))
 
-String (string_trim_end)(struct String string);
+String (string_trim_end)(StringView string);
 
 /**
  * @brief Creates a substring of the string with the specified position and length.
@@ -405,9 +431,9 @@ String (string_trim_end)(struct String string);
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if start < 0 || length < 0 || start > string.length
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_substring(string, start, length) string_substring(dispatch_string_type(string), start, length)
+#define string_substring(string, start, length) string_substring(string_view(string), start, length)
 
-String (string_substring)(struct String string, int start, int length);
+String (string_substring)(StringView string, int start, int length);
 
 /**
  * @brief Concatenates two strings into a new allocated string.
@@ -420,9 +446,9 @@ String (string_substring)(struct String string, int start, int length);
  * @exception NULL_POINTER_ERROR if string.data || other_string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_concat(string, other_string) string_concat(dispatch_string_type(string), dispatch_string_type(other_string))
+#define string_concat(string, other_string) string_concat(string_view(string), string_view(other_string))
 
-String (string_concat)(struct String string, struct String other_string);
+String (string_concat)(StringView string, StringView other_string);
 
 /**
  * Replaces all occurrences of a character or substring in the string with a new one.
@@ -440,11 +466,11 @@ String (string_concat)(struct String string, struct String other_string);
     char: string_replace_char,                                                                      \
     int: string_replace_char,                                                                       \
     default: string_replace_substring                                                               \
-)(dispatch_string_type(string), dispatch_string_type(target), dispatch_string_type(replacement))
+)(string_view(string), string_view(target), string_view(replacement))
 
-String string_replace_char(struct String string, char character, char replacement);
+String string_replace_char(StringView string, char character, char replacement);
 
-String string_replace_substring(struct String string, struct String target, struct String replacement);
+String string_replace_substring(StringView string, StringView target, StringView replacement);
 
 /**
  * @brief Concatenates the same string n times.
@@ -458,25 +484,25 @@ String string_replace_substring(struct String string, struct String target, stru
  * @exception ILLEGAL_ARGUMENT_ERROR if times is negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_repeat(string, times) string_repeat(dispatch_string_type(string), times)
+#define string_repeat(string, times) string_repeat(string_view(string), times)
 
-String (string_repeat)(struct String string, int times);
+String (string_repeat)(StringView string, int times);
 
 /**
  * @brief Concatenates n strings repeatedly inserting the specified separator between them.
  *
  * @param separator the separator
- * @param ... a string list (terminated by a null string `(struct String) {}`)
+ * @param ... a string list (terminated by a null string `(StringView) {}`)
  *
  * @return a new allocated string
  *
  * @exception NULL_POINTER_ERROR if separator.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  *
- * @warning the string list MUST be terminated by a `(struct String) {}` element, otherwise, it's undefined behavior
+ * @warning the string list MUST be terminated by a `(StringView) {}` element, otherwise, it's undefined behavior
  *  this macro automatically inserts the null string.
  */
-#define string_join(separator, ...) string_join(dispatch_string_type(separator), dispatch_string_join(__VA_ARGS__,  \
+#define string_join(separator, ...) string_join(string_view(separator), dispatch_string_join(__VA_ARGS__,  \
     string_join_20,                                                                                                 \
     string_join_19,                                                                                                 \
     string_join_18,                                                                                                 \
@@ -501,28 +527,28 @@ String (string_repeat)(struct String string, int times);
 
 #define dispatch_string_join(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, NAME, ...) NAME
 
-#define string_join_20(s, ...) dispatch_string_type(s), string_join_19(__VA_ARGS__)
-#define string_join_19(s, ...) dispatch_string_type(s), string_join_18(__VA_ARGS__)
-#define string_join_18(s, ...) dispatch_string_type(s), string_join_17(__VA_ARGS__)
-#define string_join_17(s, ...) dispatch_string_type(s), string_join_16(__VA_ARGS__)
-#define string_join_16(s, ...) dispatch_string_type(s), string_join_15(__VA_ARGS__)
-#define string_join_15(s, ...) dispatch_string_type(s), string_join_14(__VA_ARGS__)
-#define string_join_14(s, ...) dispatch_string_type(s), string_join_13(__VA_ARGS__)
-#define string_join_13(s, ...) dispatch_string_type(s), string_join_12(__VA_ARGS__)
-#define string_join_12(s, ...) dispatch_string_type(s), string_join_11(__VA_ARGS__)
-#define string_join_11(s, ...) dispatch_string_type(s), string_join_10(__VA_ARGS__)
-#define string_join_10(s, ...) dispatch_string_type(s), string_join_9(__VA_ARGS__)
-#define string_join_9(s, ...) dispatch_string_type(s), string_join_8(__VA_ARGS__)
-#define string_join_8(s, ...) dispatch_string_type(s), string_join_7(__VA_ARGS__)
-#define string_join_7(s, ...) dispatch_string_type(s), string_join_6(__VA_ARGS__)
-#define string_join_6(s, ...) dispatch_string_type(s), string_join_5(__VA_ARGS__)
-#define string_join_5(s, ...) dispatch_string_type(s), string_join_4(__VA_ARGS__)
-#define string_join_4(s, ...) dispatch_string_type(s), string_join_3(__VA_ARGS__)
-#define string_join_3(s, ...) dispatch_string_type(s), string_join_2(__VA_ARGS__)
-#define string_join_2(s, ...) dispatch_string_type(s), string_join_1(__VA_ARGS__)
-#define string_join_1(s) dispatch_string_type(s), (struct String) {} // sentinel
+#define string_join_20(s, ...) string_view(s), string_join_19(__VA_ARGS__)
+#define string_join_19(s, ...) string_view(s), string_join_18(__VA_ARGS__)
+#define string_join_18(s, ...) string_view(s), string_join_17(__VA_ARGS__)
+#define string_join_17(s, ...) string_view(s), string_join_16(__VA_ARGS__)
+#define string_join_16(s, ...) string_view(s), string_join_15(__VA_ARGS__)
+#define string_join_15(s, ...) string_view(s), string_join_14(__VA_ARGS__)
+#define string_join_14(s, ...) string_view(s), string_join_13(__VA_ARGS__)
+#define string_join_13(s, ...) string_view(s), string_join_12(__VA_ARGS__)
+#define string_join_12(s, ...) string_view(s), string_join_11(__VA_ARGS__)
+#define string_join_11(s, ...) string_view(s), string_join_10(__VA_ARGS__)
+#define string_join_10(s, ...) string_view(s), string_join_9(__VA_ARGS__)
+#define string_join_9(s, ...) string_view(s), string_join_8(__VA_ARGS__)
+#define string_join_8(s, ...) string_view(s), string_join_7(__VA_ARGS__)
+#define string_join_7(s, ...) string_view(s), string_join_6(__VA_ARGS__)
+#define string_join_6(s, ...) string_view(s), string_join_5(__VA_ARGS__)
+#define string_join_5(s, ...) string_view(s), string_join_4(__VA_ARGS__)
+#define string_join_4(s, ...) string_view(s), string_join_3(__VA_ARGS__)
+#define string_join_3(s, ...) string_view(s), string_join_2(__VA_ARGS__)
+#define string_join_2(s, ...) string_view(s), string_join_1(__VA_ARGS__)
+#define string_join_1(s) string_view(s), (StringView) {} // sentinel
 
-String (string_join)(struct String separator, ...);
+String (string_join)(StringView separator, ...);
 
 /**
  * @brief Split a string into n strings by the specified delimiter.
@@ -537,9 +563,9 @@ String (string_join)(struct String separator, ...);
  *
  * @note the returned array must be freed manually (by `array_destroy()`).
  */
-#define string_split(string, delimiter) string_split(dispatch_string_type(string), delimiter)
+#define string_split(string, delimiter) string_split(string_view(string), delimiter)
 
-Array(String) (string_split)(struct String string, char delimiter);
+Array(String) (string_split)(StringView string, char delimiter);
 
 /**
  * @brief Split a string into multiple lines.
@@ -553,9 +579,9 @@ Array(String) (string_split)(struct String string, char delimiter);
  *
  * @note the returned array must be freed manually (by `array_destroy()`).
  */
-#define string_lines(string) string_lines(dispatch_string_type(string))
+#define string_lines(string) string_lines(string_view(string))
 
-Array(String) (string_lines)(struct String string);
+Array(String) (string_lines)(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters uppercased.
@@ -567,9 +593,9 @@ Array(String) (string_lines)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_to_uppercase(string) string_to_uppercase(dispatch_string_type(string))
+#define string_to_uppercase(string) string_to_uppercase(string_view(string))
 
-String (string_to_uppercase)(struct String string);
+String (string_to_uppercase)(StringView string);
 
 /**
  * @brief Creates a new allocated string from an existing one with all characters lowercased.
@@ -581,9 +607,9 @@ String (string_to_uppercase)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define string_to_lowercase(string) string_to_lowercase(dispatch_string_type(string))
+#define string_to_lowercase(string) string_to_lowercase(string_view(string))
 
-String (string_to_lowercase)(struct String string);
+String (string_to_lowercase)(StringView string);
 
 /**
  * @brief Converts a primitive value to its string representation.
@@ -632,9 +658,9 @@ String string_value_of_long_double(long double value);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_short(string) string_to_short(dispatch_string_type(string))
+#define string_to_short(string) string_to_short(string_view(string))
 
-short (string_to_short)(struct String string);
+short (string_to_short)(StringView string);
 
 /**
  * @brief Converts a string to an `ushort`.
@@ -646,9 +672,9 @@ short (string_to_short)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_ushort(string) string_to_ushort(dispatch_string_type(string))
+#define string_to_ushort(string) string_to_ushort(string_view(string))
 
-ushort (string_to_ushort)(struct String string);
+ushort (string_to_ushort)(StringView string);
 
 /**
  * @brief Converts a string to an `int`.
@@ -660,9 +686,9 @@ ushort (string_to_ushort)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_int(string) string_to_int(dispatch_string_type(string))
+#define string_to_int(string) string_to_int(string_view(string))
 
-int (string_to_int)(struct String string);
+int (string_to_int)(StringView string);
 
 /**
  * @brief Converts a string to a `uint`.
@@ -674,9 +700,9 @@ int (string_to_int)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_uint(string) string_to_uint(dispatch_string_type(string))
+#define string_to_uint(string) string_to_uint(string_view(string))
 
-uint (string_to_uint)(struct String string);
+uint (string_to_uint)(StringView string);
 
 /**
  * @brief Converts a string to a `long`.
@@ -688,9 +714,9 @@ uint (string_to_uint)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_long(string) string_to_long(dispatch_string_type(string))
+#define string_to_long(string) string_to_long(string_view(string))
 
-long (string_to_long)(struct String string);
+long (string_to_long)(StringView string);
 
 /**
  * @brief Converts a string to an `ulong`.
@@ -702,9 +728,9 @@ long (string_to_long)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_ulong(string) string_to_ulong(dispatch_string_type(string))
+#define string_to_ulong(string) string_to_ulong(string_view(string))
 
-ulong (string_to_ulong)(struct String string);
+ulong (string_to_ulong)(StringView string);
 
 /**
  * @brief Converts a string to a `long long`.
@@ -716,9 +742,9 @@ ulong (string_to_ulong)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_long_long(string) string_to_long_long(dispatch_string_type(string))
+#define string_to_long_long(string) string_to_long_long(string_view(string))
 
-long long (string_to_long_long)(struct String string);
+long long (string_to_long_long)(StringView string);
 
 /**
  * @brief Converts a string to an `unsigned long long`.
@@ -730,9 +756,9 @@ long long (string_to_long_long)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_ulong_long(string) string_to_ulong_long(dispatch_string_type(string))
+#define string_to_ulong_long(string) string_to_ulong_long(string_view(string))
 
-unsigned long long (string_to_ulong_long)(struct String string);
+unsigned long long (string_to_ulong_long)(StringView string);
 
 /**
  * @brief Converts a string to a `float`.
@@ -744,9 +770,9 @@ unsigned long long (string_to_ulong_long)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_float(string) string_to_float(dispatch_string_type(string))
+#define string_to_float(string) string_to_float(string_view(string))
 
-float (string_to_float)(struct String string);
+float (string_to_float)(StringView string);
 
 /**
  * @brief Converts a string to a `double`.
@@ -758,9 +784,9 @@ float (string_to_float)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_double(string) string_to_double(dispatch_string_type(string))
+#define string_to_double(string) string_to_double(string_view(string))
 
-double (string_to_double)(struct String string);
+double (string_to_double)(StringView string);
 
 /**
  * @brief Converts a string to a `long double`.
@@ -772,9 +798,9 @@ double (string_to_double)(struct String string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_long_double(string) string_to_long_double(dispatch_string_type(string))
+#define string_to_long_double(string) string_to_long_double(string_view(string))
 
-long double (string_to_long_double)(struct String string);
+long double (string_to_long_double)(StringView string);
 
 /**
  * @brief String hash function to be used in containers.
@@ -821,24 +847,6 @@ void string_destroy_generic(void* string);
  */
 String string_to_string_generic(const void* string);
 
-/* --------------------------------------------------------------------------------- */
-
-#define dispatch_string_type(string) (_Generic((string),    \
-    String: string_self,                                    \
-    const char*: string_raw,                                \
-    char*: string_raw,                                      \
-    int: char_self,                                         \
-    char: char_self                                         \
-)(string))
-
-struct String string_self(String string);
-
-struct String string_raw(const char* raw_string);
-
-char char_self(char c);
-
-/* --------------------------------------------------------------------------------- */
-
 /**
  * @brief The StringBuilder type represent a mutable resizable sequence of characters.
  * It should be used to dynamically create custom strings of variable size.
@@ -873,9 +881,9 @@ StringBuilder* string_builder_init(StringBuilder* builder);
  * @exception NULL_POINTER_ERROR if builder is null
  * @exception MEMORY_ALLOCATION_ERROR if failed to resize capacity
  */
-#define string_builder_append(builder, string) string_builder_append(builder, dispatch_string_type(string))
+#define string_builder_append(builder, string) string_builder_append(builder, string_view(string))
 
-void (string_builder_append)(StringBuilder* builder, struct String string);
+void (string_builder_append)(StringBuilder* builder, StringView string);
 
 /**
  * @brief Inserts a string at the specified position of the string builder character sequence.
@@ -888,9 +896,9 @@ void (string_builder_append)(StringBuilder* builder, struct String string);
  * @exception INDEX_OUT_OF_BOUNDS_ERROR if index < 0 || index > builder.capacity
  * @exception MEMORY_ALLOCATION_ERROR if failed to resize string builder capacity
  */
-#define string_builder_insert(builder, index, string) string_builder_insert(builder, index, dispatch_string_type(string))
+#define string_builder_insert(builder, index, string) string_builder_insert(builder, index, string_view(string))
 
-void (string_builder_insert)(StringBuilder* builder, int index, struct String string);
+void (string_builder_insert)(StringBuilder* builder, int index, StringView string);
 
 /**
  * @brief Constructs a string from the string builder character sequence current state.

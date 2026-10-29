@@ -184,9 +184,9 @@ DateTime date_time_from(Date date, Time time);
  * @exception DATE_TIME_FORMAT_ERROR if failed to parse the string
  * @exception DATE_TIME_INVALID_ERROR if the date-time value is invalid
  */
-#define date_time_parse(string) date_time_parse(dispatch_string_type(string))
+#define date_time_parse(string) date_time_parse(string_view(string))
 
-DateTime (date_time_parse)(struct String string);
+DateTime (date_time_parse)(StringView string);
 
 /**
  * @brief Returns the day of the week.
@@ -377,9 +377,9 @@ Date date_of(int year, int month, int day);
  * @exception DATE_TIME_FORMAT_ERROR if failed to parse the string
  * @exception DATE_TIME_INVALID_ERROR if the date value is invalid
  */
-#define date_parse(string) date_parse(dispatch_string_type(string))
+#define date_parse(string) date_parse(string_view(string))
 
-Date (date_parse)(struct String string);
+Date (date_parse)(StringView string);
 
 /**
  * @brief Returns the day of the week.
@@ -570,9 +570,9 @@ Time time_of(int hour, int minute, int second);
  * @exception DATE_TIME_FORMAT_ERROR if failed to parse the string
  * @exception DATE_TIME_INVALID_ERROR if the time value is invalid
  */
-#define time_parse(string) time_parse(dispatch_string_type(string))
+#define time_parse(string) time_parse(string_view(string))
 
-Time (time_parse)(struct String string);
+Time (time_parse)(StringView string);
 
 /**
  * @brief Determines whether one time is after another

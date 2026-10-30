@@ -37,6 +37,16 @@ void test_create_reference_string() {
     string_destroy(&string);
 }
 
+void test_create_local_string() {
+    // given
+    const char* raw_string = "Hello World!";
+    // when
+    String string = string_local(raw_string);
+    // then
+    TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(string));
+    TEST_ASSERT_EQUAL(strlen(raw_string), string_length(string));
+}
+
 void test_create_static_string() {
     // given
     const char* raw_string = "Hello World!";
@@ -698,6 +708,7 @@ int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_create_new_string);
     RUN_TEST(test_create_reference_string);
+    RUN_TEST(test_create_local_string);
     RUN_TEST(test_create_static_string);
     RUN_TEST(test_destroy_string);
     RUN_TEST(test_create_formatted_string);

@@ -1,0 +1,320 @@
+#ifndef LIBCDSA_SYNC_H
+#define LIBCDSA_SYNC_H
+
+#ifdef __linux__
+
+/**
+ * @file sync.h
+ * @brief Thread synchronization abstractions.
+ */
+
+#include "core/errors.h"
+
+/**
+ * @brief Synchronization error constant.
+ */
+extern const Error SYNCHRONIZATION_ERROR;
+
+/**
+ * @brief Represents a lock.
+ */
+typedef struct Lock Lock;
+
+/**
+ * @brief Creates a new lock.
+ *
+ * @return A pointer to the newly created lock or nullptr on failure
+ *
+ * @exception MEMORY_ALLOCATION_ERROR If failed to allocate memory
+ * @exception SYNCHRONIZATION_ERROR If failed to initialize the lock
+ */
+Lock* lock_new(void);
+
+/**
+ * @brief Destroys a lock.
+ *
+ * @param lock_pointer pointer to a lock pointer
+ *
+ * @exception NULL_POINTER_ERROR if lock_pointer or *lock_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the lock
+ *
+ * @post *lock_pointer == nullptr
+ */
+void lock_destroy(Lock** lock_pointer);
+
+/**
+ * @brief Lock modes.
+ */
+typedef enum {
+    SIMPLE_LOCK,
+    READ_LOCK,
+    WRITE_LOCK
+} LockMode;
+
+/**
+ * @brief Acquires a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If the lock could not be acquired
+ */
+#define lock_lock(lock, ...) lock_lock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_lock_(lock, mode, ...) lock_lock(lock, mode)
+
+void (lock_lock)(Lock* lock, LockMode mode);
+
+/**
+ * @brief Attempts to acquire a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @return true if the lock was successfully acquired, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If an error occurs
+ */
+#define lock_try_lock(lock, ...) lock_try_lock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_try_lock_(lock, mode, ...) lock_try_lock(lock, mode)
+
+bool (lock_try_lock)(Lock* lock, LockMode mode);
+
+/**
+ * @brief Releases a lock.
+ *
+ * @param lock the lock
+ * @param mode the lock mode (SIMPLE_LOCK by default)
+ *
+ * @exception NULL_POINTER_ERROR If lock is null
+ * @exception ILLEGAL_ARGUMENT_ERROR If an invalid lock mode is provided
+ * @exception SYNCHRONIZATION_ERROR If the lock could not be released
+ */
+#define lock_unlock(lock, ...) lock_unlock_(lock, __VA_OPT__(__VA_ARGS__,) SIMPLE_LOCK)
+
+#define lock_unlock_(lock, mode, ...) lock_unlock(lock, mode)
+
+void (lock_unlock)(Lock* lock, LockMode mode);
+
+/**
+ * @brief Represents a monitor.
+ */
+typedef struct Monitor Monitor;
+
+/**
+ * @brief Creates a new monitor.
+ *
+ * @return A pointer to the newly created monitor, or nullptr on failure
+ *
+ * @exception MEMORY_ALLOCATION_ERROR If failed to allocate memory
+ * @exception SYNCHRONIZATION_ERROR If failed to initialize the monitor
+ */
+Monitor* monitor_new(void);
+
+/**
+ * @brief Destroys a monitor.
+ *
+ * @param monitor_pointer pointer to a monitor pointer
+ *
+ * @exception NULL_POINTER_ERROR if monitor_pointer or *monitor_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the monitor
+ *
+ * @post *monitor_pointer == nullptr
+ */
+void monitor_destroy(Monitor** monitor_pointer);
+
+/**
+ * @brief Locks the monitor.
+ *
+ * @param monitor the monitor
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If the monitor could not be locked
+ */
+void monitor_lock(Monitor* monitor);
+
+/**
+ * @brief Attempts to lock the monitor.
+ *
+ * @param monitor the monitor
+ *
+ * @return true if the monitor was successfully locked, false otherwise
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If an error occurs
+ */
+bool monitor_try_lock(Monitor* monitor);
+
+/**
+ * @brief Unlocks the monitor.
+ *
+ * @param monitor the monitor
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If the monitor could not be unlocked
+ */
+void monitor_unlock(Monitor* monitor);
+
+/**
+ * @brief Waits for a notification from another thread.
+ *
+ * @param monitor the monitor
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If the thread could not wait on the monitor
+ */
+void monitor_wait(Monitor* monitor);
+
+/**
+ * @brief Notifies one thread waiting on the monitor.
+ *
+ * @param monitor the monitor
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If the notification could not be sent
+ */
+void monitor_notify(Monitor* monitor);
+
+/**
+ * @brief Notifies all threads waiting on the monitor.
+ *
+ * @param monitor the monitor
+ *
+ * @exception NULL_POINTER_ERROR If monitor is null
+ * @exception SYNCHRONIZATION_ERROR If the notification could not be sent
+ */
+void monitor_notify_all(Monitor* monitor);
+
+/**
+ * @brief Represents a semaphore.
+ */
+typedef struct Semaphore Semaphore;
+
+/**
+ * @brief Creates a new semaphore.
+ *
+ * @param permits initial number of available permits
+ *
+ * @return A pointer to the newly created semaphore, or nullptr on failure
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR If permits is negative
+ * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be initialized
+ */
+Semaphore* semaphore_new(int permits);
+
+/**
+ * @brief Destroys a semaphore.
+ *
+ * @param semaphore_pointer pointer to a semaphore pointer
+ *
+ * @exception NULL_POINTER_ERROR if semaphore_pointer or *semaphore_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the semaphore
+ *
+ * @post *semaphore_pointer == nullptr
+ *
+ * @warning The semaphore must not have threads blocked on it.
+ */
+void semaphore_destroy(Semaphore** semaphore_pointer);
+
+/**
+ * @brief Acquires a permit from the semaphore, blocking until one is available.
+ *
+ * @param semaphore the semaphore
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be acquired
+ */
+void semaphore_acquire(Semaphore* semaphore);
+
+/**
+ * @brief Attempts to acquire a permit from the semaphore without blocking
+ *
+ * @param semaphore the semaphore
+ *
+ * @return true if a permit was acquired, or false if no permit is available
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be queried
+ */
+bool semaphore_try_acquire(Semaphore* semaphore);
+
+/**
+ * @brief Releases a permit from the semaphore.
+ *
+ * @param semaphore the semaphore
+ *
+ * @exception NULL_POINTER_ERROR If semaphore is null
+ * @exception SYNCHRONIZATION_ERROR If the semaphore cannot be released
+ */
+void semaphore_release(Semaphore* semaphore);
+
+/**
+ * @brief Represents a barrier.
+ */
+typedef struct Barrier Barrier;
+
+/**
+ * @brief Creates a barrier for the specified number of threads.
+ *
+ * @param count number of threads that must reach the barrier before they are released
+ *
+ * @return A new barrier, or nullptr on failure
+ *
+ * @exception ILLEGAL_ARGUMENT_ERROR If count is zero or negative
+ * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
+ * @exception SYNCHRONIZATION_ERROR If the barrier cannot be initialized
+ */
+Barrier* barrier_new(int count);
+
+/**
+ * @brief Destroys a barrier.
+ *
+ * @param barrier_pointer pointer to a barrier pointer
+ *
+ * @exception NULL_POINTER_ERROR if barrier_pointer or *barrier_pointer is null
+ * @exception SYNCHRONIZATION_ERROR If failed to destroy the barrier
+ *
+ * @post *barrier_pointer == nullptr
+ */
+void barrier_destroy(Barrier** barrier_pointer);
+
+/**
+ * @brief Waits until all threads reach the barrier.
+ *
+ * The barrier is reusable after all waiting threads have been released
+ *
+ * @param barrier barrier to wait on
+ *
+ * @exception NULL_POINTER_ERROR If barrier is null
+ * @exception SYNCHRONIZATION_ERROR If waiting on the barrier fails
+ */
+void barrier_wait(Barrier* barrier);
+
+/**
+ * @brief Declares the state required for one-time initialization.
+ *
+ * @param callback initialization callback associated with the state
+ */
+#define DEFINE_ONCE(callback) static int once_##callback;
+
+/**
+ * @brief Executes an initialization callback once.
+ *
+ * The callback is executed at most once for the state declared by
+ * DEFINE_ONCE().
+ *
+ * @param callback initialization callback to execute
+ */
+#define initialize_once(callback) once_call(&once_##callback, (callback))
+
+void once_call(int* once, void (*callback)(void));
+
+#endif
+
+#endif

@@ -36,77 +36,77 @@
 /** @brief String implementation */
 #include "core/string.h"
 
+/** @brief Generic function pointer types for functional-style operations */
+#include "core/functions.h"
+
 /** @brief Pointer functions */
 #include "core/pointer.h"
 
-/** @brief Simple file handling abstraction */
-#include "core/file.h"
+/** @brief Optional value container */
+#include "core/optional.h"
 
 /** @brief Runtime System abstraction */
 #include "core/system.h"
 
-/** @brief Thread synchronization abstractions */
-#include "core/sync.h"
-
 /** @brief Dynamic array-based list implementation */
-#include "list/array_list.h"
+#include "collections/list/array_list.h"
 
 /** @brief Doubly-linked list implementation */
-#include "list/linked_list.h"
+#include "collections/list/linked_list.h"
 
 /** @brief List compile-time dispatch abstraction */
-#include "list/list.h"
+#include "collections/list/list.h"
 
 /** @brief A map entry */
-#include "map/map_entry.h"
+#include "collections/map/map_entry.h"
 
 /** @brief Hash table based map implementation */
-#include "map/hash_map.h"
+#include "collections/map/hash_map.h"
 
 /** @brief Self-balancing binary tree based map implementation */
-#include "map/tree_map.h"
+#include "collections/map/tree_map.h"
 
 /** @brief Map compile-time dispatch abstraction */
-#include "map/map.h"
+#include "collections/map/map.h"
 
 /** @brief Hash based set implementation */
-#include "set/hash_set.h"
+#include "collections/set/hash_set.h"
 
 /** @brief Self-balancing binary tree based set implementation */
-#include "set/tree_set.h"
+#include "collections/set/tree_set.h"
 
 /** @brief Set compile-time dispatch abstraction and common mathematical set operations */
-#include "set/set.h"
+#include "collections/set/set.h"
 
 /** @brief Double-ended queue implemented with a resizable array */
-#include "deque/deque.h"
+#include "collections/deque.h"
 
 /** @brief LIFO stack implemented with a resizable array */
-#include "stack/stack.h"
+#include "collections/stack.h"
 
 /** @brief FIFO queue implemented with a resizable array */
-#include "queue/queue.h"
+#include "collections/queue.h"
 
 /** @brief Heap based priority queue implementation */
-#include "priority_queue/priority_queue.h"
+#include "collections/priority_queue.h"
 
 /** @brief Algorithm-related enumerations */
-#include "util/algorithms.h"
+#include "collections/algorithms.h"
 
 /** @brief Collection abstraction view */
-#include "util/collection.h"
-
-/** @brief for-each iteration macro utility */
-#include "util/for_each.h"
-
-/** @brief Generic function pointer types for functional-style operations */
-#include "util/functions.h"
+#include "collections/collection.h"
 
 /** @brief Iterator abstraction */
-#include "util/iterator.h"
+#include "collections/iterator.h"
 
-/** @brief Optional value container */
-#include "util/optional.h"
+/** @brief for-each iteration macro utility */
+#include "collections/for_each.h"
+
+/** @brief Simple file handling abstraction */
+#include "util/file.h"
+
+/** @brief Thread synchronization abstractions */
+#include "util/sync.h"
 
 /** @brief Sequence API */
 #include "util/sequence.h"

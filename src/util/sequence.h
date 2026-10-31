@@ -6,12 +6,13 @@
  * @brief Sequence API.
  */
 
+#include "collections/collection.h"
+#include "collections/algorithms.h"
+
 #include "core/errors.h"
 #include "core/array.h"
-#include "algorithms.h"
-#include "functions.h"
-#include "collection.h"
-#include "optional.h"
+#include "core/functions.h"
+#include "core/optional.h"
 
 /**
  * A sequence is an abstraction over an existing collection that allows generic

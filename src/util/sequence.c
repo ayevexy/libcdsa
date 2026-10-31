@@ -1,9 +1,10 @@
 #include "sequence.h"
 
+#include "collections/list/list.h"
+#include "collections/set/set.h"
+
 #include "core/memory.h"
 #include "core/constraints.h"
-#include "list/list.h"
-#include "set/set.h"
 
 static constexpr int OPERATION_LIMIT = 15;
 static constexpr int SORT_OPERATION_LIMIT = 5;

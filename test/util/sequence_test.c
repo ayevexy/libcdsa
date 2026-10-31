@@ -1,6 +1,6 @@
 #include "util/sequence.h"
 
-#include "list/list.h"
+#include "collections/list/list.h"
 #include "../test_utilities.h"
 
 #include "unity.h"

@@ -34,43 +34,43 @@ Java Collections Framework, offering a familiar interface for developers with a 
 
 The library currently provides the following data structures:
 
-- [Array List](src/list/array_list.h): A dynamic, linear structure that stores elements contiguously in memory for fast random access.
-- [Linked List](src/list/linked_list.h): A dynamic, linear structure that stores elements in non-contiguous memory, linked by references.
-- [Hash Map](src/map/hash_map.h): An unordered associative structure mapping unique keys to values using a hash function.
-- [Tree Map](src/map/tree_map.h): An ordered associative structure mapping unique keys to values, backed by a binary search tree.
-- [Hash Set](src/set/hash_set.h): An unordered structure storing unique elements with hash-based lookup.
-- [Tree Set](src/set/tree_set.h): An ordered structure storing unique elements in a sorted manner, backed by a binary search tree.
-- [Deque](src/deque/deque.h): A linear structure allowing insertion and removal at both ends of the sequence.
-- [Stack](src/stack/stack.h): A linear LIFO structure where elements are inserted and removed from the top.
-- [Queue](src/queue/queue.h): A linear FIFO structure where elements are added at the rear and removed from the front.
-- [Priority Queue](src/priority_queue/priority_queue.h): A dynamic, linear structure that stores elements according to their priority in a queue.
+- [Array List](src/collections/list/array_list.h): A dynamic, linear structure that stores elements contiguously in memory for fast random access.
+- [Linked List](src/collections/list/linked_list.h): A dynamic, linear structure that stores elements in non-contiguous memory, linked by references.
+- [Hash Map](src/collections/map/hash_map.h): An unordered associative structure mapping unique keys to values using a hash function.
+- [Tree Map](src/collections/map/tree_map.h): An ordered associative structure mapping unique keys to values, backed by a binary search tree.
+- [Hash Set](src/collections/set/hash_set.h): An unordered structure storing unique elements with hash-based lookup.
+- [Tree Set](src/collections/set/tree_set.h): An ordered structure storing unique elements in a sorted manner, backed by a binary search tree.
+- [Deque](src/collections/deque.h): A linear structure allowing insertion and removal at both ends of the sequence.
+- [Stack](src/collections/stack.h): A linear LIFO structure where elements are inserted and removed from the top.
+- [Queue](src/collections/queue.h): A linear FIFO structure where elements are added at the rear and removed from the front.
+- [Priority Queue](src/collections/priority_queue.h): A dynamic, linear structure that stores elements according to their priority in a queue.
 
 There are also thin abstraction layers for list, map, and set types (compile-time dispatch):
 
-- [List](src/list/list.h): A thin abstraction layer for `ArrayList` and `LinkedList`.
-- [Map](src/map/map.h): A thin abstraction layer for `HashMap` and `TreeMap`.
-- [Set](src/set/set.h): A thin abstraction layer for `HashSet` and `TreeSet`.
+- [List](src/collections/list/list.h): A thin abstraction layer for `ArrayList` and `LinkedList`.
+- [Map](src/collections/map/map.h): A thin abstraction layer for `HashMap` and `TreeMap`.
+- [Set](src/collections/set/set.h): A thin abstraction layer for `HashSet` and `TreeSet`.
 
 Also, there is some other utilities which may be useful:
 
-- [Algorithms](src/util/algorithms.h): Algorithms related enumerations.
-- [Collection](src/util/collection.h): Collection view abstraction.
+- [Algorithms](src/collections/algorithms.h): Algorithms related enumerations.
+- [Collection](src/collections/collection.h): Collection view abstraction.
 - [Constraints](src/core/constraints.h): Pre-condition checks.
 - [Errors](src/core/errors.h): Built-in custom error handling system used by the library.
-- [For Each](src/util/for_each.h): For Each macro abstraction to iterate through collections.
-- [Functions](src/util/functions.h): Functions typedefs and default implementations.
+- [For Each](src/collections/for_each.h): For Each macro abstraction to iterate through collections.
+- [Functions](src/core/functions.h): Functions typedefs and default implementations.
 - [Pointer](src/core/pointer.h): Default functions for the library containers.
-- [Iterator](src/util/iterator.h): Fully generic iterator abstraction.
+- [Iterator](src/collections/iterator.h): Fully generic iterator abstraction.
 - [Memory](src/core/memory.h): Memory management abstractions.
-- [Optional](src/util/optional.h): Container type which may or may not contain a value.
+- [Optional](src/core/optional.h): Container type which may or may not contain a value.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
 - [Macros](src/core/macros.h): Utility macros.
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
-- [File](src/core/file.h): Simple file handling abstraction.
+- [File](src/util/file.h): Simple file handling abstraction.
 - [System](src/core/system.h): Runtime system abstraction.
-- [Sync](src/core/sync.h): Thread synchronization abstractions.
+- [Sync](src/util/sync.h): Thread synchronization abstractions.
 - [Allocators](src/util/allocators.h): Custom memory allocators.
 - [Logging](src/util/logging.h): Simple logging utility.
 - [Temporal](src/util/temporal.h): Date/Time abstractions.
@@ -84,6 +84,7 @@ Like any other project, there are some limitations (most by design):
 - Not Optimized for Peak Performance.
 - Can cause Namespace Collision.
 - Not Thread-Safe.
+- Some functionalities are only available on Linux systems.
 - It Mighty have some Bugs... (help find them!)
 
 ### Technologies
@@ -143,7 +144,7 @@ Don't forget to prefix includes with `libcdsa/` if installed system-wide.
 The following examples demonstrate some of the library's features:
 
 ```c++
-#include "list/list.h"
+#include "collections/list/list.h"
 #include <stdio.h>
 
 int main() {
@@ -163,7 +164,7 @@ int main() {
 ```
 
 ```c++
-#include "map/map.h"
+#include "collections/map/map.h"
 #include <stdio.h>
 
 int main() {
@@ -183,7 +184,7 @@ int main() {
 ```
 
 ```c++
-#include "set/set.h"
+#include "collections/set/set.h"
 #include <stdio.h>
 
 int main() {
@@ -201,7 +202,7 @@ int main() {
 ```
 
 ```c++
-#include "list/list.h"
+#include "collections/list/list.h"
 #include <stdio.h>
 
 int main() {
@@ -225,8 +226,8 @@ int main() {
 ```
 
 ```c++
-#include "list/list.h"
-#include "util/for_each.h" // should be included last
+#include "collections/list/list.h"
+#include "collections/for_each.h" // should be included last
 #include <stdio.h>
 
 int main() {
@@ -245,7 +246,7 @@ int main() {
 ```
 
 ```c++
-#include "list/list.h"
+#include "collections/list/list.h"
 #include "util/sequence.h"
 #include <stdio.h>
 
@@ -289,8 +290,8 @@ int main() {
 ```
 
 ```c++
-#include "set/set.h"
-#include "util/for_each.h"
+#include "collections/set/set.h"
+#include "collections/for_each.h"
 #include <stdio.h>
 
 static inline uint64 int_hash_generic(const void* number) {
@@ -339,7 +340,7 @@ int main() {
 ```
 
 ```c++
-#include "list/list.h"
+#include "collections/list/list.h"
 #include <stdio.h>
 
 int main() {
@@ -514,7 +515,7 @@ int main(void) {
 ```
 
 ```c++
-#include "core/file.h"
+#include "util/file.h"
 #include <stdio.h>
 
 int main(void) {
@@ -779,7 +780,7 @@ and interesting design approach from most implementations.
 - **What makes libcdsa different?**
 
 Most implementations focus on simplicity and performance, at the cost of limited scope and heavy use of macros. **libcdsa** is
-the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/list/array_list.h)
+the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/collections/list/array_list.h)
 module has 50+ functions! The library also provides some flexibility regarding memory management by making it available but optional.
 You can check the documentation to learn more about what this project can offer.
 

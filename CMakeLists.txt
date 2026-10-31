@@ -22,23 +22,25 @@ include(FetchContent)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 add_library(${PROJECT_NAME}
-        src/util/iterator.c
-        src/util/collection.c
-        src/deque/deque.c
-        src/priority_queue/priority_queue.c
-        src/list/array_list.c
-        src/list/linked_list.c
-        src/map/hash_map.c
-        src/map/tree_map.c
-        src/set/hash_set.c
-        src/set/tree_set.c
         src/core/errors.c
         src/core/memory.c
         src/core/array.c
         src/core/string.c
-        src/core/file.c
         src/core/system.c
-        src/core/sync.c
+
+        src/collections/iterator.c
+        src/collections/collection.c
+        src/collections/list/array_list.c
+        src/collections/list/linked_list.c
+        src/collections/map/hash_map.c
+        src/collections/map/tree_map.c
+        src/collections/set/hash_set.c
+        src/collections/set/tree_set.c
+        src/collections/deque.c
+        src/collections/priority_queue.c
+
+        src/util/file.c
+        src/util/sync.c
         src/util/sequence.c
         src/util/allocators.c
         src/util/logging.c

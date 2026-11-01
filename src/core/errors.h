@@ -107,8 +107,7 @@ Error capture_error(void);
  * @brief Sets an error.
  *
  * @param error the error code to raise
- * @param message optional additional context message
- * @param ... optional format arguments
+ * @param ... optional message and format arguments
  */
 #define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "")
 

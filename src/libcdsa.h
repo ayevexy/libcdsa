@@ -1,3 +1,26 @@
+/**
+**         $$===========================================================$$
+**         ||                                                           ||
+**         ||                                                           ||
+**         ||            ▄▄     ▄▄             ▄▄                       ||
+**         ||            ██ ▀▀  ██             ██                       ||
+**         ||            ██ ██  ████▄ ▄████ ▄████ ▄█▀▀▀  ▀▀█▄           ||
+**         ||            ██ ██  ██ ██ ██    ██ ██ ▀███▄ ▄█▀██           ||
+**         ||            ██ ██▄ ████▀ ▀████ ▀████ ▄▄▄█▀ ▀█▄██           ||
+**         ||                                                           ||
+**         ||                                                           ||
+**         ||       A Feature-Rich, High-Level, and Easy-to-Use         ||
+**         ||       Data Structures and Algorithms Library for C        ||
+**         ||                                                           ||
+**         ||       Author: ayevexy                                     ||
+**         ||       License: MIT                                        ||
+**         ||       Contact: ayevexy@proton.me                          ||
+**         ||                                                           ||
+**         ||       https://github.com/ayevexy/libcdsa                  ||
+**         ||                                                           ||
+**         $$===========================================================$$
+*/
+
 #ifndef LIBCDSA_H
 #define LIBCDSA_H
 

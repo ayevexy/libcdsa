@@ -713,6 +713,55 @@ int main(void) {
 ```
 
 ```c++
+#include "util/temporal.h"
+#include <stdio.h>
+
+int main(void) {
+    // current date and time
+    const DateTime now = date_time_now();
+
+    // create a specific date and time
+    const DateTime launch = date_time_of(2025, 12, 17, 14, 30, 0);
+
+    // format date and time
+    printf("Current: %s\n", string_data(date_time_to_string(now)));
+    printf("Launch:  %s\n", string_data(date_time_to_string(launch)));
+
+    // extract date and time components
+    const Date date = now.date;
+    const Time time = now.time;
+
+    printf("DateTime: %04d-%02d-%02d %02d:%02d:%02d\n",
+        now.year, now.month, now.day, now.hour, now.minute, now.second
+    );
+    printf("Date: %04d-%02d-%02d\n", date.year, date.month, date.day);
+    printf("Time: %02d:%02d:%02d\n", time.hour, time.minute, time.second);
+
+    // date calculations
+    const DateTime tomorrow = date_time_plus(now, 1, DAY);
+    const DateTime next_week = date_time_plus(now, 7, DAY);
+
+    printf("Tomorrow:  %s\n", string_data(date_time_to_string(tomorrow)));
+    printf("Next week: %s\n", string_data(date_time_to_string(next_week)));
+
+    // date inspection
+    printf("Leap year: %s\n", date_is_leap_year(date) ? "yes" : "no");
+    printf("Day of year: %d\n", date_year_day(date));
+    printf("Weekday: %d\n", date_week_day(date));
+
+    // comparison
+    if (date_time_is_after(now, launch)) {
+        printf("The launch is in the future.\n");
+    } else if (date_time_is_before(now, launch)) {
+        printf("The launch has passed.\n");
+    }
+
+    return 0;
+}
+
+```
+
+```c++
 #include "core/assertions.h"
 
 int divide(int a, int b) {

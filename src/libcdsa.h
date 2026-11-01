@@ -51,6 +51,15 @@
 /** @brief Runtime System abstraction */
 #include "core/system.h"
 
+/** @brief Iterator abstraction */
+#include "collections/iterator.h"
+
+/** @brief Collection abstraction view */
+#include "collections/collection.h"
+
+/** @brief Algorithm-related enumerations */
+#include "collections/algorithms.h"
+
 /** @brief Dynamic array-based list implementation */
 #include "collections/list/array_list.h"
 
@@ -92,15 +101,6 @@
 
 /** @brief Heap based priority queue implementation */
 #include "collections/priority_queue.h"
-
-/** @brief Algorithm-related enumerations */
-#include "collections/algorithms.h"
-
-/** @brief Collection abstraction view */
-#include "collections/collection.h"
-
-/** @brief Iterator abstraction */
-#include "collections/iterator.h"
 
 /** @brief for-each iteration macro utility */
 #include "collections/for_each.h"

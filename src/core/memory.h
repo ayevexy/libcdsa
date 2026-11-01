@@ -70,7 +70,7 @@ extern Allocator global_memory_allocator;
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define clone(object) ((typeof(*(object))*) (new)(sizeof(*(object)), (object)))
+#define copy(object) ((typeof(*(object))*) (new)(sizeof(*(object)), (object)))
 
 /**
  * @brief Allocate and initialize an object of type `T` on the stack.

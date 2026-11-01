@@ -6,8 +6,8 @@
  * @brief Set compile-time dispatch abstraction and common mathematical set operations.
  */
 
-#include "hash_set.h"
-#include "tree_set.h"
+#include "collections/set/hash_set.h"
+#include "collections/set/tree_set.h"
 
 /**
  * @brief A thin abstraction layer that provides compile-time dispatch for set types

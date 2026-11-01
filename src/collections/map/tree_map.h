@@ -6,8 +6,7 @@
  * @brief Self-balancing binary tree based map implementation.
  */
 
-#include "map_entry.h"
-
+#include "collections/map/map_entry.h"
 #include "collections/collection.h"
 #include "collections/iterator.h"
 

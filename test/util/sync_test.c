@@ -3,6 +3,7 @@
 #ifdef __linux__
 
 #include "core/system.h"
+
 #include "unity.h"
 
 static Lock* lock;

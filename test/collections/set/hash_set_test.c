@@ -1,6 +1,6 @@
 #include "collections/set/hash_set.h"
 
-#include "../../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_HASH_SET_OPTIONS &(HashSetOptions) {    \

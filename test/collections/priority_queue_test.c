@@ -1,6 +1,6 @@
 #include "collections/priority_queue.h"
 
-#include "../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_PRIORITY_QUEUE_OPTIONS &(PriorityQueueOptions) {    \

@@ -6,7 +6,7 @@
  * @brief LIFO stack implemented with a resizable array.
  */
 
-#include "deque.h"
+#include "collections/deque.h"
 
 /**
  * A stack is a generic LIFO (Last-In-First-Out) data structure built on top of a deque.

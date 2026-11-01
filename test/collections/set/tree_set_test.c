@@ -1,6 +1,6 @@
 #include "collections/set/tree_set.h"
 
-#include "../../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_TREE_SET_OPTIONS &(TreeSetOptions) {    \

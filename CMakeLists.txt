@@ -144,6 +144,10 @@ foreach(TEST_FILE ${TEST_FILES})
     set(EXECUTABLE "${TEST_DIR}.${TEST_NAME}")
     add_executable(${EXECUTABLE} ${TEST_FILE})
 
+    target_include_directories(${EXECUTABLE} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/test
+    )
+
     target_link_libraries(${EXECUTABLE} PRIVATE
             ${PROJECT_NAME}
             unity_test_framework

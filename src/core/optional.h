@@ -1,8 +1,8 @@
 #ifndef LIBCDSA_OPTIONAL_H
 #define LIBCDSA_OPTIONAL_H
 
-#include "errors.h"
-#include "functions.h"
+#include "core/errors.h"
+#include "core/functions.h"
 
 /**
  * @file optional.h

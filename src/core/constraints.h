@@ -6,7 +6,7 @@
  * @brief Validation and constraint utilities.
  */
 
-#include "errors.h"
+#include "core/errors.h"
 
 /**
  * @brief Requires one or more pointers to be non-null.

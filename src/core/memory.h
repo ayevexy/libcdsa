@@ -6,7 +6,7 @@
  * @brief Memory management abstractions.
  */
 
-#include "types.h"
+#include "core/types.h"
 
 /**
  * @brief Allocator abstraction.

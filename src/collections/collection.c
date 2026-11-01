@@ -1,15 +1,15 @@
-#include "collection.h"
+#include "collections/collection.h"
 
-#include "list/array_list.h"
-#include "list/linked_list.h"
-#include "map/hash_map.h"
-#include "map/tree_map.h"
-#include "set/hash_set.h"
-#include "set/tree_set.h"
-#include "deque.h"
-#include "stack.h"
-#include "queue.h"
-#include "priority_queue.h"
+#include "collections/list/array_list.h"
+#include "collections/list/linked_list.h"
+#include "collections/map/hash_map.h"
+#include "collections/map/tree_map.h"
+#include "collections/set/hash_set.h"
+#include "collections/set/tree_set.h"
+#include "collections/deque.h"
+#include "collections/stack.h"
+#include "collections/queue.h"
+#include "collections/priority_queue.h"
 
 static const char* collection_type_to_string(const CollectionType type) {
     static const char* names[] = {

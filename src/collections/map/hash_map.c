@@ -1,4 +1,4 @@
-#include "hash_map.h"
+#include "collections/map/hash_map.h"
 
 #include "core/constraints.h"
 

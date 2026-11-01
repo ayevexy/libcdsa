@@ -1,6 +1,6 @@
 #include "collections/map/hash_map.h"
 
-#include "../../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define CHAR_INT_HASH_MAP_OPTIONS &(HashMapOptions) {   \

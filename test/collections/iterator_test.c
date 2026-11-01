@@ -1,8 +1,8 @@
 #include "collections/iterator.h"
 
 #include "collections/list/array_list.h"
-#include "../test_utilities.h"
 
+#include "test_utilities.h"
 #include "unity.h"
 
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \

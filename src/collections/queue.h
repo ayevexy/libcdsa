@@ -6,7 +6,7 @@
  * @brief FIFO queue implemented with a resizable array.
  */
 
-#include "deque.h"
+#include "collections/deque.h"
 
 /**
  * A queue is a generic FIFO (First-In-First-Out) data structure built on top of a deque.

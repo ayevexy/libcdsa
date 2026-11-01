@@ -6,8 +6,8 @@
  * @brief Map compile-time dispatch abstraction.
  */
 
-#include "hash_map.h"
-#include "tree_map.h"
+#include "collections/map/hash_map.h"
+#include "collections/map/tree_map.h"
 
 /**
  * @brief A thin abstraction layer that provides compile-time dispatch for map types

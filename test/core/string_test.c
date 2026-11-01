@@ -1,9 +1,9 @@
 #include "core/string.h"
 
 #include "core/errors.h"
+#include <string.h>
 
 #include "unity.h"
-#include <string.h>
 
 void setUp() {
 

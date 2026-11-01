@@ -6,8 +6,8 @@
  * @brief for-each iteration macro utility.
  */
 
-#include "collection.h"
-#include "iterator.h"
+#include "collections/collection.h"
+#include "collections/iterator.h"
 
 /**
  * @brief A utility macro to iterate sequentially through the elements of a collection.

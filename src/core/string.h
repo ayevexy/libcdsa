@@ -6,9 +6,9 @@
  * @brief String implementation.
  */
 
-#include "types.h"
-#include "memory.h"
-#include "array.h"
+#include "core/types.h"
+#include "core/memory.h"
+#include "core/array.h"
 
 /**
  * @brief String memory allocator used for string allocations.

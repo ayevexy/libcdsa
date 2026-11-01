@@ -6,10 +6,10 @@
  * @brief Runtime System abstraction.
  */
 
-#include "types.h"
-#include "macros.h"
-#include "errors.h"
-#include "string.h"
+#include "core/types.h"
+#include "core/macros.h"
+#include "core/errors.h"
+#include "core/string.h"
 
 typedef struct File File;
 

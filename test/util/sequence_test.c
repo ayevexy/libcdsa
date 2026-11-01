@@ -1,8 +1,8 @@
 #include "util/sequence.h"
 
 #include "collections/list/list.h"
-#include "../test_utilities.h"
 
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \

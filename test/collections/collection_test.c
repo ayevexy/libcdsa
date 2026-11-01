@@ -1,8 +1,8 @@
 #include "collections/collection.h"
 
 #include "collections/list/array_list.h"
-#include "../test_utilities.h"
 
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \

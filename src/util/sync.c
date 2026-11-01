@@ -1,4 +1,4 @@
-#include "sync.h"
+#include "util/sync.h"
 
 #ifdef __linux__
 

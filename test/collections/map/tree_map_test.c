@@ -1,6 +1,6 @@
 #include "collections/map/tree_map.h"
 
-#include "../../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define CHAR_INT_TREE_MAP_OPTIONS &(TreeMapOptions) {   \

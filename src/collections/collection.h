@@ -6,7 +6,7 @@
  * @brief Collection abstraction view.
  */
 
-#include "iterator.h"
+#include "collections/iterator.h"
 
 #include "core/array.h"
 #include "core/string.h"

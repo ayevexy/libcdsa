@@ -6,8 +6,8 @@
  * @brief Array implementation.
  */
 
-#include "types.h"
-#include "macros.h"
+#include "core/types.h"
+#include "core/macros.h"
 
 /**
  * @brief Defines a heap allocated array of type T.

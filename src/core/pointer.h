@@ -6,8 +6,8 @@
  * @brief Pointer functions.
  */
 
-#include "types.h"
-#include "string.h"
+#include "core/types.h"
+#include "core/string.h"
 
 /**
  * @brief Calculate a hash value of a pointer by its memory address.

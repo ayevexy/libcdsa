@@ -1,6 +1,6 @@
 #include "collections/list/linked_list.h"
 
-#include "../../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_LINKED_LIST_OPTIONS &(LinkedListOptions) {  \

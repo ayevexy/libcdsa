@@ -1,6 +1,7 @@
 #include "util/allocators.h"
 
 #include "core/errors.h"
+
 #include "unity.h"
 
 static MemoryArena* arena;

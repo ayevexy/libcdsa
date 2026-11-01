@@ -1,6 +1,6 @@
-#include "memory.h"
+#include "core/memory.h"
 
-#include "errors.h"
+#include "core/errors.h"
 #include <stdlib.h>
 #include <string.h>
 

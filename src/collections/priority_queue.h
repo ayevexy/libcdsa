@@ -6,8 +6,8 @@
  * @brief Heap based priority queue implementation.
  */
 
-#include "collection.h"
-#include "iterator.h"
+#include "collections/collection.h"
+#include "collections/iterator.h"
 
 #include "core/types.h"
 #include "core/errors.h"

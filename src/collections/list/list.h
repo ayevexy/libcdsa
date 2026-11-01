@@ -6,8 +6,8 @@
  * @brief List compile-time dispatch abstraction.
  */
 
-#include "array_list.h"
-#include "linked_list.h"
+#include "collections/list/array_list.h"
+#include "collections/list/linked_list.h"
 
 /**
  * @brief A thin abstraction layer that provides compile-time dispatch for list types

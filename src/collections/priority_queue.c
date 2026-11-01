@@ -1,4 +1,4 @@
-#include "priority_queue.h"
+#include "collections/priority_queue.h"
 
 #include "core/constraints.h"
 

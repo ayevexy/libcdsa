@@ -1,6 +1,7 @@
 #include "core/errors.h"
 
 #include <stdlib.h>
+
 #include "unity.h"
 
 // Custom error type

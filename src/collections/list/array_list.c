@@ -1,4 +1,4 @@
-#include "array_list.h"
+#include "collections/list/array_list.h"
 
 #include "core/constraints.h"
 

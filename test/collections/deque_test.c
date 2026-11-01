@@ -1,6 +1,6 @@
 #include "collections/deque.h"
 
-#include "../test_utilities.h"
+#include "test_utilities.h"
 #include "unity.h"
 
 #define INT_DEQUE_OPTIONS &(DequeOptions) {     \

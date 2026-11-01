@@ -56,6 +56,7 @@ Also, there is some other utilities which may be useful:
 - [Algorithms](src/collections/algorithms.h): Algorithms related enumerations.
 - [Collection](src/collections/collection.h): Collection view abstraction.
 - [Constraints](src/core/constraints.h): Pre-condition checks.
+- [Assertions](src/core/assertions.h): Custom assertions.
 - [Errors](src/core/errors.h): Built-in custom error handling system used by the library.
 - [For Each](src/collections/for_each.h): For Each macro abstraction to iterate through collections.
 - [Functions](src/core/functions.h): Functions typedefs and default implementations.
@@ -707,6 +708,36 @@ int main(void) {
     // [2026-10-22 19:26:59] [FATAL] [main] [main.c:14 main()] : Unrecoverable error occurred...
 
     logger_finalize();
+    return 0;
+}
+```
+
+```c++
+#include "core/assertions.h"
+
+int divide(int a, int b) {
+    assert_precondition(b != 0, "divisor must not be zero, received %d", b);
+
+    const int result = a / b;
+
+    assert_postcondition(result * b == a, "expected %d, received %d", a, result * b);
+
+    return result;
+}
+
+int main(void) {
+    int size = 5;
+    int capacity = 10;
+
+    assert_condition(size > 0, "expected positive size, received %d", size);
+    assert_invariant(size <= capacity, "size (%d) exceeds capacity (%d)", size, capacity);
+
+    divide(10, 2);
+
+    if (false) {
+        assert_unreachable();
+    }
+
     return 0;
 }
 ```

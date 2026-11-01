@@ -26,6 +26,7 @@ add_library(${PROJECT_NAME}
         src/core/memory.c
         src/core/array.c
         src/core/string.c
+        src/core/assertions.c
         src/core/system.c
 
         src/collections/iterator.c

@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## 🎉 [v1.0.0-beta.12]() — 2026-11-01
+
+A major update introducing the Temporal API and assertions utility, alongside a significant restructuring of the project layout.
+
+### ✨ Features
+- Introduced the Temporal API (`util/temporal.h`), featuring:
+  - `Date`, `Time` and `DateTime` types for representing dates, times, and date-times.
+  - Object creation through `now()`, `of()`, and `parse()`.
+  - Comparison operations through `is_after()`, `is_before()` and `is_equal()`.
+  - Argument validation across all functions and explicit validation through `is_valid()`.
+  - Arithmetic operations through `plus()`, `minus()`, and `difference()`.
+  - Custom formatting through `format()`.
+  - `TimeUnit`, `Month` and `WeekDay` enums.
+  - Direct access through `year`, `month`, `day`, `hour`, `minute` and `second` fields.
+  - Additional queries through `is_leap_year()`, `year_day()` and `week_day()`.
+- Introduced the assertions utility (`core/assertions.h`), featuring:
+  - Categorized assertions through `assert_condition()`, `assert_precondition()`, `assert_postcondition()`, `assert_invariant()` and `assert_unreachable()`.
+  - Optional printf-style message and formatting arguments.
+- Introduced the following operations to existing APIs:
+  - Added `copy()` to `core/memory.h` to create heap-allocated copies of existing objects.
+  - Added `string_local()` to `core/string.h` to allow creation of strings on the stack.
+
+### ✏️ Changes
+- Heavily restructured the project layout:
+  - Moved all data structures to the new `collections/` module.
+  - Removed `deque/`, `stack/`, `queue/` and `priority_queue/` directories, moving their content to the root of `collections/`.
+  - Moved `iterator.h`, `collection.h`, `algorithms.h`, and `for_each.h` from `util/` to `collections/`.
+  - Moved `functions.h` and `optional.h` from `util/` to `core/`.
+  - Moved `file.h` and `sync.h` from `core/` to `util/`.
+  - Enforced project-root-relative include paths consistently throughout the library.
+- String API:
+  - Made the `String` type opaque.
+  - Reintroduced `StringView` to replace the previous `struct String` usage in function arguments.
+  - Renamed `dispatch_string_type()` to `string_view()`; behavior remains the same.
+
+### 🪲 Bug Fixes
+- Fixed `MemoryArena` and `MemoryPool` propagating errors when used as allocators, since allocators aren't supposed to set errors.
+
+### 📚 Documentation
+- Added usage examples for `util/temporal.h` and `core/assertions.h` to the README.
+- Added project banner to `libcdsa.h`.
+
+---
+
 ## 🎉 [v1.0.0-beta.11.1]() — 2026-10-25
 
 A minor update introducing the logging utility and fixing the `file_read_line()` bug.

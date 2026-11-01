@@ -11,7 +11,9 @@ struct MemoryArena {
 };
 
 static void* arena_alloc_callback(bytes size, void* arena) {
-    return memory_arena_alloc(arena, size);
+    void* block; attempt(block = memory_arena_alloc(arena, size));
+
+    return block;
 }
 
 static void* arena_realloc_callback(void*, bytes, void*) {
@@ -24,7 +26,7 @@ static void arena_dealloc_callback(void*, void*) {
 }
 
 static void arena_reset_callback(void* arena) {
-    memory_arena_reset(arena);
+    attempt(memory_arena_reset(arena));
 }
 
 MemoryArena* memory_arena_new(bytes capacity) {
@@ -93,7 +95,9 @@ struct MemoryPool {
 };
 
 static void* memory_pool_alloc_callback(bytes, void* pool) {
-    return memory_pool_alloc(pool);
+    void* block; attempt(block = memory_pool_alloc(pool));
+
+    return block;
 }
 
 static void* memory_pool_realloc_callback(void*, bytes, void*) {
@@ -102,7 +106,7 @@ static void* memory_pool_realloc_callback(void*, bytes, void*) {
 }
 
 static void memory_pool_dealloc_callback(void* pointer, void* pool) {
-    memory_pool_dealloc(pool, pointer);
+    attempt(memory_pool_dealloc(pool, pointer));
 }
 
 static void memory_pool_reset_callback(void*) {

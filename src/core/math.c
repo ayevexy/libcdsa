@@ -226,6 +226,28 @@ float math_max_float(float a, float b) {
     return fmaxf(a, b);
 }
 
+float math_sign_float(float number) {
+    if (number > 0) return 1;
+    if (number < 0) return -1;
+    return 0;
+}
+
+float math_round_float(float number) {
+    return roundf(number);
+}
+
+float math_floor_float(float number) {
+    return floorf(number);
+}
+
+float math_ceil_float(float number) {
+    return ceilf(number);
+}
+
+float math_trunc_float(float number) {
+    return truncf(number);
+}
+
 double math_abs_double(double number) {
     return fabs(number);
 }
@@ -238,6 +260,28 @@ double math_max_double(double a, double b) {
     return fmax(a, b);
 }
 
+double math_sign_double(double number) {
+    if (number > 0) return 1;
+    if (number < 0) return -1;
+    return 0;
+}
+
+double math_round_double(double number) {
+    return round(number);
+}
+
+double math_floor_double(double number) {
+    return floor(number);
+}
+
+double math_ceil_double(double number) {
+    return ceil(number);
+}
+
+double math_trunc_double(double number) {
+    return trunc(number);
+}
+
 ldouble math_abs_ldouble(ldouble number) {
     return fabsl(number);
 }
@@ -248,4 +292,26 @@ ldouble math_min_ldouble(ldouble a, ldouble b) {
 
 ldouble math_max_ldouble(ldouble a, ldouble b) {
     return fmaxl(a, b);
+}
+
+ldouble math_sign_ldouble(ldouble number) {
+    if (number > 0) return 1;
+    if (number < 0) return -1;
+    return 0;
+}
+
+ldouble math_round_ldouble(ldouble number) {
+    return roundl(number);
+}
+
+ldouble math_floor_ldouble(ldouble number) {
+    return floorl(number);
+}
+
+ldouble math_ceil_ldouble(ldouble number) {
+    return ceill(number);
+}
+
+ldouble math_trunc_ldouble(ldouble number) {
+    return truncl(number);
 }

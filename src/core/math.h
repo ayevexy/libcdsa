@@ -168,6 +168,51 @@
 #define math_clamp(value, min, max) math_min(math_max(value, min), max)
 
 /**
+ * @brief Returns the sign of a floating-point number.
+ *
+ * @param n the number
+ *
+ * @return -1 if n is negative, 0 if n is zero, or 1 if n is positive
+ */
+#define math_sign(n) MATH_DISPATCH_FLOATS(sign, n)
+
+/**
+ * @brief Rounds a floating-point number to the nearest integer.
+ *
+ * @param n the number
+ *
+ * @return the rounded number
+ */
+#define math_round(n) MATH_DISPATCH_FLOATS(round, n)
+
+/**
+ * @brief Rounds a floating-point number down to the nearest integer.
+ *
+ * @param n the number
+ *
+ * @return the rounded number
+ */
+#define math_floor(n) MATH_DISPATCH_FLOATS(floor, n)
+
+/**
+ * @brief Rounds a floating-point number up to the nearest integer.
+ *
+ * @param n the number
+ *
+ * @return the rounded number
+ */
+#define math_ceil(n) MATH_DISPATCH_FLOATS(ceil, n)
+
+/**
+ * @brief Truncates the fractional part of a floating-point number.
+ *
+ * @param n the number
+ *
+ * @return the truncated number
+ */
+#define math_trunc(n) MATH_DISPATCH_FLOATS(trunc, n)
+
+/**
  * @brief Converts degrees to radians.
  *
  * @param degrees the value in degrees
@@ -199,6 +244,12 @@
     ulong:    math_##operation##_ulong,                             \
     llong:    math_##operation##_llong,                             \
     ullong:   math_##operation##_ullong                             \
+)(a __VA_OPT__(,) __VA_ARGS__)
+
+#define MATH_DISPATCH_FLOATS(operation, a, ...) _Generic((a),       \
+    float:    math_##operation##_float,                             \
+    double:   math_##operation##_double,                            \
+    ldouble:  math_##operation##_ldouble                            \
 )(a __VA_OPT__(,) __VA_ARGS__)
 
 #define MATH_DISPATCH_NUMBERS(operation, a, ...) _Generic((a),  \
@@ -377,17 +428,32 @@ ullong math_max_ullong(ullong a, ullong b);
 float math_abs_float(float n);
 float math_min_float(float a, float b);
 float math_max_float(float a, float b);
+float math_sign_float(float number);
+float math_round_float(float number);
+float math_floor_float(float number);
+float math_ceil_float(float number);
+float math_trunc_float(float number);
 
 /* double */
 
 double math_abs_double(double n);
 double math_min_double(double a, double b);
 double math_max_double(double a, double b);
+double math_sign_double(double number);
+double math_round_double(double number);
+double math_floor_double(double number);
+double math_ceil_double(double number);
+double math_trunc_double(double number);
 
 /* ldouble */
 
 ldouble math_abs_ldouble(ldouble n);
 ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
+ldouble math_sign_ldouble(ldouble number);
+ldouble math_round_ldouble(ldouble number);
+ldouble math_floor_ldouble(ldouble number);
+ldouble math_ceil_ldouble(ldouble number);
+ldouble math_trunc_ldouble(ldouble number);
 
 #endif

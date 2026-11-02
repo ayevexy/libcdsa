@@ -213,12 +213,14 @@ void test_math_is_prime() {
 }
 
 void test_math_abs() {
+    // then
     TEST_ASSERT_EQUAL(10, math_abs(10));
     TEST_ASSERT_EQUAL(10, math_abs(-10));
     TEST_ASSERT_EQUAL(0, math_abs(0));
 }
 
 void test_math_min() {
+    // then
     TEST_ASSERT_EQUAL(10, math_min(10, 20));
     TEST_ASSERT_EQUAL(10, math_min(20, 10));
     TEST_ASSERT_EQUAL(-10, math_min(-10, 10));
@@ -227,6 +229,7 @@ void test_math_min() {
 }
 
 void test_math_max() {
+    // then
     TEST_ASSERT_EQUAL(20, math_max(10, 20));
     TEST_ASSERT_EQUAL(20, math_max(20, 10));
     TEST_ASSERT_EQUAL(10, math_max(-10, 10));
@@ -235,9 +238,49 @@ void test_math_max() {
 }
 
 void test_math_clamp() {
+    // then
     TEST_ASSERT_EQUAL(0, math_clamp(-1, 0, 1));
     TEST_ASSERT_EQUAL(1, math_clamp(2, 0, 1));
     TEST_ASSERT_EQUAL(0, math_clamp(0, 0, 1));
+}
+
+void test_math_sign() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(-1.0, math_sign(-1.0));
+    TEST_ASSERT_EQUAL_FLOAT(0.0, math_sign(0.0));
+    TEST_ASSERT_EQUAL_FLOAT(1.0, math_sign(1.0));
+}
+
+void test_math_round() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(4.0, math_round(4.1));
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_round(4.5));
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_round(4.9));
+    TEST_ASSERT_EQUAL_FLOAT(-4, math_round(-4.1));
+}
+
+void test_math_floor() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(4.0, math_floor(4.1));
+    TEST_ASSERT_EQUAL_FLOAT(4.0, math_floor(4.5));
+    TEST_ASSERT_EQUAL_FLOAT(4.0, math_floor(4.9));
+    TEST_ASSERT_EQUAL_FLOAT(-5, math_floor(-4.1));
+}
+
+void test_math_ceil() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_ceil(4.1));
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_ceil(4.5));
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_ceil(4.9));
+    TEST_ASSERT_EQUAL_FLOAT(-4, math_ceil(-4.1));
+}
+
+void test_math_trunc() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(4.000, math_trunc(4.125427));
+    TEST_ASSERT_EQUAL_FLOAT(4.0000, math_trunc(4.523453));
+    TEST_ASSERT_EQUAL_FLOAT(4.0000, math_trunc(4.985345));
+    TEST_ASSERT_EQUAL_FLOAT(-4.0000, math_trunc(-4.111239));
 }
 
 void test_math_to_radians() {
@@ -274,6 +317,11 @@ int main(void) {
     RUN_TEST(test_math_min);
     RUN_TEST(test_math_max);
     RUN_TEST(test_math_clamp);
+    RUN_TEST(test_math_sign);
+    RUN_TEST(test_math_round);
+    RUN_TEST(test_math_floor);
+    RUN_TEST(test_math_ceil);
+    RUN_TEST(test_math_trunc);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);
     return UNITY_END();

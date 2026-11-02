@@ -1,5 +1,6 @@
 #include "core/string.h"
 
+#include "core/limits.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 
@@ -615,27 +616,27 @@ static ulong parse_ulong(const char* string, ulong max) {
 }
 
 short (string_to_short)(StringView string) {
-    return parse_long(string.data, SHRT_MIN, SHRT_MAX);
+    return parse_long(string.data, SHORT_MIN_VALUE, SHORT_MAX_VALUE);
 }
 
 ushort (string_to_ushort)(StringView string) {
-    return parse_ulong(string.data, USHRT_MAX);
+    return parse_ulong(string.data, USHORT_MAX_VALUE);
 }
 
 int (string_to_int)(StringView string) {
-    return parse_long(string.data, INT_MIN, INT_MAX);
+    return parse_long(string.data, INT_MIN_VALUE, INT_MAX_VALUE);
 }
 
 uint (string_to_uint)(StringView string) {
-    return parse_ulong(string.data, UINT_MAX);
+    return parse_ulong(string.data, UINT_MAX_VALUE);
 }
 
 long (string_to_long)(StringView string) {
-    return parse_long(string.data, LONG_MIN, LONG_MAX);
+    return parse_long(string.data, LONG_MIN_VALUE, LONG_MAX_VALUE);
 }
 
 ulong (string_to_ulong)(StringView string) {
-    return parse_ulong(string.data, ULONG_MAX);
+    return parse_ulong(string.data, ULONG_MAX_VALUE);
 }
 
 llong (string_to_llong)(StringView string) {

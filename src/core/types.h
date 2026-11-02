@@ -28,10 +28,15 @@ typedef uint64_t uint64;
 typedef float float32; // not guaranteed
 typedef double float64; // not guaranteed
 
+typedef signed char schar;
+typedef long long llong;
+typedef long double ldouble;
+
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
+typedef unsigned long long ullong;
 
 typedef size_t usize;
 typedef ptrdiff_t isize;

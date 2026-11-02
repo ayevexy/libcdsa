@@ -1,5 +1,8 @@
 #include "core/math.h"
 
+#include "core/errors.h"
+#include "core/limits.h"
+
 #include "unity.h"
 
 void setUp() {

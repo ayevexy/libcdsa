@@ -7,8 +7,6 @@
  */
 
 #include "core/types.h"
-#include "core/limits.h"
-#include "core/errors.h"
 
 /**
  * @brief Typed mathematical constants.
@@ -163,188 +161,125 @@
     ullong:   math_##operation##_ullong                 \
 )(a __VA_OPT__(,) __VA_ARGS__)
 
-#define DEFINE_SIGNED_MATH(T, suffix, min, max)                             \
-                                                                            \
-static inline T math_add_##suffix(T a, T b) {                               \
-    if ((b > 0 && a > (max) - b) || (b < 0 && a < (min) - b)) {             \
-        set_error(ARITHMETIC_ERROR, "addition overflow");                   \
-        return 0;                                                           \
-    }                                                                       \
-    return a + b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_sub_##suffix(T a, T b) {                               \
-    if ((b < 0 && a > (max) + b) || (b > 0 && a < (min) + b)) {             \
-        set_error(ARITHMETIC_ERROR, "subtraction overflow");                \
-        return 0;                                                           \
-    }                                                                       \
-    return a - b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_mul_##suffix(T a, T b) {                               \
-    if (a > 0) {                                                            \
-        if ((b > 0 && a > (max) / b) || (b < 0 && b < (min) / a))           \
-            goto overflow;                                                  \
-    } else if (a < 0) {                                                     \
-        if ((b > 0 && a < (min) / b) || (b < 0 && a < (max) / b))           \
-            goto overflow;                                                  \
-    }                                                                       \
-    return a * b;                                                           \
-                                                                            \
-    overflow:                                                               \
-        set_error(ARITHMETIC_ERROR, "multiplication overflow");             \
-        return 0;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_div_##suffix(T a, T b) {                               \
-    if (b == 0) {                                                           \
-        set_error(ARITHMETIC_ERROR, "division by zero");                    \
-        return 0;                                                           \
-    }                                                                       \
-    if (a == (min) && b == -1) {                                            \
-        set_error(ARITHMETIC_ERROR, "division overflow");                   \
-        return 0;                                                           \
-    }                                                                       \
-    return a / b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_gcd_##suffix(T a, T b) {                               \
-    while (b != 0) {                                                        \
-        T remainder = a % b;                                                \
-        a = b;                                                              \
-        b = remainder;                                                      \
-    }                                                                       \
-    return a;                                                               \
-}                                                                           \
-                                                                            \
-static inline T math_lcm_##suffix(T a, T b) {                               \
-    if (a == 0 || b == 0) {                                                 \
-        return 0;                                                           \
-    }                                                                       \
-    return (a / math_gcd_##suffix(a, b)) * b;                               \
-}                                                                           \
-                                                                            \
-static inline T math_factorial_##suffix(T number) {                         \
-    if (number < 0) {                                                       \
-        set_error(ARITHMETIC_ERROR, "factorial negative");                  \
-        return 0;                                                           \
-    }                                                                       \
-    T result = 1;                                                           \
-                                                                            \
-    for (T i = 2; i <= number; i++) {                                       \
-        if (result > max / i) {                                             \
-            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
-            return 0;                                                       \
-        }                                                                   \
-        result *= i;                                                        \
-    }                                                                       \
-    return result;                                                          \
-}                                                                           \
-                                                                            \
-static inline bool math_is_prime_##suffix(T number) {                       \
-    if (number < 2)       return false;                                     \
-    if (number == 2)      return true;                                      \
-    if (number % 2 == 0)  return false;                                     \
-                                                                            \
-    for (T i = 3; i <= number / i; i += 2) {                                \
-        if (number % i == 0) return false;                                  \
-    }                                                                       \
-    return true;                                                            \
-}
+/* char */
 
-#define DEFINE_UNSIGNED_MATH(T, suffix, max)                                \
-                                                                            \
-static inline T math_add_##suffix(T a, T b) {                               \
-    if (a > (max) - b) {                                                    \
-        set_error(ARITHMETIC_ERROR, "addition overflow");                   \
-        return 0;                                                           \
-    }                                                                       \
-    return a + b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_sub_##suffix(T a, T b) {                               \
-    if (a < b) {                                                            \
-        set_error(ARITHMETIC_ERROR, "subtraction underflow");               \
-        return 0;                                                           \
-    }                                                                       \
-    return a - b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_mul_##suffix(T a, T b) {                               \
-    if (b != 0 && a > (max) / b) {                                          \
-        set_error(ARITHMETIC_ERROR, "multiplication overflow");             \
-        return 0;                                                           \
-    }                                                                       \
-    return a * b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_div_##suffix(T a, T b) {                               \
-    if (b == 0) {                                                           \
-        set_error(ARITHMETIC_ERROR, "division by zero");                    \
-        return 0;                                                           \
-    }                                                                       \
-    return a / b;                                                           \
-}                                                                           \
-                                                                            \
-static inline T math_gcd_##suffix(T a, T b) {                               \
-    while (b != 0) {                                                        \
-        T remainder = a % b;                                                \
-        a = b;                                                              \
-        b = remainder;                                                      \
-    }                                                                       \
-    return a;                                                               \
-}                                                                           \
-                                                                            \
-static inline T math_lcm_##suffix(T a, T b) {                               \
-    if (a == 0 || b == 0) {                                                 \
-        return 0;                                                           \
-    }                                                                       \
-    return (a / math_gcd_##suffix(a, b)) * b;                               \
-}                                                                           \
-                                                                            \
-static inline T math_factorial_##suffix(T number) {                         \
-    T result = 1;                                                           \
-                                                                            \
-    for (T i = 2; i <= number; i++) {                                       \
-        if (result > max / i) {                                             \
-            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
-            return 0;                                                       \
-        }                                                                   \
-        result *= i;                                                        \
-    }                                                                       \
-    return result;                                                          \
-}                                                                           \
-                                                                            \
-static inline bool math_is_prime_##suffix(T number) {                       \
-    if (number < 2)       return false;                                     \
-    if (number == 2)      return true;                                      \
-    if (number % 2 == 0)  return false;                                     \
-                                                                            \
-    for (T i = 3; i <= number / i; i += 2) {                                \
-        if (number % i == 0) return false;                                  \
-    }                                                                       \
-    return true;                                                            \
-}
+char math_add_char(char a, char b);
+char math_sub_char(char a, char b);
+char math_mul_char(char a, char b);
+char math_div_char(char a, char b);
+char math_gcd_char(char a, char b);
+char math_lcm_char(char a, char b);
+char math_factorial_char(char number);
+bool math_is_prime_char(char number);
 
-#if CHAR_MIN < 0
-DEFINE_SIGNED_MATH(char, char, CHAR_MIN_VALUE, CHAR_MAX_VALUE)
-#else
-DEFINE_UNSIGNED_MATH(char, char, CHAR_MAX_VALUE)
-#endif
+/* schar */
 
-DEFINE_SIGNED_MATH(schar, schar, SCHAR_MIN_VALUE, SCHAR_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(uchar, uchar, UCHAR_MAX_VALUE)
+schar math_add_schar(schar a, schar b);
+schar math_sub_schar(schar a, schar b);
+schar math_mul_schar(schar a, schar b);
+schar math_div_schar(schar a, schar b);
+schar math_gcd_schar(schar a, schar b);
+schar math_lcm_schar(schar a, schar b);
+schar math_factorial_schar(schar number);
+bool math_is_prime_schar(schar number);
 
-DEFINE_SIGNED_MATH(short, short, SHORT_MIN_VALUE, SHORT_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(ushort, ushort, USHORT_MAX_VALUE)
+/* uchar */
 
-DEFINE_SIGNED_MATH(int, int, INT_MIN_VALUE, INT_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(uint, uint, UINT_MAX_VALUE)
+uchar math_add_uchar(uchar a, uchar b);
+uchar math_sub_uchar(uchar a, uchar b);
+uchar math_mul_uchar(uchar a, uchar b);
+uchar math_div_uchar(uchar a, uchar b);
+uchar math_gcd_uchar(uchar a, uchar b);
+uchar math_lcm_uchar(uchar a, uchar b);
+uchar math_factorial_uchar(uchar number);
+bool math_is_prime_uchar(uchar number);
 
-DEFINE_SIGNED_MATH(long, long, LONG_MIN_VALUE, LONG_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(ulong, ulong, ULONG_MAX_VALUE)
+/* short */
 
-DEFINE_SIGNED_MATH(llong, llong, LLONG_MIN_VALUE, LLONG_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(ullong, ullong, ULLONG_MAX_VALUE)
+short math_add_short(short a, short b);
+short math_sub_short(short a, short b);
+short math_mul_short(short a, short b);
+short math_div_short(short a, short b);
+short math_gcd_short(short a, short b);
+short math_lcm_short(short a, short b);
+short math_factorial_short(short number);
+bool math_is_prime_short(short number);
+
+/* ushort */
+
+ushort math_add_ushort(ushort a, ushort b);
+ushort math_sub_ushort(ushort a, ushort b);
+ushort math_mul_ushort(ushort a, ushort b);
+ushort math_div_ushort(ushort a, ushort b);
+ushort math_gcd_ushort(ushort a, ushort b);
+ushort math_lcm_ushort(ushort a, ushort b);
+ushort math_factorial_ushort(ushort number);
+bool math_is_prime_ushort(ushort number);
+
+/* int */
+
+int math_add_int(int a, int b);
+int math_sub_int(int a, int b);
+int math_mul_int(int a, int b);
+int math_div_int(int a, int b);
+int math_gcd_int(int a, int b);
+int math_lcm_int(int a, int b);
+int math_factorial_int(int number);
+bool math_is_prime_int(int number);
+
+/* uint */
+
+uint math_add_uint(uint a, uint b);
+uint math_sub_uint(uint a, uint b);
+uint math_mul_uint(uint a, uint b);
+uint math_div_uint(uint a, uint b);
+uint math_gcd_uint(uint a, uint b);
+uint math_lcm_uint(uint a, uint b);
+uint math_factorial_uint(uint number);
+bool math_is_prime_uint(uint number);
+
+/* long */
+
+long math_add_long(long a, long b);
+long math_sub_long(long a, long b);
+long math_mul_long(long a, long b);
+long math_div_long(long a, long b);
+long math_gcd_long(long a, long b);
+long math_lcm_long(long a, long b);
+long math_factorial_long(long number);
+bool math_is_prime_long(long number);
+
+/* ulong */
+
+ulong math_add_ulong(ulong a, ulong b);
+ulong math_sub_ulong(ulong a, ulong b);
+ulong math_mul_ulong(ulong a, ulong b);
+ulong math_div_ulong(ulong a, ulong b);
+ulong math_gcd_ulong(ulong a, ulong b);
+ulong math_lcm_ulong(ulong a, ulong b);
+ulong math_factorial_ulong(ulong number);
+bool math_is_prime_ulong(ulong number);
+
+/* llong */
+
+llong math_add_llong(llong a, llong b);
+llong math_sub_llong(llong a, llong b);
+llong math_mul_llong(llong a, llong b);
+llong math_div_llong(llong a, llong b);
+llong math_gcd_llong(llong a, llong b);
+llong math_lcm_llong(llong a, llong b);
+llong math_factorial_llong(llong number);
+bool math_is_prime_llong(llong number);
+
+/* ullong */
+
+ullong math_add_ullong(ullong a, ullong b);
+ullong math_sub_ullong(ullong a, ullong b);
+ullong math_mul_ullong(ullong a, ullong b);
+ullong math_div_ullong(ullong a, ullong b);
+ullong math_gcd_ullong(ullong a, ullong b);
+ullong math_lcm_ullong(ullong a, ullong b);
+ullong math_factorial_ullong(ullong number);
+bool math_is_prime_ullong(ullong number);
 
 #endif

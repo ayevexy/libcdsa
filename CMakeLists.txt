@@ -24,6 +24,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 add_library(${PROJECT_NAME}
         src/core/errors.c
         src/core/memory.c
+        src/core/math.c
         src/core/array.c
         src/core/string.c
         src/core/assertions.c

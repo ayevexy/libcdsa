@@ -641,22 +641,22 @@ String (string_to_lowercase)(StringView string);
  *
  * @return a new allocated string
  */
-#define string_value_of(value) _Generic((value),        \
-    bool: string_value_of_bool,                         \
-    char: string_value_of_char,                         \
-    signed char: string_value_of_int,                   \
-    uchar: string_value_of_uint,                        \
-    short: string_value_of_int,                         \
-    unsigned short: string_value_of_uint,               \
-    int: string_value_of_int,                           \
-    uint: string_value_of_uint,                         \
-    long: string_value_of_long,                         \
-    ulong: string_value_of_ulong,                       \
-    long long: string_value_of_long_long,               \
-    unsigned long long: string_value_of_ulong_long,     \
-    float: string_value_of_float,                       \
-    double: string_value_of_double,                     \
-    long double: string_value_of_long_double            \
+#define string_value_of(value) _Generic((value),    \
+    bool: string_value_of_bool,                     \
+    char: string_value_of_char,                     \
+    schar: string_value_of_int,                     \
+    uchar: string_value_of_uint,                    \
+    short: string_value_of_int,                     \
+    ushort: string_value_of_uint,                   \
+    int: string_value_of_int,                       \
+    uint: string_value_of_uint,                     \
+    long: string_value_of_long,                     \
+    ulong: string_value_of_ulong,                   \
+    llong: string_value_of_llong,                   \
+    ullong: string_value_of_ullong,                 \
+    float: string_value_of_float,                   \
+    double: string_value_of_double,                 \
+    ldouble: string_value_of_ldouble                \
 )(value)
 
 String string_value_of_bool(bool value);
@@ -665,11 +665,11 @@ String string_value_of_int(int value);
 String string_value_of_uint(uint value);
 String string_value_of_long(long value);
 String string_value_of_ulong(ulong value);
-String string_value_of_long_long(long long value);
-String string_value_of_ulong_long(unsigned long long value);
+String string_value_of_llong(llong value);
+String string_value_of_ullong(ullong value);
 String string_value_of_float(float value);
 String string_value_of_double(double value);
-String string_value_of_long_double(long double value);
+String string_value_of_ldouble(ldouble value);
 
 /**
  * @brief Converts a string to a `short`.
@@ -756,7 +756,7 @@ long (string_to_long)(StringView string);
 ulong (string_to_ulong)(StringView string);
 
 /**
- * @brief Converts a string to a `long long`.
+ * @brief Converts a string to a `llong`.
  *
  * @param string the string to convert
  *
@@ -765,12 +765,12 @@ ulong (string_to_ulong)(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_long_long(string) string_to_long_long(string_view(string))
+#define string_to_llong(string) string_to_llong(string_view(string))
 
-long long (string_to_long_long)(StringView string);
+llong (string_to_llong)(StringView string);
 
 /**
- * @brief Converts a string to an `unsigned long long`.
+ * @brief Converts a string to an `ullong`.
  *
  * @param string the string to convert
  *
@@ -779,9 +779,9 @@ long long (string_to_long_long)(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_ulong_long(string) string_to_ulong_long(string_view(string))
+#define string_to_ullong(string) string_to_ullong(string_view(string))
 
-unsigned long long (string_to_ulong_long)(StringView string);
+ullong (string_to_ullong)(StringView string);
 
 /**
  * @brief Converts a string to a `float`.
@@ -812,7 +812,7 @@ float (string_to_float)(StringView string);
 double (string_to_double)(StringView string);
 
 /**
- * @brief Converts a string to a `long double`.
+ * @brief Converts a string to a `ldouble`.
  *
  * @param string the string to convert
  *
@@ -821,9 +821,9 @@ double (string_to_double)(StringView string);
  * @exception NULL_POINTER_ERROR if string.data is null
  * @exception NUMBER_FORMAT_ERROR If the string is invalid or the value is out of range
  */
-#define string_to_long_double(string) string_to_long_double(string_view(string))
+#define string_to_ldouble(string) string_to_ldouble(string_view(string))
 
-long double (string_to_long_double)(StringView string);
+ldouble (string_to_ldouble)(StringView string);
 
 /**
  * @brief String hash function to be used in containers.

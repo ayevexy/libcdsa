@@ -542,20 +542,20 @@ void test_string_value_of() {
     TEST_ASSERT_EQUAL_STRING("\n", string_data(string_value_of((char) 10)));
 
     TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((short) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned short) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ushort) 10)));
 
     TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((int) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned int) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((uint) 10)));
 
     TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((long) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned long) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ulong) 10)));
 
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((long long) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((unsigned long long) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((llong) 10)));
+    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ullong) 10)));
 
     TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((float) 10)));
     TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((double) 10)));
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((long double) 10)));
+    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((ldouble) 10)));
 }
 
 void test_string_to_number() {
@@ -586,14 +586,14 @@ void test_string_to_number() {
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong("-10")));
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong("1'000'000'000'000'000'000'000")));
 
-    TEST_ASSERT_EQUAL(-10, string_to_long_long("-10"));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_long("a")));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_long("1'000'000'000'000'000'000'000")));
+    TEST_ASSERT_EQUAL(-10, string_to_llong("-10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_llong("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_llong("1'000'000'000'000'000'000'000")));
 
-    TEST_ASSERT_EQUAL(10, string_to_ulong_long("10"));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("a")));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("-10")));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ulong_long("1'000'000'000'000'000'000'000")));
+    TEST_ASSERT_EQUAL(10, string_to_ullong("10"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ullong("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ullong("-10")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ullong("1'000'000'000'000'000'000'000")));
 
     TEST_ASSERT_EQUAL_FLOAT(-10.0f, string_to_float("-10.0"));
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_float("a")));
@@ -603,9 +603,9 @@ void test_string_to_number() {
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_double("a")));
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_double("1.0e10000")));
 
-    TEST_ASSERT_EQUAL_FLOAT(-10.0L, string_to_long_double("-10.0"));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_double("a")));
-    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_long_double("1.0e10000")));
+    TEST_ASSERT_EQUAL_FLOAT(-10.0L, string_to_ldouble("-10.0"));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ldouble("a")));
+    TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_ldouble("1.0e10000")));
 }
 
 /* --------------------------------------------------------------------------------- */

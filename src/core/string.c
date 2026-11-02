@@ -539,8 +539,8 @@ String (string_to_lowercase)(StringView string) {
     return new_string;
 }
 
-#define DEFINE_STRING_VALUE_OF(func_name, type, format)                             \
-    String func_name(type value) {                                                  \
+#define DEFINE_STRING_VALUE_OF(T, suffix, format)                                   \
+    String string_value_of_##suffix(T value) {                                      \
         const int length = snprintf(nullptr, 0, format, value) + NULL_TERMINATOR;   \
         char data[length];                                                          \
         snprintf(data, length, format, value);                                      \
@@ -551,25 +551,25 @@ String string_value_of_bool(bool value) {
     return string_new(value ? "true" : "false");
 }
 
-DEFINE_STRING_VALUE_OF(string_value_of_char, char, "%c")
+DEFINE_STRING_VALUE_OF(char, char, "%c")
 
-DEFINE_STRING_VALUE_OF(string_value_of_int, int, "%d")
+DEFINE_STRING_VALUE_OF(int, int, "%d")
 
-DEFINE_STRING_VALUE_OF(string_value_of_uint, uint, "%u")
+DEFINE_STRING_VALUE_OF(uint, uint, "%u")
 
-DEFINE_STRING_VALUE_OF(string_value_of_long, long, "%ld")
+DEFINE_STRING_VALUE_OF(long, long, "%ld")
 
-DEFINE_STRING_VALUE_OF(string_value_of_ulong, ulong, "%lu")
+DEFINE_STRING_VALUE_OF(ulong, ulong, "%lu")
 
-DEFINE_STRING_VALUE_OF(string_value_of_long_long, long long, "%lld")
+DEFINE_STRING_VALUE_OF(llong, llong, "%lld")
 
-DEFINE_STRING_VALUE_OF(string_value_of_ulong_long, unsigned long long, "%llu")
+DEFINE_STRING_VALUE_OF(ullong, ullong, "%llu")
 
-DEFINE_STRING_VALUE_OF(string_value_of_float, float, "%f")
+DEFINE_STRING_VALUE_OF(float, float, "%f")
 
-DEFINE_STRING_VALUE_OF(string_value_of_double, double, "%f")
+DEFINE_STRING_VALUE_OF(double, double, "%f")
 
-DEFINE_STRING_VALUE_OF(string_value_of_long_double, long double, "%Lf")
+DEFINE_STRING_VALUE_OF(ldouble, ldouble, "%Lf")
 
 #undef DEFINE_STRING_VALUE_OF
 
@@ -638,12 +638,12 @@ ulong (string_to_ulong)(StringView string) {
     return parse_ulong(string.data, ULONG_MAX);
 }
 
-long long (string_to_long_long)(StringView string) {
+llong (string_to_llong)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
     char *end;
-    const long long value = strtoll(string.data, &end, 10);
+    const llong value = strtoll(string.data, &end, 10);
 
     if (errno == ERANGE || end == string.data || *end != '\0') {
         set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
@@ -652,7 +652,7 @@ long long (string_to_long_long)(StringView string) {
     return value;
 }
 
-unsigned long long (string_to_ulong_long)(StringView string) {
+ullong (string_to_ullong)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     if (string.data[0] == '-') {
@@ -662,7 +662,7 @@ unsigned long long (string_to_ulong_long)(StringView string) {
 
     errno = 0;
     char *end;
-    const unsigned long long value = strtoull(string.data, &end, 10);
+    const ullong value = strtoull(string.data, &end, 10);
 
     if (errno == ERANGE || end == string.data || *end != '\0') {
         set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);
@@ -699,12 +699,12 @@ double (string_to_double)(StringView string) {
     return value;
 }
 
-long double (string_to_long_double)(StringView string) {
+ldouble (string_to_ldouble)(StringView string) {
     if (require_non_null(string.data)) return 0;
 
     errno = 0;
     char *end;
-    const long double value = strtold(string.data, &end);
+    const ldouble value = strtold(string.data, &end);
 
     if (errno == ERANGE || end == string.data || *end != '\0') {
         set_error(NUMBER_FORMAT_ERROR, "invalid number format '%s'", string.data);

@@ -72,6 +72,64 @@
 #define math_div(a, b) MATH_DISPATCH(div, a, b)
 
 /**
+ * @brief Returns the greatest common divisor (GCD) of two numbers.
+ *
+ * @param a the first number
+ * @param b the second number
+ *
+ * @return the greatest common divisor
+ */
+#define math_gcd(a, b) MATH_DISPATCH(gcd, a, b)
+
+/**
+ * @brief Returns the least common multiple (LCM) of two numbers.
+ *
+ * @param a the first number
+ * @param b the second number
+ *
+ * @return the least common multiple
+ */
+#define math_lcm(a, b) MATH_DISPATCH(lcm, a, b)
+
+/**
+ * @brief Calculates the factorial of a number.
+ *
+ * @param n the number
+ *
+ * @return the factorial of n
+ *
+ * @exception ARITHMETIC_ERROR if n is negative or the result overflows
+ */
+#define math_factorial(n) MATH_DISPATCH(factorial, n)
+
+/**
+ * @brief Checks whether a number is even.
+ *
+ * @param n the number
+ *
+ * @return true if even, false otherwise
+ */
+#define math_is_even(n) (n % 2 == 0)
+
+/**
+ * @brief Checks whether a number is odd.
+ *
+ * @param n the number
+ *
+ * @return true if odd, false otherwise
+ */
+#define math_is_odd(n) (n % 2 != 0)
+
+/**
+ * @brief Checks whether a number is prime.
+ *
+ * @param n the number
+ *
+ * @return true if prime, false otherwise
+ */
+#define math_is_prime(n) MATH_DISPATCH(is_prime, n)
+
+/**
  * @brief Converts degrees to radians.
  *
  * @param degrees the value in degrees
@@ -91,7 +149,7 @@
 
 /*---------------------------------------------------------------------------------*/
 
-#define MATH_DISPATCH(operation, a, b) _Generic((a),    \
+#define MATH_DISPATCH(operation, a, ...) _Generic((a),  \
     char:     math_##operation##_char,                  \
     schar:    math_##operation##_schar,                 \
     uchar:    math_##operation##_uchar,                 \
@@ -103,7 +161,7 @@
     ulong:    math_##operation##_ulong,                 \
     llong:    math_##operation##_llong,                 \
     ullong:   math_##operation##_ullong                 \
-)(a, b)
+)(a __VA_OPT__(,) __VA_ARGS__)
 
 #define DEFINE_SIGNED_MATH(T, suffix, min, max)                             \
                                                                             \
@@ -148,8 +206,51 @@ static inline T math_div_##suffix(T a, T b) {                               \
         return 0;                                                           \
     }                                                                       \
     return a / b;                                                           \
+}                                                                           \
+                                                                            \
+static inline T math_gcd_##suffix(T a, T b) {                               \
+    while (b != 0) {                                                        \
+        T remainder = a % b;                                                \
+        a = b;                                                              \
+        b = remainder;                                                      \
+    }                                                                       \
+    return a;                                                               \
+}                                                                           \
+                                                                            \
+static inline T math_lcm_##suffix(T a, T b) {                               \
+    if (a == 0 || b == 0) {                                                 \
+        return 0;                                                           \
+    }                                                                       \
+    return (a / math_gcd_##suffix(a, b)) * b;                               \
+}                                                                           \
+                                                                            \
+static inline T math_factorial_##suffix(T number) {                         \
+    if (number < 0) {                                                       \
+        set_error(ARITHMETIC_ERROR, "factorial negative");                  \
+        return 0;                                                           \
+    }                                                                       \
+    T result = 1;                                                           \
+                                                                            \
+    for (T i = 2; i <= number; i++) {                                       \
+        if (result > max / i) {                                             \
+            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
+            return 0;                                                       \
+        }                                                                   \
+        result *= i;                                                        \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
+static inline bool math_is_prime_##suffix(T number) {                       \
+    if (number < 2)       return false;                                     \
+    if (number == 2)      return true;                                      \
+    if (number % 2 == 0)  return false;                                     \
+                                                                            \
+    for (T i = 3; i <= number / i; i += 2) {                                \
+        if (number % i == 0) return false;                                  \
+    }                                                                       \
+    return true;                                                            \
 }
-
 
 #define DEFINE_UNSIGNED_MATH(T, suffix, max)                                \
                                                                             \
@@ -183,6 +284,46 @@ static inline T math_div_##suffix(T a, T b) {                               \
         return 0;                                                           \
     }                                                                       \
     return a / b;                                                           \
+}                                                                           \
+                                                                            \
+static inline T math_gcd_##suffix(T a, T b) {                               \
+    while (b != 0) {                                                        \
+        T remainder = a % b;                                                \
+        a = b;                                                              \
+        b = remainder;                                                      \
+    }                                                                       \
+    return a;                                                               \
+}                                                                           \
+                                                                            \
+static inline T math_lcm_##suffix(T a, T b) {                               \
+    if (a == 0 || b == 0) {                                                 \
+        return 0;                                                           \
+    }                                                                       \
+    return (a / math_gcd_##suffix(a, b)) * b;                               \
+}                                                                           \
+                                                                            \
+static inline T math_factorial_##suffix(T number) {                         \
+    T result = 1;                                                           \
+                                                                            \
+    for (T i = 2; i <= number; i++) {                                       \
+        if (result > max / i) {                                             \
+            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
+            return 0;                                                       \
+        }                                                                   \
+        result *= i;                                                        \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
+static inline bool math_is_prime_##suffix(T number) {                       \
+    if (number < 2)       return false;                                     \
+    if (number == 2)      return true;                                      \
+    if (number % 2 == 0)  return false;                                     \
+                                                                            \
+    for (T i = 3; i <= number / i; i += 2) {                                \
+        if (number % i == 0) return false;                                  \
+    }                                                                       \
+    return true;                                                            \
 }
 
 #if CHAR_MIN < 0

@@ -157,7 +157,58 @@ void test_math_div() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div(LLONG_MIN_VALUE, -1LL)));
 }
 
+void test_math_gcd() {
+    // then
+    TEST_ASSERT_EQUAL(6, math_gcd(12, 18));
+    TEST_ASSERT_EQUAL(5, math_gcd(15, 20));
+    TEST_ASSERT_EQUAL(1, math_gcd(7, 9));
+    TEST_ASSERT_EQUAL(10, math_gcd(10, 0));
+    TEST_ASSERT_EQUAL(10, math_gcd(0, 10));
+    TEST_ASSERT_EQUAL(0, math_gcd(0, 0));
+}
+
+void test_math_lcm() {
+    // then
+    TEST_ASSERT_EQUAL(36, math_lcm(12, 18));
+    TEST_ASSERT_EQUAL(60, math_lcm(15, 20));
+    TEST_ASSERT_EQUAL(63, math_lcm(7, 9));
+    TEST_ASSERT_EQUAL(0, math_lcm(10, 0));
+    TEST_ASSERT_EQUAL(0,math_lcm(0, 10));
+}
+
+void test_math_factorial() {
+    // then
+    TEST_ASSERT_EQUAL(1, math_factorial(0));
+    TEST_ASSERT_EQUAL(1, math_factorial(1));
+    TEST_ASSERT_EQUAL(2, math_factorial(2));
+    TEST_ASSERT_EQUAL(6, math_factorial(3));
+    TEST_ASSERT_EQUAL(24, math_factorial(4));
+    TEST_ASSERT_EQUAL(120, math_factorial(5));
+    TEST_ASSERT_EQUAL(720, math_factorial(6));
+    TEST_ASSERT_EQUAL(5040, math_factorial(7));
+    TEST_ASSERT_EQUAL(3628800, math_factorial(10));
+    TEST_ASSERT_EQUAL(479001600, math_factorial(12));
+    // and
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_factorial(-1)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_factorial(1'000'000)));
+}
+
+void test_math_is_prime() {
+    // then
+    TEST_ASSERT_FALSE(math_is_prime(0));
+    TEST_ASSERT_FALSE(math_is_prime(1));
+    TEST_ASSERT_TRUE(math_is_prime(2));
+    TEST_ASSERT_TRUE(math_is_prime(3));
+    TEST_ASSERT_FALSE(math_is_prime(4));
+    TEST_ASSERT_TRUE(math_is_prime(5));
+    TEST_ASSERT_FALSE(math_is_prime(9));
+    TEST_ASSERT_TRUE(math_is_prime(17));
+    TEST_ASSERT_TRUE(math_is_prime(97));
+    TEST_ASSERT_FALSE(math_is_prime(100));
+}
+
 void test_math_to_radians() {
+    // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.7853981633974483, math_to_radians(45.0));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 1.5707963267948966, math_to_radians(90.0));
@@ -167,6 +218,7 @@ void test_math_to_radians() {
 }
 
 void test_math_to_degrees() {
+    // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_degrees(0.0));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 45.0, math_to_degrees(0.7853981633974483));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 90.0, math_to_degrees(1.5707963267948966));
@@ -181,6 +233,10 @@ int main(void) {
     RUN_TEST(test_math_sub);
     RUN_TEST(test_math_mul);
     RUN_TEST(test_math_div);
+    RUN_TEST(test_math_gcd);
+    RUN_TEST(test_math_lcm);
+    RUN_TEST(test_math_factorial);
+    RUN_TEST(test_math_is_prime);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);
     return UNITY_END();

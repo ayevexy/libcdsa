@@ -41,6 +41,9 @@
 /** @brief Optioned type aliases for existing c types */
 #include "core/types.h"
 
+/** @brief Typed aliases for standard C limit macros */
+#include "core/limits.h"
+
 /** @brief Utility macros */
 #include "core/macros.h"
 

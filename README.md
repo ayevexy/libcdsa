@@ -67,6 +67,7 @@ Also, there is some other utilities which may be useful:
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [Types](src/core/types.h): Optioned type aliases.
+- [Limits](src/core/limits.h): Typed limit aliases.
 - [Macros](src/core/macros.h): Utility macros.
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 - [File](src/util/file.h): Simple file handling abstraction.

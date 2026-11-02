@@ -162,6 +162,7 @@ void test_math_div() {
 
 void test_math_gcd() {
     // then
+    TEST_ASSERT_EQUAL(6, math_gcd(-12, -18));
     TEST_ASSERT_EQUAL(6, math_gcd(12, 18));
     TEST_ASSERT_EQUAL(5, math_gcd(15, 20));
     TEST_ASSERT_EQUAL(1, math_gcd(7, 9));
@@ -172,6 +173,7 @@ void test_math_gcd() {
 
 void test_math_lcm() {
     // then
+    TEST_ASSERT_EQUAL(36, math_lcm(-12, -18));
     TEST_ASSERT_EQUAL(36, math_lcm(12, 18));
     TEST_ASSERT_EQUAL(60, math_lcm(15, 20));
     TEST_ASSERT_EQUAL(63, math_lcm(7, 9));

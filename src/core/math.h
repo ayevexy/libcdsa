@@ -134,7 +134,7 @@
  *
  * @return the absolute value of n
  */
-#define math_abs(n) MATH_DISPATCH_FLOATS(abs, n)
+#define math_abs(n) MATH_DISPATCH_NUMBERS(abs, n)
 
 /**
  * @brief Returns the minimum of two numbers.
@@ -144,7 +144,7 @@
  *
  * @return the minimum number
  */
-#define math_min(a, b) MATH_DISPATCH_FLOATS(min, a, b)
+#define math_min(a, b) MATH_DISPATCH_NUMBERS(min, a, b)
 
 /**
  * @brief Returns the maximum of two numbers.
@@ -154,7 +154,7 @@
  *
  * @return the maximum number
  */
-#define math_max(a, b) MATH_DISPATCH_FLOATS(max, a, b)
+#define math_max(a, b) MATH_DISPATCH_NUMBERS(max, a, b)
 
 /**
  * @brief Restricts a value to a specified range.
@@ -201,7 +201,7 @@
     ullong:   math_##operation##_ullong                             \
 )(a __VA_OPT__(,) __VA_ARGS__)
 
-#define MATH_DISPATCH_FLOATS(operation, a, ...) _Generic((a),   \
+#define MATH_DISPATCH_NUMBERS(operation, a, ...) _Generic((a),  \
     char:     math_##operation##_char,                          \
     schar:    math_##operation##_schar,                         \
     uchar:    math_##operation##_uchar,                         \

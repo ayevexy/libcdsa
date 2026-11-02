@@ -50,6 +50,7 @@ T math_div_##suffix(T a, T b) {                                             \
 }                                                                           \
                                                                             \
 T math_gcd_##suffix(T a, T b) {                                             \
+    a = math_abs_##suffix(a), b = math_abs_##suffix(b);                     \
     while (b != 0) {                                                        \
         T remainder = a % b;                                                \
         a = b;                                                              \
@@ -59,6 +60,7 @@ T math_gcd_##suffix(T a, T b) {                                             \
 }                                                                           \
                                                                             \
 T math_lcm_##suffix(T a, T b) {                                             \
+    a = math_abs_##suffix(a), b = math_abs_##suffix(b);                     \
     if (a == 0 || b == 0) {                                                 \
         return 0;                                                           \
     }                                                                       \

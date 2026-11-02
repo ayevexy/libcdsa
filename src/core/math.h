@@ -71,6 +71,24 @@
  */
 #define math_div(a, b) MATH_DISPATCH(div, a, b)
 
+/**
+ * @brief Converts degrees to radians.
+ *
+ * @param degrees the value in degrees
+ *
+ * @return the value in radians
+ */
+#define math_to_radians(degrees) ((degrees) * MATH_PI(typeof(degrees)) / 180.0)
+
+/**
+ * @brief Converts radians to degrees.
+ *
+ * @param radians the value in radians
+ *
+ * @return the value in degrees
+ */
+#define math_to_degrees(radians) ((radians) * 180.0 / MATH_PI(typeof(radians)))
+
 /*---------------------------------------------------------------------------------*/
 
 #define MATH_DISPATCH(operation, a, b) _Generic((a),    \

@@ -157,11 +157,31 @@ void test_math_div() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div(LLONG_MIN_VALUE, -1LL)));
 }
 
+void test_math_to_radians() {
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.7853981633974483, math_to_radians(45.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 1.5707963267948966, math_to_radians(90.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 3.1415926535897932, math_to_radians(180.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 6.2831853071795864, math_to_radians(360.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, -1.5707963267948966, math_to_radians(-90.0));
+}
+
+void test_math_to_degrees() {
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_degrees(0.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 45.0, math_to_degrees(0.7853981633974483));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 90.0, math_to_degrees(1.5707963267948966));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 180.0, math_to_degrees(3.1415926535897932));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 360.0, math_to_degrees(6.2831853071795864));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, -90.0, math_to_degrees(-1.5707963267948966));
+}
+
 int main(void) {
     UNITY_BEGIN();
     RUN_TEST(test_math_add);
     RUN_TEST(test_math_sub);
     RUN_TEST(test_math_mul);
     RUN_TEST(test_math_div);
+    RUN_TEST(test_math_to_radians);
+    RUN_TEST(test_math_to_degrees);
     return UNITY_END();
 }

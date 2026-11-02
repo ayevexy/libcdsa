@@ -69,6 +69,7 @@ Also, there is some other utilities which may be useful:
 - [Types](src/core/types.h): Optioned type aliases.
 - [Limits](src/core/limits.h): Typed limit aliases.
 - [Macros](src/core/macros.h): Utility macros.
+- [Math](src/core/math.h): Math utilities.
 - [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 - [File](src/util/file.h): Simple file handling abstraction.
 - [System](src/core/system.h): Runtime system abstraction.

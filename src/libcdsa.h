@@ -59,6 +59,9 @@
 /** @brief Memory management abstractions */
 #include "core/memory.h"
 
+/** @brief Math utilities */
+#include "core/math.h"
+
 /** @brief Array implementation */
 #include "core/array.h"
 

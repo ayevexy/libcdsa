@@ -2,6 +2,7 @@
 
 #include "core/limits.h"
 #include "core/errors.h"
+#include <math.h>
 
 #define DEFINE_SIGNED_MATH(T, suffix, min, max)                             \
                                                                             \
@@ -90,7 +91,19 @@ bool math_is_prime_##suffix(T number) {                                     \
         if (number % i == 0) return false;                                  \
     }                                                                       \
     return true;                                                            \
-}
+}                                                                           \
+                                                                            \
+T math_abs_##suffix(T number) {                                             \
+    return number < 0 ? -number : number;                                   \
+}                                                                           \
+                                                                            \
+T math_min_##suffix(T a, T b) {                                             \
+    return a < b ? a : b;                                                   \
+}                                                                           \
+                                                                            \
+T math_max_##suffix(T a, T b) {                                             \
+    return a > b ? a : b;                                                   \
+}                                                                           \
 
 #define DEFINE_UNSIGNED_MATH(T, suffix, max)                                \
                                                                             \
@@ -164,6 +177,18 @@ bool math_is_prime_##suffix(T number) {                                     \
         if (number % i == 0) return false;                                  \
     }                                                                       \
     return true;                                                            \
+}                                                                           \
+                                                                            \
+T math_abs_##suffix(T number) {                                             \
+    return number;                                                          \
+}                                                                           \
+                                                                            \
+T math_min_##suffix(T a, T b) {                                             \
+    return a < b ? a : b;                                                   \
+}                                                                           \
+                                                                            \
+T math_max_##suffix(T a, T b) {                                             \
+    return a > b ? a : b;                                                   \
 }
 
 #if CHAR_MIN < 0
@@ -186,3 +211,39 @@ DEFINE_UNSIGNED_MATH(ulong, ulong, ULONG_MAX_VALUE)
 
 DEFINE_SIGNED_MATH(llong, llong, LLONG_MIN_VALUE, LLONG_MAX_VALUE)
 DEFINE_UNSIGNED_MATH(ullong, ullong, ULLONG_MAX_VALUE)
+
+float math_abs_float(float number) {
+    return fabsf(number);
+}
+
+float math_min_float(float a, float b) {
+    return fminf(a, b);
+}
+
+float math_max_float(float a, float b) {
+    return fmaxf(a, b);
+}
+
+double math_abs_double(double number) {
+    return fabs(number);
+}
+
+double math_min_double(double a, double b) {
+    return fmin(a, b);
+}
+
+double math_max_double(double a, double b) {
+    return fmax(a, b);
+}
+
+ldouble math_abs_ldouble(ldouble number) {
+    return fabsl(number);
+}
+
+ldouble math_min_ldouble(ldouble a, ldouble b) {
+    return fminl(a, b);
+}
+
+ldouble math_max_ldouble(ldouble a, ldouble b) {
+    return fmaxl(a, b);
+}

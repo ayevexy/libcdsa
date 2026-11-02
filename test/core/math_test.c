@@ -210,6 +210,34 @@ void test_math_is_prime() {
     TEST_ASSERT_FALSE(math_is_prime(100));
 }
 
+void test_math_abs() {
+    TEST_ASSERT_EQUAL(10, math_abs(10));
+    TEST_ASSERT_EQUAL(10, math_abs(-10));
+    TEST_ASSERT_EQUAL(0, math_abs(0));
+}
+
+void test_math_min() {
+    TEST_ASSERT_EQUAL(10, math_min(10, 20));
+    TEST_ASSERT_EQUAL(10, math_min(20, 10));
+    TEST_ASSERT_EQUAL(-10, math_min(-10, 10));
+    TEST_ASSERT_EQUAL(-20, math_min(-10, -20));
+    TEST_ASSERT_EQUAL(10, math_min(10, 10));
+}
+
+void test_math_max() {
+    TEST_ASSERT_EQUAL(20, math_max(10, 20));
+    TEST_ASSERT_EQUAL(20, math_max(20, 10));
+    TEST_ASSERT_EQUAL(10, math_max(-10, 10));
+    TEST_ASSERT_EQUAL(-10, math_max(-10, -20));
+    TEST_ASSERT_EQUAL(10, math_max(10, 10));
+}
+
+void test_math_clamp() {
+    TEST_ASSERT_EQUAL(0, math_clamp(-1, 0, 1));
+    TEST_ASSERT_EQUAL(1, math_clamp(2, 0, 1));
+    TEST_ASSERT_EQUAL(0, math_clamp(0, 0, 1));
+}
+
 void test_math_to_radians() {
     // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
@@ -240,6 +268,10 @@ int main(void) {
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);
     RUN_TEST(test_math_is_prime);
+    RUN_TEST(test_math_abs);
+    RUN_TEST(test_math_min);
+    RUN_TEST(test_math_max);
+    RUN_TEST(test_math_clamp);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);
     return UNITY_END();

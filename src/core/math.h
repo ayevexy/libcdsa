@@ -31,7 +31,7 @@
  *
  * @throws ARITHMETIC_ERROR if the addition overflows
  */
-#define math_add(a, b) MATH_DISPATCH(add, a, b)
+#define math_add(a, b) MATH_DISPATCH_INTEGERS(add, a, b)
 
 /**
  * @brief Subtracts the second number from the first, checking for arithmetic overflow or underflow.
@@ -43,7 +43,7 @@
  *
  * @throws ARITHMETIC_ERROR if the subtraction overflows or underflows
  */
-#define math_sub(a, b) MATH_DISPATCH(sub, a, b)
+#define math_sub(a, b) MATH_DISPATCH_INTEGERS(sub, a, b)
 
 /**
  * @brief Multiplies two numbers, checking for arithmetic overflow.
@@ -55,7 +55,7 @@
  *
  * @throws ARITHMETIC_ERROR if the multiplication overflows
  */
-#define math_mul(a, b) MATH_DISPATCH(mul, a, b)
+#define math_mul(a, b) MATH_DISPATCH_INTEGERS(mul, a, b)
 
 /**
  * @brief Divides the first number by the second, checking for division by zero and arithmetic overflow.
@@ -67,7 +67,7 @@
  *
  * @throws ARITHMETIC_ERROR if the divisor is zero or the division overflows
  */
-#define math_div(a, b) MATH_DISPATCH(div, a, b)
+#define math_div(a, b) MATH_DISPATCH_INTEGERS(div, a, b)
 
 /**
  * @brief Returns the greatest common divisor (GCD) of two numbers.
@@ -77,7 +77,7 @@
  *
  * @return the greatest common divisor
  */
-#define math_gcd(a, b) MATH_DISPATCH(gcd, a, b)
+#define math_gcd(a, b) MATH_DISPATCH_INTEGERS(gcd, a, b)
 
 /**
  * @brief Returns the least common multiple (LCM) of two numbers.
@@ -87,7 +87,7 @@
  *
  * @return the least common multiple
  */
-#define math_lcm(a, b) MATH_DISPATCH(lcm, a, b)
+#define math_lcm(a, b) MATH_DISPATCH_INTEGERS(lcm, a, b)
 
 /**
  * @brief Calculates the factorial of a number.
@@ -98,7 +98,7 @@
  *
  * @exception ARITHMETIC_ERROR if n is negative or the result overflows
  */
-#define math_factorial(n) MATH_DISPATCH(factorial, n)
+#define math_factorial(n) MATH_DISPATCH_INTEGERS(factorial, n)
 
 /**
  * @brief Checks whether a number is even.
@@ -125,7 +125,47 @@
  *
  * @return true if prime, false otherwise
  */
-#define math_is_prime(n) MATH_DISPATCH(is_prime, n)
+#define math_is_prime(n) MATH_DISPATCH_INTEGERS(is_prime, n)
+
+/**
+ * @brief Returns the absolute value of a number.
+ *
+ * @param n the number
+ *
+ * @return the absolute value of n
+ */
+#define math_abs(n) MATH_DISPATCH_FLOATS(abs, n)
+
+/**
+ * @brief Returns the minimum of two numbers.
+ *
+ * @param a the first number
+ * @param b the second number
+ *
+ * @return the minimum number
+ */
+#define math_min(a, b) MATH_DISPATCH_FLOATS(min, a, b)
+
+/**
+ * @brief Returns the maximum of two numbers.
+ *
+ * @param a the first number
+ * @param b the second number
+ *
+ * @return the maximum number
+ */
+#define math_max(a, b) MATH_DISPATCH_FLOATS(max, a, b)
+
+/**
+ * @brief Restricts a value to a specified range.
+ *
+ * @param value the value to be restricted
+ * @param min the minimum value
+ * @param max the maximum value
+ *
+ * @return a clamped value within the min..max interval
+ */
+#define math_clamp(value, min, max) math_min(math_max(value, min), max)
 
 /**
  * @brief Converts degrees to radians.
@@ -147,18 +187,35 @@
 
 /*---------------------------------------------------------------------------------*/
 
-#define MATH_DISPATCH(operation, a, ...) _Generic((a),  \
-    char:     math_##operation##_char,                  \
-    schar:    math_##operation##_schar,                 \
-    uchar:    math_##operation##_uchar,                 \
-    short:    math_##operation##_short,                 \
-    ushort:   math_##operation##_ushort,                \
-    int:      math_##operation##_int,                   \
-    uint:     math_##operation##_uint,                  \
-    long:     math_##operation##_long,                  \
-    ulong:    math_##operation##_ulong,                 \
-    llong:    math_##operation##_llong,                 \
-    ullong:   math_##operation##_ullong                 \
+#define MATH_DISPATCH_INTEGERS(operation, a, ...) _Generic((a),     \
+    char:     math_##operation##_char,                              \
+    schar:    math_##operation##_schar,                             \
+    uchar:    math_##operation##_uchar,                             \
+    short:    math_##operation##_short,                             \
+    ushort:   math_##operation##_ushort,                            \
+    int:      math_##operation##_int,                               \
+    uint:     math_##operation##_uint,                              \
+    long:     math_##operation##_long,                              \
+    ulong:    math_##operation##_ulong,                             \
+    llong:    math_##operation##_llong,                             \
+    ullong:   math_##operation##_ullong                             \
+)(a __VA_OPT__(,) __VA_ARGS__)
+
+#define MATH_DISPATCH_FLOATS(operation, a, ...) _Generic((a),   \
+    char:     math_##operation##_char,                          \
+    schar:    math_##operation##_schar,                         \
+    uchar:    math_##operation##_uchar,                         \
+    short:    math_##operation##_short,                         \
+    ushort:   math_##operation##_ushort,                        \
+    int:      math_##operation##_int,                           \
+    uint:     math_##operation##_uint,                          \
+    long:     math_##operation##_long,                          \
+    ulong:    math_##operation##_ulong,                         \
+    llong:    math_##operation##_llong,                         \
+    ullong:   math_##operation##_ullong,                        \
+    float:    math_##operation##_float,                         \
+    double:   math_##operation##_double,                        \
+    ldouble:  math_##operation##_ldouble                        \
 )(a __VA_OPT__(,) __VA_ARGS__)
 
 /* char */
@@ -171,6 +228,9 @@ char math_gcd_char(char a, char b);
 char math_lcm_char(char a, char b);
 char math_factorial_char(char number);
 bool math_is_prime_char(char number);
+char math_abs_char(char n);
+char math_min_char(char a, char b);
+char math_max_char(char a, char b);
 
 /* schar */
 
@@ -182,6 +242,9 @@ schar math_gcd_schar(schar a, schar b);
 schar math_lcm_schar(schar a, schar b);
 schar math_factorial_schar(schar number);
 bool math_is_prime_schar(schar number);
+schar math_abs_schar(schar n);
+schar math_min_schar(schar a, schar b);
+schar math_max_schar(schar a, schar b);
 
 /* uchar */
 
@@ -193,6 +256,9 @@ uchar math_gcd_uchar(uchar a, uchar b);
 uchar math_lcm_uchar(uchar a, uchar b);
 uchar math_factorial_uchar(uchar number);
 bool math_is_prime_uchar(uchar number);
+uchar math_abs_uchar(uchar n);
+uchar math_min_uchar(uchar a, uchar b);
+uchar math_max_uchar(uchar a, uchar b);
 
 /* short */
 
@@ -204,6 +270,9 @@ short math_gcd_short(short a, short b);
 short math_lcm_short(short a, short b);
 short math_factorial_short(short number);
 bool math_is_prime_short(short number);
+short math_abs_short(short n);
+short math_min_short(short a, short b);
+short math_max_short(short a, short b);
 
 /* ushort */
 
@@ -215,6 +284,9 @@ ushort math_gcd_ushort(ushort a, ushort b);
 ushort math_lcm_ushort(ushort a, ushort b);
 ushort math_factorial_ushort(ushort number);
 bool math_is_prime_ushort(ushort number);
+ushort math_abs_ushort(ushort n);
+ushort math_min_ushort(ushort a, ushort b);
+ushort math_max_ushort(ushort a, ushort b);
 
 /* int */
 
@@ -226,6 +298,9 @@ int math_gcd_int(int a, int b);
 int math_lcm_int(int a, int b);
 int math_factorial_int(int number);
 bool math_is_prime_int(int number);
+int math_abs_int(int n);
+int math_min_int(int a, int b);
+int math_max_int(int a, int b);
 
 /* uint */
 
@@ -237,6 +312,9 @@ uint math_gcd_uint(uint a, uint b);
 uint math_lcm_uint(uint a, uint b);
 uint math_factorial_uint(uint number);
 bool math_is_prime_uint(uint number);
+uint math_abs_uint(uint n);
+uint math_min_uint(uint a, uint b);
+uint math_max_uint(uint a, uint b);
 
 /* long */
 
@@ -248,6 +326,9 @@ long math_gcd_long(long a, long b);
 long math_lcm_long(long a, long b);
 long math_factorial_long(long number);
 bool math_is_prime_long(long number);
+long math_abs_long(long n);
+long math_min_long(long a, long b);
+long math_max_long(long a, long b);
 
 /* ulong */
 
@@ -259,6 +340,9 @@ ulong math_gcd_ulong(ulong a, ulong b);
 ulong math_lcm_ulong(ulong a, ulong b);
 ulong math_factorial_ulong(ulong number);
 bool math_is_prime_ulong(ulong number);
+ulong math_abs_ulong(ulong n);
+ulong math_min_ulong(ulong a, ulong b);
+ulong math_max_ulong(ulong a, ulong b);
 
 /* llong */
 
@@ -270,6 +354,9 @@ llong math_gcd_llong(llong a, llong b);
 llong math_lcm_llong(llong a, llong b);
 llong math_factorial_llong(llong number);
 bool math_is_prime_llong(llong number);
+llong math_abs_llong(llong n);
+llong math_min_llong(llong a, llong b);
+llong math_max_llong(llong a, llong b);
 
 /* ullong */
 
@@ -281,5 +368,26 @@ ullong math_gcd_ullong(ullong a, ullong b);
 ullong math_lcm_ullong(ullong a, ullong b);
 ullong math_factorial_ullong(ullong number);
 bool math_is_prime_ullong(ullong number);
+ullong math_abs_ullong(ullong n);
+ullong math_min_ullong(ullong a, ullong b);
+ullong math_max_ullong(ullong a, ullong b);
+
+/* float */
+
+float math_abs_float(float n);
+float math_min_float(float a, float b);
+float math_max_float(float a, float b);
+
+/* double */
+
+double math_abs_double(double n);
+double math_min_double(double a, double b);
+double math_max_double(double a, double b);
+
+/* ldouble */
+
+ldouble math_abs_ldouble(ldouble n);
+ldouble math_min_ldouble(ldouble a, ldouble b);
+ldouble math_max_ldouble(ldouble a, ldouble b);
 
 #endif

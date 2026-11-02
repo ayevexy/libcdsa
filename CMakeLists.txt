@@ -56,6 +56,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>
 )
 
+target_link_libraries(libcdsa PRIVATE m)
+
 # ---- Development ----
 
 target_compile_options(${PROJECT_NAME} PRIVATE

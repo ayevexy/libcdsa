@@ -323,6 +323,14 @@ T math_ceil_##suffix(T number) {                                            \
                                                                             \
 T math_trunc_##suffix(T number) {                                           \
     return trunc##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_is_close_##suffix(T a, T b, T tolerance) {                           \
+    return fabs##t(a - b) <= tolerance;                                     \
+}                                                                           \
+                                                                            \
+T math_lerp_##suffix(T start, T end, T amount) {                            \
+    return start + (end - start) * amount;                                  \
 }
 
 #if CHAR_MIN < 0

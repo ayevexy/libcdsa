@@ -433,6 +433,28 @@
 #define math_trunc(n) MATH_DISPATCH_FLOATS(trunc, n)
 
 /**
+ * @brief Checks whether two floating-point numbers are approximately equal.
+ *
+ * @param a the first number
+ * @param b the second number
+ * @param tolerance the maximum allowed absolute difference
+ *
+ * @return true if the absolute difference between a and b is within tolerance, false otherwise
+ */
+#define math_is_close(a, b, tolerance) MATH_DISPATCH_FLOATS(is_close, a, b, tolerance)
+
+/**
+ * @brief Linearly interpolates between two values.
+ *
+ * @param start the starting value
+ * @param end the ending value
+ * @param amount the interpolation amount (0.0 to 1.0)
+ *
+ * @return the interpolated value
+ */
+#define math_lerp(start, end, amount) MATH_DISPATCH_FLOATS(lerp, start, end, amount)
+
+/**
  * @brief Converts degrees to radians.
  *
  * @param degrees the value in degrees
@@ -685,6 +707,9 @@ float math_floor_float(float number);
 float math_ceil_float(float number);
 float math_trunc_float(float number);
 
+float math_is_close_float(float a, float b, float tolerance);
+float math_lerp_float(float start, float end, float amount);
+
 /* double */
 
 double math_pow_double(double base, double exponent);
@@ -727,6 +752,9 @@ double math_floor_double(double number);
 double math_ceil_double(double number);
 double math_trunc_double(double number);
 
+double math_is_close_double(double a, double b, double tolerance);
+double math_lerp_double(double start, double end, double amount);
+
 /* ldouble */
 
 ldouble math_pow_ldouble(ldouble base, ldouble exponent);
@@ -768,5 +796,8 @@ ldouble math_round_ldouble(ldouble number);
 ldouble math_floor_ldouble(ldouble number);
 ldouble math_ceil_ldouble(ldouble number);
 ldouble math_trunc_ldouble(ldouble number);
+
+ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
+ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);
 
 #endif

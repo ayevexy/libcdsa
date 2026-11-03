@@ -322,6 +322,28 @@ void test_math_trunc() {
     TEST_ASSERT_EQUAL_FLOAT(-4.0000, math_trunc(-4.111239));
 }
 
+void test_math_is_close() {
+    // then
+    TEST_ASSERT_TRUE(math_is_close(3.0010, 3.0015, 0.1));
+    TEST_ASSERT_FALSE(math_is_close(3.0010, 3.0015, 0.0001));
+}
+
+void test_math_lerp(void) {
+    // then: interpolation
+    TEST_ASSERT_EQUAL_FLOAT(0, math_lerp(0.0, 10.0, 0.0));
+    TEST_ASSERT_EQUAL_FLOAT(5, math_lerp(0.0, 10.0, 0.5));
+    TEST_ASSERT_EQUAL_FLOAT(10, math_lerp(0.0, 10.0, 1.0));
+    // then: reverse interpolation
+    TEST_ASSERT_EQUAL_FLOAT(5, math_lerp(10.0, 0.0, 0.5));
+    // then: extrapolation
+    TEST_ASSERT_EQUAL_FLOAT(15, math_lerp(0.0, 10.0, 1.5));
+    TEST_ASSERT_EQUAL_FLOAT(-5, math_lerp(0.0, 10.0, -0.5));
+    // then: negative values
+    TEST_ASSERT_EQUAL_FLOAT(-5, math_lerp(-10.0, 0.0, 0.5));
+    TEST_ASSERT_EQUAL_FLOAT(-10, math_lerp(-10.0, -20.0, 0.0));
+    TEST_ASSERT_EQUAL_FLOAT(-20, math_lerp(-10.0, -20.0, 1.0));
+}
+
 void test_math_to_radians() {
     // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
@@ -363,6 +385,8 @@ int main(void) {
     RUN_TEST(test_math_floor);
     RUN_TEST(test_math_ceil);
     RUN_TEST(test_math_trunc);
+    RUN_TEST(test_math_is_close);
+    RUN_TEST(test_math_lerp);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);
     return UNITY_END();

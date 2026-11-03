@@ -67,14 +67,14 @@ T math_lcm_##suffix(T a, T b) {                                             \
     return (a / math_gcd_##suffix(a, b)) * b;                               \
 }                                                                           \
                                                                             \
-T math_factorial_##suffix(T number) {                                       \
-    if (number < 0) {                                                       \
+T math_factorial_##suffix(T n) {                                            \
+    if (n < 0) {                                                            \
         set_error(ARITHMETIC_ERROR, "factorial negative");                  \
         return 0;                                                           \
     }                                                                       \
     T result = 1;                                                           \
                                                                             \
-    for (T i = 2; i <= number; i++) {                                       \
+    for (T i = 2; i <= n; i++) {                                            \
         if (result > max / i) {                                             \
             set_error(ARITHMETIC_ERROR, "factorial overflow");              \
             return 0;                                                       \
@@ -84,19 +84,19 @@ T math_factorial_##suffix(T number) {                                       \
     return result;                                                          \
 }                                                                           \
                                                                             \
-bool math_is_prime_##suffix(T number) {                                     \
-    if (number < 2)       return false;                                     \
-    if (number == 2)      return true;                                      \
-    if (number % 2 == 0)  return false;                                     \
+bool math_is_prime_##suffix(T n) {                                          \
+    if (n < 2)       return false;                                          \
+    if (n == 2)      return true;                                           \
+    if (n % 2 == 0)  return false;                                          \
                                                                             \
-    for (T i = 3; i <= number / i; i += 2) {                                \
-        if (number % i == 0) return false;                                  \
+    for (T i = 3; i <= n / i; i += 2) {                                     \
+        if (n % i == 0) return false;                                       \
     }                                                                       \
     return true;                                                            \
 }                                                                           \
                                                                             \
-T math_abs_##suffix(T number) {                                             \
-    return number < 0 ? -number : number;                                   \
+T math_abs_##suffix(T n) {                                                  \
+    return n < 0 ? -n : n;                                                  \
 }                                                                           \
                                                                             \
 T math_min_##suffix(T a, T b) {                                             \
@@ -157,10 +157,10 @@ T math_lcm_##suffix(T a, T b) {                                             \
     return (a / math_gcd_##suffix(a, b)) * b;                               \
 }                                                                           \
                                                                             \
-T math_factorial_##suffix(T number) {                                       \
+T math_factorial_##suffix(T n) {                                            \
     T result = 1;                                                           \
                                                                             \
-    for (T i = 2; i <= number; i++) {                                       \
+    for (T i = 2; i <= n; i++) {                                            \
         if (result > max / i) {                                             \
             set_error(ARITHMETIC_ERROR, "factorial overflow");              \
             return 0;                                                       \
@@ -170,19 +170,19 @@ T math_factorial_##suffix(T number) {                                       \
     return result;                                                          \
 }                                                                           \
                                                                             \
-bool math_is_prime_##suffix(T number) {                                     \
-    if (number < 2)       return false;                                     \
-    if (number == 2)      return true;                                      \
-    if (number % 2 == 0)  return false;                                     \
+bool math_is_prime_##suffix(T n) {                                          \
+    if (n < 2)       return false;                                          \
+    if (n == 2)      return true;                                           \
+    if (n % 2 == 0)  return false;                                          \
                                                                             \
-    for (T i = 3; i <= number / i; i += 2) {                                \
-        if (number % i == 0) return false;                                  \
+    for (T i = 3; i <= n / i; i += 2) {                                     \
+        if (n % i == 0) return false;                                       \
     }                                                                       \
     return true;                                                            \
 }                                                                           \
                                                                             \
-T math_abs_##suffix(T number) {                                             \
-    return number;                                                          \
+T math_abs_##suffix(T n) {                                                  \
+    return n;                                                               \
 }                                                                           \
                                                                             \
 T math_min_##suffix(T a, T b) {                                             \
@@ -199,40 +199,40 @@ T math_pow_##suffix(T base, T exponent) {                                   \
     return pow##t(base, exponent);                                          \
 }                                                                           \
                                                                             \
-T math_log_##suffix(T number) {                                             \
-    return log##t(number);                                                  \
+T math_log_##suffix(T n) {                                                  \
+    return log##t(n);                                                       \
 }                                                                           \
                                                                             \
-T math_log2_##suffix(T number) {                                            \
-    return log2##t(number);                                                 \
+T math_log2_##suffix(T n) {                                                 \
+    return log2##t(n);                                                      \
 }                                                                           \
                                                                             \
-T math_log10_##suffix(T number) {                                           \
-    return log10##t(number);                                                \
+T math_log10_##suffix(T n) {                                                \
+    return log10##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_log1p_##suffix(T number) {                                           \
-    return log1p##t(number);                                                \
+T math_log1p_##suffix(T n) {                                                \
+    return log1p##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_exp_##suffix(T number) {                                             \
-    return exp##t(number);                                                  \
+T math_exp_##suffix(T n) {                                                  \
+    return exp##t(n);                                                       \
 }                                                                           \
                                                                             \
-T math_exp2_##suffix(T number) {                                            \
-    return exp2##t(number);                                                 \
+T math_exp2_##suffix(T n) {                                                 \
+    return exp2##t(n);                                                      \
 }                                                                           \
                                                                             \
-T math_expm1_##suffix(T number) {                                           \
-    return expm1##t(number);                                                \
+T math_expm1_##suffix(T n) {                                                \
+    return expm1##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_sqrt_##suffix(T number) {                                            \
-    return sqrt##t(number);                                                 \
+T math_sqrt_##suffix(T n) {                                                 \
+    return sqrt##t(n);                                                      \
 }                                                                           \
                                                                             \
-T math_cbrt_##suffix(T number) {                                            \
-    return cbrt##t(number);                                                 \
+T math_cbrt_##suffix(T n) {                                                 \
+    return cbrt##t(n);                                                      \
 }                                                                           \
                                                                             \
 T math_hypot_##suffix(T x, T y) {                                           \
@@ -291,8 +291,8 @@ T math_atanh_##suffix(T n) {                                                \
     return atanh##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_abs_##suffix(T number) {                                             \
-    return fabs##t(number);                                                 \
+T math_abs_##suffix(T n) {                                                  \
+    return fabs##t(n);                                                      \
 }                                                                           \
                                                                             \
 T math_min_##suffix(T a, T b) {                                             \
@@ -303,9 +303,9 @@ T math_max_##suffix(T a, T b) {                                             \
     return fmax##t(a, b);                                                   \
 }                                                                           \
                                                                             \
-T math_sign_##suffix(T number) {                                            \
-    if (number > 0) return 1;                                               \
-    if (number < 0) return -1;                                              \
+T math_sign_##suffix(T n) {                                                 \
+    if (n > 0) return 1;                                                    \
+    if (n < 0) return -1;                                                   \
     return 0;                                                               \
 }                                                                           \
                                                                             \
@@ -313,20 +313,20 @@ T math_mod_##suffix(T a, T b) {                                             \
     return fmod##t(a, b);                                                   \
 }                                                                           \
                                                                             \
-T math_round_##suffix(T number) {                                           \
-    return round##t(number);                                                \
+T math_round_##suffix(T n) {                                                \
+    return round##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_floor_##suffix(T number) {                                           \
-    return floor##t(number);                                                \
+T math_floor_##suffix(T n) {                                                \
+    return floor##t(n);                                                     \
 }                                                                           \
                                                                             \
-T math_ceil_##suffix(T number) {                                            \
-    return ceil##t(number);                                                 \
+T math_ceil_##suffix(T n) {                                                 \
+    return ceil##t(n);                                                      \
 }                                                                           \
                                                                             \
-T math_trunc_##suffix(T number) {                                           \
-    return trunc##t(number);                                                \
+T math_trunc_##suffix(T n) {                                                \
+    return trunc##t(n);                                                     \
 }                                                                           \
                                                                             \
 T math_is_close_##suffix(T a, T b, T tolerance) {                           \

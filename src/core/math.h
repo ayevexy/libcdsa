@@ -82,83 +82,83 @@
 /**
  * @brief Computes the natural logarithm of a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the natural logarithm of the number
+ * @return the natural logarithm of n
  */
-#define math_log(number) MATH_DISPATCH_FLOATS(log, number)
+#define math_log(n) MATH_DISPATCH_FLOATS(log, n)
 
 /**
  * @brief Computes the base-2 logarithm of a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the base-2 logarithm of the number
+ * @return the base-2 logarithm of n
  */
-#define math_log2(number) MATH_DISPATCH_FLOATS(log2, number)
+#define math_log2(n) MATH_DISPATCH_FLOATS(log2, n)
 
 /**
  * @brief Computes the base-10 logarithm of a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the base-10 logarithm of the number
+ * @return the base-10 logarithm of n
  */
-#define math_log10(number) MATH_DISPATCH_FLOATS(log10, number)
+#define math_log10(n) MATH_DISPATCH_FLOATS(log10, n)
 
 /**
  * @brief Computes the natural logarithm of one plus a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the natural logarithm of one plus the number
+ * @return the natural logarithm of one plus n
  */
-#define math_log1p(number) MATH_DISPATCH_FLOATS(log1p, number)
+#define math_log1p(n) MATH_DISPATCH_FLOATS(log1p, n)
 
 /**
  * @brief Computes the exponential of a number.
  *
- * @param number the exponent
+ * @param n the exponent
  *
- * @return e raised to the power of the number
+ * @return e raised to the power of n
  */
-#define math_exp(number) MATH_DISPATCH_FLOATS(exp, number)
+#define math_exp(n) MATH_DISPATCH_FLOATS(exp, n)
 
 /**
  * @brief Computes two raised to the power of a number.
  *
- * @param number the exponent
+ * @param n the exponent
  *
- * @return two raised to the power of the number
+ * @return two raised to the power of n
  */
-#define math_exp2(number) MATH_DISPATCH_FLOATS(exp2, number)
+#define math_exp2(n) MATH_DISPATCH_FLOATS(exp2, n)
 
 /**
  * @brief Computes the exponential of a number minus one.
  *
- * @param number the exponent
+ * @param n the exponent
  *
- * @return e raised to the power of the number, minus one
+ * @return e raised to the power of n, minus one
  */
-#define math_expm1(number) MATH_DISPATCH_FLOATS(expm1, number)
+#define math_expm1(n) MATH_DISPATCH_FLOATS(expm1, n)
 
 /**
  * @brief Computes the square root of a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the square root of the number
+ * @return the square root of n
  */
-#define math_sqrt(number) MATH_DISPATCH_FLOATS(sqrt, number)
+#define math_sqrt(n) MATH_DISPATCH_FLOATS(sqrt, n)
 
 /**
  * @brief Computes the cube root of a number.
  *
- * @param number the input value
+ * @param n the input value
  *
- * @return the cube root of the number
+ * @return the cube root of n
  */
-#define math_cbrt(number) MATH_DISPATCH_FLOATS(cbrt, number)
+#define math_cbrt(n) MATH_DISPATCH_FLOATS(cbrt, n)
 
 /**
  * @brief Computes the hypotenuse of a right triangle.
@@ -529,8 +529,8 @@ char math_mul_char(char a, char b);
 char math_div_char(char a, char b);
 char math_gcd_char(char a, char b);
 char math_lcm_char(char a, char b);
-char math_factorial_char(char number);
-bool math_is_prime_char(char number);
+char math_factorial_char(char n);
+bool math_is_prime_char(char n);
 char math_abs_char(char n);
 char math_min_char(char a, char b);
 char math_max_char(char a, char b);
@@ -543,8 +543,8 @@ schar math_mul_schar(schar a, schar b);
 schar math_div_schar(schar a, schar b);
 schar math_gcd_schar(schar a, schar b);
 schar math_lcm_schar(schar a, schar b);
-schar math_factorial_schar(schar number);
-bool math_is_prime_schar(schar number);
+schar math_factorial_schar(schar n);
+bool math_is_prime_schar(schar n);
 schar math_abs_schar(schar n);
 schar math_min_schar(schar a, schar b);
 schar math_max_schar(schar a, schar b);
@@ -557,8 +557,8 @@ uchar math_mul_uchar(uchar a, uchar b);
 uchar math_div_uchar(uchar a, uchar b);
 uchar math_gcd_uchar(uchar a, uchar b);
 uchar math_lcm_uchar(uchar a, uchar b);
-uchar math_factorial_uchar(uchar number);
-bool math_is_prime_uchar(uchar number);
+uchar math_factorial_uchar(uchar n);
+bool math_is_prime_uchar(uchar n);
 uchar math_abs_uchar(uchar n);
 uchar math_min_uchar(uchar a, uchar b);
 uchar math_max_uchar(uchar a, uchar b);
@@ -571,8 +571,8 @@ short math_mul_short(short a, short b);
 short math_div_short(short a, short b);
 short math_gcd_short(short a, short b);
 short math_lcm_short(short a, short b);
-short math_factorial_short(short number);
-bool math_is_prime_short(short number);
+short math_factorial_short(short n);
+bool math_is_prime_short(short n);
 short math_abs_short(short n);
 short math_min_short(short a, short b);
 short math_max_short(short a, short b);
@@ -585,8 +585,8 @@ ushort math_mul_ushort(ushort a, ushort b);
 ushort math_div_ushort(ushort a, ushort b);
 ushort math_gcd_ushort(ushort a, ushort b);
 ushort math_lcm_ushort(ushort a, ushort b);
-ushort math_factorial_ushort(ushort number);
-bool math_is_prime_ushort(ushort number);
+ushort math_factorial_ushort(ushort n);
+bool math_is_prime_ushort(ushort n);
 ushort math_abs_ushort(ushort n);
 ushort math_min_ushort(ushort a, ushort b);
 ushort math_max_ushort(ushort a, ushort b);
@@ -599,8 +599,8 @@ int math_mul_int(int a, int b);
 int math_div_int(int a, int b);
 int math_gcd_int(int a, int b);
 int math_lcm_int(int a, int b);
-int math_factorial_int(int number);
-bool math_is_prime_int(int number);
+int math_factorial_int(int n);
+bool math_is_prime_int(int n);
 int math_abs_int(int n);
 int math_min_int(int a, int b);
 int math_max_int(int a, int b);
@@ -613,8 +613,8 @@ uint math_mul_uint(uint a, uint b);
 uint math_div_uint(uint a, uint b);
 uint math_gcd_uint(uint a, uint b);
 uint math_lcm_uint(uint a, uint b);
-uint math_factorial_uint(uint number);
-bool math_is_prime_uint(uint number);
+uint math_factorial_uint(uint n);
+bool math_is_prime_uint(uint n);
 uint math_abs_uint(uint n);
 uint math_min_uint(uint a, uint b);
 uint math_max_uint(uint a, uint b);
@@ -627,8 +627,8 @@ long math_mul_long(long a, long b);
 long math_div_long(long a, long b);
 long math_gcd_long(long a, long b);
 long math_lcm_long(long a, long b);
-long math_factorial_long(long number);
-bool math_is_prime_long(long number);
+long math_factorial_long(long n);
+bool math_is_prime_long(long n);
 long math_abs_long(long n);
 long math_min_long(long a, long b);
 long math_max_long(long a, long b);
@@ -641,8 +641,8 @@ ulong math_mul_ulong(ulong a, ulong b);
 ulong math_div_ulong(ulong a, ulong b);
 ulong math_gcd_ulong(ulong a, ulong b);
 ulong math_lcm_ulong(ulong a, ulong b);
-ulong math_factorial_ulong(ulong number);
-bool math_is_prime_ulong(ulong number);
+ulong math_factorial_ulong(ulong n);
+bool math_is_prime_ulong(ulong n);
 ulong math_abs_ulong(ulong n);
 ulong math_min_ulong(ulong a, ulong b);
 ulong math_max_ulong(ulong a, ulong b);
@@ -655,8 +655,8 @@ llong math_mul_llong(llong a, llong b);
 llong math_div_llong(llong a, llong b);
 llong math_gcd_llong(llong a, llong b);
 llong math_lcm_llong(llong a, llong b);
-llong math_factorial_llong(llong number);
-bool math_is_prime_llong(llong number);
+llong math_factorial_llong(llong n);
+bool math_is_prime_llong(llong n);
 llong math_abs_llong(llong n);
 llong math_min_llong(llong a, llong b);
 llong math_max_llong(llong a, llong b);
@@ -669,8 +669,8 @@ ullong math_mul_ullong(ullong a, ullong b);
 ullong math_div_ullong(ullong a, ullong b);
 ullong math_gcd_ullong(ullong a, ullong b);
 ullong math_lcm_ullong(ullong a, ullong b);
-ullong math_factorial_ullong(ullong number);
-bool math_is_prime_ullong(ullong number);
+ullong math_factorial_ullong(ullong n);
+bool math_is_prime_ullong(ullong n);
 ullong math_abs_ullong(ullong n);
 ullong math_min_ullong(ullong a, ullong b);
 ullong math_max_ullong(ullong a, ullong b);
@@ -678,16 +678,16 @@ ullong math_max_ullong(ullong a, ullong b);
 /* float */
 
 float math_pow_float(float base, float exponent);
-float math_log_float(float number);
-float math_log2_float(float number);
-float math_log10_float(float number);
-float math_log1p_float(float number);
+float math_log_float(float n);
+float math_log2_float(float n);
+float math_log10_float(float n);
+float math_log1p_float(float n);
 
-float math_exp_float(float number);
-float math_exp2_float(float number);
-float math_expm1_float(float number);
-float math_sqrt_float(float number);
-float math_cbrt_float(float number);
+float math_exp_float(float n);
+float math_exp2_float(float n);
+float math_expm1_float(float n);
+float math_sqrt_float(float n);
+float math_cbrt_float(float n);
 float math_hypot_float(float x, float y);
 
 float math_sin_float(float n);
@@ -710,13 +710,13 @@ float math_atanh_float(float n);
 float math_abs_float(float n);
 float math_min_float(float a, float b);
 float math_max_float(float a, float b);
-float math_sign_float(float number);
+float math_sign_float(float n);
 float math_mod_float(float a, float b);
 
-float math_round_float(float number);
-float math_floor_float(float number);
-float math_ceil_float(float number);
-float math_trunc_float(float number);
+float math_round_float(float n);
+float math_floor_float(float n);
+float math_ceil_float(float n);
+float math_trunc_float(float n);
 
 float math_is_close_float(float a, float b, float tolerance);
 float math_lerp_float(float start, float end, float amount);
@@ -724,16 +724,16 @@ float math_lerp_float(float start, float end, float amount);
 /* double */
 
 double math_pow_double(double base, double exponent);
-double math_log_double(double number);
-double math_log2_double(double number);
-double math_log10_double(double number);
-double math_log1p_double(double number);
+double math_log_double(double n);
+double math_log2_double(double n);
+double math_log10_double(double n);
+double math_log1p_double(double n);
 
-double math_exp_double(double number);
-double math_exp2_double(double number);
-double math_expm1_double(double number);
-double math_sqrt_double(double number);
-double math_cbrt_double(double number);
+double math_exp_double(double n);
+double math_exp2_double(double n);
+double math_expm1_double(double n);
+double math_sqrt_double(double n);
+double math_cbrt_double(double n);
 double math_hypot_double(double x, double y);
 
 double math_sin_double(double n);
@@ -756,13 +756,13 @@ double math_atanh_double(double n);
 double math_abs_double(double n);
 double math_min_double(double a, double b);
 double math_max_double(double a, double b);
-double math_sign_double(double number);
+double math_sign_double(double n);
 double math_mod_double(double a, double b);
 
-double math_round_double(double number);
-double math_floor_double(double number);
-double math_ceil_double(double number);
-double math_trunc_double(double number);
+double math_round_double(double n);
+double math_floor_double(double n);
+double math_ceil_double(double n);
+double math_trunc_double(double n);
 
 double math_is_close_double(double a, double b, double tolerance);
 double math_lerp_double(double start, double end, double amount);
@@ -770,16 +770,16 @@ double math_lerp_double(double start, double end, double amount);
 /* ldouble */
 
 ldouble math_pow_ldouble(ldouble base, ldouble exponent);
-ldouble math_log_ldouble(ldouble number);
-ldouble math_log2_ldouble(ldouble number);
-ldouble math_log10_ldouble(ldouble number);
-ldouble math_log1p_ldouble(ldouble number);
+ldouble math_log_ldouble(ldouble n);
+ldouble math_log2_ldouble(ldouble n);
+ldouble math_log10_ldouble(ldouble n);
+ldouble math_log1p_ldouble(ldouble n);
 
-ldouble math_exp_ldouble(ldouble number);
-ldouble math_exp2_ldouble(ldouble number);
-ldouble math_expm1_ldouble(ldouble number);
-ldouble math_sqrt_ldouble(ldouble number);
-ldouble math_cbrt_ldouble(ldouble number);
+ldouble math_exp_ldouble(ldouble n);
+ldouble math_exp2_ldouble(ldouble n);
+ldouble math_expm1_ldouble(ldouble n);
+ldouble math_sqrt_ldouble(ldouble n);
+ldouble math_cbrt_ldouble(ldouble n);
 ldouble math_hypot_ldouble(ldouble x, ldouble y);
 
 ldouble math_sin_ldouble(ldouble n);
@@ -802,13 +802,13 @@ ldouble math_atanh_ldouble(ldouble n);
 ldouble math_abs_ldouble(ldouble n);
 ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
-ldouble math_sign_ldouble(ldouble number);
+ldouble math_sign_ldouble(ldouble n);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
 
-ldouble math_round_ldouble(ldouble number);
-ldouble math_floor_ldouble(ldouble number);
-ldouble math_ceil_ldouble(ldouble number);
-ldouble math_trunc_ldouble(ldouble number);
+ldouble math_round_ldouble(ldouble n);
+ldouble math_floor_ldouble(ldouble n);
+ldouble math_ceil_ldouble(ldouble n);
+ldouble math_trunc_ldouble(ldouble n);
 
 ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
 ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);

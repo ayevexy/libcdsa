@@ -31,7 +31,7 @@
  *
  * @exception ARITHMETIC_ERROR if the addition overflows
  */
-#define math_add(a, b) MATH_DISPATCH_INTEGERS(add, a, b)
+#define math_add_exact(a, b) MATH_DISPATCH_INTEGERS(add_exact, a, b)
 
 /**
  * @brief Subtracts the second number from the first, checking for arithmetic overflow or underflow.
@@ -43,7 +43,7 @@
  *
  * @exception ARITHMETIC_ERROR if the subtraction overflows or underflows
  */
-#define math_sub(a, b) MATH_DISPATCH_INTEGERS(sub, a, b)
+#define math_sub_exact(a, b) MATH_DISPATCH_INTEGERS(sub_exact, a, b)
 
 /**
  * @brief Multiplies two numbers, checking for arithmetic overflow.
@@ -55,7 +55,7 @@
  *
  * @exception ARITHMETIC_ERROR if the multiplication overflows
  */
-#define math_mul(a, b) MATH_DISPATCH_INTEGERS(mul, a, b)
+#define math_mul_exact(a, b) MATH_DISPATCH_INTEGERS(mul_exact, a, b)
 
 /**
  * @brief Divides the first number by the second, checking for division by zero and arithmetic overflow.
@@ -67,7 +67,7 @@
  *
  * @exception ARITHMETIC_ERROR if the divisor is zero or the division overflows
  */
-#define math_div(a, b) MATH_DISPATCH_INTEGERS(div, a, b)
+#define math_div_exact(a, b) MATH_DISPATCH_INTEGERS(div_exact, a, b)
 
 /**
  * @brief Raises a number to a given power.
@@ -523,10 +523,10 @@
 
 /* char */
 
-char math_add_char(char a, char b);
-char math_sub_char(char a, char b);
-char math_mul_char(char a, char b);
-char math_div_char(char a, char b);
+char math_add_exact_char(char a, char b);
+char math_sub_exact_char(char a, char b);
+char math_mul_exact_char(char a, char b);
+char math_div_exact_char(char a, char b);
 char math_gcd_char(char a, char b);
 char math_lcm_char(char a, char b);
 char math_factorial_char(char n);
@@ -537,10 +537,10 @@ char math_max_char(char a, char b);
 
 /* schar */
 
-schar math_add_schar(schar a, schar b);
-schar math_sub_schar(schar a, schar b);
-schar math_mul_schar(schar a, schar b);
-schar math_div_schar(schar a, schar b);
+schar math_add_exact_schar(schar a, schar b);
+schar math_sub_exact_schar(schar a, schar b);
+schar math_mul_exact_schar(schar a, schar b);
+schar math_div_exact_schar(schar a, schar b);
 schar math_gcd_schar(schar a, schar b);
 schar math_lcm_schar(schar a, schar b);
 schar math_factorial_schar(schar n);
@@ -551,10 +551,10 @@ schar math_max_schar(schar a, schar b);
 
 /* uchar */
 
-uchar math_add_uchar(uchar a, uchar b);
-uchar math_sub_uchar(uchar a, uchar b);
-uchar math_mul_uchar(uchar a, uchar b);
-uchar math_div_uchar(uchar a, uchar b);
+uchar math_add_exact_uchar(uchar a, uchar b);
+uchar math_sub_exact_uchar(uchar a, uchar b);
+uchar math_mul_exact_uchar(uchar a, uchar b);
+uchar math_div_exact_uchar(uchar a, uchar b);
 uchar math_gcd_uchar(uchar a, uchar b);
 uchar math_lcm_uchar(uchar a, uchar b);
 uchar math_factorial_uchar(uchar n);
@@ -565,10 +565,10 @@ uchar math_max_uchar(uchar a, uchar b);
 
 /* short */
 
-short math_add_short(short a, short b);
-short math_sub_short(short a, short b);
-short math_mul_short(short a, short b);
-short math_div_short(short a, short b);
+short math_add_exact_short(short a, short b);
+short math_sub_exact_short(short a, short b);
+short math_mul_exact_short(short a, short b);
+short math_div_exact_short(short a, short b);
 short math_gcd_short(short a, short b);
 short math_lcm_short(short a, short b);
 short math_factorial_short(short n);
@@ -579,10 +579,10 @@ short math_max_short(short a, short b);
 
 /* ushort */
 
-ushort math_add_ushort(ushort a, ushort b);
-ushort math_sub_ushort(ushort a, ushort b);
-ushort math_mul_ushort(ushort a, ushort b);
-ushort math_div_ushort(ushort a, ushort b);
+ushort math_add_exact_ushort(ushort a, ushort b);
+ushort math_sub_exact_ushort(ushort a, ushort b);
+ushort math_mul_exact_ushort(ushort a, ushort b);
+ushort math_div_exact_ushort(ushort a, ushort b);
 ushort math_gcd_ushort(ushort a, ushort b);
 ushort math_lcm_ushort(ushort a, ushort b);
 ushort math_factorial_ushort(ushort n);
@@ -593,10 +593,10 @@ ushort math_max_ushort(ushort a, ushort b);
 
 /* int */
 
-int math_add_int(int a, int b);
-int math_sub_int(int a, int b);
-int math_mul_int(int a, int b);
-int math_div_int(int a, int b);
+int math_add_exact_int(int a, int b);
+int math_sub_exact_int(int a, int b);
+int math_mul_exact_int(int a, int b);
+int math_div_exact_int(int a, int b);
 int math_gcd_int(int a, int b);
 int math_lcm_int(int a, int b);
 int math_factorial_int(int n);
@@ -607,10 +607,10 @@ int math_max_int(int a, int b);
 
 /* uint */
 
-uint math_add_uint(uint a, uint b);
-uint math_sub_uint(uint a, uint b);
-uint math_mul_uint(uint a, uint b);
-uint math_div_uint(uint a, uint b);
+uint math_add_exact_uint(uint a, uint b);
+uint math_sub_exact_uint(uint a, uint b);
+uint math_mul_exact_uint(uint a, uint b);
+uint math_div_exact_uint(uint a, uint b);
 uint math_gcd_uint(uint a, uint b);
 uint math_lcm_uint(uint a, uint b);
 uint math_factorial_uint(uint n);
@@ -621,10 +621,10 @@ uint math_max_uint(uint a, uint b);
 
 /* long */
 
-long math_add_long(long a, long b);
-long math_sub_long(long a, long b);
-long math_mul_long(long a, long b);
-long math_div_long(long a, long b);
+long math_add_exact_long(long a, long b);
+long math_sub_exact_long(long a, long b);
+long math_mul_exact_long(long a, long b);
+long math_div_exact_long(long a, long b);
 long math_gcd_long(long a, long b);
 long math_lcm_long(long a, long b);
 long math_factorial_long(long n);
@@ -635,10 +635,10 @@ long math_max_long(long a, long b);
 
 /* ulong */
 
-ulong math_add_ulong(ulong a, ulong b);
-ulong math_sub_ulong(ulong a, ulong b);
-ulong math_mul_ulong(ulong a, ulong b);
-ulong math_div_ulong(ulong a, ulong b);
+ulong math_add_exact_ulong(ulong a, ulong b);
+ulong math_sub_exact_ulong(ulong a, ulong b);
+ulong math_mul_exact_ulong(ulong a, ulong b);
+ulong math_div_exact_ulong(ulong a, ulong b);
 ulong math_gcd_ulong(ulong a, ulong b);
 ulong math_lcm_ulong(ulong a, ulong b);
 ulong math_factorial_ulong(ulong n);
@@ -649,10 +649,10 @@ ulong math_max_ulong(ulong a, ulong b);
 
 /* llong */
 
-llong math_add_llong(llong a, llong b);
-llong math_sub_llong(llong a, llong b);
-llong math_mul_llong(llong a, llong b);
-llong math_div_llong(llong a, llong b);
+llong math_add_exact_llong(llong a, llong b);
+llong math_sub_exact_llong(llong a, llong b);
+llong math_mul_exact_llong(llong a, llong b);
+llong math_div_exact_llong(llong a, llong b);
 llong math_gcd_llong(llong a, llong b);
 llong math_lcm_llong(llong a, llong b);
 llong math_factorial_llong(llong n);
@@ -663,10 +663,10 @@ llong math_max_llong(llong a, llong b);
 
 /* ullong */
 
-ullong math_add_ullong(ullong a, ullong b);
-ullong math_sub_ullong(ullong a, ullong b);
-ullong math_mul_ullong(ullong a, ullong b);
-ullong math_div_ullong(ullong a, ullong b);
+ullong math_add_exact_ullong(ullong a, ullong b);
+ullong math_sub_exact_ullong(ullong a, ullong b);
+ullong math_mul_exact_ullong(ullong a, ullong b);
+ullong math_div_exact_ullong(ullong a, ullong b);
 ullong math_gcd_ullong(ullong a, ullong b);
 ullong math_lcm_ullong(ullong a, ullong b);
 ullong math_factorial_ullong(ullong n);

@@ -6,7 +6,7 @@
 
 #define DEFINE_SIGNED_MATH(T, suffix, min, max)                             \
                                                                             \
-T math_add_##suffix(T a, T b) {                                             \
+T math_add_exact_##suffix(T a, T b) {                                       \
     if ((b > 0 && a > (max) - b) || (b < 0 && a < (min) - b)) {             \
         set_error(ARITHMETIC_ERROR, "addition overflow");                   \
         return 0;                                                           \
@@ -14,7 +14,7 @@ T math_add_##suffix(T a, T b) {                                             \
     return a + b;                                                           \
 }                                                                           \
                                                                             \
-T math_sub_##suffix(T a, T b) {                                             \
+T math_sub_exact_##suffix(T a, T b) {                                       \
     if ((b < 0 && a > (max) + b) || (b > 0 && a < (min) + b)) {             \
         set_error(ARITHMETIC_ERROR, "subtraction overflow");                \
         return 0;                                                           \
@@ -22,7 +22,7 @@ T math_sub_##suffix(T a, T b) {                                             \
     return a - b;                                                           \
 }                                                                           \
                                                                             \
-T math_mul_##suffix(T a, T b) {                                             \
+T math_mul_exact_##suffix(T a, T b) {                                       \
     if (a > 0) {                                                            \
         if ((b > 0 && a > (max) / b) || (b < 0 && b < (min) / a))           \
             goto overflow;                                                  \
@@ -37,7 +37,7 @@ T math_mul_##suffix(T a, T b) {                                             \
         return 0;                                                           \
 }                                                                           \
                                                                             \
-T math_div_##suffix(T a, T b) {                                             \
+T math_div_exact_##suffix(T a, T b) {                                       \
     if (b == 0) {                                                           \
         set_error(ARITHMETIC_ERROR, "division by zero");                    \
         return 0;                                                           \
@@ -109,7 +109,7 @@ T math_max_##suffix(T a, T b) {                                             \
 
 #define DEFINE_UNSIGNED_MATH(T, suffix, max)                                \
                                                                             \
-T math_add_##suffix(T a, T b) {                                             \
+T math_add_exact_##suffix(T a, T b) {                                       \
     if (a > (max) - b) {                                                    \
         set_error(ARITHMETIC_ERROR, "addition overflow");                   \
         return 0;                                                           \
@@ -117,7 +117,7 @@ T math_add_##suffix(T a, T b) {                                             \
     return a + b;                                                           \
 }                                                                           \
                                                                             \
-T math_sub_##suffix(T a, T b) {                                             \
+T math_sub_exact_##suffix(T a, T b) {                                       \
     if (a < b) {                                                            \
         set_error(ARITHMETIC_ERROR, "subtraction underflow");               \
         return 0;                                                           \
@@ -125,7 +125,7 @@ T math_sub_##suffix(T a, T b) {                                             \
     return a - b;                                                           \
 }                                                                           \
                                                                             \
-T math_mul_##suffix(T a, T b) {                                             \
+T math_mul_exact_##suffix(T a, T b) {                                       \
     if (b != 0 && a > (max) / b) {                                          \
         set_error(ARITHMETIC_ERROR, "multiplication overflow");             \
         return 0;                                                           \
@@ -133,7 +133,7 @@ T math_mul_##suffix(T a, T b) {                                             \
     return a * b;                                                           \
 }                                                                           \
                                                                             \
-T math_div_##suffix(T a, T b) {                                             \
+T math_div_exact_##suffix(T a, T b) {                                       \
     if (b == 0) {                                                           \
         set_error(ARITHMETIC_ERROR, "division by zero");                    \
         return 0;                                                           \

@@ -70,6 +70,125 @@
 #define math_div(a, b) MATH_DISPATCH_INTEGERS(div, a, b)
 
 /**
+ * @brief Returns the sine of an angle in radians.
+ *
+ * @param n the angle in radians
+ *
+ * @return the sine of n
+ */
+#define math_sin(n) MATH_DISPATCH_FLOATS(sin, n)
+
+/**
+ * @brief Returns the cosine of an angle in radians.
+ *
+ * @param n the angle in radians
+ *
+ * @return the cosine of n
+ */
+#define math_cos(n) MATH_DISPATCH_FLOATS(cos, n)
+
+/**
+ * @brief Returns the tangent of an angle in radians.
+ *
+ * @param n the angle in radians
+ *
+ * @return the tangent of n
+ */
+#define math_tan(n) MATH_DISPATCH_FLOATS(tan, n)
+
+/**
+ * @brief Returns the arc sine of a value.
+ *
+ * @param n the value, in the range -1..1
+ *
+ * @return the arc sine of n in radians
+ */
+#define math_asin(n) MATH_DISPATCH_FLOATS(asin, n)
+
+/**
+ * @brief Returns the arc cosine of a value.
+ *
+ * @param n the value, in the range -1..1
+ *
+ * @return the arc cosine of n in radians
+ */
+#define math_acos(n) MATH_DISPATCH_FLOATS(acos, n)
+
+/**
+ * @brief Returns the arc tangent of a value.
+ *
+ * @param n the value
+ *
+ * @return the arc tangent of n in radians
+ */
+#define math_atan(n) MATH_DISPATCH_FLOATS(atan, n)
+
+/**
+ * @brief Returns the arc tangent of y / x, using the signs of both arguments
+ * to determine the quadrant.
+ *
+ * @param y the y-coordinate
+ * @param x the x-coordinate
+ *
+ * @return the arc tangent of y / x in radians
+ */
+#define math_atan2(y, x) MATH_DISPATCH_FLOATS(atan2, y, x)
+
+/**
+ * @brief Returns the hyperbolic sine of a value.
+ *
+ * @param n the value
+ *
+ * @return the hyperbolic sine of n
+ */
+#define math_sinh(n) MATH_DISPATCH_FLOATS(sinh, n)
+
+/**
+ * @brief Returns the hyperbolic cosine of a value.
+ *
+ * @param n the value
+ *
+ * @return the hyperbolic cosine of n
+ */
+#define math_cosh(n) MATH_DISPATCH_FLOATS(cosh, n)
+
+/**
+ * @brief Returns the hyperbolic tangent of a value.
+ *
+ * @param n the value
+ *
+ * @return the hyperbolic tangent of n
+ */
+#define math_tanh(n) MATH_DISPATCH_FLOATS(tanh, n)
+
+/**
+ * @brief Returns the inverse hyperbolic sine of a value.
+ *
+ * @param n the value
+ *
+ * @return the inverse hyperbolic sine of n
+ */
+#define math_asinh(n) MATH_DISPATCH_FLOATS(asinh, n)
+
+/**
+ * @brief Returns the inverse hyperbolic cosine of a value.
+ *
+ * @param n the value, greater than or equal to 1
+ *
+ * @return the inverse hyperbolic cosine of n
+ */
+#define math_acosh(n) MATH_DISPATCH_FLOATS(acosh, n)
+
+/**
+ * @brief Returns the inverse hyperbolic tangent of a value.
+ *
+ * @param n the value, in the range -1..1 (exclusive)
+ *
+ * @return the inverse hyperbolic tangent of n
+ */
+#define math_atanh(n) MATH_DISPATCH_FLOATS(atanh, n)
+
+/**
  * @brief Returns the greatest common divisor (GCD) of two numbers.
  *
  * @param a the first number
@@ -425,10 +544,28 @@ ullong math_max_ullong(ullong a, ullong b);
 
 /* float */
 
+float math_sin_float(float n);
+float math_cos_float(float n);
+float math_tan_float(float n);
+
+float math_asin_float(float n);
+float math_acos_float(float n);
+float math_atan_float(float n);
+float math_atan2_float(float y, float x);
+
+float math_sinh_float(float n);
+float math_cosh_float(float n);
+float math_tanh_float(float n);
+
+float math_asinh_float(float n);
+float math_acosh_float(float n);
+float math_atanh_float(float n);
+
 float math_abs_float(float n);
 float math_min_float(float a, float b);
 float math_max_float(float a, float b);
 float math_sign_float(float number);
+
 float math_round_float(float number);
 float math_floor_float(float number);
 float math_ceil_float(float number);
@@ -436,10 +573,28 @@ float math_trunc_float(float number);
 
 /* double */
 
+double math_sin_double(double n);
+double math_cos_double(double n);
+double math_tan_double(double n);
+
+double math_asin_double(double n);
+double math_acos_double(double n);
+double math_atan_double(double n);
+double math_atan2_double(double y, double x);
+
+double math_sinh_double(double n);
+double math_cosh_double(double n);
+double math_tanh_double(double n);
+
+double math_asinh_double(double n);
+double math_acosh_double(double n);
+double math_atanh_double(double n);
+
 double math_abs_double(double n);
 double math_min_double(double a, double b);
 double math_max_double(double a, double b);
 double math_sign_double(double number);
+
 double math_round_double(double number);
 double math_floor_double(double number);
 double math_ceil_double(double number);
@@ -447,10 +602,28 @@ double math_trunc_double(double number);
 
 /* ldouble */
 
+ldouble math_sin_ldouble(ldouble n);
+ldouble math_cos_ldouble(ldouble n);
+ldouble math_tan_ldouble(ldouble n);
+
+ldouble math_asin_ldouble(ldouble n);
+ldouble math_acos_ldouble(ldouble n);
+ldouble math_atan_ldouble(ldouble n);
+ldouble math_atan2_ldouble(ldouble y, ldouble x);
+
+ldouble math_sinh_ldouble(ldouble n);
+ldouble math_cosh_ldouble(ldouble n);
+ldouble math_tanh_ldouble(ldouble n);
+
+ldouble math_asinh_ldouble(ldouble n);
+ldouble math_acosh_ldouble(ldouble n);
+ldouble math_atanh_ldouble(ldouble n);
+
 ldouble math_abs_ldouble(ldouble n);
 ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble number);
+
 ldouble math_round_ldouble(ldouble number);
 ldouble math_floor_ldouble(ldouble number);
 ldouble math_ceil_ldouble(ldouble number);

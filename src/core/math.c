@@ -193,6 +193,94 @@ T math_max_##suffix(T a, T b) {                                             \
     return a > b ? a : b;                                                   \
 }
 
+#define DEFINE_FLOAT_MATH(T, suffix, t)                                     \
+                                                                            \
+T math_sin_##suffix(T n) {                                                  \
+    return sin##t(n);                                                       \
+}                                                                           \
+                                                                            \
+T math_cos_##suffix(T n) {                                                  \
+    return cos##t(n);                                                       \
+}                                                                           \
+                                                                            \
+T math_tan_##suffix(T n) {                                                  \
+    return tan##t(n);                                                       \
+}                                                                           \
+                                                                            \
+T math_asin_##suffix(T n) {                                                 \
+    return asin##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_acos_##suffix(T n) {                                                 \
+    return acos##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_atan_##suffix(T n) {                                                 \
+    return atan##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_atan2_##suffix(T y, T x) {                                           \
+    return atan2##t(y, x);                                                  \
+}                                                                           \
+                                                                            \
+T math_sinh_##suffix(T n) {                                                 \
+    return sinh##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_cosh_##suffix(T n) {                                                 \
+    return cosh##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_tanh_##suffix(T n) {                                                 \
+    return tanh##t(n);                                                      \
+}                                                                           \
+                                                                            \
+T math_asinh_##suffix(T n) {                                                \
+    return asinh##t(n);                                                     \
+}                                                                           \
+                                                                            \
+T math_acosh_##suffix(T n) {                                                \
+    return acosh##t(n);                                                     \
+}                                                                           \
+                                                                            \
+T math_atanh_##suffix(T n) {                                                \
+    return atanh##t(n);                                                     \
+}                                                                           \
+                                                                            \
+T math_abs_##suffix(T number) {                                             \
+    return fabs##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_min_##suffix(T a, T b) {                                             \
+    return fmin##t(a, b);                                                   \
+}                                                                           \
+                                                                            \
+T math_max_##suffix(T a, T b) {                                             \
+    return fmax##t(a, b);                                                   \
+}                                                                           \
+                                                                            \
+T math_sign_##suffix(T number) {                                            \
+    if (number > 0) return 1;                                               \
+    if (number < 0) return -1;                                              \
+    return 0;                                                               \
+}                                                                           \
+                                                                            \
+T math_round_##suffix(T number) {                                           \
+    return round##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_floor_##suffix(T number) {                                           \
+    return floor##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_ceil_##suffix(T number) {                                            \
+    return ceil##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_trunc_##suffix(T number) {                                           \
+    return trunc##t(number);                                                \
+}
+
 #if CHAR_MIN < 0
 DEFINE_SIGNED_MATH(char, char, CHAR_MIN_VALUE, CHAR_MAX_VALUE)
 #else
@@ -214,104 +302,6 @@ DEFINE_UNSIGNED_MATH(ulong, ulong, ULONG_MAX_VALUE)
 DEFINE_SIGNED_MATH(llong, llong, LLONG_MIN_VALUE, LLONG_MAX_VALUE)
 DEFINE_UNSIGNED_MATH(ullong, ullong, ULLONG_MAX_VALUE)
 
-float math_abs_float(float number) {
-    return fabsf(number);
-}
-
-float math_min_float(float a, float b) {
-    return fminf(a, b);
-}
-
-float math_max_float(float a, float b) {
-    return fmaxf(a, b);
-}
-
-float math_sign_float(float number) {
-    if (number > 0) return 1;
-    if (number < 0) return -1;
-    return 0;
-}
-
-float math_round_float(float number) {
-    return roundf(number);
-}
-
-float math_floor_float(float number) {
-    return floorf(number);
-}
-
-float math_ceil_float(float number) {
-    return ceilf(number);
-}
-
-float math_trunc_float(float number) {
-    return truncf(number);
-}
-
-double math_abs_double(double number) {
-    return fabs(number);
-}
-
-double math_min_double(double a, double b) {
-    return fmin(a, b);
-}
-
-double math_max_double(double a, double b) {
-    return fmax(a, b);
-}
-
-double math_sign_double(double number) {
-    if (number > 0) return 1;
-    if (number < 0) return -1;
-    return 0;
-}
-
-double math_round_double(double number) {
-    return round(number);
-}
-
-double math_floor_double(double number) {
-    return floor(number);
-}
-
-double math_ceil_double(double number) {
-    return ceil(number);
-}
-
-double math_trunc_double(double number) {
-    return trunc(number);
-}
-
-ldouble math_abs_ldouble(ldouble number) {
-    return fabsl(number);
-}
-
-ldouble math_min_ldouble(ldouble a, ldouble b) {
-    return fminl(a, b);
-}
-
-ldouble math_max_ldouble(ldouble a, ldouble b) {
-    return fmaxl(a, b);
-}
-
-ldouble math_sign_ldouble(ldouble number) {
-    if (number > 0) return 1;
-    if (number < 0) return -1;
-    return 0;
-}
-
-ldouble math_round_ldouble(ldouble number) {
-    return roundl(number);
-}
-
-ldouble math_floor_ldouble(ldouble number) {
-    return floorl(number);
-}
-
-ldouble math_ceil_ldouble(ldouble number) {
-    return ceill(number);
-}
-
-ldouble math_trunc_ldouble(ldouble number) {
-    return truncl(number);
-}
+DEFINE_FLOAT_MATH(float, float, f)
+DEFINE_FLOAT_MATH(double, double, /* empty */)
+DEFINE_FLOAT_MATH(ldouble, ldouble, l)

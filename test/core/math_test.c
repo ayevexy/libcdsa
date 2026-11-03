@@ -160,6 +160,27 @@ void test_math_div() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div(LLONG_MIN_VALUE, -1LL)));
 }
 
+#define TEST_TRIGONOMETRIC(T, suffix, tolerance, pi, half)                      \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_sin_##suffix(0));               \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_cos_##suffix(0));               \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_tan_##suffix(pi / 4));          \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 6, math_asin_##suffix(half));      \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 3, math_acos_##suffix(half));      \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 4, math_atan_##suffix(1));         \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 4, math_atan2_##suffix(1, 1));     \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_sinh_##suffix(0));              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_cosh_##suffix(0));              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_tanh_##suffix(0));              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_asinh_##suffix(0));             \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_acosh_##suffix(1));             \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_atanh_##suffix(0))
+
+void test_math_trigonometric(void) {
+    TEST_TRIGONOMETRIC(float, float, 1e-6f, MATH_PI(float), 0.5f);
+    TEST_TRIGONOMETRIC(double, double, 1e-12, MATH_PI(double), 0.5);
+    TEST_TRIGONOMETRIC(ldouble, ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
+}
+
 void test_math_gcd() {
     // then
     TEST_ASSERT_EQUAL(6, math_gcd(-12, -18));
@@ -309,6 +330,7 @@ int main(void) {
     RUN_TEST(test_math_sub);
     RUN_TEST(test_math_mul);
     RUN_TEST(test_math_div);
+    RUN_TEST(test_math_trigonometric);
     RUN_TEST(test_math_gcd);
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);

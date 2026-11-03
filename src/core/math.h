@@ -397,6 +397,16 @@
 #define math_sign(n) MATH_DISPATCH_FLOATS(sign, n)
 
 /**
+ * @brief Computes the floating-point remainder of a division.
+ *
+ * @param a the dividend
+ * @param b the divisor
+ *
+ * @return the remainder of dividing a by b
+ */
+#define math_mod(a, b) MATH_DISPATCH_FLOATS(mod, a, b)
+
+/**
  * @brief Rounds a floating-point number to the nearest integer.
  *
  * @param n the number
@@ -701,6 +711,7 @@ float math_abs_float(float n);
 float math_min_float(float a, float b);
 float math_max_float(float a, float b);
 float math_sign_float(float number);
+float math_mod_float(float a, float b);
 
 float math_round_float(float number);
 float math_floor_float(float number);
@@ -746,6 +757,7 @@ double math_abs_double(double n);
 double math_min_double(double a, double b);
 double math_max_double(double a, double b);
 double math_sign_double(double number);
+double math_mod_double(double a, double b);
 
 double math_round_double(double number);
 double math_floor_double(double number);
@@ -791,6 +803,7 @@ ldouble math_abs_ldouble(ldouble n);
 ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble number);
+ldouble math_mod_ldouble(ldouble a, ldouble b);
 
 ldouble math_round_ldouble(ldouble number);
 ldouble math_floor_ldouble(ldouble number);

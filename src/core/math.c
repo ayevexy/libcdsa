@@ -309,6 +309,10 @@ T math_sign_##suffix(T number) {                                            \
     return 0;                                                               \
 }                                                                           \
                                                                             \
+T math_mod_##suffix(T a, T b) {                                             \
+    return fmod##t(a, b);                                                   \
+}                                                                           \
+                                                                            \
 T math_round_##suffix(T number) {                                           \
     return round##t(number);                                                \
 }                                                                           \

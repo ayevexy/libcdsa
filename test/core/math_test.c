@@ -290,6 +290,14 @@ void test_math_sign() {
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_sign(1.0));
 }
 
+void test_math_mod() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(1.0, math_mod(10.0,  3.0));
+    TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0,  3.0));
+    TEST_ASSERT_EQUAL_FLOAT(1.0, math_mod(10.0,  -3.0));
+    TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0, -3.0));
+}
+
 void test_math_round() {
     // then
     TEST_ASSERT_EQUAL_FLOAT(4.0, math_round(4.1));
@@ -381,6 +389,7 @@ int main(void) {
     RUN_TEST(test_math_max);
     RUN_TEST(test_math_clamp);
     RUN_TEST(test_math_sign);
+    RUN_TEST(test_math_mod);
     RUN_TEST(test_math_round);
     RUN_TEST(test_math_floor);
     RUN_TEST(test_math_ceil);

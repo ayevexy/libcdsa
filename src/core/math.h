@@ -471,7 +471,7 @@
  *
  * @return the value in radians
  */
-#define math_to_radians(degrees) ((degrees) * MATH_PI(typeof(degrees)) / 180.0)
+#define math_to_radians(degrees) MATH_DISPATCH_FLOATS(to_radians, degrees)
 
 /**
  * @brief Converts radians to degrees.
@@ -480,7 +480,7 @@
  *
  * @return the value in degrees
  */
-#define math_to_degrees(radians) ((radians) * 180.0 / MATH_PI(typeof(radians)))
+#define math_to_degrees(radians) MATH_DISPATCH_FLOATS(to_degrees, radians)
 
 /*---------------------------------------------------------------------------------*/
 
@@ -721,6 +721,9 @@ float math_trunc_float(float n);
 float math_is_close_float(float a, float b, float tolerance);
 float math_lerp_float(float start, float end, float amount);
 
+float math_to_radians_float(float degrees);
+float math_to_degrees_float(float radians);
+
 /* double */
 
 double math_pow_double(double base, double exponent);
@@ -767,6 +770,9 @@ double math_trunc_double(double n);
 double math_is_close_double(double a, double b, double tolerance);
 double math_lerp_double(double start, double end, double amount);
 
+double math_to_radians_double(double degrees);
+double math_to_degrees_double(double radians);
+
 /* ldouble */
 
 ldouble math_pow_ldouble(ldouble base, ldouble exponent);
@@ -812,5 +818,8 @@ ldouble math_trunc_ldouble(ldouble n);
 
 ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
 ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);
+
+ldouble math_to_radians_ldouble(ldouble degrees);
+ldouble math_to_degrees_ldouble(ldouble radians);
 
 #endif

@@ -335,6 +335,14 @@ T math_is_close_##suffix(T a, T b, T tolerance) {                           \
                                                                             \
 T math_lerp_##suffix(T start, T end, T amount) {                            \
     return start + (end - start) * amount;                                  \
+}                                                                           \
+                                                                            \
+T math_to_radians_##suffix(T degrees) {                                     \
+    return degrees * MATH_PI(T) / 180.0##t;                                 \
+}                                                                           \
+                                                                            \
+T math_to_degrees_##suffix(T radians) {                                     \
+    return radians * 180.0##t / MATH_PI(T);                                 \
 }
 
 #if CHAR_MIN < 0

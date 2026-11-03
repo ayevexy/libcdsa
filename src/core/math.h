@@ -29,7 +29,7 @@
  *
  * @return the sum of the numbers
  *
- * @throws ARITHMETIC_ERROR if the addition overflows
+ * @exception ARITHMETIC_ERROR if the addition overflows
  */
 #define math_add(a, b) MATH_DISPATCH_INTEGERS(add, a, b)
 
@@ -41,7 +41,7 @@
  *
  * @return the difference of the numbers
  *
- * @throws ARITHMETIC_ERROR if the subtraction overflows or underflows
+ * @exception ARITHMETIC_ERROR if the subtraction overflows or underflows
  */
 #define math_sub(a, b) MATH_DISPATCH_INTEGERS(sub, a, b)
 
@@ -53,7 +53,7 @@
  *
  * @return the product of the numbers
  *
- * @throws ARITHMETIC_ERROR if the multiplication overflows
+ * @exception ARITHMETIC_ERROR if the multiplication overflows
  */
 #define math_mul(a, b) MATH_DISPATCH_INTEGERS(mul, a, b)
 
@@ -65,7 +65,7 @@
  *
  * @return the quotient of the numbers
  *
- * @throws ARITHMETIC_ERROR if the divisor is zero or the division overflows
+ * @exception ARITHMETIC_ERROR if the divisor is zero or the division overflows
  */
 #define math_div(a, b) MATH_DISPATCH_INTEGERS(div, a, b)
 

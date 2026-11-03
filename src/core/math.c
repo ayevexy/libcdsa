@@ -195,6 +195,50 @@ T math_max_##suffix(T a, T b) {                                             \
 
 #define DEFINE_FLOAT_MATH(T, suffix, t)                                     \
                                                                             \
+T math_pow_##suffix(T base, T exponent) {                                   \
+    return pow##t(base, exponent);                                          \
+}                                                                           \
+                                                                            \
+T math_log_##suffix(T number) {                                             \
+    return log##t(number);                                                  \
+}                                                                           \
+                                                                            \
+T math_log2_##suffix(T number) {                                            \
+    return log2##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_log10_##suffix(T number) {                                           \
+    return log10##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_log1p_##suffix(T number) {                                           \
+    return log1p##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_exp_##suffix(T number) {                                             \
+    return exp##t(number);                                                  \
+}                                                                           \
+                                                                            \
+T math_exp2_##suffix(T number) {                                            \
+    return exp2##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_expm1_##suffix(T number) {                                           \
+    return expm1##t(number);                                                \
+}                                                                           \
+                                                                            \
+T math_sqrt_##suffix(T number) {                                            \
+    return sqrt##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_cbrt_##suffix(T number) {                                            \
+    return cbrt##t(number);                                                 \
+}                                                                           \
+                                                                            \
+T math_hypot_##suffix(T x, T y) {                                           \
+    return hypot##t(x, y);                                                  \
+}                                                                           \
+                                                                            \
 T math_sin_##suffix(T n) {                                                  \
     return sin##t(n);                                                       \
 }                                                                           \

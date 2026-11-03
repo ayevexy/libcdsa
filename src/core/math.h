@@ -70,6 +70,107 @@
 #define math_div(a, b) MATH_DISPATCH_INTEGERS(div, a, b)
 
 /**
+ * @brief Raises a number to a given power.
+ *
+ * @param base the base value
+ * @param exponent the exponent value
+ *
+ * @return the result of raising the base to the exponent
+ */
+#define math_pow(base, exponent) MATH_DISPATCH_FLOATS(pow, base, exponent)
+
+/**
+ * @brief Computes the natural logarithm of a number.
+ *
+ * @param number the input value
+ *
+ * @return the natural logarithm of the number
+ */
+#define math_log(number) MATH_DISPATCH_FLOATS(log, number)
+
+/**
+ * @brief Computes the base-2 logarithm of a number.
+ *
+ * @param number the input value
+ *
+ * @return the base-2 logarithm of the number
+ */
+#define math_log2(number) MATH_DISPATCH_FLOATS(log2, number)
+
+/**
+ * @brief Computes the base-10 logarithm of a number.
+ *
+ * @param number the input value
+ *
+ * @return the base-10 logarithm of the number
+ */
+#define math_log10(number) MATH_DISPATCH_FLOATS(log10, number)
+
+/**
+ * @brief Computes the natural logarithm of one plus a number.
+ *
+ * @param number the input value
+ *
+ * @return the natural logarithm of one plus the number
+ */
+#define math_log1p(number) MATH_DISPATCH_FLOATS(log1p, number)
+
+/**
+ * @brief Computes the exponential of a number.
+ *
+ * @param number the exponent
+ *
+ * @return e raised to the power of the number
+ */
+#define math_exp(number) MATH_DISPATCH_FLOATS(exp, number)
+
+/**
+ * @brief Computes two raised to the power of a number.
+ *
+ * @param number the exponent
+ *
+ * @return two raised to the power of the number
+ */
+#define math_exp2(number) MATH_DISPATCH_FLOATS(exp2, number)
+
+/**
+ * @brief Computes the exponential of a number minus one.
+ *
+ * @param number the exponent
+ *
+ * @return e raised to the power of the number, minus one
+ */
+#define math_expm1(number) MATH_DISPATCH_FLOATS(expm1, number)
+
+/**
+ * @brief Computes the square root of a number.
+ *
+ * @param number the input value
+ *
+ * @return the square root of the number
+ */
+#define math_sqrt(number) MATH_DISPATCH_FLOATS(sqrt, number)
+
+/**
+ * @brief Computes the cube root of a number.
+ *
+ * @param number the input value
+ *
+ * @return the cube root of the number
+ */
+#define math_cbrt(number) MATH_DISPATCH_FLOATS(cbrt, number)
+
+/**
+ * @brief Computes the hypotenuse of a right triangle.
+ *
+ * @param x the first side
+ * @param y the second side
+ *
+ * @return the length of the hypotenuse
+ */
+#define math_hypot(x, y) MATH_DISPATCH_FLOATS(hypot, x, y)
+
+/**
  * @brief Returns the sine of an angle in radians.
  *
  * @param n the angle in radians
@@ -544,6 +645,19 @@ ullong math_max_ullong(ullong a, ullong b);
 
 /* float */
 
+float math_pow_float(float base, float exponent);
+float math_log_float(float number);
+float math_log2_float(float number);
+float math_log10_float(float number);
+float math_log1p_float(float number);
+
+float math_exp_float(float number);
+float math_exp2_float(float number);
+float math_expm1_float(float number);
+float math_sqrt_float(float number);
+float math_cbrt_float(float number);
+float math_hypot_float(float x, float y);
+
 float math_sin_float(float n);
 float math_cos_float(float n);
 float math_tan_float(float n);
@@ -573,6 +687,19 @@ float math_trunc_float(float number);
 
 /* double */
 
+double math_pow_double(double base, double exponent);
+double math_log_double(double number);
+double math_log2_double(double number);
+double math_log10_double(double number);
+double math_log1p_double(double number);
+
+double math_exp_double(double number);
+double math_exp2_double(double number);
+double math_expm1_double(double number);
+double math_sqrt_double(double number);
+double math_cbrt_double(double number);
+double math_hypot_double(double x, double y);
+
 double math_sin_double(double n);
 double math_cos_double(double n);
 double math_tan_double(double n);
@@ -601,6 +728,19 @@ double math_ceil_double(double number);
 double math_trunc_double(double number);
 
 /* ldouble */
+
+ldouble math_pow_ldouble(ldouble base, ldouble exponent);
+ldouble math_log_ldouble(ldouble number);
+ldouble math_log2_ldouble(ldouble number);
+ldouble math_log10_ldouble(ldouble number);
+ldouble math_log1p_ldouble(ldouble number);
+
+ldouble math_exp_ldouble(ldouble number);
+ldouble math_exp2_ldouble(ldouble number);
+ldouble math_expm1_ldouble(ldouble number);
+ldouble math_sqrt_ldouble(ldouble number);
+ldouble math_cbrt_ldouble(ldouble number);
+ldouble math_hypot_ldouble(ldouble x, ldouble y);
 
 ldouble math_sin_ldouble(ldouble n);
 ldouble math_cos_ldouble(ldouble n);

@@ -462,11 +462,12 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
         return;
     }
     switch (algorithm) {
-        case BUBBLE_SORT: { bubble_sort(linked_list, comparator); return; }
-        case SELECTION_SORT: { selection_sort(linked_list, comparator); return; }
-        case INSERTION_SORT: { insertion_sort(linked_list, comparator); return; }
-        case MERGE_SORT: { merge_sort(linked_list, comparator); return; }
-        case QUICK_SORT: { quick_sort(linked_list, comparator); }
+        case BUBBLE_SORT:     bubble_sort(linked_list, comparator);                    break;
+        case INSERTION_SORT:  insertion_sort(linked_list, comparator);                 break;
+        case SELECTION_SORT:  selection_sort(linked_list, comparator);                 break;
+        case MERGE_SORT:      merge_sort(linked_list, comparator);                     break;
+        case QUICK_SORT:      quick_sort(linked_list, comparator);                     break;
+        default:              set_error(ILLEGAL_ARGUMENT_ERROR, "invalid algorithm");  break;
     }
 }
 
@@ -474,9 +475,10 @@ void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), Shuffling
     if (require_non_null(linked_list, random)) return;
     bool shuffled = false;
     switch (algorithm) {
-        case DURSTENFELD_SHUFFLE: { shuffled = durstenfeld_shuffle(linked_list, random); break; }
-        case SATTOLO_SHUFFLE: { shuffled = sattolo_shuffle(linked_list, random); break; }
-        case NAIVE_SHUFFLE: { shuffled = naive_shuffle(linked_list, random); break; }
+        case DURSTENFELD_SHUFFLE:  shuffled = durstenfeld_shuffle(linked_list, random);     break;
+        case SATTOLO_SHUFFLE:      shuffled = sattolo_shuffle(linked_list, random);         break;
+        case NAIVE_SHUFFLE:        shuffled = naive_shuffle(linked_list, random);           break;
+        default:                   set_error(ILLEGAL_ARGUMENT_ERROR, "invalid algorithm");  break;
     }
     if (!shuffled) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory while converting 'linked_list' to array");

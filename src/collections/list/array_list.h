@@ -562,6 +562,7 @@ void array_list_for_each(ArrayList* array_list, Consumer action);
  * @param algorithm sorting algorithm
  *
  * @exception NULL_POINTER_ERROR if array_list or comparator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if algorithm is invalid
  * @exception MEMORY_ALLOCATION_ERROR if merge sort is chosen and memory allocation for temporary arrays fails
  */
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm);
@@ -574,6 +575,7 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
  * @param algorithm shuffling algorithm
  *
  * @exception NULL_POINTER_ERROR if array_list or random is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if algorithm is invalid
  */
 void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm);
 

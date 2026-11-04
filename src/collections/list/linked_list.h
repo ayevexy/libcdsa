@@ -517,6 +517,7 @@ void linked_list_for_each(LinkedList* linked_list, Consumer action);
  * @param algorithm sorting algorithm
  *
  * @exception NULL_POINTER_ERROR if linked_list or comparator is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if algorithm is invalid
  */
 void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm);
 
@@ -528,6 +529,7 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
  * @param algorithm shuffling algorithm
  *
  * @exception NULL_POINTER_ERROR if linked_list or random is null
+ * @exception ILLEGAL_ARGUMENT_ERROR if algorithm is invalid
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation for creation of the temporary array fails
  */
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm);

@@ -451,20 +451,22 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
         return;
     }
     switch (algorithm) {
-        case BUBBLE_SORT: { bubble_sort(array_list, comparator); return; }
-        case INSERTION_SORT: { insertion_sort(array_list, comparator); return; }
-        case SELECTION_SORT: { selection_sort(array_list, comparator); return; }
-        case MERGE_SORT: { merge_sort(array_list, 0, array_list->size - 1, comparator); return; }
-        case QUICK_SORT: { quick_sort(array_list, 0, array_list->size - 1, comparator); }
+        case BUBBLE_SORT:     bubble_sort(array_list, comparator);                          break;
+        case INSERTION_SORT:  insertion_sort(array_list, comparator);                       break;
+        case SELECTION_SORT:  selection_sort(array_list, comparator);                       break;
+        case MERGE_SORT:      merge_sort(array_list, 0, array_list->size - 1, comparator);  break;
+        case QUICK_SORT:      quick_sort(array_list, 0, array_list->size - 1, comparator);  break;
+        default:              set_error(ILLEGAL_ARGUMENT_ERROR, "invalid algorithm");       break;
     }
 }
 
 void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm) {
     if (require_non_null(array_list, random)) return;
     switch (algorithm) {
-        case DURSTENFELD_SHUFFLE: { durstenfeld_shuffle(array_list, random); return; }
-        case SATTOLO_SHUFFLE: { sattolo_shuffle(array_list, random); return; }
-        case NAIVE_SHUFFLE: { naive_shuffle(array_list, random); }
+        case DURSTENFELD_SHUFFLE:  durstenfeld_shuffle(array_list, random);                 break;
+        case SATTOLO_SHUFFLE:      sattolo_shuffle(array_list, random);                     break;
+        case NAIVE_SHUFFLE:        naive_shuffle(array_list, random);                       break;
+        default:                   set_error(ILLEGAL_ARGUMENT_ERROR, "invalid algorithm");  break;
     }
 }
 

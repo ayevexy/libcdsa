@@ -1,7 +1,6 @@
 #ifndef LIBCDSA_OPTIONAL_H
 #define LIBCDSA_OPTIONAL_H
 
-#include "core/errors.h"
 #include "core/functions.h"
 
 /**
@@ -22,9 +21,7 @@ typedef struct Optional {
  *
  * @return an empty optional
  */
-static inline Optional optional_empty(void) {
-    return (Optional) { .present = false };
-}
+Optional optional_empty(void);
 
 /**
  * @brief Creates an optional containing the specified value.
@@ -33,9 +30,7 @@ static inline Optional optional_empty(void) {
  *
  * @return an optional containing the value
  */
-static inline Optional optional_of(void* value) {
-    return (Optional) { .value = value, .present = true };
-}
+Optional optional_of(void* value);
 
 /**
  * @brief Creates an optional containing the specified value if non-null,
@@ -45,9 +40,7 @@ static inline Optional optional_of(void* value) {
  *
  * @return an optional containing the value, or an empty optional
  */
-static inline Optional optional_of_nullable(void* value) {
-    return value ? optional_of(value) : optional_empty();
-}
+Optional optional_of_nullable(void* value);
 
 /**
  * @brief Checks whether the optional contains a value.
@@ -56,9 +49,7 @@ static inline Optional optional_of_nullable(void* value) {
  *
  * @return true if the optional contains a value
  */
-static inline bool optional_is_present(Optional optional) {
-    return optional.present;
-}
+bool optional_is_present(Optional optional);
 
 /**
  * @brief Checks whether the optional is empty.
@@ -67,9 +58,7 @@ static inline bool optional_is_present(Optional optional) {
  *
  * @return true if the optional is empty
  */
-static inline bool optional_is_empty(Optional optional) {
-    return !optional.present;
-}
+bool optional_is_empty(Optional optional);
 
 /**
  * @brief Retrieves the contained value.
@@ -80,13 +69,7 @@ static inline bool optional_is_empty(Optional optional) {
  *
  * @exception NO_SUCH_ELEMENT_ERROR if optional is empty
  */
-static inline void* optional_get(Optional optional) {
-    if (optional_is_empty(optional)) {
-        set_error(NO_SUCH_ELEMENT_ERROR, "optional is empty");
-        return nullptr;
-    }
-    return optional.value;
-}
+void* optional_get(Optional optional);
 
 /**
  * @brief Retrieves the contained value, or a fallback if the optional is empty.
@@ -96,9 +79,7 @@ static inline void* optional_get(Optional optional) {
  *
  * @return the contained value or the fallback
  */
-static inline void* optional_or_else(Optional optional, void* fallback) {
-    return optional.present ? optional.value : fallback;
-}
+void* optional_or_else(Optional optional, void* fallback);
 
 /**
  * @brief Performs the specified action if the optional contains a value.
@@ -106,11 +87,7 @@ static inline void* optional_or_else(Optional optional, void* fallback) {
  * @param optional the optional
  * @param action the action to perform
  */
-static inline void optional_if_present(Optional optional, Consumer action) {
-    if (optional.present) {
-        action(optional.value);
-    }
-}
+void optional_if_present(Optional optional, Consumer action);
 
 /**
  * @brief Applies the specified function to the contained value.
@@ -120,11 +97,7 @@ static inline void optional_if_present(Optional optional, Consumer action) {
  *
  * @return an optional containing the result, or an empty optional
  */
-static inline Optional optional_transform(Optional optional, Operator mapper) {
-    return optional.present
-        ? optional_of(mapper(optional.value))
-        : optional_empty();
-}
+Optional optional_transform(Optional optional, Operator mapper);
 
 /**
  * @brief Returns the optional if it contains a value matching the predicate,
@@ -135,10 +108,6 @@ static inline Optional optional_transform(Optional optional, Operator mapper) {
  *
  * @return the original optional if the predicate matches, or an empty optional
  */
-static inline Optional optional_keep_if(Optional optional, Predicate predicate) {
-    return optional.present && predicate(optional.value)
-        ? optional
-        : optional_empty();
-}
+Optional optional_keep_if(Optional optional, Predicate predicate);
 
 #endif

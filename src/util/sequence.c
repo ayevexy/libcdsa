@@ -387,7 +387,7 @@ static SequencePipeLineResult process_sequence_pipeline(Sequence* sequence) {
             replace_pipeline_source(sequence);
         }
         if (sequence->pipeline.state == ABORTED) {
-            set_error(SEQUENCE_PROCESSING_ERROR, "%s", error_description());
+            set_error(SEQUENCE_PROCESSING_ERROR, "caused by %s", error_message());
             return (SequencePipeLineResult) {};
         }
         if (sequence->pipeline.state == EXHAUSTED) {
@@ -473,7 +473,7 @@ static SequencePipeLineResult pipeline_result_array(Sequence* sequence, Terminal
 
     if (error) {
         sequence->pipeline.state = ABORTED;
-        set_error(SEQUENCE_PROCESSING_ERROR, "%s", error_description());
+        set_error(SEQUENCE_PROCESSING_ERROR, "caused by %s", error_message());
         return (SequencePipeLineResult) {};
     }
     list_destroy(&list);

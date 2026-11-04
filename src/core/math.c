@@ -331,6 +331,22 @@ T math_trunc_##suffix(T n) {                                                \
     return trunc##t(n);                                                     \
 }                                                                           \
                                                                             \
+bool math_is_nan_##suffix(T n) {                                            \
+    return isnan(n);                                                        \
+}                                                                           \
+                                                                            \
+bool math_is_infinite_##suffix(T n) {                                       \
+    return isinf(n);                                                        \
+}                                                                           \
+                                                                            \
+bool math_is_finite_##suffix(T n) {                                         \
+    return isfinite(n);                                                     \
+}                                                                           \
+                                                                            \
+bool math_is_normal_##suffix(T n) {                                         \
+    return isnormal(n);                                                     \
+}                                                                           \
+                                                                            \
 T math_is_close_##suffix(T a, T b, T tolerance) {                           \
     return fabs##t(a - b) <= tolerance;                                     \
 }                                                                           \

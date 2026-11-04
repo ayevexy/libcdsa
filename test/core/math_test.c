@@ -316,6 +316,15 @@ void test_math_trunc() {
     TEST_ASSERT_EQUAL_FLOAT(-4.0000, math_trunc(-4.111239));
 }
 
+void test_math_is() {
+    // then
+    TEST_ASSERT_TRUE(math_is_nan(0.0 / 0.0));
+    TEST_ASSERT_TRUE(math_is_infinite(1.0 / 0.0));
+    TEST_ASSERT_TRUE(math_is_infinite(-1.0 / 0.0));
+    TEST_ASSERT_TRUE(math_is_finite(1.0 / 1.0));
+    TEST_ASSERT_TRUE(math_is_normal(1.0 / 1.0));
+}
+
 void test_math_is_close() {
     // then
     TEST_ASSERT_TRUE(math_is_close(3.0010, 3.0015, 0.1));
@@ -395,6 +404,7 @@ int main(void) {
     RUN_TEST(test_math_floor);
     RUN_TEST(test_math_ceil);
     RUN_TEST(test_math_trunc);
+    RUN_TEST(test_math_is);
     RUN_TEST(test_math_is_close);
     RUN_TEST(test_math_lerp);
     RUN_TEST(test_math_random);

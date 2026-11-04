@@ -444,6 +444,42 @@
 #define math_trunc(n) MATH_DISPATCH_FLOATS(trunc, n)
 
 /**
+ * @brief Checks whether a floating-point number is NaN.
+ *
+ * @param n the number
+ *
+ * @return true if n is NaN, false otherwise
+ */
+#define math_is_nan(n) MATH_DISPATCH_FLOATS(is_nan, n)
+
+/**
+ * @brief Checks whether a floating-point number is infinite.
+ *
+ * @param n the number
+ *
+ * @return true if n is infinite, false otherwise
+ */
+#define math_is_infinite(n) MATH_DISPATCH_FLOATS(is_infinite, n)
+
+/**
+ * @brief Checks whether a floating-point number is finite.
+ *
+ * @param n the number
+ *
+ * @return true if n is finite, false otherwise
+ */
+#define math_is_finite(n) MATH_DISPATCH_FLOATS(is_finite, n)
+
+/**
+ * @brief Checks whether a floating-point number is normal.
+ *
+ * @param n the number
+ *
+ * @return true if n is normal, false otherwise
+ */
+#define math_is_normal(n) MATH_DISPATCH_FLOATS(is_normal, n)
+
+/**
  * @brief Checks whether two floating-point numbers are approximately equal.
  *
  * @param a the first number
@@ -732,6 +768,11 @@ float math_floor_float(float n);
 float math_ceil_float(float n);
 float math_trunc_float(float n);
 
+bool math_is_nan_float(float n);
+bool math_is_infinite_float(float n);
+bool math_is_finite_float(float n);
+bool math_is_normal_float(float n);
+
 float math_is_close_float(float a, float b, float tolerance);
 float math_lerp_float(float start, float end, float amount);
 float math_random_float(void);
@@ -782,6 +823,11 @@ double math_floor_double(double n);
 double math_ceil_double(double n);
 double math_trunc_double(double n);
 
+bool math_is_nan_double(double n);
+bool math_is_infinite_double(double n);
+bool math_is_finite_double(double n);
+bool math_is_normal_double(double n);
+
 double math_is_close_double(double a, double b, double tolerance);
 double math_lerp_double(double start, double end, double amount);
 double math_random_double(void);
@@ -831,6 +877,11 @@ ldouble math_round_ldouble(ldouble n);
 ldouble math_floor_ldouble(ldouble n);
 ldouble math_ceil_ldouble(ldouble n);
 ldouble math_trunc_ldouble(ldouble n);
+
+bool math_is_nan_ldouble(ldouble n);
+bool math_is_infinite_ldouble(ldouble n);
+bool math_is_finite_ldouble(ldouble n);
+bool math_is_normal_ldouble(ldouble n);
 
 ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
 ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);

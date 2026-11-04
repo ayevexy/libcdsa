@@ -148,6 +148,8 @@ The following examples demonstrate some of the library's features:
 
 ```c++
 #include "collections/list/list.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -168,6 +170,8 @@ int main() {
 
 ```c++
 #include "collections/map/map.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -188,6 +192,8 @@ int main() {
 
 ```c++
 #include "collections/set/set.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -206,6 +212,9 @@ int main() {
 
 ```c++
 #include "collections/list/list.h"
+#include "collections/iterator.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -231,6 +240,8 @@ int main() {
 ```c++
 #include "collections/list/list.h"
 #include "collections/for_each.h" // should be included last
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -250,7 +261,12 @@ int main() {
 
 ```c++
 #include "collections/list/list.h"
+#include "collections/collection.h"
+#include "core/memory.h"
+#include "core/array.h"
+#include "core/pointer.h"
 #include "util/sequence.h"
+
 #include <stdio.h>
 
 bool is_even(const void* number) {
@@ -283,7 +299,7 @@ int main() {
     Array(void*) array = sequence_to_array(sequence);
 
     for (int i = 0; i < array_length(array); i++) {
-        printf("%d ", *(int*) array[i]); // 6, 10
+        printf("%d\n", *(int*) array[i]); // 6, 10
     }
 
     list_destroy(&list);
@@ -294,7 +310,10 @@ int main() {
 
 ```c++
 #include "collections/set/set.h"
+#include "collections/collection.h"
 #include "collections/for_each.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 static inline uint64 int_hash_generic(const void* number) {
@@ -332,9 +351,12 @@ int main() {
 
     for_each (int* e, union_set) printf("%d ", *e); // 1, 2, 3, 4, 5
     printf("\n");
+
     for_each (int* e, intersection_set) printf("%d ", *e); // 3
     printf("\n");
+    
     for_each (int* e, difference_set) printf("%d ", *e); // 1, 2
+    printf("\n");
 
     set_destroy(&set_a);
     set_destroy(&set_b);
@@ -344,6 +366,9 @@ int main() {
 
 ```c++
 #include "collections/list/list.h"
+#include "collections/collection.h"
+#include "core/pointer.h"
+
 #include <stdio.h>
 
 int main() {
@@ -440,6 +465,8 @@ int main() {
 
 ```c++
 #include "core/string.h"
+#include "core/array.h"
+
 #include <stdio.h>
 
 int main() {
@@ -519,6 +546,9 @@ int main(void) {
 
 ```c++
 #include "util/file.h"
+#include "core/string.h"
+#include "core/array.h"
+
 #include <stdio.h>
 
 int main(void) {
@@ -579,6 +609,8 @@ int main(void) {
 
 ```c++
 #include "core/system.h"
+#include "core/string.h"
+
 #include <inttypes.h>
 
 void* hello_thread(void*) {
@@ -716,6 +748,8 @@ int main(void) {
 
 ```c++
 #include "util/temporal.h"
+#include "core/string.h"
+
 #include <stdio.h>
 
 int main(void) {
@@ -760,7 +794,6 @@ int main(void) {
 
     return 0;
 }
-
 ```
 
 ```c++

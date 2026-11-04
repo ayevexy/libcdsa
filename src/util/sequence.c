@@ -2,9 +2,14 @@
 
 #include "collections/list/list.h"
 #include "collections/set/set.h"
-
+#include "collections/collection.h"
+#include "collections/iterator.h"
 #include "core/memory.h"
+#include "core/errors.h"
 #include "core/constraints.h"
+#include "core/array.h"
+#include "core/pointer.h"
+#include "core/optional.h"
 
 static constexpr int OPERATION_LIMIT = 15;
 static constexpr int SORT_OPERATION_LIMIT = 5;

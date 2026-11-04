@@ -1,5 +1,13 @@
 #include "collections/map/tree_map.h"
 
+#include "collections/map/map_entry.h"
+#include "collections/collection.h"
+#include "collections/iterator.h"
+#include "core/errors.h"
+#include "core/memory.h"
+#include "core/string.h"
+#include "core/pointer.h"
+
 #include "test_utilities.h"
 #include "unity.h"
 

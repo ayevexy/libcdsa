@@ -7,7 +7,8 @@
  */
 
 #include "core/types.h"
-#include "core/string.h"
+
+typedef struct String* String;
 
 /**
  * @brief Calculate a hash value of a pointer by its memory address.
@@ -51,9 +52,7 @@ static inline int pointer_compare(const void* pointer_a, const void* pointer_b) 
  *
  * @return a newly allocated string
  */
-static inline String pointer_to_string(const void* pointer) {
-    return string_format("%p", pointer);
-}
+extern String pointer_to_string(const void* pointer);
 
 /**
  * @brief No Operation destruct function.

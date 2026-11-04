@@ -6,8 +6,9 @@
  * @brief Temporal API.
  */
 
-#include "core/errors.h"
-#include "core/string.h"
+typedef struct Error* Error;
+typedef struct String* String;
+typedef struct StringView StringView;
 
 /**
  * @brief Time units.

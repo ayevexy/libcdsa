@@ -8,10 +8,11 @@
 
 #include "core/types.h"
 #include "core/macros.h"
-#include "core/errors.h"
-#include "core/string.h"
 
 typedef struct File File;
+typedef struct Error* Error;
+typedef struct String* String;
+typedef struct StringView StringView;
 
 /**
  * @brief Returns the system input stream (defaults to stdin).

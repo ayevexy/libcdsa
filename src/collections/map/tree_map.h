@@ -6,17 +6,12 @@
  * @brief Self-balancing binary tree based map implementation.
  */
 
-#include "collections/map/map_entry.h"
-#include "collections/collection.h"
-#include "collections/iterator.h"
-
-#include "core/types.h"
-#include "core/errors.h"
-#include "core/memory.h"
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
+
+typedef struct MapEntry MapEntry;
+typedef struct Collection Collection;
+typedef struct Iterator Iterator;
+typedef struct String* String;
 
 /**
  * A tree map is an ordered associative data structure that maps keys to values

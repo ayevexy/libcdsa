@@ -2,6 +2,7 @@
 
 #include "core/errors.h"
 #include "core/constraints.h"
+#include "core/memory.h"
 
 struct MemoryArena {
     Allocator self;

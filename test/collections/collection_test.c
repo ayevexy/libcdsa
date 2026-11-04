@@ -1,6 +1,10 @@
 #include "collections/collection.h"
 
 #include "collections/list/array_list.h"
+#include "core/errors.h"
+#include "core/memory.h"
+#include "core/array.h"
+#include "core/pointer.h"
 
 #include "test_utilities.h"
 #include "unity.h"

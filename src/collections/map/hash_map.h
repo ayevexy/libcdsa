@@ -6,17 +6,12 @@
  * @brief Hash table based map implementation.
  */
 
-#include "collections/map/map_entry.h"
-#include "collections/collection.h"
-#include "collections/iterator.h"
-
 #include "core/types.h"
-#include "core/errors.h"
-#include "core/memory.h"
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
+
+typedef struct Collection Collection;
+typedef struct Iterator Iterator;
+typedef struct String* String;
 
 /**
  * A hash map is a generic dynamic associative data structure that maps keys to values

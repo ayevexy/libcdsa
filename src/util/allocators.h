@@ -7,7 +7,8 @@
  */
 
 #include "core/types.h"
-#include "core/memory.h"
+
+typedef struct Allocator Allocator;
 
 /**
  * @brief Represents a Memory Arena.

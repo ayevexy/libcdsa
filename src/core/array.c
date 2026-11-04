@@ -1,8 +1,8 @@
 #include "core/array.h"
 
 #include "core/errors.h"
-#include "core/memory.h"
 #include "core/constraints.h"
+#include "core/memory.h"
 
 typedef struct {
     int length;

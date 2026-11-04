@@ -1,6 +1,9 @@
 #include "util/temporal.h"
 
+#include "core/errors.h"
 #include "core/constraints.h"
+#include "core/string.h"
+
 #include <time.h>
 #include <stdio.h>
 

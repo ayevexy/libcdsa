@@ -7,8 +7,10 @@
  */
 
 #include "core/types.h"
-#include "core/memory.h"
-#include "core/array.h"
+
+typedef struct Allocator Allocator;
+
+#define Array(T) T*
 
 /**
  * @brief String memory allocator used for string allocations.
@@ -31,7 +33,7 @@ typedef struct String * String;
  * @brief A non-owning view of a string, intended for use as a function parameter only.
  * The view does not manage the lifetime of the underlying character data.
  */
-typedef struct {
+typedef struct StringView {
     const int length;
     const char* const data;
 } StringView;

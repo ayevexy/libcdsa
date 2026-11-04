@@ -10,6 +10,9 @@
 #include "collections/stack.h"
 #include "collections/queue.h"
 #include "collections/priority_queue.h"
+#include "collections/iterator.h"
+#include "core/errors.h"
+#include "core/array.h"
 
 static const char* collection_type_to_string(const CollectionType type) {
     static const char* names[] = {

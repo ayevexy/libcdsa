@@ -8,7 +8,7 @@
  * @brief Thread synchronization abstractions.
  */
 
-#include "core/errors.h"
+typedef struct Error* Error;
 
 /**
  * @brief Synchronization error constant.

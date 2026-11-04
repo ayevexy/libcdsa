@@ -1,7 +1,9 @@
 #include "core/system.h"
 
 #include "util/file.h"
+#include "core/errors.h"
 #include "core/constraints.h"
+#include "core/string.h"
 
 #include <errno.h>
 #include <stdio.h>

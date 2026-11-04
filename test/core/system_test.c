@@ -1,6 +1,7 @@
 #include "core/system.h"
 
 #include "util/file.h"
+#include "core/string.h"
 
 #include "unity.h"
 

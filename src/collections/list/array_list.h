@@ -6,18 +6,15 @@
  * @brief Dynamic array-based list implementation.
  */
 
-#include "collections/collection.h"
-#include "collections/iterator.h"
 #include "collections/algorithms.h"
-
-#include "core/types.h"
-#include "core/errors.h"
-#include "core/memory.h"
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
-#include "core/optional.h"
+
+typedef struct Collection Collection;
+typedef struct Iterator Iterator;
+typedef struct String* String;
+typedef struct Optional Optional;
+
+#define Array(T) T*
 
 /**
  * An array list is a generic dynamic linear data structure that stores elements

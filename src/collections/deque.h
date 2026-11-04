@@ -6,16 +6,13 @@
  * @brief Double-ended queue implemented with a resizable array.
  */
 
-#include "collections/collection.h"
-#include "collections/iterator.h"
-
-#include "core/types.h"
-#include "core/errors.h"
-#include "core/memory.h"
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
+
+typedef struct Collection Collection;
+typedef struct Iterator Iterator;
+typedef struct String* String;
+
+#define Array(T) T*
 
 /**
  * A deque is a generic dynamic linear data structure that allows insertion

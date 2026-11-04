@@ -1,5 +1,8 @@
 #include "util/temporal.h"
 
+#include "core/errors.h"
+#include "core/string.h"
+
 #include "unity.h"
 
 #define TEST_ASSERT_DATE_TIME(year_, month_, day_, hour_, minute_, second_, date_time)      \

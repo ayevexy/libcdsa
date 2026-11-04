@@ -1,6 +1,11 @@
 #include "util/sequence.h"
 
 #include "collections/list/list.h"
+#include "collections/collection.h"
+#include "core/memory.h"
+#include "core/array.h"
+#include "core/pointer.h"
+#include "core/optional.h"
 
 #include "test_utilities.h"
 #include "unity.h"

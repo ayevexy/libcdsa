@@ -2,8 +2,9 @@
 
 #ifdef __linux__
 
-#include "core/memory.h"
+#include "core/errors.h"
 #include "core/constraints.h"
+#include "core/memory.h"
 
 #include <errno.h>
 #include <pthread.h>

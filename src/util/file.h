@@ -7,9 +7,12 @@
  */
 
 #include "core/types.h"
-#include "core/errors.h"
-#include "core/array.h"
-#include "core/string.h"
+
+typedef struct Error* Error;
+typedef struct String* String;
+typedef struct StringView StringView;
+
+#define Array(T) T*
 
 /**
  * @brief Represents a file.

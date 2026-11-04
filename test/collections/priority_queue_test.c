@@ -1,5 +1,13 @@
 #include "collections/priority_queue.h"
 
+#include "collections/collection.h"
+#include "collections/iterator.h"
+#include "core/errors.h"
+#include "core/memory.h"
+#include "core/array.h"
+#include "core/string.h"
+#include "core/pointer.h"
+
 #include "test_utilities.h"
 #include "unity.h"
 

@@ -3,6 +3,8 @@
 #include "core/limits.h"
 #include "core/errors.h"
 #include "core/constraints.h"
+#include "core/memory.h"
+#include "core/array.h"
 
 #include <string.h>
 #include <ctype.h>
@@ -550,6 +552,11 @@ String (string_to_lowercase)(StringView string) {
 
 String string_value_of_bool(bool value) {
     return string_new(value ? "true" : "false");
+}
+
+// I don't know why this shit is here...
+String pointer_to_string(const void* pointer) {
+    return string_format("%p", pointer);
 }
 
 DEFINE_STRING_VALUE_OF(char, char, "%c")

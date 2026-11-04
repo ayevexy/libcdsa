@@ -6,13 +6,14 @@
  * @brief Sequence API.
  */
 
-#include "collections/collection.h"
 #include "collections/algorithms.h"
-
-#include "core/errors.h"
-#include "core/array.h"
 #include "core/functions.h"
-#include "core/optional.h"
+
+typedef struct Error* Error;
+typedef struct Collection Collection;
+typedef struct Optional Optional;
+
+#define Array(T) T*
 
 /**
  * A sequence is an abstraction over an existing collection that allows generic

@@ -1,6 +1,7 @@
 #include "collections/list/array_list.h"
 
 #include "collections/for_each.h" // should be included after all data structures
+#include "core/memory.h"
 
 #include "test_utilities.h"
 #include "unity.h"

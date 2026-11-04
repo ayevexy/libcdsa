@@ -6,11 +6,12 @@
  * @brief Collection abstraction view.
  */
 
-#include "collections/iterator.h"
-
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
+
+typedef struct Iterator Iterator;
+typedef struct String* String;
+
+#define Array(T) T*
 
 /**
  * @brief Enumeration of existing collection types.
@@ -31,7 +32,7 @@ typedef enum {
 /**
  * @brief A generic collection view abstraction that provides a common interface over data structures.
  */
-typedef struct {
+typedef struct Collection {
     const CollectionType type;
     const void* const data_structure;
     int (*const size)(const void*);

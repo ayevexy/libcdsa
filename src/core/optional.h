@@ -12,7 +12,7 @@
 /**
  * @brief A container object which may or may not contain a value.
  */
-typedef struct {
+typedef struct Optional {
     void* const value;
     const bool present;
 } Optional;

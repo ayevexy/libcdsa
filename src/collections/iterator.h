@@ -18,7 +18,7 @@
  *
  * This API is not thread-safe.
  */
-typedef struct {
+typedef struct Iterator {
     void* iteration_context;
     bool (*has_next)(const void* iteration_context);
     void* (*next)(void* iteration_context);

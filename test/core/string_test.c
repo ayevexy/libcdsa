@@ -1,6 +1,8 @@
 #include "core/string.h"
 
 #include "core/errors.h"
+#include "core/array.h"
+
 #include <string.h>
 
 #include "unity.h"

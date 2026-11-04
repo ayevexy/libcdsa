@@ -1,9 +1,11 @@
 #define _GNU_SOURCE
 
 #include "util/file.h"
-
-#include "core/memory.h"
+#include "core/errors.h"
 #include "core/constraints.h"
+#include "core/memory.h"
+#include "core/array.h"
+#include "core/string.h"
 
 #include <stdio.h>
 #include <stdarg.h>

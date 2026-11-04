@@ -9,7 +9,7 @@
 /**
  * @brief An entry of a map, containing the key-value pair.
  */
-typedef struct {
+typedef struct MapEntry {
     const void* key;
     void* value;
 } MapEntry;

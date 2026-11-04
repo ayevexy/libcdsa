@@ -1,5 +1,8 @@
 #include "util/file.h"
 
+#include "core/array.h"
+#include "core/string.h"
+
 #include "unity.h"
 
 static const char* file_name = "test_file.txt";

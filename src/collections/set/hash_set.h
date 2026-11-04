@@ -6,16 +6,14 @@
  * @brief Hash based set implementation.
  */
 
-#include "collections/collection.h"
-#include "collections/iterator.h"
-
 #include "core/types.h"
-#include "core/errors.h"
-#include "core/memory.h"
-#include "core/array.h"
-#include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
+
+typedef struct Collection Collection;
+typedef struct Iterator Iterator;
+typedef struct String* String;
+
+#define Array(T) T*
 
 /**
  * A hash set is a generic dynamic unordered data structure that stores elements

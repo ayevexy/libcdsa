@@ -13,7 +13,7 @@
  *
  * Provides a flexible and uniform way to manage memory.
  */
-typedef struct {
+typedef struct Allocator {
     void* storage;
     void* (*alloc)(bytes, void*);
     void* (*realloc)(void*, bytes, void*);

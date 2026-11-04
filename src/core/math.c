@@ -71,15 +71,13 @@ T math_lcm_##suffix(T a, T b) {                                             \
                                                                             \
 T math_factorial_##suffix(T n) {                                            \
     if (n < 0) {                                                            \
-        set_error(ARITHMETIC_ERROR, "factorial negative");                  \
-        return 0;                                                           \
+        return min;                                                         \
     }                                                                       \
     T result = 1;                                                           \
                                                                             \
     for (T i = 2; i <= n; i++) {                                            \
         if (result > max / i) {                                             \
-            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
-            return 0;                                                       \
+            return max;                                                     \
         }                                                                   \
         result *= i;                                                        \
     }                                                                       \
@@ -168,8 +166,7 @@ T math_factorial_##suffix(T n) {                                            \
                                                                             \
     for (T i = 2; i <= n; i++) {                                            \
         if (result > max / i) {                                             \
-            set_error(ARITHMETIC_ERROR, "factorial overflow");              \
-            return 0;                                                       \
+            return max;                                                     \
         }                                                                   \
         result *= i;                                                        \
     }                                                                       \

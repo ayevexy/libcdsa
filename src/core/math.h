@@ -317,7 +317,8 @@
  *
  * @return the factorial of n
  *
- * @exception ARITHMETIC_ERROR if n is negative or the result overflows
+ * @note Returns the minimum value of the type for negative inputs
+ *       and the maximum value if the result overflows.
  */
 #define math_factorial(n) MATH_DISPATCH_INTEGERS(factorial, n)
 

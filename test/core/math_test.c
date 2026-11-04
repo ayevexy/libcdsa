@@ -219,8 +219,8 @@ void test_math_factorial() {
     TEST_ASSERT_EQUAL(3628800, math_factorial(10));
     TEST_ASSERT_EQUAL(479001600, math_factorial(12));
     // and
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_factorial(-1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_factorial(1'000'000)));
+    TEST_ASSERT_EQUAL(INT_MIN_VALUE, math_factorial(-1));
+    TEST_ASSERT_EQUAL(INT_MAX_VALUE, math_factorial(1'000'000));
 }
 
 void test_math_is_prime() {

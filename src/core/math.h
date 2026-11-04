@@ -465,6 +465,19 @@
 #define math_lerp(start, end, amount) MATH_DISPATCH_FLOATS(lerp, start, end, amount)
 
 /**
+ * @brief Generates a pseudo-random floating-point number.
+ *
+ * @param T the floating-point type of the generated number
+ *
+ * @return a pseudo-random number in the range [0.0, 1.0)
+ */
+#define math_random(T) _Generic((T) 0,  \
+    float: math_random_float,           \
+    double: math_random_double,         \
+    ldouble: math_random_ldouble        \
+)()
+
+/**
  * @brief Converts degrees to radians.
  *
  * @param degrees the value in degrees
@@ -720,6 +733,7 @@ float math_trunc_float(float n);
 
 float math_is_close_float(float a, float b, float tolerance);
 float math_lerp_float(float start, float end, float amount);
+float math_random_float(void);
 
 float math_to_radians_float(float degrees);
 float math_to_degrees_float(float radians);
@@ -769,6 +783,7 @@ double math_trunc_double(double n);
 
 double math_is_close_double(double a, double b, double tolerance);
 double math_lerp_double(double start, double end, double amount);
+double math_random_double(void);
 
 double math_to_radians_double(double degrees);
 double math_to_degrees_double(double radians);
@@ -818,6 +833,7 @@ ldouble math_trunc_ldouble(ldouble n);
 
 ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
 ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);
+ldouble math_random_ldouble(void);
 
 ldouble math_to_radians_ldouble(ldouble degrees);
 ldouble math_to_degrees_ldouble(ldouble radians);

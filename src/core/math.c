@@ -2,7 +2,9 @@
 
 #include "core/limits.h"
 #include "core/errors.h"
+
 #include <math.h>
+#include <stdlib.h>
 
 #define DEFINE_SIGNED_MATH(T, suffix, min, max)                             \
                                                                             \
@@ -335,6 +337,10 @@ T math_is_close_##suffix(T a, T b, T tolerance) {                           \
                                                                             \
 T math_lerp_##suffix(T start, T end, T amount) {                            \
     return start + (end - start) * amount;                                  \
+}                                                                           \
+                                                                            \
+T math_random_##suffix(void) {                                              \
+    return (T) rand() / ((T) RAND_MAX + 1.0##t);                            \
 }                                                                           \
                                                                             \
 T math_to_radians_##suffix(T degrees) {                                     \

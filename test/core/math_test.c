@@ -156,7 +156,7 @@ void test_math_div_exact() {
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 2, math_cbrt_##suffix(8));          \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 5, math_hypot_##suffix(3, 4))
 
-void test_math_functions(void) {
+void test_math_functions() {
     // then
     TEST_MATH_FUNCTIONS(float, float, 1e-6f, MATH_E(float));
     TEST_MATH_FUNCTIONS(double, double, 1e-12, MATH_E(double));
@@ -178,7 +178,7 @@ void test_math_functions(void) {
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_acosh_##suffix(1));             \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_atanh_##suffix(0))
 
-void test_math_trigonometric(void) {
+void test_math_trigonometric() {
     // then
     TEST_TRIGONOMETRIC(float, float, 1e-6f, MATH_PI(float), 0.5f);
     TEST_TRIGONOMETRIC(double, double, 1e-12, MATH_PI(double), 0.5);
@@ -322,7 +322,7 @@ void test_math_is_close() {
     TEST_ASSERT_FALSE(math_is_close(3.0010, 3.0015, 0.0001));
 }
 
-void test_math_lerp(void) {
+void test_math_lerp() {
     // then: interpolation
     TEST_ASSERT_EQUAL_FLOAT(0, math_lerp(0.0, 10.0, 0.0));
     TEST_ASSERT_EQUAL_FLOAT(5, math_lerp(0.0, 10.0, 0.5));
@@ -336,6 +336,21 @@ void test_math_lerp(void) {
     TEST_ASSERT_EQUAL_FLOAT(-5, math_lerp(-10.0, 0.0, 0.5));
     TEST_ASSERT_EQUAL_FLOAT(-10, math_lerp(-10.0, -20.0, 0.0));
     TEST_ASSERT_EQUAL_FLOAT(-20, math_lerp(-10.0, -20.0, 1.0));
+}
+
+void test_math_random() {
+    // then: float
+    float random_float = math_random(float);
+    TEST_ASSERT_TRUE(random_float >= 0.0f);
+    TEST_ASSERT_TRUE(random_float < 1.0f);
+    // then: double
+    double random_double = math_random(double);
+    TEST_ASSERT_TRUE(random_double >= 0.0);
+    TEST_ASSERT_TRUE(random_double < 1.0);
+    // then: ldouble
+    ldouble random_ldouble = math_random(ldouble);
+    TEST_ASSERT_TRUE(random_ldouble >= 0.0L);
+    TEST_ASSERT_TRUE(random_ldouble < 1.0L);
 }
 
 void test_math_to_radians() {
@@ -382,6 +397,7 @@ int main(void) {
     RUN_TEST(test_math_trunc);
     RUN_TEST(test_math_is_close);
     RUN_TEST(test_math_lerp);
+    RUN_TEST(test_math_random);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);
     return UNITY_END();

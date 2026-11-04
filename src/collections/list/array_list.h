@@ -35,9 +35,7 @@
  * - the destruct function used to free element memory
  * - the equality function used to compare elements
  * - the to_string function used to convert elements to strings
- * - the memory allocation function
- * - the memory reallocation function (optional, it will be used for resizing if non-null)
- * - the memory deallocation function
+ * - the memory reallocation strategy, controlled by the use_memory_realloc field
  *
  * Underlying implementation (simplified):
  * @code
@@ -83,8 +81,6 @@ typedef struct ArrayList ArrayList;
  * @pre destruct != nullptr
  * @pre equals != nullptr
  * @pre to_string != nullptr
- * @pre memory_alloc != nullptr
- * @pre memory_dealloc != nullptr
  */
 typedef struct {
     int initial_capacity;
@@ -94,11 +90,7 @@ typedef struct {
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void* (*memory_realloc)(void*, bytes);
-        void (*memory_dealloc)(void*);
-    };
+    bool use_memory_realloc;
 } ArrayListOptions;
 
 /**
@@ -112,9 +104,7 @@ typedef struct {
     .destruct = noop_destruct,                                  \
     .equals = pointer_equals,                                   \
     .to_string = pointer_to_string,                             \
-    .memory_alloc = memory_try_alloc,                           \
-    .memory_realloc = memory_try_realloc,                       \
-    .memory_dealloc = memory_dealloc,                           \
+    .use_memory_realloc = true,                                 \
     __VA_ARGS__                                                 \
 }
 

@@ -17,14 +17,10 @@ struct LinkedList {
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
     int modification_count;
 };
 
-static Node* create_node(const LinkedList*, const void*);
+static Node* create_node(const void*);
 
 static Node* get_node(const LinkedList*, int);
 
@@ -90,11 +86,11 @@ static bool collection_contains_internal(const void*, const void*);
 
 LinkedList* linked_list_new(const LinkedListOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (!options->destruct || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_dealloc) {
+    if (!options->destruct || !options->equals || !options->to_string) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
-    LinkedList* linked_list = options->memory_alloc(sizeof(LinkedList));
+    LinkedList* linked_list = memory_try_alloc(sizeof(LinkedList));
     if (!linked_list) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'linked_list'");
         return nullptr;
@@ -105,8 +101,6 @@ LinkedList* linked_list_new(const LinkedListOptions* options) {
     linked_list->destruct = options->destruct;
     linked_list->equals = options->equals;
     linked_list->to_string = options->to_string;
-    linked_list->memory_alloc = options->memory_alloc;
-    linked_list->memory_dealloc = options->memory_dealloc;
     linked_list->modification_count = 0;
     return linked_list;
 }
@@ -131,7 +125,7 @@ void linked_list_destroy(LinkedList** linked_list_pointer) {
     if (require_non_null(linked_list_pointer, *linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
     destroy_nodes(linked_list);
-    linked_list->memory_dealloc(linked_list);
+    memory_dealloc(linked_list);
     *linked_list_pointer = nullptr;
 }
 
@@ -151,7 +145,7 @@ void linked_list_add(LinkedList* linked_list, int index, const void* element) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "index %d out of bounds for length %d", index, linked_list->size);
         return;
     }
-    Node* node = create_node(linked_list, element);
+    Node* node = create_node(element);
     if (!node) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return;
@@ -199,12 +193,12 @@ void linked_list_add_all(LinkedList* linked_list, int index, Collection collecti
     }
     Node* head = nullptr, * tail = nullptr;
     while (iterator_has_next(iterator)) {
-        Node* node = create_node(linked_list, iterator_next(iterator));
+        Node* node = create_node(iterator_next(iterator));
         if (!node) {
             while (head) {
                 Node* temporary = head;
                 head = head->next;
-                linked_list->memory_dealloc(temporary);
+                memory_dealloc(temporary);
             }
             iterator_destroy(&iterator);
             set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
@@ -663,9 +657,7 @@ LinkedList* linked_list_sub_list(const LinkedList* linked_list, int start_index,
     if ((error = attempt(new_linked_list = linked_list_new(&(LinkedListOptions) {
         .destruct = noop_destruct,
         .equals = linked_list->equals,
-        .to_string = linked_list->to_string,
-        .memory_alloc = linked_list->memory_alloc,
-        .memory_dealloc = linked_list->memory_dealloc
+        .to_string = linked_list->to_string
     })))) {
         set_error(error, "%s", error_description());
         return nullptr;
@@ -730,8 +722,8 @@ String linked_list_to_string(const LinkedList* linked_list) {
     return string;
 }
 
-static Node* create_node(const LinkedList* linked_list, const void* element) {
-    Node* node = linked_list->memory_alloc(sizeof(Node));
+static Node* create_node(const void* element) {
+    Node* node = memory_try_alloc(sizeof(Node));
     if (!node) {
         return nullptr;
     }
@@ -781,7 +773,7 @@ static void* remove_node(LinkedList* linked_list, Node* node) {
         node->next->prev = node->prev;
     }
     linked_list->destruct(node->element);
-    linked_list->memory_dealloc(node);
+    memory_dealloc(node);
     linked_list->size--;
     linked_list->modification_count++;
     return element;
@@ -791,7 +783,7 @@ static void destroy_nodes(LinkedList* linked_list) {
     for (Node* current = linked_list->head, * next; current; current = next) {
         next = current->next;
         linked_list->destruct(current->element);
-        linked_list->memory_dealloc(current);
+        memory_dealloc(current);
     }
 }
 
@@ -805,7 +797,7 @@ typedef struct {
 } IterationContext;
 
 static Iterator* create_iterator(const LinkedList* linked_list, int position) {
-    IterationContext* iteration_context = linked_list->memory_alloc(sizeof(IterationContext));
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -821,7 +813,6 @@ static Iterator* create_iterator(const LinkedList* linked_list, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.destroy = linked_list->memory_dealloc;
 
     iteration_context->linked_list = (LinkedList*) linked_list;
     iteration_context->current = position == linked_list->size ? nullptr : get_node(linked_list, position);
@@ -885,7 +876,7 @@ static void iterator_add_internal(void* raw_iteration_context, const void* eleme
         set_error(CONCURRENT_MODIFICATION_ERROR, "collection was modified while this iterator still alive");
         return;
     }
-    Node* node = create_node(iteration_context->linked_list, element);
+    Node* node = create_node(element);
     if (!node) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return;

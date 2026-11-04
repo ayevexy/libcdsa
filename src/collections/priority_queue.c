@@ -16,10 +16,6 @@ struct PriorityQueue {
         int (*compare)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
     int modification_count;
 };
 
@@ -56,20 +52,19 @@ static bool collection_contains_internal(const void*, const void*);
 PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->compare
-        || !options->to_string || !options->memory_alloc || !options->memory_dealloc
+        || options->growth_factor < MIN_GROWTH_FACTOR || !options->destruct || !options->compare || !options->to_string
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
-    PriorityQueue* priority_queue = options->memory_alloc(sizeof(PriorityQueue));
+    PriorityQueue* priority_queue = memory_try_alloc(sizeof(PriorityQueue));
     if (!priority_queue) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'priority_queue'");
         return nullptr;
     }
-    priority_queue->elements = options->memory_alloc(options->initial_capacity * sizeof(void*));
+    priority_queue->elements = memory_try_alloc(options->initial_capacity * sizeof(void*));
     if (!priority_queue->elements) {
-        options->memory_dealloc(priority_queue);
+        memory_dealloc(priority_queue);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'priority_queue'");
         return nullptr;
     }
@@ -79,8 +74,6 @@ PriorityQueue* priority_queue_new(const PriorityQueueOptions* options) {
     priority_queue->destruct = options->destruct;
     priority_queue->compare = options->compare;
     priority_queue->to_string = options->to_string;
-    priority_queue->memory_alloc = options->memory_alloc;
-    priority_queue->memory_dealloc = options->memory_dealloc;
     priority_queue->modification_count = 0;
     return priority_queue;
 }
@@ -107,8 +100,8 @@ void priority_queue_destroy(PriorityQueue** priority_queue_pointer) {
     for (int i = 0; i < priority_queue->size; i++) {
         priority_queue->destruct(priority_queue->elements[i]);
     }
-    priority_queue->memory_dealloc(priority_queue->elements);
-    priority_queue->memory_dealloc(priority_queue);
+    memory_dealloc(priority_queue->elements);
+    memory_dealloc(priority_queue);
     *priority_queue_pointer = nullptr;
 }
 
@@ -278,9 +271,7 @@ PriorityQueue* priority_queue_clone(const PriorityQueue* priority_queue) {
         .growth_factor = priority_queue->growth_factor,
         .destruct = noop_destruct,
         .compare = priority_queue->compare,
-        .to_string = priority_queue->to_string,
-        .memory_alloc = priority_queue->memory_alloc,
-        .memory_dealloc = priority_queue->memory_dealloc
+        .to_string = priority_queue->to_string
     })))) {
         set_error(error, "%s", error_description());
         return nullptr;
@@ -353,12 +344,12 @@ static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {
         }
         new_capacity *= priority_queue->growth_factor;
     }
-    void** elements = priority_queue->memory_alloc(new_capacity * sizeof(void*));
+    void** elements = memory_try_alloc(new_capacity * sizeof(void*));
     if (!elements) {
         return false;
     }
     memory_copy(priority_queue->elements, elements, priority_queue->size * sizeof(void*));
-    priority_queue->memory_dealloc(priority_queue->elements);
+    memory_dealloc(priority_queue->elements);
     priority_queue->elements = elements;
     priority_queue->capacity = new_capacity;
     return true;
@@ -416,10 +407,10 @@ typedef struct {
     PriorityQueue* priority_queue;
     int cursor;
     int modification_count;
-}  IterationContext;
+} IterationContext;
 
 static Iterator* create_iterator(const PriorityQueue* priority_queue) {
-    IterationContext* iteration_context = priority_queue->memory_alloc(sizeof(IterationContext));
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -435,7 +426,6 @@ static Iterator* create_iterator(const PriorityQueue* priority_queue) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.destroy = priority_queue->memory_dealloc;
 
     iteration_context->priority_queue = (PriorityQueue*) priority_queue;
     iteration_context->cursor = 0;

@@ -33,8 +33,6 @@
  * - the destruct function used to free element memory
  * - the equality function used to compare elements
  * - the to_string function used to convert elements to strings
- * - the memory allocation function
- * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
@@ -78,19 +76,11 @@ typedef struct LinkedList LinkedList;
  * @pre destruct != nullptr
  * @pre equals != nullptr
  * @pre to_string != nullptr
- * @pre memory_alloc != nullptr
- * @pre memory_dealloc != nullptr
  */
 typedef struct {
-    struct {
-        void (*destruct)(void*);
-        bool (*equals)(const void*, const void*);
-        String (*to_string)(const void*);
-    };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
+    void (*destruct)(void*);
+    bool (*equals)(const void*, const void*);
+    String (*to_string)(const void*);
 } LinkedListOptions;
 
 /**
@@ -101,9 +91,7 @@ typedef struct {
 #define DEFAULT_LINKED_LIST_OPTIONS(...) &(LinkedListOptions) {     \
     .destruct = noop_destruct,                                      \
     .equals = pointer_equals,                                       \
-    .to_string = pointer_to_string,                                 \
-    .memory_alloc = memory_try_alloc,                               \
-    .memory_dealloc = memory_dealloc,                               \
+    .to_string = pointer_to_string                                  \
     __VA_ARGS__                                                     \
 }
 

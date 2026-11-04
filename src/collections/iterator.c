@@ -1,6 +1,7 @@
 #include "collections/iterator.h"
 
 #include "core/constraints.h"
+#include "core/memory.h"
 
 bool iterator_has_next(const Iterator* iterator) {
     if (require_non_null(iterator)) return false;
@@ -115,6 +116,6 @@ void iterator_destroy(Iterator** iterator_pointer) {
     if (require_non_null(iterator_pointer, *iterator_pointer)) return;
     const Iterator* iterator = *iterator_pointer;
 
-    iterator->destroy(iterator->iteration_context);
+    memory_dealloc(iterator->iteration_context);
     *iterator_pointer = nullptr;
 }

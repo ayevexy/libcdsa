@@ -9,9 +9,7 @@
     .hash = char_hash_generic,                      \
     .destruct = noop_destruct,                      \
     .equals = int_equals_generic,                   \
-    .to_string = int_to_string_generic,             \
-    .memory_alloc = memory_try_alloc,               \
-    .memory_dealloc = memory_dealloc                \
+    .to_string = int_to_string_generic              \
 }
 
 #define POPULATE_HASH_SET(hash_set, T, ...)                 \

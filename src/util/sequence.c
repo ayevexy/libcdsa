@@ -141,8 +141,6 @@ static bool iterator_has_next_internal(const void*);
 
 static void* iterator_next_internal(void*);
 
-static void iterator_destroy_internal(void*);
-
 static Sequence* sequence_create(Iterator* source) {
     if (!source) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'sequence'");
@@ -272,9 +270,7 @@ void sequence_distinct(Sequence* sequence, bool (*equals)(const void*, const voi
             .hash = pointer_hash,
             .destruct = noop_destruct,
             .equals = equals,
-            .to_string = pointer_to_string,
-            .memory_alloc = memory_try_alloc,
-            .memory_dealloc = memory_dealloc
+            .to_string = pointer_to_string
         })));
         if (error) {
             set_error(error, "%s", error_description());
@@ -605,8 +601,7 @@ static Iterator* create_iterator(IterationContextOptions options) {
     iteration_context->iterator = (Iterator) {
         .iteration_context = iteration_context,
         .has_next = iterator_has_next_internal,
-        .next = iterator_next_internal,
-        .destroy = iterator_destroy_internal
+        .next = iterator_next_internal
     };
 
     iteration_context->seed = options.seed;
@@ -621,11 +616,17 @@ static Iterator* create_iterator(IterationContextOptions options) {
 }
 
 static bool iterator_has_next_internal(const void* raw_iteration_context) {
-    const IterationContext* iteration_context = raw_iteration_context;
+    IterationContext* iteration_context = (void*) raw_iteration_context;
     if (iteration_context->test) {
         return iteration_context->test(iteration_context->seed);
     }
-    return iteration_context->count < iteration_context->limit;
+    if (iteration_context->count < iteration_context->limit) {
+        return true;
+    }
+    if (iteration_context->elements) {
+        array_destroy(&iteration_context->elements);
+    }
+    return false;
 }
 
 static void* iterator_next_internal(void* raw_iteration_context) {
@@ -640,12 +641,4 @@ static void* iterator_next_internal(void* raw_iteration_context) {
         return element;
     }
     return iteration_context->elements[iteration_context->count++];
-}
-
-static void iterator_destroy_internal(void* raw_iteration_context) {
-    IterationContext* iteration_context = raw_iteration_context;
-    if (iteration_context->elements) {
-        array_destroy(&iteration_context->elements);
-    }
-    memory_dealloc(iteration_context);
 }

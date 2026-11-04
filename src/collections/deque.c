@@ -17,10 +17,6 @@ struct Deque {
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
     int modification_count;
 };
 
@@ -54,21 +50,21 @@ static bool collection_contains_internal(const void*, const void*);
 
 Deque* deque_new(const DequeOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY || !options->destruct
-        || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_dealloc
+    if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
+        || !options->destruct || !options->equals || !options->to_string
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
-    Deque* deque = options->memory_alloc(sizeof(Deque));
+    Deque* deque = memory_try_alloc(sizeof(Deque));
     if (!deque) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'deque'");
         return nullptr;
     }
     deque->capacity = next_power_of_two(options->initial_capacity);
-    deque->elements = options->memory_alloc(deque->capacity * sizeof(void*));
+    deque->elements = memory_try_alloc(deque->capacity * sizeof(void*));
     if (!deque->elements) {
-        options->memory_dealloc(deque);
+        memory_dealloc(deque);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'deque'");
         return nullptr;
     }
@@ -78,8 +74,6 @@ Deque* deque_new(const DequeOptions* options) {
     deque->destruct = options->destruct;
     deque->equals = options->equals;
     deque->to_string = options->to_string;
-    deque->memory_alloc = options->memory_alloc;
-    deque->memory_dealloc = options->memory_dealloc;
     deque->modification_count = 0;
     return deque;
 }
@@ -107,8 +101,8 @@ void deque_destroy(Deque** deque_pointer) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         deque->destruct(deque->elements[index]);
     }
-    deque->memory_dealloc(deque->elements);
-    deque->memory_dealloc(deque);
+    memory_dealloc(deque->elements);
+    memory_dealloc(deque);
     *deque_pointer = nullptr;
 }
 
@@ -357,9 +351,7 @@ Deque* deque_clone(const Deque* deque) {
          .initial_capacity = deque->capacity,
          .destruct = noop_destruct,
          .equals = deque->equals,
-         .to_string = deque->to_string,
-         .memory_alloc = deque->memory_alloc,
-         .memory_dealloc = deque->memory_dealloc
+         .to_string = deque->to_string
     })))) {
         set_error(error, "%s", error_description());
         return nullptr;
@@ -442,7 +434,7 @@ static bool ensure_capacity(Deque* deque, int capacity) {
         }
         new_capacity *= GROWTH_FACTOR;
     }
-    void** elements = deque->memory_alloc(new_capacity * sizeof(void*));
+    void** elements = memory_try_alloc(new_capacity * sizeof(void*));
     if (!elements) {
         return false;
     }
@@ -450,7 +442,7 @@ static bool ensure_capacity(Deque* deque, int capacity) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         elements[i] = deque->elements[index];
     }
-    deque->memory_dealloc(deque->elements);
+    memory_dealloc(deque->elements);
     deque->elements = elements;
     deque->first = 0;
     deque->last = deque->size;
@@ -463,10 +455,10 @@ typedef struct {
     Deque* deque;
     int count;
     int modification_count;
-}  IterationContext;
+} IterationContext;
 
 static Iterator* create_iterator(const Deque* deque, int position) {
-    IterationContext* iteration_context = deque->memory_alloc(sizeof(IterationContext));
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -482,7 +474,6 @@ static Iterator* create_iterator(const Deque* deque, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.destroy = deque->memory_dealloc;
 
     iteration_context->deque = (Deque*) deque;
     iteration_context->count = position;

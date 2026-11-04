@@ -9,9 +9,7 @@
     .destruct = noop_destruct,                          \
     .equals = int_equals_generic,                       \
     .to_string = int_to_string_generic,                 \
-    .memory_alloc = memory_try_alloc,                   \
-    .memory_realloc = memory_try_realloc,               \
-    .memory_dealloc = memory_dealloc                    \
+    .use_memory_realloc = true                          \
 }
 
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \

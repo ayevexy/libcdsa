@@ -9,9 +9,7 @@
     .key_to_string = char_to_string_generic,            \
     .value_destruct = noop_destruct,                    \
     .value_equals = int_equals_generic,                 \
-    .value_to_string = int_to_string_generic,           \
-    .memory_alloc = memory_try_alloc,                   \
-    .memory_dealloc = memory_dealloc                    \
+    .value_to_string = int_to_string_generic            \
 }
 
 #define POPULATE_TREE_MAP(tree_map, T, ...)                     \

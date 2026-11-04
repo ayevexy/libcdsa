@@ -24,10 +24,6 @@ struct HashSet {
         bool (*equals)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
     int modification_count;
 };
 
@@ -37,7 +33,7 @@ static int compute_threshold(int, float);
 
 static bool ensure_capacity(HashSet*);
 
-static Node* create_node(const HashSet*, const void*);
+static Node* create_node(const void*);
 
 static void* remove_node(HashSet*, int, Node*, Node*);
 
@@ -70,21 +66,21 @@ static bool collection_contains_internal(const void*, const void*);
 HashSet* hash_set_new(const HashSetOptions* options) {
     if (require_non_null(options)) return nullptr;
     if (options->initial_capacity < MIN_CAPACITY || options->initial_capacity > MAX_CAPACITY
-        || options->load_factor < MIN_LOAD_FACTOR || !options->hash || !options->destruct
-        || !options->equals || !options->to_string || !options->memory_alloc || !options->memory_dealloc
+        || options->load_factor < MIN_LOAD_FACTOR || !options->hash
+        || !options->destruct || !options->equals || !options->to_string
     ) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
-    HashSet* hash_set = options->memory_alloc(sizeof(HashSet));
+    HashSet* hash_set = memory_try_alloc(sizeof(HashSet));
     if (!hash_set) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_set'");
         return nullptr;
     }
     hash_set->capacity = next_power_of_two(options->initial_capacity);
-    hash_set->buckets = options->memory_alloc(hash_set->capacity * sizeof(Node*));
+    hash_set->buckets = memory_try_alloc(hash_set->capacity * sizeof(Node*));
     if (!hash_set->buckets) {
-        options->memory_dealloc(hash_set);
+        memory_dealloc(hash_set);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'hash_set'");
         return nullptr;
     }
@@ -96,8 +92,6 @@ HashSet* hash_set_new(const HashSetOptions* options) {
     hash_set->destruct = options->destruct;
     hash_set->equals = options->equals;
     hash_set->to_string = options->to_string;
-    hash_set->memory_alloc = options->memory_alloc;
-    hash_set->memory_dealloc = options->memory_dealloc;
     hash_set->modification_count = 0;
     return hash_set;
 }
@@ -122,8 +116,8 @@ void hash_set_destroy(HashSet** hash_set_pointer) {
     if (require_non_null(hash_set_pointer, *hash_set_pointer)) return;
     HashSet* hash_set = *hash_set_pointer;
     destroy_nodes(hash_set);
-    hash_set->memory_dealloc(hash_set->buckets);
-    hash_set->memory_dealloc(hash_set);
+    memory_dealloc(hash_set->buckets);
+    memory_dealloc(hash_set);
     *hash_set_pointer = nullptr;
 }
 
@@ -146,7 +140,7 @@ bool hash_set_add(HashSet* hash_set, const void* element) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to expand 'hash_set' capacity");
         return false;
     }
-    Node* node = create_node(hash_set, element);
+    Node* node = create_node(element);
     if (!node) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'new node'");
         return false;
@@ -353,9 +347,7 @@ HashSet* hash_set_clone(const HashSet* hash_set) {
         .hash = hash_set->hash,
         .destruct = noop_destruct,
         .equals = hash_set->equals,
-        .to_string = hash_set->to_string,
-        .memory_alloc = hash_set->memory_alloc,
-        .memory_dealloc = hash_set->memory_dealloc
+        .to_string = hash_set->to_string
     })))) {
         set_error(error, "%s", error_description());
         return nullptr;
@@ -433,7 +425,7 @@ static bool ensure_capacity(HashSet* hash_set) {
         return false;
     }
     const int new_capacity = hash_set->capacity * GROWN_FACTOR;
-    Node** buckets = hash_set->memory_alloc(new_capacity * sizeof(Node*));
+    Node** buckets = memory_try_alloc(new_capacity * sizeof(Node*));
     if (!buckets) {
         return false;
     }
@@ -451,15 +443,15 @@ static bool ensure_capacity(HashSet* hash_set) {
             buckets[index] = node;
         }
     }
-    hash_set->memory_dealloc(hash_set->buckets);
+    memory_dealloc(hash_set->buckets);
     hash_set->buckets = buckets;
     hash_set->capacity = new_capacity;
     hash_set->threshold = compute_threshold(hash_set->capacity, hash_set->load_factor);
     return true;
 }
 
-static Node* create_node(const HashSet* hash_set, const void* element) {
-    Node* node = hash_set->memory_alloc(sizeof(Node));
+static Node* create_node(const void* element) {
+    Node* node = memory_try_alloc(sizeof(Node));
     if (!node) {
         return nullptr;
     }
@@ -476,7 +468,7 @@ static void* remove_node(HashSet* hash_set, int bucket, Node* prev_node, Node* n
     }
     void* element = node->element;
     hash_set->destruct(node->element);
-    hash_set->memory_dealloc(node);
+    memory_dealloc(node);
     hash_set->size--;
     hash_set->modification_count++;
     return element;
@@ -488,7 +480,7 @@ static void destroy_nodes(HashSet* hash_set) {
             hash_set->destruct(current->element);
 
             next = current->next;
-            hash_set->memory_dealloc(current);
+            memory_dealloc(current);
         }
     }
 }
@@ -505,7 +497,7 @@ typedef struct {
 } IterationContext;
 
 static Iterator* create_iterator(const HashSet* hash_set) {
-    IterationContext* iteration_context = hash_set->memory_alloc(sizeof(IterationContext));
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -521,7 +513,6 @@ static Iterator* create_iterator(const HashSet* hash_set) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.destroy = hash_set->memory_dealloc;
 
     iteration_context->hash_set = (HashSet*) hash_set;
     iteration_context->node = nullptr;

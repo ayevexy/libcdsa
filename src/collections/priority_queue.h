@@ -33,8 +33,6 @@
  * - the destruct function used to free element memory
  * - the comparator function used to compare elements
  * - the to_string function used to convert elements to strings
- * - the memory allocation function
- * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
@@ -76,8 +74,6 @@ typedef struct PriorityQueue PriorityQueue;
  * @pre destruct != nullptr
  * @pre compare != nullptr
  * @pre to_string != nullptr
- * @pre memory_alloc != nullptr
- * @pre memory_dealloc != nullptr
  */
 typedef struct {
     int initial_capacity;
@@ -86,10 +82,6 @@ typedef struct {
         void (*destruct)(void*);
         int (*compare)(const void*, const void*);
         String (*to_string)(const void*);
-    };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
     };
 } PriorityQueueOptions;
 
@@ -104,8 +96,6 @@ typedef struct {
     .destruct = noop_destruct,                                          \
     .compare = pointer_compare,                                         \
     .to_string = pointer_to_string,                                     \
-    .memory_alloc = memory_try_alloc,                                   \
-    .memory_dealloc = memory_dealloc,                                   \
     __VA_ARGS__                                                         \
 }
 

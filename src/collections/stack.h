@@ -23,7 +23,6 @@ typedef Deque Stack;
  * - destruct function
  * - equals function
  * - to_string function
- * - memory allocation functions
  */
 typedef DequeOptions StackOptions;
 

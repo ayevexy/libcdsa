@@ -6,9 +6,7 @@
 #define INT_LINKED_LIST_OPTIONS &(LinkedListOptions) {  \
     .destruct = noop_destruct,                          \
     .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic,                 \
-    .memory_alloc = memory_try_alloc,                   \
-    .memory_dealloc = memory_dealloc,                   \
+    .to_string = int_to_string_generic                  \
 }
 
 #define POPULATE_LINKED_LIST(linked_list, T, ...)                   \

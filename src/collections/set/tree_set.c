@@ -23,10 +23,6 @@ struct TreeSet {
         int (*compare)(const void*, const void*);
         String (*to_string)(const void*);
     };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
-    };
     int modification_count;
 };
 
@@ -84,20 +80,18 @@ static bool collection_contains_internal(const void*, const void*);
 
 TreeSet* tree_set_new(const TreeSetOptions* options) {
     if (require_non_null(options)) return nullptr;
-    if (!options->destruct || !options->compare || !options->to_string
-        || !options->memory_alloc || !options->memory_dealloc
-    ) {
+    if (!options->destruct || !options->compare || !options->to_string) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "'options' argument must adhere to its constraints");
         return nullptr;
     }
-    TreeSet* tree_set = options->memory_alloc(sizeof(TreeSet));
+    TreeSet* tree_set = memory_try_alloc(sizeof(TreeSet));
     if (!tree_set) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_set'");
         return nullptr;
     }
-    Node* sentinel = options->memory_alloc(sizeof(Node));
+    Node* sentinel = memory_try_alloc(sizeof(Node));
     if (!sentinel) {
-        options->memory_dealloc(tree_set);
+        memory_dealloc(tree_set);
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'tree_set'");
         return nullptr;
     }
@@ -110,8 +104,6 @@ TreeSet* tree_set_new(const TreeSetOptions* options) {
     tree_set->destruct = options->destruct;
     tree_set->compare = options->compare;
     tree_set->to_string = options->to_string;
-    tree_set->memory_alloc = options->memory_alloc;
-    tree_set->memory_dealloc = options->memory_dealloc;
     tree_set->modification_count = 0;
     return tree_set;
 }
@@ -136,8 +128,8 @@ void tree_set_destroy(TreeSet** tree_set_pointer) {
     if (require_non_null(tree_set_pointer, *tree_set_pointer)) return;
     TreeSet* tree_set = *tree_set_pointer;
     destroy_nodes(tree_set, tree_set->root);
-    tree_set->memory_dealloc(tree_set->sentinel);
-    tree_set->memory_dealloc(tree_set);
+    memory_dealloc(tree_set->sentinel);
+    memory_dealloc(tree_set);
     *tree_set_pointer = nullptr;
 }
 
@@ -578,9 +570,7 @@ static TreeSet* create_tree_set_like(const TreeSet* tree_set) {
     if ((error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
        .destruct = noop_destruct,
        .compare = tree_set->compare,
-       .to_string = tree_set->to_string,
-       .memory_alloc = tree_set->memory_alloc,
-       .memory_dealloc = tree_set->memory_dealloc
+       .to_string = tree_set->to_string
     })))) {
         return nullptr;
     }
@@ -588,7 +578,7 @@ static TreeSet* create_tree_set_like(const TreeSet* tree_set) {
 }
 
 static Node* create_node(const TreeSet* tree_set, const void* element) {
-    Node* node = tree_set->memory_alloc(sizeof(Node));
+    Node* node = memory_try_alloc(sizeof(Node));
     if (!node) {
         return nullptr;
     }
@@ -688,7 +678,7 @@ static void* remove_node(TreeSet* tree_set, Node* node) {
     }
     void* element = node->element;
     tree_set->destruct(node->element);
-    tree_set->memory_dealloc(node);
+    memory_dealloc(node);
     tree_set->size--;
     tree_set->modification_count++;
     return element;
@@ -712,7 +702,7 @@ static void destroy_nodes(TreeSet* tree_set, Node* node) {
     destroy_nodes(tree_set, node->left);
     destroy_nodes(tree_set, node->right);
     tree_set->destruct(node->element);
-    tree_set->memory_dealloc(node);
+    memory_dealloc(node);
 }
 
 static void rebalance_after_insert(TreeSet* tree_set, Node* node) {
@@ -858,7 +848,7 @@ typedef struct {
 } IterationContext;
 
 static Iterator* create_iterator(const TreeSet* tree_set, int position) {
-    IterationContext* iteration_context = tree_set->memory_alloc(sizeof(IterationContext));
+    IterationContext* iteration_context = memory_try_alloc(sizeof(IterationContext));
 
     if (!iteration_context) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'iterator'");
@@ -874,7 +864,6 @@ static Iterator* create_iterator(const TreeSet* tree_set, int position) {
     iteration_context->iterator.set = iterator_set_internal;
     iteration_context->iterator.remove = iterator_remove_internal;
     iteration_context->iterator.reset = iterator_reset_internal;
-    iteration_context->iterator.destroy = tree_set->memory_dealloc;
 
     Node* node = get_lower_node(tree_set, tree_set->root);
     for (int count = 0; count < position - 1 && node != tree_set->sentinel; count++) {

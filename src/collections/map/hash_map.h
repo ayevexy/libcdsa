@@ -38,8 +38,6 @@
  * - the destruct function used to free value memory
  * - the equality function used to compare values
  * - the to_string function used to convert values to strings
- * - the memory allocation function
- * - the memory deallocation function
  *
  * Underlying implementation (simplified):
  * @code
@@ -92,8 +90,6 @@ typedef struct HashMap HashMap;
  * @pre value_destruct != nullptr
  * @pre value_equals != nullptr
  * @pre value_to_string != nullptr
- * @pre memory_alloc != nullptr
- * @pre memory_dealloc != nullptr
  */
 typedef struct {
     int initial_capacity;
@@ -108,10 +104,6 @@ typedef struct {
         void (*value_destruct)(void*);
         bool (*value_equals)(const void*, const void*);
         String (*value_to_string)(const void*);
-    };
-    struct {
-        void* (*memory_alloc)(bytes);
-        void (*memory_dealloc)(void*);
     };
 } HashMapOptions;
 
@@ -130,8 +122,6 @@ typedef struct {
     .value_destruct = noop_destruct,                        \
     .value_equals = pointer_equals,                         \
     .value_to_string = pointer_to_string,                   \
-    .memory_alloc = memory_try_alloc,                       \
-    .memory_dealloc = memory_dealloc,                       \
     __VA_ARGS__                                             \
 }
 

@@ -347,6 +347,13 @@ void test_math_lerp() {
     TEST_ASSERT_EQUAL_FLOAT(-20, math_lerp(-10.0, -20.0, 1.0));
 }
 
+void test_math_percentage() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(10.0, math_percentage(100.0, 10.0));
+    TEST_ASSERT_EQUAL_FLOAT(2.0, math_percentage(200.0, 1.0));
+    TEST_ASSERT_EQUAL_FLOAT(200.0, math_percentage(100.0, 200.0));
+}
+
 void test_math_random() {
     // then: float
     float random_float = math_random(float);
@@ -407,6 +414,7 @@ int main(void) {
     RUN_TEST(test_math_is);
     RUN_TEST(test_math_is_close);
     RUN_TEST(test_math_lerp);
+    RUN_TEST(test_math_percentage);
     RUN_TEST(test_math_random);
     RUN_TEST(test_math_to_radians);
     RUN_TEST(test_math_to_degrees);

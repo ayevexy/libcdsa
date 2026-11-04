@@ -355,6 +355,10 @@ T math_lerp_##suffix(T start, T end, T amount) {                            \
     return start + (end - start) * amount;                                  \
 }                                                                           \
                                                                             \
+T math_percentage_##suffix(T value, T percentage) {                         \
+    return (value / 100.0##t) * percentage;                                 \
+}                                                                           \
+                                                                            \
 T math_random_##suffix(void) {                                              \
     return (T) rand() / ((T) RAND_MAX + 1.0##t);                            \
 }                                                                           \

@@ -491,7 +491,7 @@
 #define math_is_close(a, b, tolerance) MATH_DISPATCH_FLOATS(is_close, a, b, tolerance)
 
 /**
- * @brief Linearly interpolates between two values.
+ * @brief Linearly interpolates between two floating-point numbers.
  *
  * @param start the starting value
  * @param end the ending value
@@ -500,6 +500,16 @@
  * @return the interpolated value
  */
 #define math_lerp(start, end, amount) MATH_DISPATCH_FLOATS(lerp, start, end, amount)
+
+/**
+ * @brief Calculates a percentage of a floating-point number.
+ *
+ * @param value the value
+ * @param percentage_ the percentage to calculate
+ *
+ * @return the calculated percentage of the value
+ */
+#define math_percentage(value, percentage_) MATH_DISPATCH_FLOATS(percentage, value, percentage_)
 
 /**
  * @brief Generates a pseudo-random floating-point number.
@@ -775,6 +785,7 @@ bool math_is_normal_float(float n);
 
 float math_is_close_float(float a, float b, float tolerance);
 float math_lerp_float(float start, float end, float amount);
+float math_percentage_float(float value, float percentage);
 float math_random_float(void);
 
 float math_to_radians_float(float degrees);
@@ -830,6 +841,7 @@ bool math_is_normal_double(double n);
 
 double math_is_close_double(double a, double b, double tolerance);
 double math_lerp_double(double start, double end, double amount);
+double math_percentage_double(double value, double percentage);
 double math_random_double(void);
 
 double math_to_radians_double(double degrees);
@@ -885,6 +897,7 @@ bool math_is_normal_ldouble(ldouble n);
 
 ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
 ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);
+ldouble math_percentage_ldouble(ldouble value, ldouble percentage);
 ldouble math_random_ldouble(void);
 
 ldouble math_to_radians_ldouble(ldouble degrees);

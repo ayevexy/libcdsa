@@ -287,6 +287,30 @@ void test_math_sign() {
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_sign(1.0));
 }
 
+void test_math_copysign() {
+    // then: positive and negative signs
+    TEST_ASSERT_EQUAL_FLOAT(-5.0, math_copysign(5.0, -1.0));
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_copysign(-5.0, 1.0));
+    // then: zero signs
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_copysign(5.0, 0.0));
+    TEST_ASSERT_EQUAL_FLOAT(-5.0, math_copysign(5.0, -0.0));
+    // then: zero magnitude
+    TEST_ASSERT_EQUAL_FLOAT(0.0, math_copysign(0.0, 1.0));
+    TEST_ASSERT_EQUAL_FLOAT(-0.0, math_copysign(0.0, -1.0));
+}
+
+void test_math_remainder() {
+    // then: positive values
+    TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(5.0, 2.0));
+    TEST_ASSERT_EQUAL_FLOAT(-1.0, math_remainder(7.0, 2.0));
+    TEST_ASSERT_EQUAL_FLOAT(-2.0, math_remainder(6.0, 4.0));
+    // then: negative values
+    TEST_ASSERT_EQUAL_FLOAT(-1.0, math_remainder(-5.0, 2.0));
+    TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(-7.0, 2.0));
+    // then: exact division
+    TEST_ASSERT_EQUAL_FLOAT(0.0, math_remainder(8.0, 2.0));
+}
+
 void test_math_mod() {
     // then
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_mod(10.0,  3.0));
@@ -418,6 +442,8 @@ int main(void) {
     RUN_TEST(test_math_max);
     RUN_TEST(test_math_clamp);
     RUN_TEST(test_math_sign);
+    RUN_TEST(test_math_copysign);
+    RUN_TEST(test_math_remainder);
     RUN_TEST(test_math_mod);
     RUN_TEST(test_math_round);
     RUN_TEST(test_math_floor);

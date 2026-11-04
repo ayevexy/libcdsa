@@ -319,6 +319,14 @@ T math_sign_##suffix(T n) {                                                 \
     return 0;                                                               \
 }                                                                           \
                                                                             \
+T math_copysign_##suffix(T value, T sign) {                                 \
+    return copysign##t(value, sign);                                        \
+}                                                                           \
+                                                                            \
+T math_remainder_##suffix(T a, T b) {                                       \
+    return remainder##t(a, b);                                              \
+}                                                                           \
+                                                                            \
 T math_mod_##suffix(T a, T b) {                                             \
     return fmod##t(a, b);                                                   \
 }                                                                           \

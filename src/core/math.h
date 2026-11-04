@@ -407,6 +407,26 @@
 #define math_sign(n) MATH_DISPATCH_FLOATS(sign, n)
 
 /**
+ * @brief Returns a value with the magnitude of one floating-point number and the sign of another.
+ *
+ * @param value the value whose magnitude is used
+ * @param sign the value whose sign is copied
+ *
+ * @return the value with the magnitude of value and the sign of sign
+ */
+#define math_copysign(value, sign) MATH_DISPATCH_FLOATS(copysign, value, sign)
+
+/**
+ * @brief Calculates the IEEE floating-point remainder of two numbers.
+ *
+ * @param a the dividend
+ * @param b the divisor
+ *
+ * @return the remainder of a divided by b
+ */
+#define math_remainder(a, b) MATH_DISPATCH_FLOATS(remainder, a, b)
+
+/**
  * @brief Computes the floating-point remainder of a division.
  *
  * @param a the dividend
@@ -791,6 +811,8 @@ float math_abs_float(float n);
 float math_min_float(float a, float b);
 float math_max_float(float a, float b);
 float math_sign_float(float n);
+float math_copysign_float(float value, float sign);
+float math_remainder_float(float a, float b);
 float math_mod_float(float a, float b);
 
 float math_round_float(float n);
@@ -847,6 +869,8 @@ double math_abs_double(double n);
 double math_min_double(double a, double b);
 double math_max_double(double a, double b);
 double math_sign_double(double n);
+double math_copysign_double(double value, double sign);
+double math_remainder_double(double a, double b);
 double math_mod_double(double a, double b);
 
 double math_round_double(double n);
@@ -903,6 +927,8 @@ ldouble math_abs_ldouble(ldouble n);
 ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble n);
+ldouble math_copysign_ldouble(ldouble value, ldouble sign);
+ldouble math_remainder_ldouble(ldouble a, ldouble b);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
 
 ldouble math_round_ldouble(ldouble n);

@@ -237,6 +237,17 @@ void test_math_is_prime() {
     TEST_ASSERT_FALSE(math_is_prime(100));
 }
 
+void test_math_is_power_of_two() {
+    // then
+    TEST_ASSERT_TRUE(math_is_power_of_two(2));
+    TEST_ASSERT_TRUE(math_is_power_of_two(8));
+    TEST_ASSERT_TRUE(math_is_power_of_two(32));
+    TEST_ASSERT_FALSE(math_is_power_of_two(-8));
+    TEST_ASSERT_FALSE(math_is_power_of_two(-32));
+    TEST_ASSERT_FALSE(math_is_power_of_two(-1));
+    TEST_ASSERT_FALSE(math_is_power_of_two(237));
+}
+
 void test_math_abs() {
     // then
     TEST_ASSERT_EQUAL(10, math_abs(10));
@@ -401,6 +412,7 @@ int main(void) {
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);
     RUN_TEST(test_math_is_prime);
+    RUN_TEST(test_math_is_power_of_two);
     RUN_TEST(test_math_abs);
     RUN_TEST(test_math_min);
     RUN_TEST(test_math_max);

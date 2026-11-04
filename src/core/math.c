@@ -97,6 +97,10 @@ bool math_is_prime_##suffix(T n) {                                          \
     return true;                                                            \
 }                                                                           \
                                                                             \
+bool math_is_power_of_two_##suffix(T n) {                                   \
+    return n != 0 && (n & (n - 1)) == 0;                                    \
+}                                                                           \
+                                                                            \
 T math_abs_##suffix(T n) {                                                  \
     return n < 0 ? -n : n;                                                  \
 }                                                                           \
@@ -181,6 +185,10 @@ bool math_is_prime_##suffix(T n) {                                          \
         if (n % i == 0) return false;                                       \
     }                                                                       \
     return true;                                                            \
+}                                                                           \
+                                                                            \
+bool math_is_power_of_two_##suffix(T n) {                                   \
+    return (n & (n - 1)) == 0;                                              \
 }                                                                           \
                                                                             \
 T math_abs_##suffix(T n) {                                                  \

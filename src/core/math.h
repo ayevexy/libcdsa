@@ -349,6 +349,15 @@
 #define math_is_prime(n) MATH_DISPATCH_INTEGERS(is_prime, n)
 
 /**
+ * @brief Checks whether a number is power of two.
+ *
+ * @param n the number
+ *
+ * @return true if n is power of two, false otherwise
+ */
+#define math_is_power_of_two(n) MATH_DISPATCH_INTEGERS(is_power_of_two, n)
+
+/**
  * @brief Returns the absolute value of a number.
  *
  * @param n the number
@@ -591,6 +600,7 @@ char math_gcd_char(char a, char b);
 char math_lcm_char(char a, char b);
 char math_factorial_char(char n);
 bool math_is_prime_char(char n);
+bool math_is_power_of_two_char(char n);
 char math_abs_char(char n);
 char math_min_char(char a, char b);
 char math_max_char(char a, char b);
@@ -605,6 +615,7 @@ schar math_gcd_schar(schar a, schar b);
 schar math_lcm_schar(schar a, schar b);
 schar math_factorial_schar(schar n);
 bool math_is_prime_schar(schar n);
+bool math_is_power_of_two_schar(schar n);
 schar math_abs_schar(schar n);
 schar math_min_schar(schar a, schar b);
 schar math_max_schar(schar a, schar b);
@@ -619,6 +630,7 @@ uchar math_gcd_uchar(uchar a, uchar b);
 uchar math_lcm_uchar(uchar a, uchar b);
 uchar math_factorial_uchar(uchar n);
 bool math_is_prime_uchar(uchar n);
+bool math_is_power_of_two_uchar(uchar n);
 uchar math_abs_uchar(uchar n);
 uchar math_min_uchar(uchar a, uchar b);
 uchar math_max_uchar(uchar a, uchar b);
@@ -633,6 +645,7 @@ short math_gcd_short(short a, short b);
 short math_lcm_short(short a, short b);
 short math_factorial_short(short n);
 bool math_is_prime_short(short n);
+bool math_is_power_of_two_short(short n);
 short math_abs_short(short n);
 short math_min_short(short a, short b);
 short math_max_short(short a, short b);
@@ -647,6 +660,7 @@ ushort math_gcd_ushort(ushort a, ushort b);
 ushort math_lcm_ushort(ushort a, ushort b);
 ushort math_factorial_ushort(ushort n);
 bool math_is_prime_ushort(ushort n);
+bool math_is_power_of_two_ushort(ushort n);
 ushort math_abs_ushort(ushort n);
 ushort math_min_ushort(ushort a, ushort b);
 ushort math_max_ushort(ushort a, ushort b);
@@ -661,6 +675,7 @@ int math_gcd_int(int a, int b);
 int math_lcm_int(int a, int b);
 int math_factorial_int(int n);
 bool math_is_prime_int(int n);
+bool math_is_power_of_two_int(int n);
 int math_abs_int(int n);
 int math_min_int(int a, int b);
 int math_max_int(int a, int b);
@@ -675,6 +690,7 @@ uint math_gcd_uint(uint a, uint b);
 uint math_lcm_uint(uint a, uint b);
 uint math_factorial_uint(uint n);
 bool math_is_prime_uint(uint n);
+bool math_is_power_of_two_uint(uint n);
 uint math_abs_uint(uint n);
 uint math_min_uint(uint a, uint b);
 uint math_max_uint(uint a, uint b);
@@ -689,6 +705,7 @@ long math_gcd_long(long a, long b);
 long math_lcm_long(long a, long b);
 long math_factorial_long(long n);
 bool math_is_prime_long(long n);
+bool math_is_power_of_two_long(long n);
 long math_abs_long(long n);
 long math_min_long(long a, long b);
 long math_max_long(long a, long b);
@@ -703,6 +720,7 @@ ulong math_gcd_ulong(ulong a, ulong b);
 ulong math_lcm_ulong(ulong a, ulong b);
 ulong math_factorial_ulong(ulong n);
 bool math_is_prime_ulong(ulong n);
+bool math_is_power_of_two_ulong(ulong n);
 ulong math_abs_ulong(ulong n);
 ulong math_min_ulong(ulong a, ulong b);
 ulong math_max_ulong(ulong a, ulong b);
@@ -717,6 +735,7 @@ llong math_gcd_llong(llong a, llong b);
 llong math_lcm_llong(llong a, llong b);
 llong math_factorial_llong(llong n);
 bool math_is_prime_llong(llong n);
+bool math_is_power_of_two_llong(llong n);
 llong math_abs_llong(llong n);
 llong math_min_llong(llong a, llong b);
 llong math_max_llong(llong a, llong b);
@@ -731,6 +750,7 @@ ullong math_gcd_ullong(ullong a, ullong b);
 ullong math_lcm_ullong(ullong a, ullong b);
 ullong math_factorial_ullong(ullong n);
 bool math_is_prime_ullong(ullong n);
+bool math_is_power_of_two_ullong(ullong n);
 ullong math_abs_ullong(ullong n);
 ullong math_min_ullong(ullong a, ullong b);
 ullong math_max_ullong(ullong a, ullong b);

@@ -1,7 +1,5 @@
 #include "core/math.h"
 
-#include <tgmath.h>
-
 #include "core/errors.h"
 #include "core/limits.h"
 
@@ -306,7 +304,7 @@ void test_math_frexp() {
     int exponent; float mantissa = math_frexp(10.0, &exponent);
     // then
     TEST_ASSERT_EQUAL_FLOAT(0.625f, mantissa);
-    TEST_ASSERT_EQUAL_FLOAT(4.0f, exponent);
+    TEST_ASSERT_EQUAL(4, exponent);
 }
 
 void test_math_remainder() {

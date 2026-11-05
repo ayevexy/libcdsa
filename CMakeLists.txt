@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 4.0)
 
 project(libcdsa
         VERSION 1.0.0
-        DESCRIPTION "Data Structures and Algorithms Library in C"
+        DESCRIPTION "General-Purpose Utility Library for C"
         LANGUAGES C
 )
 

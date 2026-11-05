@@ -1,7 +1,7 @@
 <p align="center"><img src="logo.svg" alt="Project Logo"></p>
 
 > [!WARNING]
-> This library is currently a work in progress. It is experimental and may be unstable — use it at your own risk.
+> This library is currently a work in progress. It is experimental and may be unstable — use with caution.
 
 ## Table of Contents
 
@@ -22,17 +22,21 @@
 
 ## Overview
 
-**A Feature-Rich, High-Level, and Easy-to-Use Data Structures and Algorithms Library for the C programming language.**
+**A Feature-Rich, High-Level, and Easy-to-Use General-Purpose Utility Library for the C Programming Language.**
 
-This project provides common data structures and algorithms with clean, expressive, and
-reusable abstractions — bringing a modern programming experience to C.
-It includes implementations of widely used data structures such as array lists, linked lists, hash maps, and hash sets,
-along with classic algorithms like merge sort and quick sort. The API is heavily inspired by the 
-Java Collections Framework, offering a familiar interface for developers with a Java background.
+This project provides a comprehensive collection of utilities, abstractions, data structures,
+and algorithms designed to make C development more expressive, convenient, and productive.
+It offers a broad range of functionality, including collections, memory management,
+string manipulation, mathematical operations, date and time handling, file
+and system utilities, logging, and more. Its API emphasizes consistency, reusability,
+and ease of use, drawing inspiration from modern programming languages and libraries,
+particularly the Java ecosystem.
 
 ### Features
 
-The library currently provides the following data structures:
+#### Collections
+
+The library provides a variety of commonly used data structures:
 
 - [Array List](src/collections/list/array_list.h): A dynamic, linear structure that stores elements contiguously in memory for fast random access.
 - [Linked List](src/collections/list/linked_list.h): A dynamic, linear structure that stores elements in non-contiguous memory, linked by references.
@@ -43,37 +47,47 @@ The library currently provides the following data structures:
 - [Deque](src/collections/deque.h): A linear structure allowing insertion and removal at both ends of the sequence.
 - [Stack](src/collections/stack.h): A linear LIFO structure where elements are inserted and removed from the top.
 - [Queue](src/collections/queue.h): A linear FIFO structure where elements are added at the rear and removed from the front.
-- [Priority Queue](src/collections/priority_queue.h): A dynamic, linear structure that stores elements according to their priority in a queue.
+- [Priority Queue](src/collections/priority_queue.h): A dynamic structure that stores elements according to their priority.
 
-There are also thin abstraction layers for list, map, and set types (compile-time dispatch):
+The library also provides thin abstraction layers for list, map, and set types through compile-time dispatch:
 
-- [List](src/collections/list/list.h): A thin abstraction layer for `ArrayList` and `LinkedList`.
-- [Map](src/collections/map/map.h): A thin abstraction layer for `HashMap` and `TreeMap`.
-- [Set](src/collections/set/set.h): A thin abstraction layer for `HashSet` and `TreeSet`.
+- [List](src/collections/list/list.h): An abstraction over `ArrayList` and `LinkedList`.
+- [Map](src/collections/map/map.h): An abstraction over `HashMap` and `TreeMap`.
+- [Set](src/collections/set/set.h): An abstraction over `HashSet` and `TreeSet`.
 
-Also, there is some other utilities which may be useful:
+Additional collection-related functionality:
 
-- [Algorithms](src/collections/algorithms.h): Algorithms related enumerations.
-- [Collection](src/collections/collection.h): Collection view abstraction.
-- [Constraints](src/core/constraints.h): Pre-condition checks.
-- [Assertions](src/core/assertions.h): Custom assertions.
-- [Errors](src/core/errors.h): Built-in custom error handling system used by the library.
-- [For Each](src/collections/for_each.h): For Each macro abstraction to iterate through collections.
-- [Functions](src/core/functions.h): Functions typedefs and default implementations.
-- [Pointer](src/core/pointer.h): Default functions for the library containers.
-- [Iterator](src/collections/iterator.h): Fully generic iterator abstraction.
+- [Collection](src/collections/collection.h): Generic, non-owning collection view abstraction.
+- [Iterator](src/collections/iterator.h): Generic iterator abstraction.
+- [For Each](src/collections/for_each.h): Macro abstraction for iterating through collections.
+- [Algorithms](src/collections/algorithms.h): Enumerations defining available sorting and shuffling algorithms.
+
+#### Core
+
+Fundamental abstractions and functionality used throughout the library:
+
+- [Types](src/core/types.h): Common type aliases.
+- [Limits](src/core/limits.h): Typed numeric limit aliases.
+- [Macros](src/core/macros.h): General-purpose utility macros.
+- [Assertions](src/core/assertions.h): Custom assertion utilities.
+- [Errors](src/core/errors.h): Built-in error handling system.
+- [Constraints](src/core/constraints.h): Precondition checks.
 - [Memory](src/core/memory.h): Memory management abstractions.
-- [Optional](src/core/optional.h): Container type which may or may not contain a value.
-- [String](src/core/string.h): Built-in custom string implementation.
+- [Math](src/core/math.h): Mathematical functions, constants, and utilities.
 - [Array](src/core/array.h): Built-in custom array implementation.
-- [Types](src/core/types.h): Optioned type aliases.
-- [Limits](src/core/limits.h): Typed limit aliases.
-- [Macros](src/core/macros.h): Utility macros.
-- [Math](src/core/math.h): Math utilities.
-- [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
-- [File](src/util/file.h): Simple file handling abstraction.
+- [String](src/core/string.h): Built-in custom string implementation.
+- [Functions](src/core/functions.h): Generic function pointer typedefs.
+- [Pointer](src/core/pointer.h): Default function implementations for library containers.
+- [Optional](src/core/optional.h): A container type which may or may not contain a value.
 - [System](src/core/system.h): Runtime system abstraction.
+
+#### Util
+
+Additional functionality for common programming tasks:
+
+- [File](src/util/file.h): File handling abstractions.
 - [Sync](src/util/sync.h): Thread synchronization abstractions.
+- [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 - [Allocators](src/util/allocators.h): Custom memory allocators.
 - [Logging](src/util/logging.h): Simple logging utility.
 - [Temporal](src/util/temporal.h): Date/Time abstractions.
@@ -82,13 +96,12 @@ Also, there is some other utilities which may be useful:
 
 Like any other project, there are some limitations (most by design):
 
-- Lack of Type Safety.
-- Reference Storage Only.
-- Not Optimized for Peak Performance.
-- Can cause Namespace Collision.
-- Not Thread-Safe.
-- Some functionalities are only available on Linux systems.
-- It Mighty have some Bugs... (help find them!)
+- Requires a compiler with C23 support.
+- Not optimized for peak performance.
+- May cause namespace collisions with existing or third-party code.
+- Most functionalities are not designed to be thread-safe.
+- Some functionalities are only available on Linux.
+- It might have some bugs... (help find them!)
 
 ### Technologies
 
@@ -828,7 +841,7 @@ int main(void) {
 
 ### Documentation
 
-Each data structure and utility is documented in its corresponding header file within the `src` folder.
+Each module and utility is documented in its corresponding header file within the `src` folder.
 For usage examples, see the corresponding test file in the `test` folder.
 
 ### Building
@@ -886,47 +899,99 @@ Instead, to install to a custom directory in the home folder:
 
 ## Frequently Asked Questions
 
-- **Isn't it just another data structures library? Why does this exist?**
+- **Why does libcdsa exist?**
 
-I made **libcdsa** as a hobby project to learn and practice the C programming language and data structures
-and algorithms. But the project grew while developing it and became a powerful library with a different
-and interesting design approach from most implementations.
+  I originally created **libcdsa** as a hobby project to learn
+  and practice the C programming language, particularly data
+  structures and algorithms.
+
+  As development progressed, the project gradually expanded
+  beyond its original scope, evolving into a general-purpose
+  library with a broad collection of functionality and its
+  own design philosophy.
+
 
 - **What makes libcdsa different?**
 
-Most implementations focus on simplicity and performance, at the cost of limited scope and heavy use of macros. **libcdsa** is
-the opposite—its focus is mainly on functionality, an abstracted API, and ease of use. For example: the [Array List](src/collections/list/array_list.h)
-module has 50+ functions! You can check the documentation to learn more about what this project can offer.
+  Many C libraries prioritize simplicity and performance,
+  often favoring limited functionality and non-intuitive api.
 
-- **Isn't it a reimplementation of the Java Collections Framework, but in C?**
+  **libcdsa**, on the other hand, prioritizes functionality,
+  abstraction, and ease of use. Its goal is to provide rich,
+  expressive APIs with consistent interfaces across different
+  modules.
 
-Even though **libcdsa** is heavily inspired by Java Collections, it's not a reimplementation.
-The API is based on Java because I personally like it, but there are many differences, both in the API and in the implementation.
-For example, Java makes heavy use of exceptions; however, in **libcdsa**, exceptions don’t exist—there’s an entirely new built-in error handling mechanism.
-If you look at the source code and the API, the differences will become clear.
+  For example, the [ArrayList](src/collections/list/array_list.h)
+  module provides over 50 functions! You can explore the
+  documentation to discover everything the library has to offer.
+
+
+- **Isn't it a reimplementation of the Java Standard Library in C?**
+
+  Although **libcdsa** is heavily inspired by the Java
+  Standard Library, it is not a direct reimplementation.
+
+  Java's API design is something I personally appreciate,
+  so it serves as an important source of inspiration.
+  However, there are considerable differences in both API
+  design and implementation.
+
+  For example, Java relies heavily on exceptions for error
+  handling, whereas **libcdsa** provides its own built-in
+  error handling mechanism. The differences become even more
+  apparent when exploring the source code and API.
+
 
 - **Is it easy to use?**
 
-Absolutely. If you’ve used Java before, the API will feel familiar.
-Even if you haven’t, the design is straightforward and consistent across all data structures.
-The only tough part would be installing it, which requires CMake and some steps—unless you grab the header/source pair files instead.
+  Absolutely. If you've used Java before, many of the APIs
+  will feel familiar. Even if you haven't, the library aims
+  to maintain straightforward and consistent interfaces
+  across its different modules.
+
+  Installation requires CMake and a few additional steps,
+  although individual header/source pairs can also be used
+  directly.
+
 
 - **Is it ready for production?**
 
-If the mentioned [limitations](#limitations) aren’t an obstacle for your project, it might be used in production,
-but it's better to wait until the first stable version is released. The project is currently in beta, and breaking changes may occur
-before the definitive version `v1.0.0`.
+  If the [limitations](#limitations) aren't an obstacle for
+  your project, it may be suitable for production use.
+  However, it's recommended to wait until the first stable
+  release.
+
+  The project is currently in beta, and breaking changes
+  may occur before the definitive version `v1.0.0`.
+
 
 - **Is it suitable for learning?**
 
-One thing I tried to achieve and maintain while developing this project is the clarity and readability of the code.
-But it can be difficult due to the size of the project, the topics it addresses, and some design decisions made.
-Still, I think it could be a good source for learning.
+  One of my goals throughout development has been to maintain
+  clarity and readability in the code.
 
-- **Can I contribute with the project?**
+  However, learning from the project can be challenging due
+  to its size, the variety of topics it covers, and some of
+  its design decisions.
 
-Yes! If you have any feedback, feature requests, bug reports, or questions, you can start a discussion,
-open an issue, or email me at `ayevexy@proton.me`. If you’ve used **libcdsa** anywhere, I’d love to know too!
+  Nevertheless, I believe it can be a valuable resource for
+  exploring C programming, data structures, algorithms,
+  memory management, API design, and other related topics.
+
+
+- **Can I contribute to the project?**
+
+  Absolutely! If you have feedback, feature requests, bug
+  reports, or questions, you can start a discussion, open
+  an issue, or email me at `ayevexy@proton.me`.
+
+  If you've used **libcdsa** in any project, I'd love to
+  hear about it!
+
+
+- **Who are you?**
+
+  Just a random boy who enjoys computers. 😉👍
 
 ## License
 

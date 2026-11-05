@@ -10,7 +10,7 @@
 **         ||                                                           ||
 **         ||                                                           ||
 **         ||       A Feature-Rich, High-Level, and Easy-to-Use         ||
-**         ||       Data Structures and Algorithms Library for C        ||
+**         ||          General-Purpose Utility Library for C            ||
 **         ||                                                           ||
 **         ||       Author: ayevexy                                     ||
 **         ||       License: MIT                                        ||

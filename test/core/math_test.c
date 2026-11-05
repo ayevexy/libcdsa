@@ -1,5 +1,7 @@
 #include "core/math.h"
 
+#include <tgmath.h>
+
 #include "core/errors.h"
 #include "core/limits.h"
 
@@ -299,6 +301,14 @@ void test_math_copysign() {
     TEST_ASSERT_EQUAL_FLOAT(-0.0, math_copysign(0.0, -1.0));
 }
 
+void test_math_frexp() {
+    // when
+    int exponent; float mantissa = math_frexp(10.0, &exponent);
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(0.625f, mantissa);
+    TEST_ASSERT_EQUAL_FLOAT(4.0f, exponent);
+}
+
 void test_math_remainder() {
     // then: positive values
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(5.0, 2.0));
@@ -317,6 +327,12 @@ void test_math_mod() {
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0,  3.0));
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_mod(10.0,  -3.0));
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0, -3.0));
+}
+
+void test_math_fma() {
+    // given
+    TEST_ASSERT_EQUAL_FLOAT(5.0, math_fma(2.0, 2.0, 1.0));
+    TEST_ASSERT_EQUAL_FLOAT(-3.0, math_fma(2.0, -2.0, 1.0));
 }
 
 void test_math_round() {
@@ -443,8 +459,10 @@ int main(void) {
     RUN_TEST(test_math_clamp);
     RUN_TEST(test_math_sign);
     RUN_TEST(test_math_copysign);
+    RUN_TEST(test_math_frexp);
     RUN_TEST(test_math_remainder);
     RUN_TEST(test_math_mod);
+    RUN_TEST(test_math_fma);
     RUN_TEST(test_math_round);
     RUN_TEST(test_math_floor);
     RUN_TEST(test_math_ceil);

@@ -320,12 +320,20 @@ T math_copysign_##suffix(T value, T sign) {                                 \
     return copysign##t(value, sign);                                        \
 }                                                                           \
                                                                             \
+T math_frexp_##suffix(T n, int* exponent) {                                 \
+    return frexp##t(n, exponent);                                           \
+}                                                                           \
+                                                                            \
 T math_remainder_##suffix(T a, T b) {                                       \
     return remainder##t(a, b);                                              \
 }                                                                           \
                                                                             \
 T math_mod_##suffix(T a, T b) {                                             \
     return fmod##t(a, b);                                                   \
+}                                                                           \
+                                                                            \
+T math_fma_##suffix(T a, T b, T c) {                                        \
+    return fma##t(a, b, c);                                                 \
 }                                                                           \
                                                                             \
 T math_round_##suffix(T n) {                                                \

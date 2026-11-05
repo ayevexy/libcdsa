@@ -418,6 +418,16 @@
 #define math_copysign(value, sign) MATH_DISPATCH_FLOATS(copysign, value, sign)
 
 /**
+ * @brief Decomposes a floating-point number into a normalized fraction and an integer exponent.
+ *
+ * @param n the number to decompose
+ * @param exponent pointer to an integer where the exponent is stored
+ *
+ * @return the normalized fraction
+ */
+#define math_frexp(n, exponent) MATH_DISPATCH_FLOATS(frexp, n, exponent)
+
+/**
  * @brief Calculates the IEEE floating-point remainder of two numbers.
  *
  * @param a the dividend
@@ -436,6 +446,17 @@
  * @return the remainder of dividing a by b
  */
 #define math_mod(a, b) MATH_DISPATCH_FLOATS(mod, a, b)
+
+/**
+ * @brief Computes the fused multiply-add operation: a * b + c.
+ *
+ * @param a the first multiplicand
+ * @param b the second multiplicand
+ * @param c the addend
+ *
+ * @return the result of a * b + c, computed with a single rounding
+ */
+#define math_fma(a, b, c) MATH_DISPATCH_FLOATS(fma, a, b, c)
 
 /**
  * @brief Rounds a floating-point number to the nearest integer.
@@ -813,8 +834,10 @@ float math_min_float(float a, float b);
 float math_max_float(float a, float b);
 float math_sign_float(float n);
 float math_copysign_float(float value, float sign);
+float math_frexp_float(float n, int* exponent);
 float math_remainder_float(float a, float b);
 float math_mod_float(float a, float b);
+float math_fma_float(float a, float b, float c);
 
 float math_round_float(float n);
 float math_floor_float(float n);
@@ -871,8 +894,10 @@ double math_min_double(double a, double b);
 double math_max_double(double a, double b);
 double math_sign_double(double n);
 double math_copysign_double(double value, double sign);
+double math_frexp_double(double n, int* exponent);
 double math_remainder_double(double a, double b);
 double math_mod_double(double a, double b);
+double math_fma_double(double a, double b, double c);
 
 double math_round_double(double n);
 double math_floor_double(double n);
@@ -929,8 +954,10 @@ ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble n);
 ldouble math_copysign_ldouble(ldouble value, ldouble sign);
+ldouble math_frexp_ldouble(ldouble n, int* exponent);
 ldouble math_remainder_ldouble(ldouble a, ldouble b);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
+ldouble math_fma_ldouble(ldouble a, ldouble b, ldouble c);
 
 ldouble math_round_ldouble(ldouble n);
 ldouble math_floor_ldouble(ldouble n);

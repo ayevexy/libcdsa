@@ -111,8 +111,8 @@ Error capture_error(void);
  */
 #define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "")
 
-#define set_error_(error, message, ...) set_error(error, __func__, message __VA_OPT__(, ) __VA_ARGS__)
+#define set_error_(error, message, ...) set_error(error, __FILE__, __LINE__, __func__, message __VA_OPT__(, ) __VA_ARGS__)
 
-void (set_error)(Error error, const char* location, const char* message, ...);
+void (set_error)(Error error, const char* source, int line, const char* location, const char* message, ...);
 
 #endif

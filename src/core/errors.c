@@ -67,7 +67,7 @@ Error capture_error(void) {
     return error;
 }
 
-void (set_error)(Error error, const char* location, const char* message, ...) {
+void (set_error)(Error error, const char* source, int line, const char* location, const char* message, ...) {
     assert(error != NO_ERROR && "can't raise NO_ERROR");
 
     thread_local static char message_copy[MAX_MESSAGE_LENGTH];
@@ -87,8 +87,11 @@ void (set_error)(Error error, const char* location, const char* message, ...) {
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
 
+    for (const char* path = source; *path; path++)
+        if (*path == '/' || *path == '\\') source = path + 1;
+
     const int location_offset = length + 1;
-    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH - location_offset, "\n\tat %s()\n", location);
+    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH - location_offset, "\n\tat: %s:%d %s()\n", source, line, location);
 
     assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
 

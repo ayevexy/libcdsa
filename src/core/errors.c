@@ -17,6 +17,7 @@ typedef struct {
 
 thread_local static ErrorContext error_context = { .abort = true };
 
+const Error ASSERTION_ERROR               = ERROR("ASSERTION_ERROR", "an assertion failed");
 const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR", "a null pointer was provided");
 const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR", "an arithmetic operation could not be completed");
 const Error NUMBER_FORMAT_ERROR           = ERROR("NUMBER_FORMAT_ERROR", "the string does not represent a valid number");
@@ -99,6 +100,6 @@ void (set_error)(Error error, const char* source, int line, const char* location
 
     if (error_context.error && error_context.abort && error_context.scope == 0) {
         fprintf(stderr, "%s%s", error_context.message, error_context.message + location_offset);
-        exit(EXIT_FAILURE);
+        error_context.error == ASSERTION_ERROR ? abort() : exit(EXIT_FAILURE);
     }
 }

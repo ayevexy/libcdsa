@@ -28,6 +28,7 @@ constexpr Error NO_ERROR = nullptr;
 /**
  * @brief Common runtime error constants.
  */
+extern const Error ASSERTION_ERROR;
 extern const Error NULL_POINTER_ERROR;
 extern const Error ARITHMETIC_ERROR;
 extern const Error NUMBER_FORMAT_ERROR;

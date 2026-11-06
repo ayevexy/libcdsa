@@ -6,6 +6,8 @@
  * @brief Custom assertions.
  */
 
+#include "core/errors.h"
+
 /**
  * @brief Checks a condition and aborts execution if it evaluates to false.
  *
@@ -53,15 +55,12 @@
 #ifndef NDEBUG
 
 #define assert_internal(expression, message, ...) \
-    ((expression) ? (void) 0 : assertion_failed(__FILE__, __LINE__, __func__, message __VA_OPT__(,) __VA_ARGS__))
+    ((expression) ? (void) 0 : set_error(ASSERTION_ERROR, message __VA_OPT__(,) __VA_ARGS__))
 
 #else
 
 #define assert_internal(expression, message, ...) ((void) 0)
 
 #endif
-
-[[noreturn]]
-void assertion_failed(const char* source, int line, const char* location, const char* message, ...);
 
 #endif

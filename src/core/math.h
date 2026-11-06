@@ -432,6 +432,20 @@
 )(n, exponent)
 
 /**
+ * @brief Scales a floating-point number by a power of two, computing `n * 2^exponent`.
+ *
+ * @param n the number to scale
+ * @param exponent the integer exponent of the power of two
+ *
+ * @return the result of scaling `n` by `2^exponent`
+ */
+#define math_ldexp(n, exponent) _Generic((n),   \
+    float:    math_ldexp_float,                 \
+    double:   math_ldexp_double,                \
+    ldouble:  math_ldexp_ldouble                \
+)(n, exponent)
+
+/**
  * @brief Calculates the IEEE floating-point remainder of two numbers.
  *
  * @param a the dividend
@@ -900,6 +914,7 @@ float math_max_float(float a, float b);
 float math_sign_float(float n);
 float math_copysign_float(float value, float sign);
 float math_frexp_float(float n, int* exponent);
+float math_ldexp_float(float n, int exponent);
 float math_remainder_float(float a, float b);
 float math_mod_float(float a, float b);
 float math_fma_float(float a, float b, float c);
@@ -960,6 +975,7 @@ double math_max_double(double a, double b);
 double math_sign_double(double n);
 double math_copysign_double(double value, double sign);
 double math_frexp_double(double n, int* exponent);
+double math_ldexp_double(double n, int exponent);
 double math_remainder_double(double a, double b);
 double math_mod_double(double a, double b);
 double math_fma_double(double a, double b, double c);
@@ -1020,6 +1036,7 @@ ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble n);
 ldouble math_copysign_ldouble(ldouble value, ldouble sign);
 ldouble math_frexp_ldouble(ldouble n, int* exponent);
+ldouble math_ldexp_ldouble(ldouble n, int exponent);
 ldouble math_remainder_ldouble(ldouble a, ldouble b);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
 ldouble math_fma_ldouble(ldouble a, ldouble b, ldouble c);

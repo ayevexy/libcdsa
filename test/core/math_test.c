@@ -307,6 +307,11 @@ void test_math_frexp() {
     TEST_ASSERT_EQUAL(4, exponent);
 }
 
+void test_math_ldexp() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(0.437500, math_ldexp(7.0, -4));
+}
+
 void test_math_remainder() {
     // then: positive values
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(5.0, 2.0));
@@ -458,6 +463,7 @@ int main(void) {
     RUN_TEST(test_math_sign);
     RUN_TEST(test_math_copysign);
     RUN_TEST(test_math_frexp);
+    RUN_TEST(test_math_ldexp);
     RUN_TEST(test_math_remainder);
     RUN_TEST(test_math_mod);
     RUN_TEST(test_math_fma);

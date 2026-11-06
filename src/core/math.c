@@ -324,6 +324,10 @@ T math_frexp_##suffix(T n, int* exponent) {                                 \
     return frexp##t(n, exponent);                                           \
 }                                                                           \
                                                                             \
+T math_ldexp_##suffix(T n, int exponent) {                                  \
+    return ldexp##t(n, exponent);                                           \
+}                                                                           \
+                                                                            \
 T math_remainder_##suffix(T a, T b) {                                       \
     return remainder##t(a, b);                                              \
 }                                                                           \

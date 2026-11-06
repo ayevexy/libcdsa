@@ -91,29 +91,24 @@ void error_print(void);
 #define try(expression) { (isolate_error(), (expression)), capture_error() }
 
 /**
- * @brief Clears the current error state.
- *
- * After calling this function, the error state is reset to NO_ERROR.
- */
-void isolate_error(void);
-
-/**
- * @brief Captures and returns the current error.
- *
- * @return the current Error
- */
-Error capture_error(void);
-
-/**
- * @brief Sets an error.
+ * @brief Raises an error. If unhandled, prints an error message to `stderr`
+ * and terminates program execution.
  *
  * @param error the error code to raise
- * @param ... optional message and format arguments
+ * @param ... optional format string and corresponding arguments
+ *
+ * @note Errors can be handled using the `attempt()` macro.
  */
 #define set_error(error, ...) set_error_(error, __VA_OPT__(__VA_ARGS__,) "")
 
+/*-------------------------------------------------------------------------------------------------------------------------*/
+
+void isolate_error(void);
+
+Error capture_error(void);
+
 #define set_error_(error, message, ...) set_error(error, __FILE__, __LINE__, __func__, message __VA_OPT__(, ) __VA_ARGS__)
 
-void (set_error)(Error error, const char* source, int line, const char* location, const char* message, ...);
+void (set_error)(Error error, const char* source, int line, const char* location, const char* format, ...);
 
 #endif

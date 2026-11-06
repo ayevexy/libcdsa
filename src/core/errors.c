@@ -6,11 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-static constexpr int MAX_MESSAGE_LENGTH = 256;
+static constexpr int MAX_ERROR_MESSAGE_LENGTH = 256;
 
 typedef struct {
     Error error;
-    char message[MAX_MESSAGE_LENGTH];
+    char message[MAX_ERROR_MESSAGE_LENGTH];
     int scope;
     bool abort;
 } ErrorContext;
@@ -68,35 +68,37 @@ Error capture_error(void) {
     return error;
 }
 
-void (set_error)(Error error, const char* source, int line, const char* location, const char* message, ...) {
-    assert(error != NO_ERROR && "can't raise NO_ERROR");
+void (set_error)(Error error, const char* source, int line, const char* location, const char* format, ...) {
+    if (error == NO_ERROR) {
+       return;
+    }
 
-    thread_local static char message_copy[MAX_MESSAGE_LENGTH];
-    error_context.error = error;
+    char message[MAX_ERROR_MESSAGE_LENGTH];
 
-    int length = snprintf(message_copy, MAX_MESSAGE_LENGTH, "%s: ", error->name);
+    int length = snprintf(message, MAX_ERROR_MESSAGE_LENGTH, "%s: ", error->name);
 
-    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
+    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
 
     va_list parameters = {};
-    va_start(parameters, message);
+    va_start(parameters, format);
 
-    message = message[0] != '\0' ? message : error->description ? error->description : "no additional details are available";
+    format = format[0] != '\0' ? format : error->description ? error->description : "no additional details are available";
 
-    length += vsnprintf(message_copy + length, MAX_MESSAGE_LENGTH - length, message, parameters);
+    length += vsnprintf(message + length, MAX_ERROR_MESSAGE_LENGTH - length, format, parameters);
     va_end(parameters);
 
-    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
+    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
 
     for (const char* path = source; *path; path++)
         if (*path == '/' || *path == '\\') source = path + 1;
 
     const int location_offset = length + 1;
-    length += snprintf(message_copy + location_offset, MAX_MESSAGE_LENGTH - location_offset, "\n\tat: %s:%d %s()\n", source, line, location);
+    length += snprintf(message + location_offset, MAX_ERROR_MESSAGE_LENGTH - location_offset, "\n\tat: %s:%d %s()\n", source, line, location);
 
-    assert(length >= 0 && length < MAX_MESSAGE_LENGTH && "formatted string is too big");
+    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
 
-    memcpy(error_context.message, message_copy, MAX_MESSAGE_LENGTH);
+    error_context.error = error;
+    memcpy(error_context.message, message, length + 1);
 
     if (error_context.error && error_context.abort && error_context.scope == 0) {
         fprintf(stderr, "%s%s", error_context.message, error_context.message + location_offset);

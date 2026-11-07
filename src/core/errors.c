@@ -1,12 +1,11 @@
 #include "core/errors.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
-static constexpr int MAX_ERROR_MESSAGE_LENGTH = 256;
+static constexpr int MAX_ERROR_MESSAGE_LENGTH = 512;
 
 typedef struct {
     Error error;
@@ -17,6 +16,7 @@ typedef struct {
 
 thread_local static ErrorContext error_context = { .abort = true };
 
+const Error INTERNAL_ERROR                = ERROR("INTERNAL_ERROR", "an internal error occurred in the runtime");
 const Error ASSERTION_ERROR               = ERROR("ASSERTION_ERROR", "an assertion failed");
 const Error NULL_POINTER_ERROR            = ERROR("NULL_POINTER_ERROR", "a null pointer was provided");
 const Error ARITHMETIC_ERROR              = ERROR("ARITHMETIC_ERROR", "an arithmetic operation could not be completed");
@@ -30,6 +30,8 @@ const Error UNSUPPORTED_OPERATION_ERROR   = ERROR("UNSUPPORTED_OPERATION_ERROR",
 const Error CONCURRENT_MODIFICATION_ERROR = ERROR("CONCURRENT_MODIFICATION_ERROR", "a collection was modified while it was being iterated");
 const Error MEMORY_ALLOCATION_ERROR       = ERROR("MEMORY_ALLOCATION_ERROR", "a memory allocation operation failed");
 const Error INPUT_OUTPUT_ERROR            = ERROR("INPUT_OUTPUT_ERROR", "an input/output operation failed");
+
+static void throw_internal_error(const char* source, int line, const char* location, const char* format, ...);
 
 const char* error_message(void) {
     return error_context.message;
@@ -61,7 +63,9 @@ Error capture_error(void) {
     const Error error = error_context.error;
     error_context.error = NO_ERROR;
 
-    assert(error_context.scope > 0 && "error_context.scope can't be negative");
+    if (error_context.scope <= 0) {
+        throw_internal_error(__FILE__, __LINE__, __func__, "error context scope corrupted");
+    }
     error_context.scope--;
     error_context.abort = true;
 
@@ -69,7 +73,7 @@ Error capture_error(void) {
 }
 
 void (set_error)(Error error, const char* source, int line, const char* location, const char* format, ...) {
-    if (error == NO_ERROR) {
+    if (error == NO_ERROR || error == INTERNAL_ERROR) {
        return;
     }
 
@@ -77,7 +81,9 @@ void (set_error)(Error error, const char* source, int line, const char* location
 
     int length = snprintf(message, MAX_ERROR_MESSAGE_LENGTH, "%s: ", error->name);
 
-    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
+    if (length < 0 || length >= MAX_ERROR_MESSAGE_LENGTH) {
+        throw_internal_error(__FILE__, __LINE__, __func__, "message length exceeds error context buffer capacity");
+    }
 
     va_list parameters = {};
     va_start(parameters, format);
@@ -87,7 +93,9 @@ void (set_error)(Error error, const char* source, int line, const char* location
     length += vsnprintf(message + length, MAX_ERROR_MESSAGE_LENGTH - length, format, parameters);
     va_end(parameters);
 
-    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
+    if (length < 0 || length >= MAX_ERROR_MESSAGE_LENGTH) {
+        throw_internal_error(__FILE__, __LINE__, __func__, "message length exceeds error context buffer capacity");
+    }
 
     for (const char* path = source; *path; path++)
         if (*path == '/' || *path == '\\') source = path + 1;
@@ -95,7 +103,9 @@ void (set_error)(Error error, const char* source, int line, const char* location
     const int location_offset = length + 1;
     length += snprintf(message + location_offset, MAX_ERROR_MESSAGE_LENGTH - location_offset, "\n\tat: %s:%d %s()\n", source, line, location);
 
-    assert(length >= 0 && length < MAX_ERROR_MESSAGE_LENGTH && "formatted string is too big");
+    if (length < 0 || length >= MAX_ERROR_MESSAGE_LENGTH) {
+        throw_internal_error(__FILE__, __LINE__, __func__, "message length exceeds error context buffer capacity");
+    }
 
     error_context.error = error;
     memcpy(error_context.message, message, length + 1);
@@ -104,4 +114,23 @@ void (set_error)(Error error, const char* source, int line, const char* location
         fprintf(stderr, "%s%s", error_context.message, error_context.message + location_offset);
         error_context.error == ASSERTION_ERROR ? abort() : exit(EXIT_FAILURE);
     }
+}
+
+[[noreturn]]
+static void throw_internal_error(const char* source, int line, const char* location, const char* format, ...) {
+    fprintf(stderr, "%s: ", INTERNAL_ERROR->name);
+
+    va_list parameters = {};
+    va_start(parameters, format);
+
+    vfprintf(stderr, format, parameters);
+    va_end(parameters);
+
+    for (const char* path = source; *path; path++)
+        if (*path == '/' || *path == '\\') source = path + 1;
+
+    fprintf(stderr, "\n\tat: %s:%d %s()\n", source, line, location);
+
+    fflush(stderr);
+    abort();
 }

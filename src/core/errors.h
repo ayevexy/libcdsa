@@ -26,9 +26,14 @@ typedef struct Error {
 constexpr Error NO_ERROR = nullptr;
 
 /**
+ * @brief Special errors constants reserved for internal runtime operations.
+ */
+extern const Error INTERNAL_ERROR; /* Reserved for internal use; cannot be raised or handled directly */
+extern const Error ASSERTION_ERROR; /* Calls abort() instead of exit() */
+
+/**
  * @brief Common runtime error constants.
  */
-extern const Error ASSERTION_ERROR;
 extern const Error NULL_POINTER_ERROR;
 extern const Error ARITHMETIC_ERROR;
 extern const Error NUMBER_FORMAT_ERROR;
@@ -96,6 +101,8 @@ void error_print(void);
  *
  * @param error the error code to raise
  * @param ... optional format string and corresponding arguments
+ *
+ * @exception INTERNAL_ERROR if the error message exceeds the error context buffer capacity (512 bytes)
  *
  * @note Errors can be handled using the `attempt()` macro.
  */

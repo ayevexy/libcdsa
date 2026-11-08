@@ -146,7 +146,7 @@ void test_math_div_exact() {
 
 #define TEST_MATH_FUNCTIONS(T, suffix, tolerance, e)                        \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 8, math_pow_##suffix(2, 3));        \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log_##suffix(e));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log_natural_##suffix(e));   \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log2_##suffix(2));          \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log10_##suffix(10));        \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, e, math_exp_##suffix(1));           \

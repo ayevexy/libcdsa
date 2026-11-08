@@ -81,13 +81,20 @@
 #define math_pow(base, exponent) MATH_DISPATCH_FLOATS_TWO_ARGS(pow, base, exponent)
 
 /**
- * @brief Computes the natural logarithm of a number.
+ * @brief Computes the natural or base-specific logarithm of a number.
  *
  * @param n the input value
+ * @param base the logarithm base (optional)
  *
- * @return the natural logarithm of n
+ * @return the logarithm of `n` to the specified base, or base e by default
  */
-#define math_log(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log, n)
+#define math_log(...) dispatch_math_log(__VA_ARGS__, math_log_base, math_log_natural)(__VA_ARGS__)
+
+#define dispatch_math_log(_1, _2, NAME, ...) NAME
+
+#define math_log_natural(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log_natural, n)
+
+#define math_log_base(n, base) MATH_DISPATCH_FLOATS_TWO_ARGS(log_base, n, base)
 
 /**
  * @brief Computes the base-2 logarithm of a number.
@@ -913,7 +920,8 @@ ullong math_max_ullong(ullong a, ullong b);
 /* float */
 
 float math_pow_float(float base, float exponent);
-float math_log_float(float n);
+float math_log_natural_float(float n);
+float math_log_base_float(float n, float base);
 float math_log2_float(float n);
 float math_log10_float(float n);
 float math_log1p_float(float n);
@@ -977,7 +985,8 @@ float math_to_degrees_float(float radians);
 /* double */
 
 double math_pow_double(double base, double exponent);
-double math_log_double(double n);
+double math_log_natural_double(double n);
+double math_log_base_double(double n, double base);
 double math_log2_double(double n);
 double math_log10_double(double n);
 double math_log1p_double(double n);
@@ -1041,7 +1050,8 @@ double math_to_degrees_double(double radians);
 /* ldouble */
 
 ldouble math_pow_ldouble(ldouble base, ldouble exponent);
-ldouble math_log_ldouble(ldouble n);
+ldouble math_log_natural_ldouble(ldouble n);
+ldouble math_log_base_ldouble(ldouble n, ldouble base);
 ldouble math_log2_ldouble(ldouble n);
 ldouble math_log10_ldouble(ldouble n);
 ldouble math_log1p_ldouble(ldouble n);

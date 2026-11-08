@@ -206,8 +206,12 @@ T math_pow_##suffix(T base, T exponent) {                                   \
     return pow##t(base, exponent);                                          \
 }                                                                           \
                                                                             \
-T math_log_##suffix(T n) {                                                  \
+T math_log_natural_##suffix(T n) {                                          \
     return log##t(n);                                                       \
+}                                                                           \
+                                                                            \
+T math_log_base_##suffix(T n, T base) {                                     \
+    return log##t(base) / log##t(n);                                        \
 }                                                                           \
                                                                             \
 T math_log2_##suffix(T n) {                                                 \

@@ -144,45 +144,45 @@ void test_math_div_exact() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(LLONG_MIN_VALUE, -1LL)));
 }
 
-#define TEST_MATH_FUNCTIONS(T, suffix, tolerance, e)                        \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 8, math_pow_##suffix(2, 3));        \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log_natural_##suffix(e));   \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log2_##suffix(2));          \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log10_##suffix(10));        \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, e, math_exp_##suffix(1));           \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, e - 1, math_expm1_##suffix(1));     \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_log1p_##suffix(e - 1));     \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 2, math_sqrt_##suffix(4));          \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 2, math_cbrt_##suffix(8));          \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 5, math_hypot_##suffix(3, 4))
+#define TEST_MATH_FUNCTIONS(T, tolerance, e)                                \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 8, math_pow((T) 2, (T) 3));     \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_log(e));                \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_log2((T) 2));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_log10((T) 10));         \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, e, math_exp((T) 1));                \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, e - 1, math_expm1((T) 1));          \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_log1p(e - 1));          \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 2, math_sqrt((T) 4));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 2, math_cbrt((T) 8));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 5, math_hypot((T) 3, (T) 4))
 
 void test_math_functions() {
     // then
-    TEST_MATH_FUNCTIONS(float, float, 1e-6f, MATH_E(float));
-    TEST_MATH_FUNCTIONS(double, double, 1e-12, MATH_E(double));
-    TEST_MATH_FUNCTIONS(ldouble, ldouble, 1e-12, MATH_E(ldouble));
+    TEST_MATH_FUNCTIONS(float, 1e-6f, MATH_E(float));
+    TEST_MATH_FUNCTIONS(double, 1e-12, MATH_E(double));
+    TEST_MATH_FUNCTIONS(ldouble, 1e-12l, MATH_E(ldouble));
 }
 
-#define TEST_TRIGONOMETRIC(T, suffix, tolerance, pi, half)                      \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_sin_##suffix(0));               \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_cos_##suffix(0));               \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_tan_##suffix(pi / 4));          \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 6, math_asin_##suffix(half));      \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 3, math_acos_##suffix(half));      \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 4, math_atan_##suffix(1));         \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / 4, math_atan2_##suffix(1, 1));     \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_sinh_##suffix(0));              \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 1, math_cosh_##suffix(0));              \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_tanh_##suffix(0));              \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_asinh_##suffix(0));             \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_acosh_##suffix(1));             \
-    TEST_ASSERT_FLOAT_WITHIN(tolerance, 0, math_atanh_##suffix(0))
+#define TEST_TRIGONOMETRIC(T, tolerance, pi, half)                              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_sin((T) 0));                \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_cos((T) 0));                \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_tan(pi / (T) 4));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / (T) 6, math_asin(half));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / (T) 3, math_acos(half));           \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / (T) 4, math_atan((T) 1));          \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, pi / (T) 4, math_atan2((T) 1, (T) 1));  \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_sinh((T) 0));               \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 1, math_cosh((T) 0));               \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_tanh((T) 0));               \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_asinh((T) 0));              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_acosh((T) 1));              \
+    TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_atanh((T) 0))
 
 void test_math_trigonometric() {
     // then
-    TEST_TRIGONOMETRIC(float, float, 1e-6f, MATH_PI(float), 0.5f);
-    TEST_TRIGONOMETRIC(double, double, 1e-12, MATH_PI(double), 0.5);
-    TEST_TRIGONOMETRIC(ldouble, ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
+    TEST_TRIGONOMETRIC(float, 1e-6f, MATH_PI(float), 0.5f);
+    TEST_TRIGONOMETRIC(double, 1e-12, MATH_PI(double), 0.5);
+    TEST_TRIGONOMETRIC(ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
 }
 
 void test_math_gcd() {

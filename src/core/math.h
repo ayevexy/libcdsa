@@ -490,6 +490,16 @@
 #define math_mod(a, b) MATH_DISPATCH_FLOATS_TWO_ARGS(mod, a, b)
 
 /**
+ * @brief Computes the positive difference between two floating-point numbers.
+ *
+ * @param a the first number
+ * @param b the second number
+ *
+ * @return `a - b` if `a > b`; otherwise, `+0.0`
+ */
+#define math_fdim(a, b) MATH_DISPATCH_FLOATS_TWO_ARGS(fdim, a, b)
+
+/**
  * @brief Computes the fused multiply-add operation: a * b + c.
  *
  * @param a the first multiplicand
@@ -943,6 +953,7 @@ float math_next_after_float(float from, float to);
 float math_next_toward_float(float from, ldouble to);
 float math_remainder_float(float a, float b);
 float math_mod_float(float a, float b);
+float math_fdim_float(float a, float b);
 float math_fma_float(float a, float b, float c);
 
 float math_round_float(float n);
@@ -1006,6 +1017,7 @@ double math_next_after_double(double from, double to);
 double math_next_toward_double(double from, ldouble to);
 double math_remainder_double(double a, double b);
 double math_mod_double(double a, double b);
+double math_fdim_double(double a, double b);
 double math_fma_double(double a, double b, double c);
 
 double math_round_double(double n);
@@ -1069,6 +1081,7 @@ ldouble math_next_after_ldouble(ldouble from, ldouble to);
 ldouble math_next_toward_ldouble(ldouble from, ldouble to);
 ldouble math_remainder_ldouble(ldouble a, ldouble b);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
+ldouble math_fdim_ldouble(ldouble a, ldouble b);
 ldouble math_fma_ldouble(ldouble a, ldouble b, ldouble c);
 
 ldouble math_round_ldouble(ldouble n);

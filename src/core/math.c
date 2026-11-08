@@ -344,6 +344,10 @@ T math_mod_##suffix(T a, T b) {                                             \
     return fmod##t(a, b);                                                   \
 }                                                                           \
                                                                             \
+T math_fdim_##suffix(T a, T b) {                                            \
+    return fdim##t(a, b);                                                   \
+}                                                                           \
+                                                                            \
 T math_fma_##suffix(T a, T b, T c) {                                        \
     return fma##t(a, b, c);                                                 \
 }                                                                           \

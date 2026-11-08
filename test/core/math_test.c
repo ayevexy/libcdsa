@@ -346,6 +346,13 @@ void test_math_mod() {
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0, -3.0));
 }
 
+void test_math_fdim() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(2.0f, math_fdim(5.0f, 3.0f));
+    TEST_ASSERT_EQUAL_FLOAT(0.0, math_fdim(3.0, 5.0));
+    TEST_ASSERT_EQUAL_FLOAT(0.0L, math_fdim(5.0L, 5.0L));
+}
+
 void test_math_fma() {
     // given
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_fma(2.0, 2.0, 1.0));
@@ -482,6 +489,7 @@ int main(void) {
     RUN_TEST(test_math_next_toward);
     RUN_TEST(test_math_remainder);
     RUN_TEST(test_math_mod);
+    RUN_TEST(test_math_fdim);
     RUN_TEST(test_math_fma);
     RUN_TEST(test_math_round);
     RUN_TEST(test_math_floor);

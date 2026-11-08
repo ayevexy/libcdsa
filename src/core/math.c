@@ -328,6 +328,14 @@ T math_ldexp_##suffix(T n, int exponent) {                                  \
     return ldexp##t(n, exponent);                                           \
 }                                                                           \
                                                                             \
+T math_next_after_##suffix(T from, T to) {                                  \
+    return nextafter##t(from, to);                                          \
+}                                                                           \
+                                                                            \
+T math_next_toward_##suffix(T from, ldouble to) {                           \
+    return nexttoward##t(from, to);                                         \
+}                                                                           \
+                                                                            \
 T math_remainder_##suffix(T a, T b) {                                       \
     return remainder##t(a, b);                                              \
 }                                                                           \

@@ -446,6 +446,30 @@
 )(n, exponent)
 
 /**
+ * @brief Returns the next representable floating-point number after `from` in the direction of `to`.
+ *
+ * @param from the starting floating-point value
+ * @param to the number toward which to advance
+ *
+ * @return the next representable floating-point number after `from` in the direction of `to`
+ */
+#define math_next_after(from, to) MATH_DISPATCH_FLOATS_TWO_ARGS(next_after, from, to)
+
+/**
+ * @brief Returns the next representable floating-point number after `from` in the direction of `to`.
+ *
+ * @param from the starting floating-point value
+ * @param to the number toward which to advance
+ *
+ * @return the next representable floating-point number after `from` in the direction of `to`
+ */
+#define math_next_toward(from, to) _Generic((from),     \
+    float:    math_next_toward_float,                   \
+    double:   math_next_toward_double,                  \
+    ldouble:  math_next_toward_ldouble                  \
+)(from, to)
+
+/**
  * @brief Calculates the IEEE floating-point remainder of two numbers.
  *
  * @param a the dividend
@@ -915,6 +939,8 @@ float math_sign_float(float n);
 float math_copysign_float(float value, float sign);
 float math_frexp_float(float n, int* exponent);
 float math_ldexp_float(float n, int exponent);
+float math_next_after_float(float from, float to);
+float math_next_toward_float(float from, ldouble to);
 float math_remainder_float(float a, float b);
 float math_mod_float(float a, float b);
 float math_fma_float(float a, float b, float c);
@@ -976,6 +1002,8 @@ double math_sign_double(double n);
 double math_copysign_double(double value, double sign);
 double math_frexp_double(double n, int* exponent);
 double math_ldexp_double(double n, int exponent);
+double math_next_after_double(double from, double to);
+double math_next_toward_double(double from, ldouble to);
 double math_remainder_double(double a, double b);
 double math_mod_double(double a, double b);
 double math_fma_double(double a, double b, double c);
@@ -1037,6 +1065,8 @@ ldouble math_sign_ldouble(ldouble n);
 ldouble math_copysign_ldouble(ldouble value, ldouble sign);
 ldouble math_frexp_ldouble(ldouble n, int* exponent);
 ldouble math_ldexp_ldouble(ldouble n, int exponent);
+ldouble math_next_after_ldouble(ldouble from, ldouble to);
+ldouble math_next_toward_ldouble(ldouble from, ldouble to);
 ldouble math_remainder_ldouble(ldouble a, ldouble b);
 ldouble math_mod_ldouble(ldouble a, ldouble b);
 ldouble math_fma_ldouble(ldouble a, ldouble b, ldouble c);

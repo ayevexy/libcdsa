@@ -312,6 +312,20 @@ void test_math_ldexp() {
     TEST_ASSERT_EQUAL_FLOAT(0.437500, math_ldexp(7.0, -4));
 }
 
+void test_math_next_after() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(nextafterf(1.0f, 2.0f), math_next_after(1.0f, 2.0f));
+    TEST_ASSERT_EQUAL_FLOAT(nextafter(1.0, 2.0), math_next_after(1.0, 2.0));
+    TEST_ASSERT_EQUAL_FLOAT(nextafterl(1.0L, 2.0L), math_next_after(1.0L, 2.0L));
+}
+
+void test_math_next_toward() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(nexttowardf(1.0f, 2.0L), math_next_toward(1.0f, 2.0L));
+    TEST_ASSERT_EQUAL_FLOAT(nexttoward(1.0, 2.0L), math_next_toward(1.0, 2.0L));
+    TEST_ASSERT_EQUAL_FLOAT(nexttowardl(1.0L, 2.0L), math_next_toward(1.0L, 2.0L));
+}
+
 void test_math_remainder() {
     // then: positive values
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(5.0, 2.0));
@@ -464,6 +478,8 @@ int main(void) {
     RUN_TEST(test_math_copysign);
     RUN_TEST(test_math_frexp);
     RUN_TEST(test_math_ldexp);
+    RUN_TEST(test_math_next_after);
+    RUN_TEST(test_math_next_toward);
     RUN_TEST(test_math_remainder);
     RUN_TEST(test_math_mod);
     RUN_TEST(test_math_fma);

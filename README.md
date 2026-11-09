@@ -59,6 +59,7 @@ Additional collection-related functionality:
 
 - [Collection](src/collections/collection.h): Generic, non-owning collection view abstraction.
 - [Iterator](src/collections/iterator.h): Generic iterator abstraction.
+- [Sequence](src/collections/sequence.h): Declarative pipeline processing of collections.
 - [For Each](src/collections/for_each.h): Macro abstraction for iterating through collections.
 - [Algorithms](src/collections/algorithms.h): Enumerations defining available sorting and shuffling algorithms.
 
@@ -87,7 +88,6 @@ Additional functionality for common programming tasks:
 
 - [File](src/util/file.h): File handling abstractions.
 - [Sync](src/util/sync.h): Thread synchronization abstractions.
-- [Sequence](src/util/sequence.h): Declarative pipeline processing of collections.
 - [Allocators](src/util/allocators.h): Custom memory allocators.
 - [Logging](src/util/logging.h): Simple logging utility.
 - [Temporal](src/util/temporal.h): Date/Time abstractions.
@@ -275,10 +275,10 @@ int main() {
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
+#include "collections/sequence.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/pointer.h"
-#include "util/sequence.h"
 
 #include <stdio.h>
 

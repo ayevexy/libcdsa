@@ -1,4 +1,4 @@
-#include "util/sequence.h"
+#include "collections/sequence.h"
 
 #include "collections/list/list.h"
 #include "collections/collection.h"

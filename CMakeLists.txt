@@ -32,6 +32,8 @@ add_library(${PROJECT_NAME}
 
         src/collections/iterator.c
         src/collections/collection.c
+        src/collections/sequence.c
+
         src/collections/list/array_list.c
         src/collections/list/linked_list.c
         src/collections/map/hash_map.c
@@ -43,7 +45,6 @@ add_library(${PROJECT_NAME}
 
         src/util/file.c
         src/util/sync.c
-        src/util/sequence.c
         src/util/allocators.c
         src/util/logging.c
         src/util/temporal.c

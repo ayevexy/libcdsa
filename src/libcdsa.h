@@ -86,6 +86,9 @@
 /** @brief Collection abstraction view */
 #include "collections/collection.h"
 
+/** @brief Sequence API */
+#include "collections/sequence.h"
+
 /** @brief Algorithm-related enumerations */
 #include "collections/algorithms.h"
 
@@ -139,9 +142,6 @@
 
 /** @brief Thread synchronization abstractions */
 #include "util/sync.h"
-
-/** @brief Sequence API */
-#include "util/sequence.h"
 
 /** @brief Custom memory allocators */
 #include "util/allocators.h"

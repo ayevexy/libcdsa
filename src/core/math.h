@@ -425,6 +425,19 @@
 #define math_copysign(value, sign) MATH_DISPATCH_FLOATS_TWO_ARGS(copysign, value, sign)
 
 /**
+ * @brief Scales a floating-point number by a power of two, computing `n * 2^exponent`.
+ *
+ * @param n the number to scale
+ * @param exponent the exponent of the power of two
+ *
+ * @return the result of scaling `n` by `2^exponent`
+ */
+#define math_scalb(n, exponent) _Generic((exponent),                                                            \
+    int:  _Generic((n), float: math_scalbn_float, double: math_scalbn_double, ldouble: math_scalbn_ldouble),    \
+    long: _Generic((n), float: math_scalbln_float, double: math_scalbln_double, ldouble: math_scalbln_ldouble)  \
+)(n, exponent)
+
+/**
  * @brief Decomposes a floating-point number into a normalized fraction and an integer exponent.
  *
  * @param n the number to decompose
@@ -955,6 +968,8 @@ float math_min_float(float a, float b);
 float math_max_float(float a, float b);
 float math_sign_float(float n);
 float math_copysign_float(float value, float sign);
+float math_scalbn_float(float n, int exponent);
+float math_scalbln_float(float n, long exponent);
 float math_frexp_float(float n, int* exponent);
 float math_ldexp_float(float n, int exponent);
 float math_next_after_float(float from, float to);
@@ -1020,6 +1035,8 @@ double math_min_double(double a, double b);
 double math_max_double(double a, double b);
 double math_sign_double(double n);
 double math_copysign_double(double value, double sign);
+double math_scalbn_double(double n, int exponent);
+double math_scalbln_double(double n, long exponent);
 double math_frexp_double(double n, int* exponent);
 double math_ldexp_double(double n, int exponent);
 double math_next_after_double(double from, double to);
@@ -1085,6 +1102,8 @@ ldouble math_min_ldouble(ldouble a, ldouble b);
 ldouble math_max_ldouble(ldouble a, ldouble b);
 ldouble math_sign_ldouble(ldouble n);
 ldouble math_copysign_ldouble(ldouble value, ldouble sign);
+ldouble math_scalbn_ldouble(ldouble n, int exponent);
+ldouble math_scalbln_ldouble(ldouble n, long exponent);
 ldouble math_frexp_ldouble(ldouble n, int* exponent);
 ldouble math_ldexp_ldouble(ldouble n, int exponent);
 ldouble math_next_after_ldouble(ldouble from, ldouble to);

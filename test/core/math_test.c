@@ -299,6 +299,14 @@ void test_math_copysign() {
     TEST_ASSERT_EQUAL_FLOAT(-0.0, math_copysign(0.0, -1.0));
 }
 
+void test_math_scalb() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(-16, math_scalb(-0.5f, 5));
+    TEST_ASSERT_EQUAL_FLOAT(16, math_scalb(0.5, 5));
+    TEST_ASSERT_EQUAL_FLOAT(0.125, math_scalb(1.0, -3));
+    TEST_ASSERT_EQUAL_FLOAT(32, math_scalb(1.0L, 5L));
+}
+
 void test_math_frexp() {
     // when
     int exponent; float mantissa = math_frexp(10.0, &exponent);
@@ -483,6 +491,7 @@ int main(void) {
     RUN_TEST(test_math_clamp);
     RUN_TEST(test_math_sign);
     RUN_TEST(test_math_copysign);
+    RUN_TEST(test_math_scalb);
     RUN_TEST(test_math_frexp);
     RUN_TEST(test_math_ldexp);
     RUN_TEST(test_math_next_after);

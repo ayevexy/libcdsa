@@ -324,6 +324,14 @@ T math_copysign_##suffix(T value, T sign) {                                 \
     return copysign##t(value, sign);                                        \
 }                                                                           \
                                                                             \
+T math_scalbn_##suffix(T n, int exponent) {                                 \
+    return scalbn##t(n, exponent);                                          \
+}                                                                           \
+                                                                            \
+T math_scalbln_##suffix(T n, long exponent) {                               \
+    return scalbln##t(n, exponent);                                         \
+}                                                                           \
+                                                                            \
 T math_frexp_##suffix(T n, int* exponent) {                                 \
     return frexp##t(n, exponent);                                           \
 }                                                                           \

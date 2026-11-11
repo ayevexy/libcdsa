@@ -32,7 +32,6 @@ static constexpr int NULL_TERMINATOR = 1;
 
 struct String {
     int length;
-    bool owned;
     const char* data;
     char buffer[];
 };
@@ -58,7 +57,6 @@ static String string_create(int length) {
     }
 
     string->length = length;
-    string->owned = true;
     string->data = string->buffer;
     string->buffer[length] = '\0';
 
@@ -89,54 +87,10 @@ String (string_ref)(StringView string) {
     return new_string;
 }
 
-String (string_local)(StringView string, StringStorage* storage) {
-    if (string.length > 32) {
-        set_error(MEMORY_ALLOCATION_ERROR, "string exceeds local storage capacity");
-        return nullptr;
-    }
-
-    const String new_string = (String) storage;
-
-    new_string->length = string.length;
-    new_string->owned = false;
-    new_string->data = new_string->buffer;
-
-    memory_copy(string.data, new_string->buffer, string.length);
-    new_string->buffer[new_string->length] = '\0';
-
-    return new_string;
-}
-
-String (string_static)(StringView string) {
-    if (require_non_null(string.data)) return nullptr;
-
-    constexpr int STRING_POOL_CAPACITY = 256;
-    static alignas(struct String) uchar string_pool[STRING_POOL_CAPACITY * sizeof(struct String)];
-    static int string_pool_size = 0;
-
-    if (string_pool_size >= STRING_POOL_CAPACITY) {
-        set_error(MEMORY_ALLOCATION_ERROR, "string pool exhausted");
-        return nullptr;
-    }
-
-    const String new_string = (String) &string_pool[string_pool_size * sizeof(struct String)];
-
-    new_string->length = string.length;
-    new_string->owned = false;
-    new_string->data = string.data;
-
-    string_pool_size++;
-    return new_string;
-}
-
 void (string_destroy)(String* string_pointer) {
     if (require_non_null(string_pointer, *string_pointer)) return;
     String string = *string_pointer;
 
-    if (!string->owned) {
-        set_error(ILLEGAL_STATE_ERROR, "cannot destroy a non-owned string");
-        return;
-    }
     string_memory_dealloc(string);
     *string_pointer = nullptr;
 }

@@ -88,42 +88,6 @@ String (string_new)(StringView string);
 String (string_ref)(StringView string);
 
 /**
- * @brief Storage for locally allocated strings.
- */
-typedef union {
-    max_align_t alignment;
-    uchar buffer[49];
-} StringStorage;
-
-/**
- * @brief Creates a locally allocated string.
- *
- * @param string the string
- *
- * @return the local string
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- * @exception MEMORY_ALLOCATION_ERROR if the string exceeds the local storage capacity
- */
-#define string_local(string) string_local(string_view(string), &(StringStorage){})
-
-String (string_local)(StringView string, StringStorage* storage);
-
-/**
- * @brief Returns a static-storage string that references an existing string.
- *
- * @param string the string
- *
- * @return the static-storage string
- *
- * @exception NULL_POINTER_ERROR if string.data is null
- * @exception MEMORY_ALLOCATION_ERROR if the string pool is exhausted
- */
-#define string_static(string) string_static(string_view(string))
-
-String (string_static)(StringView string);
-
-/**
  * @brief Destroys previously allocated strings.
  *
  * @param ... the strings
@@ -131,7 +95,6 @@ String (string_static)(StringView string);
  * @post &strings[i] == nullptr
  *
  * @exception NULL_POINTER_ERROR if &strings[i] || strings[i] is null
- * @exception ILLEGAL_STATE_ERROR if strings[i] is not heap-allocated
  */
 #define string_destroy(...) (dispatch_string_destroy(__VA_ARGS__,   \
     string_destroy_10,                                              \

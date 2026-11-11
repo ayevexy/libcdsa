@@ -483,8 +483,8 @@ int main() {
 #include <stdio.h>
 
 int main() {
-    String hello = string_ref("Hello"); // heap allocated
-    String world = string_static("World!"); // static pool
+    String hello = string_new("Hello"); // copies "Hello"
+    String world = string_ref("World!"); // references "World!"
 
     char c = string_char_at(hello, 2);
     printf("%c\n", c); // l
@@ -501,7 +501,7 @@ int main() {
         printf("%s ", string_data(words[i])); // Hello World! Code!
     }
 
-    string_destroy(&hello, &sub, &hello_world);
+    string_destroy(&hello, &world, &sub, &hello_world);
     array_destroy(&words);
     
     return 0;

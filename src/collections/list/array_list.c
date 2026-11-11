@@ -2,6 +2,7 @@
 
 #include "collections/collection.h"
 #include "collections/iterator.h"
+#include "core/macros.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 #include "core/memory.h"
@@ -71,8 +72,6 @@ static void sattolo_shuffle(ArrayList*, int (*random)(void));
 static void naive_shuffle(ArrayList*, int (*random)(void));
 
 static void reverse(ArrayList*, int, int);
-
-static void swap(void** a, void** b);
 
 static int collection_size_internal(const void*);
 
@@ -256,7 +255,7 @@ void array_list_swap(ArrayList* array_list, int index_a, int index_b) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid indexes first = %d, second = %d; size = %d", index_a, index_b, array_list->size);
         return;
     }
-    swap(&array_list->elements[index_a], &array_list->elements[index_b]);
+    swap(array_list->elements[index_a], array_list->elements[index_b]);
 }
 
 void* array_list_remove(ArrayList* array_list, int index) {
@@ -874,7 +873,7 @@ static void bubble_sort(ArrayList* array_list, Comparator compare) {
     for (int i = 0; i < array_list->size - 1; i++) {
         for (int j = 0; j < array_list->size - i - 1; j++) {
             if (compare(array_list->elements[j], array_list->elements[j + 1]) > 0) {
-                swap(&array_list->elements[j], &array_list->elements[j + 1]);
+                swap(array_list->elements[j], array_list->elements[j + 1]);
             }
         }
     }
@@ -888,7 +887,7 @@ static void selection_sort(ArrayList* array_list, Comparator compare) {
                 min_index = j;
             }
         }
-        swap(&array_list->elements[min_index], &array_list->elements[i]);
+        swap(array_list->elements[min_index], array_list->elements[i]);
     }
 }
 
@@ -976,31 +975,31 @@ static int partition(ArrayList* array_list, int start_index, int end_index, Comp
     for (int i = start_index; i < end_index; i++) {
         if (compare(array_list->elements[i], array_list->elements[end_index]) <= 0) {
             pivot++;
-            swap(&array_list->elements[i], &array_list->elements[pivot]);
+            swap(array_list->elements[i], array_list->elements[pivot]);
         }
     }
-    swap(&array_list->elements[pivot + 1], &array_list->elements[end_index]);
+    swap(array_list->elements[pivot + 1], array_list->elements[end_index]);
     return pivot + 1;
 }
 
 static void durstenfeld_shuffle(ArrayList* array_list, int (*random)(void)) {
     for (int i = array_list->size - 1; i > 0; i--) {
         const int j = random() % (i + 1);
-        swap(&array_list->elements[i], &array_list->elements[j]);
+        swap(array_list->elements[i], array_list->elements[j]);
     }
 }
 
 static void sattolo_shuffle(ArrayList* array_list, int (*random)(void)) {
     for (int i = array_list->size - 1; i > 0; i--) {
         const int j = random() % i;
-        swap(&array_list->elements[i], &array_list->elements[j]);
+        swap(array_list->elements[i], array_list->elements[j]);
     }
 }
 
 static void naive_shuffle(ArrayList* array_list, int (*random)(void)) {
     for (int i = 0; i < array_list->size; i++) {
         const int j = random() % array_list->size;
-        swap(&array_list->elements[i], &array_list->elements[j]);
+        swap(array_list->elements[i], array_list->elements[j]);
     }
 }
 
@@ -1012,12 +1011,6 @@ static void reverse(ArrayList* array_list, int start_index, int end_index) {
         start_index++;
         end_index--;
     }
-}
-
-static void swap(void** a, void** b) {
-    void* temp = *a;
-    *a = *b;
-    *b = temp;
 }
 
 static int collection_size_internal(const void* array_list) {

@@ -2,6 +2,7 @@
 
 #include "collections/collection.h"
 #include "collections/iterator.h"
+#include "core/macros.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 #include "core/memory.h"
@@ -83,8 +84,6 @@ static bool sattolo_shuffle(LinkedList*, int (*random)(void));
 static bool naive_shuffle(LinkedList*, int (*random)(void));
 
 static void array_to_linked_list(void**, LinkedList*);
-
-static void swap(void**, void**);
 
 static int collection_size_internal(const void*);
 
@@ -301,7 +300,7 @@ void linked_list_swap(LinkedList* linked_list, int index_a, int index_b) {
         set_error(INDEX_OUT_OF_BOUNDS_ERROR, "invalid indexes first = %d, second = %d; size = %d", index_a, index_b, linked_list->size);
         return;
     }
-    swap(&get_node(linked_list, index_a)->element, &get_node(linked_list, index_b)->element);
+    swap(get_node(linked_list, index_a)->element, get_node(linked_list, index_b)->element);
 }
 
 void* linked_list_remove(LinkedList* linked_list, int index) {
@@ -491,7 +490,7 @@ void linked_list_reverse(LinkedList* linked_list) {
     if (require_non_null(linked_list)) return;
     Node* first = linked_list->head, * second = linked_list->tail;
     while (first != second && first->prev != second) {
-        swap(&first->element, &second->element);
+        swap(first->element, second->element);
         first = first->next;
         second = second->prev;
     }
@@ -965,7 +964,7 @@ static void bubble_sort(LinkedList* linked_list, Comparator compare) {
         for (int j = 0; j < linked_list->size - i - 1; j++) {
             Node* next = node->next;
             if (compare(node->element, next->element) > 0) {
-                swap(&node->element, &next->element);
+                swap(node->element, next->element);
             }
             node = next;
         }
@@ -982,7 +981,7 @@ static void selection_sort(LinkedList* linked_list, Comparator compare) {
             }
             next = next->next;
         }
-        swap(&min_node->element, &node->element);
+        swap(min_node->element, node->element);
         node = node->next;
     }
 }
@@ -1078,11 +1077,11 @@ static Node* partition(Node* low, Node* high, Comparator compare) {
     for (Node* j = low; j != high; j = j->next) {
         if (compare(j->element, high->element) <= 0) {
             i = (i == nullptr) ? low : i->next;
-            swap(&i->element, &j->element);
+            swap(i->element, j->element);
         }
     }
     i = i == nullptr ? low : i->next;
-    swap(&i->element, &high->element);
+    swap(i->element, high->element);
 
     return i;
 }
@@ -1094,7 +1093,7 @@ static bool durstenfeld_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % (i + 1);
-        swap(&elements[i], &elements[j]);
+        swap(elements[i], elements[j]);
     }
     array_to_linked_list(elements, linked_list);
     array_destroy(&elements);
@@ -1108,7 +1107,7 @@ static bool sattolo_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     for (int i = linked_list->size - 1; i > 0; i--) {
         const int j = random() % i;
-        swap(&elements[i], &elements[j]);
+        swap(elements[i], elements[j]);
     }
     array_to_linked_list(elements, linked_list);
     array_destroy(&elements);
@@ -1122,7 +1121,7 @@ static bool naive_shuffle(LinkedList* linked_list, int (*random)(void)) {
     }
     for (int i = 0; i < linked_list->size; i++) {
         const int j = random() % linked_list->size;
-        swap(&elements[i], &elements[j]);
+        swap(elements[i], elements[j]);
     }
     array_to_linked_list(elements, linked_list);
     array_destroy(&elements);
@@ -1135,12 +1134,6 @@ static void array_to_linked_list(void** elements, LinkedList* linked_list) {
         node->element = elements[i];
         node = node->next;
     }
-}
-
-static void swap(void** a, void** b) {
-    void* temp = *a;
-    *a = *b;
-    *b = temp;
 }
 
 static int collection_size_internal(const void* linked_list) {

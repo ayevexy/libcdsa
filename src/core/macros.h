@@ -29,4 +29,19 @@
 
 #define count_args_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, NAME, ...) NAME
 
+/**
+ * @brief Swaps the values of two objects of the same type.
+ *
+ * @param a the first object
+ * @param b the second object
+ *
+ * @note Both arguments must be modifiable lvalues of compatible types.
+ */
+#define swap(a, b)              \
+    do {                        \
+        typeof(a) temp = (a);   \
+        (a) = (b);              \
+        (b) = temp;             \
+    } while (false)
+
 #endif

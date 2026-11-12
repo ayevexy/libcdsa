@@ -330,6 +330,30 @@
 #define math_factorial(n) MATH_DISPATCH_INTEGERS_SINGLE_ARG(factorial, n)
 
 /**
+ * @brief Calculates the number of ways to select r elements from n elements.
+ *
+ * @param n the total number of elements
+ * @param r the number of elements to select
+ *
+ * @return the number of possible combinations
+ *
+ * @note The order of selected elements does not matter.
+ */
+#define math_combinations(n, r) MATH_DISPATCH_INTEGERS_TWO_ARGS(combinations, n, r)
+
+/**
+ * @brief Calculates the number of ways to arrange r elements selected from n elements.
+ *
+ * @param n the total number of elements
+ * @param r the number of elements to arrange
+ *
+ * @return the number of possible permutations
+ *
+ * @note The order of selected elements matters.
+ */
+#define math_permutations(n, r) MATH_DISPATCH_INTEGERS_TWO_ARGS(permutations, n, r)
+
+/**
  * @brief Checks whether a number is even.
  *
  * @param n the number
@@ -774,6 +798,8 @@ char math_div_exact_char(char a, char b);
 char math_gcd_char(char a, char b);
 char math_lcm_char(char a, char b);
 char math_factorial_char(char n);
+char math_combinations_char(char n, char r);
+char math_permutations_char(char n, char r);
 bool math_is_prime_char(char n);
 bool math_is_power_of_two_char(char n);
 char math_abs_char(char n);
@@ -789,6 +815,8 @@ schar math_div_exact_schar(schar a, schar b);
 schar math_gcd_schar(schar a, schar b);
 schar math_lcm_schar(schar a, schar b);
 schar math_factorial_schar(schar n);
+schar math_combinations_schar(schar n, schar r);
+schar math_permutations_schar(schar n, schar r);
 bool math_is_prime_schar(schar n);
 bool math_is_power_of_two_schar(schar n);
 schar math_abs_schar(schar n);
@@ -804,6 +832,8 @@ uchar math_div_exact_uchar(uchar a, uchar b);
 uchar math_gcd_uchar(uchar a, uchar b);
 uchar math_lcm_uchar(uchar a, uchar b);
 uchar math_factorial_uchar(uchar n);
+uchar math_combinations_uchar(uchar n, uchar r);
+uchar math_permutations_uchar(uchar n, uchar r);
 bool math_is_prime_uchar(uchar n);
 bool math_is_power_of_two_uchar(uchar n);
 uchar math_abs_uchar(uchar n);
@@ -819,6 +849,8 @@ short math_div_exact_short(short a, short b);
 short math_gcd_short(short a, short b);
 short math_lcm_short(short a, short b);
 short math_factorial_short(short n);
+short math_combinations_short(short n, short r);
+short math_permutations_short(short n, short r);
 bool math_is_prime_short(short n);
 bool math_is_power_of_two_short(short n);
 short math_abs_short(short n);
@@ -834,6 +866,8 @@ ushort math_div_exact_ushort(ushort a, ushort b);
 ushort math_gcd_ushort(ushort a, ushort b);
 ushort math_lcm_ushort(ushort a, ushort b);
 ushort math_factorial_ushort(ushort n);
+ushort math_combinations_ushort(ushort n, ushort r);
+ushort math_permutations_ushort(ushort n, ushort r);
 bool math_is_prime_ushort(ushort n);
 bool math_is_power_of_two_ushort(ushort n);
 ushort math_abs_ushort(ushort n);
@@ -849,6 +883,8 @@ int math_div_exact_int(int a, int b);
 int math_gcd_int(int a, int b);
 int math_lcm_int(int a, int b);
 int math_factorial_int(int n);
+int math_combinations_int(int n, int r);
+int math_permutations_int(int n, int r);
 bool math_is_prime_int(int n);
 bool math_is_power_of_two_int(int n);
 int math_abs_int(int n);
@@ -864,6 +900,8 @@ uint math_div_exact_uint(uint a, uint b);
 uint math_gcd_uint(uint a, uint b);
 uint math_lcm_uint(uint a, uint b);
 uint math_factorial_uint(uint n);
+uint math_combinations_uint(uint n, uint r);
+uint math_permutations_uint(uint n, uint r);
 bool math_is_prime_uint(uint n);
 bool math_is_power_of_two_uint(uint n);
 uint math_abs_uint(uint n);
@@ -879,6 +917,8 @@ long math_div_exact_long(long a, long b);
 long math_gcd_long(long a, long b);
 long math_lcm_long(long a, long b);
 long math_factorial_long(long n);
+long math_combinations_long(long n, long r);
+long math_permutations_long(long n, long r);
 bool math_is_prime_long(long n);
 bool math_is_power_of_two_long(long n);
 long math_abs_long(long n);
@@ -894,6 +934,8 @@ ulong math_div_exact_ulong(ulong a, ulong b);
 ulong math_gcd_ulong(ulong a, ulong b);
 ulong math_lcm_ulong(ulong a, ulong b);
 ulong math_factorial_ulong(ulong n);
+ulong math_combinations_ulong(ulong n, ulong r);
+ulong math_permutations_ulong(ulong n, ulong r);
 bool math_is_prime_ulong(ulong n);
 bool math_is_power_of_two_ulong(ulong n);
 ulong math_abs_ulong(ulong n);
@@ -909,6 +951,8 @@ llong math_div_exact_llong(llong a, llong b);
 llong math_gcd_llong(llong a, llong b);
 llong math_lcm_llong(llong a, llong b);
 llong math_factorial_llong(llong n);
+llong math_combinations_llong(llong n, llong r);
+llong math_permutations_llong(llong n, llong r);
 bool math_is_prime_llong(llong n);
 bool math_is_power_of_two_llong(llong n);
 llong math_abs_llong(llong n);
@@ -924,6 +968,8 @@ ullong math_div_exact_ullong(ullong a, ullong b);
 ullong math_gcd_ullong(ullong a, ullong b);
 ullong math_lcm_ullong(ullong a, ullong b);
 ullong math_factorial_ullong(ullong n);
+ullong math_combinations_ullong(ullong n, ullong r);
+ullong math_permutations_ullong(ullong n, ullong r);
 bool math_is_prime_ullong(ullong n);
 bool math_is_power_of_two_ullong(ullong n);
 ullong math_abs_ullong(ullong n);

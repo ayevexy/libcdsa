@@ -223,6 +223,43 @@ void test_math_factorial() {
     TEST_ASSERT_EQUAL(INT_MAX_VALUE, math_factorial(1'000'000));
 }
 
+void test_math_combinations() {
+    // then
+    TEST_ASSERT_EQUAL(1, math_combinations(5, 0));
+    TEST_ASSERT_EQUAL(5, math_combinations(5, 1));
+    TEST_ASSERT_EQUAL(10, math_combinations(5, 2));
+    TEST_ASSERT_EQUAL(10, math_combinations(5, 3));
+    TEST_ASSERT_EQUAL(5, math_combinations(5, 4));
+    TEST_ASSERT_EQUAL(1, math_combinations(5, 5));
+    // symmetry
+    TEST_ASSERT_EQUAL(math_combinations(10, 3), math_combinations(10, 7));
+    TEST_ASSERT_EQUAL(15504, math_combinations(20, 5));
+    // boundary cases
+    TEST_ASSERT_EQUAL(1, math_combinations(0, 0));
+    TEST_ASSERT_EQUAL(1, math_combinations(1, 0));
+    TEST_ASSERT_EQUAL(1, math_combinations(1, 1));
+    // invalid arguments
+    TEST_ASSERT_EQUAL(0, math_combinations(5, 6));
+    TEST_ASSERT_EQUAL(0, math_combinations(-2, -4));
+}
+
+void test_math_permutations() {
+    // then
+    TEST_ASSERT_EQUAL(1, math_permutations(5, 0));
+    TEST_ASSERT_EQUAL(5, math_permutations(5, 1));
+    TEST_ASSERT_EQUAL(20, math_permutations(5, 2));
+    TEST_ASSERT_EQUAL(60, math_permutations(5, 3));
+    TEST_ASSERT_EQUAL(120, math_permutations(5, 4));
+    TEST_ASSERT_EQUAL(120, math_permutations(5, 5));
+    // boundary cases
+    TEST_ASSERT_EQUAL(1, math_permutations(0, 0));
+    TEST_ASSERT_EQUAL(1, math_permutations(1, 0));
+    TEST_ASSERT_EQUAL(1, math_permutations(1, 1));
+    // invalid arguments
+    TEST_ASSERT_EQUAL(0, math_permutations(5, 6));
+    TEST_ASSERT_EQUAL(0, math_combinations(-2, -4));
+}
+
 void test_math_is_prime() {
     // then
     TEST_ASSERT_FALSE(math_is_prime(0));
@@ -483,6 +520,8 @@ int main(void) {
     RUN_TEST(test_math_gcd);
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);
+    RUN_TEST(test_math_combinations);
+    RUN_TEST(test_math_permutations);
     RUN_TEST(test_math_is_prime);
     RUN_TEST(test_math_is_power_of_two);
     RUN_TEST(test_math_abs);

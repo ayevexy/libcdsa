@@ -84,6 +84,47 @@ T math_factorial_##suffix(T n) {                                            \
     return result;                                                          \
 }                                                                           \
                                                                             \
+T math_combinations_##suffix(T n, T r) {                                    \
+    if (r > n || n < 0 || r < 0) return 0;                                  \
+                                                                            \
+    if (r > n - r) {                                                        \
+        r = n - r;                                                          \
+    }                                                                       \
+    T result = 1;                                                           \
+    for (T i = 1; i <= r; i++) {                                            \
+        T numerator = n - r + i;                                            \
+        T denominator = i;                                                  \
+                                                                            \
+        T divisor = math_gcd(numerator, denominator);                       \
+        numerator /= divisor;                                               \
+        denominator /= divisor;                                             \
+                                                                            \
+        divisor = math_gcd(result, denominator);                            \
+        result /= divisor;                                                  \
+        denominator /= divisor;                                             \
+                                                                            \
+        if (result > max / numerator)                                       \
+            return max;                                                     \
+                                                                            \
+        result *= numerator;                                                \
+        result /= denominator;                                              \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
+T math_permutations_##suffix(T n, T r) {                                    \
+    if (r > n || n < 0 || r < 0) return 0;                                  \
+                                                                            \
+    T result = 1;                                                           \
+    for (T i = 0; i < r; i++) {                                             \
+        T factor = n - i;                                                   \
+        if (result > max / factor)                                          \
+            return max;                                                     \
+        result *= factor;                                                   \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
 bool math_is_prime_##suffix(T n) {                                          \
     if (n < 2)       return false;                                          \
     if (n == 2)      return true;                                           \
@@ -169,6 +210,47 @@ T math_factorial_##suffix(T n) {                                            \
             return max;                                                     \
         }                                                                   \
         result *= i;                                                        \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
+T math_combinations_##suffix(T n, T r) {                                    \
+    if (r > n) return 0;                                                    \
+                                                                            \
+    if (r > n - r) {                                                        \
+        r = n - r;                                                          \
+    }                                                                       \
+    T result = 1;                                                           \
+    for (T i = 1; i <= r; i++) {                                            \
+        T numerator = n - r + i;                                            \
+        T denominator = i;                                                  \
+                                                                            \
+        T divisor = math_gcd(numerator, denominator);                       \
+        numerator /= divisor;                                               \
+        denominator /= divisor;                                             \
+                                                                            \
+        divisor = math_gcd(result, denominator);                            \
+        result /= divisor;                                                  \
+        denominator /= divisor;                                             \
+                                                                            \
+        if (result > max / numerator)                                       \
+            return max;                                                     \
+                                                                            \
+        result *= numerator;                                                \
+        result /= denominator;                                              \
+    }                                                                       \
+    return result;                                                          \
+}                                                                           \
+                                                                            \
+T math_permutations_##suffix(T n, T r) {                                    \
+    if (r > n) return 0;                                                    \
+                                                                            \
+    T result = 1;                                                           \
+    for (T i = 0; i < r; i++) {                                             \
+        T factor = n - i;                                                   \
+        if (result > max / factor)                                          \
+            return max;                                                     \
+        result *= factor;                                                   \
     }                                                                       \
     return result;                                                          \
 }                                                                           \

@@ -789,392 +789,98 @@
         MATH_FLOAT_MATCH(operation, ldouble, b)             \
     )(a, b)
 
-/* char */
+/* Declarations */
 
-char math_add_exact_char(char a, char b);
-char math_sub_exact_char(char a, char b);
-char math_mul_exact_char(char a, char b);
-char math_div_exact_char(char a, char b);
-char math_gcd_char(char a, char b);
-char math_lcm_char(char a, char b);
-char math_factorial_char(char n);
-char math_combinations_char(char n, char r);
-char math_permutations_char(char n, char r);
-bool math_is_prime_char(char n);
-bool math_is_power_of_two_char(char n);
-char math_abs_char(char n);
-char math_min_char(char a, char b);
-char math_max_char(char a, char b);
+#define DECLARE_INTEGER_MATH(T, suffix)                     \
+    T math_add_exact_##suffix(T a, T b);                    \
+    T math_sub_exact_##suffix(T a, T b);                    \
+    T math_mul_exact_##suffix(T a, T b);                    \
+    T math_div_exact_##suffix(T a, T b);                    \
+    T math_gcd_##suffix(T a, T b);                          \
+    T math_lcm_##suffix(T a, T b);                          \
+    T math_factorial_##suffix(T n);                         \
+    T math_combinations_##suffix(T n, T r);                 \
+    T math_permutations_##suffix(T n, T r);                 \
+    bool math_is_prime_##suffix(T n);                       \
+    bool math_is_power_of_two_##suffix(T n);                \
+    T math_abs_##suffix(T n);                               \
+    T math_min_##suffix(T a, T b);                          \
+    T math_max_##suffix(T a, T b);
 
-/* schar */
+#define DECLARE_FLOAT_MATH(T, suffix)                       \
+    T math_pow_##suffix(T base, T exponent);                \
+    T math_log_natural_##suffix(T n);                       \
+    T math_log_base_##suffix(T n, T base);                  \
+    T math_log2_##suffix(T n);                              \
+    T math_log10_##suffix(T n);                             \
+    T math_log1p_##suffix(T n);                             \
+    T math_exp_##suffix(T n);                               \
+    T math_exp2_##suffix(T n);                              \
+    T math_expm1_##suffix(T n);                             \
+    T math_sqrt_##suffix(T n);                              \
+    T math_cbrt_##suffix(T n);                              \
+    T math_hypot_##suffix(T x, T y);                        \
+    T math_sin_##suffix(T n);                               \
+    T math_cos_##suffix(T n);                               \
+    T math_tan_##suffix(T n);                               \
+    T math_asin_##suffix(T n);                              \
+    T math_acos_##suffix(T n);                              \
+    T math_atan_##suffix(T n);                              \
+    T math_atan2_##suffix(T y, T x);                        \
+    T math_sinh_##suffix(T n);                              \
+    T math_cosh_##suffix(T n);                              \
+    T math_tanh_##suffix(T n);                              \
+    T math_asinh_##suffix(T n);                             \
+    T math_acosh_##suffix(T n);                             \
+    T math_atanh_##suffix(T n);                             \
+    T math_abs_##suffix(T n);                               \
+    T math_min_##suffix(T a, T b);                          \
+    T math_max_##suffix(T a, T b);                          \
+    T math_sign_##suffix(T n);                              \
+    T math_copysign_##suffix(T value, T sign);              \
+    T math_scalbn_##suffix(T n, int exponent);              \
+    T math_scalbln_##suffix(T n, long exponent);            \
+    T math_frexp_##suffix(T n, int* exponent);              \
+    T math_ldexp_##suffix(T n, int exponent);               \
+    T math_next_after_##suffix(T from, T to);               \
+    T math_next_toward_##suffix(T from, ldouble to);        \
+    T math_remainder_##suffix(T a, T b);                    \
+    T math_mod_##suffix(T a, T b);                          \
+    T math_fdim_##suffix(T a, T b);                         \
+    T math_fma_##suffix(T a, T b, T c);                     \
+    T math_round_##suffix(T n);                             \
+    T math_floor_##suffix(T n);                             \
+    T math_ceil_##suffix(T n);                              \
+    T math_trunc_##suffix(T n);                             \
+    bool math_is_nan_##suffix(T n);                         \
+    bool math_is_infinite_##suffix(T n);                    \
+    bool math_is_finite_##suffix(T n);                      \
+    bool math_is_normal_##suffix(T n);                      \
+    bool math_is_close_##suffix(T a, T b, T tolerance);     \
+    T math_lerp_##suffix(T start, T end, T amount);         \
+    T math_percentage_##suffix(T value, T percentage);      \
+    T math_random_##suffix(void);                           \
+    T math_to_radians_##suffix(T degrees);                  \
+    T math_to_degrees_##suffix(T radians);
 
-schar math_add_exact_schar(schar a, schar b);
-schar math_sub_exact_schar(schar a, schar b);
-schar math_mul_exact_schar(schar a, schar b);
-schar math_div_exact_schar(schar a, schar b);
-schar math_gcd_schar(schar a, schar b);
-schar math_lcm_schar(schar a, schar b);
-schar math_factorial_schar(schar n);
-schar math_combinations_schar(schar n, schar r);
-schar math_permutations_schar(schar n, schar r);
-bool math_is_prime_schar(schar n);
-bool math_is_power_of_two_schar(schar n);
-schar math_abs_schar(schar n);
-schar math_min_schar(schar a, schar b);
-schar math_max_schar(schar a, schar b);
+DECLARE_INTEGER_MATH(char, char)
+DECLARE_INTEGER_MATH(schar, schar)
+DECLARE_INTEGER_MATH(uchar, uchar)
 
-/* uchar */
+DECLARE_INTEGER_MATH(short, short)
+DECLARE_INTEGER_MATH(ushort, ushort)
 
-uchar math_add_exact_uchar(uchar a, uchar b);
-uchar math_sub_exact_uchar(uchar a, uchar b);
-uchar math_mul_exact_uchar(uchar a, uchar b);
-uchar math_div_exact_uchar(uchar a, uchar b);
-uchar math_gcd_uchar(uchar a, uchar b);
-uchar math_lcm_uchar(uchar a, uchar b);
-uchar math_factorial_uchar(uchar n);
-uchar math_combinations_uchar(uchar n, uchar r);
-uchar math_permutations_uchar(uchar n, uchar r);
-bool math_is_prime_uchar(uchar n);
-bool math_is_power_of_two_uchar(uchar n);
-uchar math_abs_uchar(uchar n);
-uchar math_min_uchar(uchar a, uchar b);
-uchar math_max_uchar(uchar a, uchar b);
+DECLARE_INTEGER_MATH(int, int)
+DECLARE_INTEGER_MATH(uint, uint)
 
-/* short */
+DECLARE_INTEGER_MATH(long, long)
+DECLARE_INTEGER_MATH(ulong, ulong)
 
-short math_add_exact_short(short a, short b);
-short math_sub_exact_short(short a, short b);
-short math_mul_exact_short(short a, short b);
-short math_div_exact_short(short a, short b);
-short math_gcd_short(short a, short b);
-short math_lcm_short(short a, short b);
-short math_factorial_short(short n);
-short math_combinations_short(short n, short r);
-short math_permutations_short(short n, short r);
-bool math_is_prime_short(short n);
-bool math_is_power_of_two_short(short n);
-short math_abs_short(short n);
-short math_min_short(short a, short b);
-short math_max_short(short a, short b);
+DECLARE_INTEGER_MATH(llong, llong)
+DECLARE_INTEGER_MATH(ullong, ullong)
 
-/* ushort */
-
-ushort math_add_exact_ushort(ushort a, ushort b);
-ushort math_sub_exact_ushort(ushort a, ushort b);
-ushort math_mul_exact_ushort(ushort a, ushort b);
-ushort math_div_exact_ushort(ushort a, ushort b);
-ushort math_gcd_ushort(ushort a, ushort b);
-ushort math_lcm_ushort(ushort a, ushort b);
-ushort math_factorial_ushort(ushort n);
-ushort math_combinations_ushort(ushort n, ushort r);
-ushort math_permutations_ushort(ushort n, ushort r);
-bool math_is_prime_ushort(ushort n);
-bool math_is_power_of_two_ushort(ushort n);
-ushort math_abs_ushort(ushort n);
-ushort math_min_ushort(ushort a, ushort b);
-ushort math_max_ushort(ushort a, ushort b);
-
-/* int */
-
-int math_add_exact_int(int a, int b);
-int math_sub_exact_int(int a, int b);
-int math_mul_exact_int(int a, int b);
-int math_div_exact_int(int a, int b);
-int math_gcd_int(int a, int b);
-int math_lcm_int(int a, int b);
-int math_factorial_int(int n);
-int math_combinations_int(int n, int r);
-int math_permutations_int(int n, int r);
-bool math_is_prime_int(int n);
-bool math_is_power_of_two_int(int n);
-int math_abs_int(int n);
-int math_min_int(int a, int b);
-int math_max_int(int a, int b);
-
-/* uint */
-
-uint math_add_exact_uint(uint a, uint b);
-uint math_sub_exact_uint(uint a, uint b);
-uint math_mul_exact_uint(uint a, uint b);
-uint math_div_exact_uint(uint a, uint b);
-uint math_gcd_uint(uint a, uint b);
-uint math_lcm_uint(uint a, uint b);
-uint math_factorial_uint(uint n);
-uint math_combinations_uint(uint n, uint r);
-uint math_permutations_uint(uint n, uint r);
-bool math_is_prime_uint(uint n);
-bool math_is_power_of_two_uint(uint n);
-uint math_abs_uint(uint n);
-uint math_min_uint(uint a, uint b);
-uint math_max_uint(uint a, uint b);
-
-/* long */
-
-long math_add_exact_long(long a, long b);
-long math_sub_exact_long(long a, long b);
-long math_mul_exact_long(long a, long b);
-long math_div_exact_long(long a, long b);
-long math_gcd_long(long a, long b);
-long math_lcm_long(long a, long b);
-long math_factorial_long(long n);
-long math_combinations_long(long n, long r);
-long math_permutations_long(long n, long r);
-bool math_is_prime_long(long n);
-bool math_is_power_of_two_long(long n);
-long math_abs_long(long n);
-long math_min_long(long a, long b);
-long math_max_long(long a, long b);
-
-/* ulong */
-
-ulong math_add_exact_ulong(ulong a, ulong b);
-ulong math_sub_exact_ulong(ulong a, ulong b);
-ulong math_mul_exact_ulong(ulong a, ulong b);
-ulong math_div_exact_ulong(ulong a, ulong b);
-ulong math_gcd_ulong(ulong a, ulong b);
-ulong math_lcm_ulong(ulong a, ulong b);
-ulong math_factorial_ulong(ulong n);
-ulong math_combinations_ulong(ulong n, ulong r);
-ulong math_permutations_ulong(ulong n, ulong r);
-bool math_is_prime_ulong(ulong n);
-bool math_is_power_of_two_ulong(ulong n);
-ulong math_abs_ulong(ulong n);
-ulong math_min_ulong(ulong a, ulong b);
-ulong math_max_ulong(ulong a, ulong b);
-
-/* llong */
-
-llong math_add_exact_llong(llong a, llong b);
-llong math_sub_exact_llong(llong a, llong b);
-llong math_mul_exact_llong(llong a, llong b);
-llong math_div_exact_llong(llong a, llong b);
-llong math_gcd_llong(llong a, llong b);
-llong math_lcm_llong(llong a, llong b);
-llong math_factorial_llong(llong n);
-llong math_combinations_llong(llong n, llong r);
-llong math_permutations_llong(llong n, llong r);
-bool math_is_prime_llong(llong n);
-bool math_is_power_of_two_llong(llong n);
-llong math_abs_llong(llong n);
-llong math_min_llong(llong a, llong b);
-llong math_max_llong(llong a, llong b);
-
-/* ullong */
-
-ullong math_add_exact_ullong(ullong a, ullong b);
-ullong math_sub_exact_ullong(ullong a, ullong b);
-ullong math_mul_exact_ullong(ullong a, ullong b);
-ullong math_div_exact_ullong(ullong a, ullong b);
-ullong math_gcd_ullong(ullong a, ullong b);
-ullong math_lcm_ullong(ullong a, ullong b);
-ullong math_factorial_ullong(ullong n);
-ullong math_combinations_ullong(ullong n, ullong r);
-ullong math_permutations_ullong(ullong n, ullong r);
-bool math_is_prime_ullong(ullong n);
-bool math_is_power_of_two_ullong(ullong n);
-ullong math_abs_ullong(ullong n);
-ullong math_min_ullong(ullong a, ullong b);
-ullong math_max_ullong(ullong a, ullong b);
-
-/* float */
-
-float math_pow_float(float base, float exponent);
-float math_log_natural_float(float n);
-float math_log_base_float(float n, float base);
-float math_log2_float(float n);
-float math_log10_float(float n);
-float math_log1p_float(float n);
-
-float math_exp_float(float n);
-float math_exp2_float(float n);
-float math_expm1_float(float n);
-float math_sqrt_float(float n);
-float math_cbrt_float(float n);
-float math_hypot_float(float x, float y);
-
-float math_sin_float(float n);
-float math_cos_float(float n);
-float math_tan_float(float n);
-
-float math_asin_float(float n);
-float math_acos_float(float n);
-float math_atan_float(float n);
-float math_atan2_float(float y, float x);
-
-float math_sinh_float(float n);
-float math_cosh_float(float n);
-float math_tanh_float(float n);
-
-float math_asinh_float(float n);
-float math_acosh_float(float n);
-float math_atanh_float(float n);
-
-float math_abs_float(float n);
-float math_min_float(float a, float b);
-float math_max_float(float a, float b);
-float math_sign_float(float n);
-float math_copysign_float(float value, float sign);
-float math_scalbn_float(float n, int exponent);
-float math_scalbln_float(float n, long exponent);
-float math_frexp_float(float n, int* exponent);
-float math_ldexp_float(float n, int exponent);
-float math_next_after_float(float from, float to);
-float math_next_toward_float(float from, ldouble to);
-float math_remainder_float(float a, float b);
-float math_mod_float(float a, float b);
-float math_fdim_float(float a, float b);
-float math_fma_float(float a, float b, float c);
-
-float math_round_float(float n);
-float math_floor_float(float n);
-float math_ceil_float(float n);
-float math_trunc_float(float n);
-
-bool math_is_nan_float(float n);
-bool math_is_infinite_float(float n);
-bool math_is_finite_float(float n);
-bool math_is_normal_float(float n);
-
-float math_is_close_float(float a, float b, float tolerance);
-float math_lerp_float(float start, float end, float amount);
-float math_percentage_float(float value, float percentage);
-float math_random_float(void);
-
-float math_to_radians_float(float degrees);
-float math_to_degrees_float(float radians);
-
-/* double */
-
-double math_pow_double(double base, double exponent);
-double math_log_natural_double(double n);
-double math_log_base_double(double n, double base);
-double math_log2_double(double n);
-double math_log10_double(double n);
-double math_log1p_double(double n);
-
-double math_exp_double(double n);
-double math_exp2_double(double n);
-double math_expm1_double(double n);
-double math_sqrt_double(double n);
-double math_cbrt_double(double n);
-double math_hypot_double(double x, double y);
-
-double math_sin_double(double n);
-double math_cos_double(double n);
-double math_tan_double(double n);
-
-double math_asin_double(double n);
-double math_acos_double(double n);
-double math_atan_double(double n);
-double math_atan2_double(double y, double x);
-
-double math_sinh_double(double n);
-double math_cosh_double(double n);
-double math_tanh_double(double n);
-
-double math_asinh_double(double n);
-double math_acosh_double(double n);
-double math_atanh_double(double n);
-
-double math_abs_double(double n);
-double math_min_double(double a, double b);
-double math_max_double(double a, double b);
-double math_sign_double(double n);
-double math_copysign_double(double value, double sign);
-double math_scalbn_double(double n, int exponent);
-double math_scalbln_double(double n, long exponent);
-double math_frexp_double(double n, int* exponent);
-double math_ldexp_double(double n, int exponent);
-double math_next_after_double(double from, double to);
-double math_next_toward_double(double from, ldouble to);
-double math_remainder_double(double a, double b);
-double math_mod_double(double a, double b);
-double math_fdim_double(double a, double b);
-double math_fma_double(double a, double b, double c);
-
-double math_round_double(double n);
-double math_floor_double(double n);
-double math_ceil_double(double n);
-double math_trunc_double(double n);
-
-bool math_is_nan_double(double n);
-bool math_is_infinite_double(double n);
-bool math_is_finite_double(double n);
-bool math_is_normal_double(double n);
-
-double math_is_close_double(double a, double b, double tolerance);
-double math_lerp_double(double start, double end, double amount);
-double math_percentage_double(double value, double percentage);
-double math_random_double(void);
-
-double math_to_radians_double(double degrees);
-double math_to_degrees_double(double radians);
-
-/* ldouble */
-
-ldouble math_pow_ldouble(ldouble base, ldouble exponent);
-ldouble math_log_natural_ldouble(ldouble n);
-ldouble math_log_base_ldouble(ldouble n, ldouble base);
-ldouble math_log2_ldouble(ldouble n);
-ldouble math_log10_ldouble(ldouble n);
-ldouble math_log1p_ldouble(ldouble n);
-
-ldouble math_exp_ldouble(ldouble n);
-ldouble math_exp2_ldouble(ldouble n);
-ldouble math_expm1_ldouble(ldouble n);
-ldouble math_sqrt_ldouble(ldouble n);
-ldouble math_cbrt_ldouble(ldouble n);
-ldouble math_hypot_ldouble(ldouble x, ldouble y);
-
-ldouble math_sin_ldouble(ldouble n);
-ldouble math_cos_ldouble(ldouble n);
-ldouble math_tan_ldouble(ldouble n);
-
-ldouble math_asin_ldouble(ldouble n);
-ldouble math_acos_ldouble(ldouble n);
-ldouble math_atan_ldouble(ldouble n);
-ldouble math_atan2_ldouble(ldouble y, ldouble x);
-
-ldouble math_sinh_ldouble(ldouble n);
-ldouble math_cosh_ldouble(ldouble n);
-ldouble math_tanh_ldouble(ldouble n);
-
-ldouble math_asinh_ldouble(ldouble n);
-ldouble math_acosh_ldouble(ldouble n);
-ldouble math_atanh_ldouble(ldouble n);
-
-ldouble math_abs_ldouble(ldouble n);
-ldouble math_min_ldouble(ldouble a, ldouble b);
-ldouble math_max_ldouble(ldouble a, ldouble b);
-ldouble math_sign_ldouble(ldouble n);
-ldouble math_copysign_ldouble(ldouble value, ldouble sign);
-ldouble math_scalbn_ldouble(ldouble n, int exponent);
-ldouble math_scalbln_ldouble(ldouble n, long exponent);
-ldouble math_frexp_ldouble(ldouble n, int* exponent);
-ldouble math_ldexp_ldouble(ldouble n, int exponent);
-ldouble math_next_after_ldouble(ldouble from, ldouble to);
-ldouble math_next_toward_ldouble(ldouble from, ldouble to);
-ldouble math_remainder_ldouble(ldouble a, ldouble b);
-ldouble math_mod_ldouble(ldouble a, ldouble b);
-ldouble math_fdim_ldouble(ldouble a, ldouble b);
-ldouble math_fma_ldouble(ldouble a, ldouble b, ldouble c);
-
-ldouble math_round_ldouble(ldouble n);
-ldouble math_floor_ldouble(ldouble n);
-ldouble math_ceil_ldouble(ldouble n);
-ldouble math_trunc_ldouble(ldouble n);
-
-bool math_is_nan_ldouble(ldouble n);
-bool math_is_infinite_ldouble(ldouble n);
-bool math_is_finite_ldouble(ldouble n);
-bool math_is_normal_ldouble(ldouble n);
-
-ldouble math_is_close_ldouble(ldouble a, ldouble b, ldouble tolerance);
-ldouble math_lerp_ldouble(ldouble start, ldouble end, ldouble amount);
-ldouble math_percentage_ldouble(ldouble value, ldouble percentage);
-ldouble math_random_ldouble(void);
-
-ldouble math_to_radians_ldouble(ldouble degrees);
-ldouble math_to_degrees_ldouble(ldouble radians);
+DECLARE_FLOAT_MATH(float, float)
+DECLARE_FLOAT_MATH(double, double)
+DECLARE_FLOAT_MATH(ldouble, ldouble)
 
 #endif

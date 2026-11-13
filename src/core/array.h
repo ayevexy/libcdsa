@@ -29,7 +29,7 @@
  * @exception ILLEGAL_ARGUMENT_ERROR if length is negative
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define array_new(length, T) array_create(length, sizeof(T), nullptr)
+#define array_new(length, T) ((T*) array_create(length, sizeof(T), nullptr))
 
 /**
  * @brief Creates a new array with the specified type and elements.
@@ -41,7 +41,7 @@
  *
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
-#define array_of(T, ...) array_create(count_args(__VA_ARGS__), sizeof(T), (T[]){__VA_ARGS__})
+#define array_of(T, ...) ((T*) array_create(count_args(__VA_ARGS__), sizeof(T), (T[]){__VA_ARGS__}))
 
 /**
  * @brief Fills an array with the provided value.

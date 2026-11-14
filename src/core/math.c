@@ -541,6 +541,19 @@
     }
 
 /* -------------------------------------------------------------------------- */
+/* Number type functions                                                      */
+/* -------------------------------------------------------------------------- */
+
+#define DEFINE_MATH_MEAN(T, suffix)                                         \
+    double math_mean_##suffix(T* values, uint size) {                       \
+        double result = 0;                                                  \
+        for (uint i = 0; i < size; i++) {                                   \
+            result += values[i];                                            \
+        }                                                                   \
+        return result / size;                                               \
+    }
+
+/* -------------------------------------------------------------------------- */
 /* Integer type generation                                                    */
 /* -------------------------------------------------------------------------- */
 
@@ -554,6 +567,7 @@
     DEFINE_MATH_FACTORIAL_SIGNED(T, suffix, min, max)                       \
     DEFINE_MATH_COMBINATIONS_SIGNED(T, suffix, max)                         \
     DEFINE_MATH_PERMUTATIONS_SIGNED(T, suffix, max)                         \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_SIGNED(T, suffix)                           \
     DEFINE_MATH_ABS_SIGNED(T, suffix)                                       \
@@ -570,6 +584,7 @@
     DEFINE_MATH_FACTORIAL_UNSIGNED(T, suffix, max)                          \
     DEFINE_MATH_COMBINATIONS_UNSIGNED(T, suffix, max)                       \
     DEFINE_MATH_PERMUTATIONS_UNSIGNED(T, suffix, max)                       \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_UNSIGNED(T, suffix)                         \
     DEFINE_MATH_ABS_UNSIGNED(T, suffix)                                     \
@@ -633,6 +648,7 @@
     DEFINE_MATH_LERP(T, suffix)                                             \
     DEFINE_MATH_PERCENTAGE(T, suffix, t)                                    \
     DEFINE_MATH_RANDOM(T, suffix, t)                                        \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
     DEFINE_MATH_TO_RADIANS(T, suffix, t)                                    \
     DEFINE_MATH_TO_DEGREES(T, suffix, t)
 

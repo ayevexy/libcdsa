@@ -7,6 +7,7 @@
  */
 
 #include "core/types.h"
+#include "core/macros.h"
 
 /**
  * @brief Typed mathematical constants.
@@ -243,6 +244,27 @@
  */
 #define math_atan2(y, x) MATH_DISPATCH_FLOATS_TWO_ARGS(atan2, y, x)
 
+/**
+ * @brief Calculates the arithmetic mean of an array of values.
+ *
+ * @param values the array of values
+ * @param size the number of values
+ *
+ * @return the arithmetic mean
+ */
+#define math_mean(values, size) MATH_DISPATCH_NUMBERS_POINTER(mean, values, size)
+
+/**
+ * @brief Calculates the arithmetic mean of variadic values of a specified type.
+ *
+ * @param T the type of values
+ * @param ... the values to calculate the arithmetic mean of
+ *
+ * @return the arithmetic mean
+ *
+ * @note All values must be compatible with the specified type.
+ */
+#define math_mean_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(mean, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
 /**
  * @brief Returns the hyperbolic sine of a value.
  *
@@ -789,6 +811,58 @@
         MATH_FLOAT_MATCH(operation, ldouble, b)             \
     )(a, b)
 
+/* Array pointers */
+
+#define MATH_INTEGER_POINTER_TYPES(operation) \
+    char*:    math_##operation##_char,        \
+    schar*:   math_##operation##_schar,       \
+    uchar*:   math_##operation##_uchar,       \
+    short*:   math_##operation##_short,       \
+    ushort*:  math_##operation##_ushort,      \
+    int*:     math_##operation##_int,         \
+    uint*:    math_##operation##_uint,        \
+    long*:    math_##operation##_long,        \
+    ulong*:   math_##operation##_ulong,       \
+    llong*:   math_##operation##_llong,       \
+    ullong*:  math_##operation##_ullong
+
+#define MATH_FLOAT_POINTER_TYPES(operation)     \
+    float*:   math_##operation##_float,         \
+    double*:  math_##operation##_double,        \
+    ldouble*: math_##operation##_ldouble
+
+#define MATH_NUMBER_POINTER_TYPES(operation)    \
+    MATH_INTEGER_POINTER_TYPES(operation),      \
+    MATH_FLOAT_POINTER_TYPES(operation)
+
+#define MATH_INTEGER_CONST_POINTER_TYPES(operation) \
+    const char*:    math_##operation##_char,        \
+    const schar*:   math_##operation##_schar,       \
+    const uchar*:   math_##operation##_uchar,       \
+    const short*:   math_##operation##_short,       \
+    const ushort*:  math_##operation##_ushort,      \
+    const int*:     math_##operation##_int,         \
+    const uint*:    math_##operation##_uint,        \
+    const long*:    math_##operation##_long,        \
+    const ulong*:   math_##operation##_ulong,       \
+    const llong*:   math_##operation##_llong,       \
+    const ullong*:  math_##operation##_ullong
+
+#define MATH_FLOAT_CONST_POINTER_TYPES(operation)   \
+    const float*:   math_##operation##_float,       \
+    const double*:  math_##operation##_double,      \
+    const ldouble*: math_##operation##_ldouble
+
+#define MATH_NUMBER_CONST_POINTER_TYPES(operation)      \
+    MATH_INTEGER_CONST_POINTER_TYPES(operation),        \
+    MATH_FLOAT_CONST_POINTER_TYPES(operation)
+
+#define MATH_DISPATCH_NUMBERS_POINTER(operation, values, size)      \
+    _Generic((values),                                              \
+        MATH_NUMBER_POINTER_TYPES(operation),                       \
+        MATH_NUMBER_CONST_POINTER_TYPES(operation)                  \
+    )(values, size)
+
 /* Declarations */
 
 #define DECLARE_INTEGER_MATH(T, suffix)                     \
@@ -801,6 +875,7 @@
     T math_factorial_##suffix(T n);                         \
     T math_combinations_##suffix(T n, T r);                 \
     T math_permutations_##suffix(T n, T r);                 \
+    double math_mean_##suffix(T* values, uint size);        \
     bool math_is_prime_##suffix(T n);                       \
     bool math_is_power_of_two_##suffix(T n);                \
     T math_abs_##suffix(T n);                               \
@@ -860,6 +935,7 @@
     T math_lerp_##suffix(T start, T end, T amount);         \
     T math_percentage_##suffix(T value, T percentage);      \
     T math_random_##suffix(void);                           \
+    double math_mean_##suffix(T* values, uint size);        \
     T math_to_radians_##suffix(T degrees);                  \
     T math_to_degrees_##suffix(T radians);
 

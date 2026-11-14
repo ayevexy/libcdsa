@@ -1,7 +1,7 @@
 #include "core/math.h"
 
-#include "core/errors.h"
 #include "core/limits.h"
+#include "core/errors.h"
 
 #include "unity.h"
 
@@ -183,6 +183,38 @@ void test_math_trigonometric() {
     TEST_TRIGONOMETRIC(float, 1e-6f, MATH_PI(float), 0.5f);
     TEST_TRIGONOMETRIC(double, 1e-12, MATH_PI(double), 0.5);
     TEST_TRIGONOMETRIC(ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
+}
+
+void test_math_mean() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(3, math_mean(((int[]) {1, 2, 3, 4, 5}), 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean(((int[]) {1, 2, 3, 4}), 4));
+    TEST_ASSERT_EQUAL_FLOAT(0, math_mean(((int[]) {-2, -1, 1, 2}), 4));
+    TEST_ASSERT_EQUAL_FLOAT(5, math_mean(((int[]) {5}), 1));
+    TEST_ASSERT_EQUAL_FLOAT(0, math_mean(((int[]) {0, 0, 0, 0}), 4));
+
+    TEST_ASSERT_EQUAL_FLOAT(3.0f, math_mean(((float[]) {1, 2, 3, 4, 5}), 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5f, math_mean(((float[]) {1, 2, 3, 4}), 4));
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, math_mean(((float[]) {-2, -1, 1, 2}), 4));
+
+    TEST_ASSERT_EQUAL_FLOAT(3.0, math_mean(((double[]) {1, 2, 3, 4, 5}), 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean(((double[]) {1, 2, 3, 4}), 4));
+}
+
+void test_math_mean_of() {
+    // then
+    TEST_ASSERT_EQUAL_FLOAT(3, math_mean_of(int, 1, 2, 3, 4, 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean_of(int, 1, 2, 3, 4));
+    TEST_ASSERT_EQUAL_FLOAT(0, math_mean_of(int, -2, -1, 1, 2));
+    TEST_ASSERT_EQUAL_FLOAT(5, math_mean_of(int, 5));
+    TEST_ASSERT_EQUAL_FLOAT(0, math_mean_of(int, 0, 0, 0, 0));
+
+    TEST_ASSERT_EQUAL_FLOAT(3.0f, math_mean_of(float, 1, 2, 3, 4, 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5f, math_mean_of(float, 1, 2, 3, 4));
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, math_mean_of(float, -2, -1, 1, 2));
+
+    TEST_ASSERT_EQUAL_FLOAT(3.0, math_mean_of(double, 1, 2, 3, 4, 5));
+    TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean_of(double, 1, 2, 3, 4));
 }
 
 void test_math_gcd() {
@@ -517,6 +549,8 @@ int main(void) {
     RUN_TEST(test_math_div_exact);
     RUN_TEST(test_math_functions);
     RUN_TEST(test_math_trigonometric);
+    RUN_TEST(test_math_mean);
+    RUN_TEST(test_math_mean_of);
     RUN_TEST(test_math_gcd);
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);

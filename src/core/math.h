@@ -265,6 +265,32 @@
  * @note All values must be compatible with the specified type.
  */
 #define math_mean_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(mean, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
+
+/**
+ * @brief Calculates the median of a sorted array of values.
+ *
+ * @param values the array of values sorted in ascending order
+ * @param size the number of elements
+ *
+ * @return the median value, or NAN if the array is empty
+ *
+ * @note The input array must be sorted in ascending order.
+ * @note The input array is not modified.
+ */
+#define math_median(values, size) MATH_DISPATCH_NUMBERS_POINTER(median, values, size)
+
+/**
+ * @brief Calculates the median of a sorted sequence of values.
+ *
+ * @param T the type of the values
+ * @param ... the values sorted in ascending order
+ *
+ * @return the median value, or NAN if no values are provided
+ *
+ * @note The values must be provided in ascending order.
+ */
+#define math_median_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(median, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
+
 /**
  * @brief Returns the hyperbolic sine of a value.
  *
@@ -876,6 +902,7 @@
     T math_combinations_##suffix(T n, T r);                 \
     T math_permutations_##suffix(T n, T r);                 \
     double math_mean_##suffix(T* values, uint size);        \
+    double math_median_##suffix(T* values, uint size);      \
     bool math_is_prime_##suffix(T n);                       \
     bool math_is_power_of_two_##suffix(T n);                \
     T math_abs_##suffix(T n);                               \
@@ -936,6 +963,7 @@
     T math_percentage_##suffix(T value, T percentage);      \
     T math_random_##suffix(void);                           \
     double math_mean_##suffix(T* values, uint size);        \
+    double math_median_##suffix(T* values, uint size);      \
     T math_to_radians_##suffix(T degrees);                  \
     T math_to_degrees_##suffix(T radians);
 

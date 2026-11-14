@@ -553,6 +553,18 @@
         return result / size;                                               \
     }
 
+#define DEFINE_MATH_MEDIAN(T, suffix)                                       \
+    double math_median_##suffix(T* values, uint size) {                     \
+        if (size == 0) {                                                    \
+            return NAN;                                                     \
+        }                                                                   \
+        const size_t middle = size / 2;                                     \
+                                                                            \
+        return size % 2 == 0                                                \
+            ? values[middle - 1] / 2.0 + values[middle] / 2.0               \
+            : values[middle];                                               \
+    }
+
 /* -------------------------------------------------------------------------- */
 /* Integer type generation                                                    */
 /* -------------------------------------------------------------------------- */
@@ -568,6 +580,7 @@
     DEFINE_MATH_COMBINATIONS_SIGNED(T, suffix, max)                         \
     DEFINE_MATH_PERMUTATIONS_SIGNED(T, suffix, max)                         \
     DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_SIGNED(T, suffix)                           \
     DEFINE_MATH_ABS_SIGNED(T, suffix)                                       \
@@ -585,6 +598,7 @@
     DEFINE_MATH_COMBINATIONS_UNSIGNED(T, suffix, max)                       \
     DEFINE_MATH_PERMUTATIONS_UNSIGNED(T, suffix, max)                       \
     DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_UNSIGNED(T, suffix)                         \
     DEFINE_MATH_ABS_UNSIGNED(T, suffix)                                     \
@@ -649,6 +663,7 @@
     DEFINE_MATH_PERCENTAGE(T, suffix, t)                                    \
     DEFINE_MATH_RANDOM(T, suffix, t)                                        \
     DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_TO_RADIANS(T, suffix, t)                                    \
     DEFINE_MATH_TO_DEGREES(T, suffix, t)
 

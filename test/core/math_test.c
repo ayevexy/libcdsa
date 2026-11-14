@@ -217,6 +217,48 @@ void test_math_mean_of() {
     TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean_of(double, 1, 2, 3, 4));
 }
 
+void test_math_median() {
+    // then: odd number of elements
+    TEST_ASSERT_EQUAL(3.0, math_median(((double[]) {1, 2, 3, 4, 5}), 5));
+    TEST_ASSERT_EQUAL(1.0, math_median(((double[]) {1}), 1));
+    TEST_ASSERT_EQUAL(10.0, math_median(((double[]) {5, 10, 15}), 3));
+    // then: even number of elements
+    TEST_ASSERT_EQUAL(2.5, math_median(((double[]) {1, 2, 3, 4}), 4));
+    TEST_ASSERT_EQUAL(3.5, math_median(((double[]) {2, 3, 4, 5}), 4));
+    TEST_ASSERT_EQUAL(0.0, math_median(((double[]) {-2, -1, 1, 2}), 4));
+    // then: negative values
+    TEST_ASSERT_EQUAL(-3.0, math_median(((double[]) {-5, -3, -1}), 3));
+    TEST_ASSERT_EQUAL(-2.5, math_median(((double[]) {-4, -3, -2, -1}), 4));
+    // then: duplicate values
+    TEST_ASSERT_EQUAL(2.0, math_median(((double[]) {1, 2, 2, 3, 4}), 5));
+    TEST_ASSERT_EQUAL(2.5, math_median(((double[]) {1, 2, 3, 3}), 4));
+    // then: decimal values
+    TEST_ASSERT_EQUAL(2.5, math_median(((double[]) {1.5, 2.5, 3.5}), 3));
+    TEST_ASSERT_EQUAL(2.25, math_median(((double[]) {1.5, 2.0, 2.5, 3.0}), 4));
+    // then: empty array
+    TEST_ASSERT_TRUE(math_is_nan(math_median((double[]){}, 0)));
+}
+
+void test_math_median_of() {
+    // then: odd number of elements
+    TEST_ASSERT_EQUAL(3.0, math_median_of(int, 1, 2, 3, 4, 5));
+    TEST_ASSERT_EQUAL(1.0, math_median_of(int, 1));
+    TEST_ASSERT_EQUAL(10.0, math_median_of(int, 5, 10, 15));
+    // then: even number of elements
+    TEST_ASSERT_EQUAL(2.5, math_median_of(int, 1, 2, 3, 4));
+    TEST_ASSERT_EQUAL(3.5, math_median_of(int, 2, 3, 4, 5));
+    TEST_ASSERT_EQUAL(0.0, math_median_of(int, -2, -1, 1, 2));
+    // then: negative values
+    TEST_ASSERT_EQUAL(-3.0, math_median_of(int, -5, -3, -1));
+    TEST_ASSERT_EQUAL(-2.5, math_median_of(int, -4, -3, -2, -1));
+    // then: duplicate values
+    TEST_ASSERT_EQUAL(2.0, math_median_of(int, 1, 2, 2, 3, 4));
+    TEST_ASSERT_EQUAL(2.5, math_median_of(int, 1, 2, 3, 3));
+    // then: decimal values
+    TEST_ASSERT_EQUAL(2.5, math_median_of(double, 1.5, 2.5, 3.5));
+    TEST_ASSERT_EQUAL(2.25, math_median_of(double, 1.5, 2.0, 2.5, 3.0));
+}
+
 void test_math_gcd() {
     // then
     TEST_ASSERT_EQUAL(6, math_gcd(-12, -18));
@@ -551,6 +593,8 @@ int main(void) {
     RUN_TEST(test_math_trigonometric);
     RUN_TEST(test_math_mean);
     RUN_TEST(test_math_mean_of);
+    RUN_TEST(test_math_median);
+    RUN_TEST(test_math_median_of);
     RUN_TEST(test_math_gcd);
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);

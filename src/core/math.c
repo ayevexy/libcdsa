@@ -4,7 +4,6 @@
 #include "core/errors.h"
 
 #include <math.h>
-#include <stdlib.h>
 
 /* -------------------------------------------------------------------------- */
 /* Signed integer functions                                                   */
@@ -535,9 +534,22 @@
         return (value / 100.0##t) * percentage;                             \
     }
 
+static uint64 splitmix64_next(uint64* state) {
+    static thread_local uint64 default_state = 0xDEADBEEF;
+
+    uint64* current_state = state ? state : &default_state;
+
+    uint64 z = (*current_state += 0x9E3779B97F4A7C15ULL);
+
+    z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9ULL;
+    z = (z ^ (z >> 27)) * 0x94D049BB133111EBULL;
+
+    return (z ^ (z >> 31));
+}
+
 #define DEFINE_MATH_RANDOM(T, suffix, t)                                    \
-    T math_random_##suffix(void) {                                          \
-        return (T) rand() / ((T) RAND_MAX + 1.0##t);                        \
+    T math_random_##suffix(uint64* state) {                                 \
+        return (T) splitmix64_next(state) / ((T) UINT64_MAX + 1.0##t);      \
     }
 
 /* -------------------------------------------------------------------------- */

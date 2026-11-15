@@ -1,5 +1,7 @@
 #include "core/math.h"
 
+#include <time.h>
+
 #include "core/limits.h"
 #include "core/errors.h"
 
@@ -568,19 +570,23 @@ void test_math_percentage() {
     TEST_ASSERT_EQUAL_FLOAT(200.0, math_percentage(100.0, 200.0));
 }
 
+#define ASSERT_RANDOM(T, zero, one)         \
+    do {                                    \
+        T value = math_random(T);           \
+        TEST_ASSERT_TRUE(value >= zero);    \
+        TEST_ASSERT_TRUE(value < one);      \
+        value = math_random(T, &state);     \
+        TEST_ASSERT_TRUE(value >= zero);    \
+        TEST_ASSERT_TRUE(value < one);      \
+    } while (0)
+
 void test_math_random() {
-    // then: float
-    float random_float = math_random(float);
-    TEST_ASSERT_TRUE(random_float >= 0.0f);
-    TEST_ASSERT_TRUE(random_float < 1.0f);
-    // then: double
-    double random_double = math_random(double);
-    TEST_ASSERT_TRUE(random_double >= 0.0);
-    TEST_ASSERT_TRUE(random_double < 1.0);
-    // then: ldouble
-    ldouble random_ldouble = math_random(ldouble);
-    TEST_ASSERT_TRUE(random_ldouble >= 0.0L);
-    TEST_ASSERT_TRUE(random_ldouble < 1.0L);
+    // given
+    uint64 state = 12345;
+    // then
+    ASSERT_RANDOM(float, 0.0f, 1.0f);
+    ASSERT_RANDOM(double, 0.0, 1.0);
+    ASSERT_RANDOM(ldouble, 0.0L, 1.0L);
 }
 
 int main(void) {

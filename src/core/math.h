@@ -728,14 +728,20 @@
  * @brief Generates a pseudo-random floating-point number.
  *
  * @param T the floating-point type of the generated number
+ * @param state the optional state used to generate the sequence (an uint64*)
  *
  * @return a pseudo-random number in the range [0.0, 1.0)
+ *
+ * @note If state is nullptr, an internal thread-local state is used.
+ * @note This function is not suitable for cryptographic purposes.
  */
-#define math_random(T) _Generic((T) 0,  \
-    float:    math_random_float,        \
-    double:   math_random_double,       \
-    ldouble:  math_random_ldouble       \
-)()
+#define math_random(T, ...) math_random_(T, __VA_OPT__(__VA_ARGS__,) nullptr, __VA_ARGS__)
+
+#define math_random_(T, state, ...) _Generic((T) 0,     \
+    float:    math_random_float,                        \
+    double:   math_random_double,                       \
+    ldouble:  math_random_ldouble                       \
+)(state)
 
 /*---------------------------------------------------------------------------------*/
 
@@ -965,7 +971,7 @@
     bool math_is_close_##suffix(T a, T b, T tolerance);     \
     T math_lerp_##suffix(T start, T end, T amount);         \
     T math_percentage_##suffix(T value, T percentage);      \
-    T math_random_##suffix(void);
+    T math_random_##suffix(uint64* state);
 
 DECLARE_INTEGER_MATH(char, char)
 DECLARE_INTEGER_MATH(schar, schar)

@@ -185,6 +185,26 @@ void test_math_trigonometric() {
     TEST_TRIGONOMETRIC(ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
 }
 
+void test_math_to_radians() {
+    // then
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.7853981633974483, math_to_radians(45.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 1.5707963267948966, math_to_radians(90.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 3.1415926535897932, math_to_radians(180.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 6.2831853071795864, math_to_radians(360.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, -1.5707963267948966, math_to_radians(-90.0));
+}
+
+void test_math_to_degrees() {
+    // then
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_degrees(0.0));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 45.0, math_to_degrees(0.7853981633974483));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 90.0, math_to_degrees(1.5707963267948966));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 180.0, math_to_degrees(3.1415926535897932));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 360.0, math_to_degrees(6.2831853071795864));
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, -90.0, math_to_degrees(-1.5707963267948966));
+}
+
 void test_math_mean() {
     // then
     TEST_ASSERT_EQUAL_FLOAT(3, math_mean(((int[]) {1, 2, 3, 4, 5}), 5));
@@ -563,38 +583,24 @@ void test_math_random() {
     TEST_ASSERT_TRUE(random_ldouble < 1.0L);
 }
 
-void test_math_to_radians() {
-    // then
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.7853981633974483, math_to_radians(45.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 1.5707963267948966, math_to_radians(90.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 3.1415926535897932, math_to_radians(180.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 6.2831853071795864, math_to_radians(360.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, -1.5707963267948966, math_to_radians(-90.0));
-}
-
-void test_math_to_degrees() {
-    // then
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_degrees(0.0));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 45.0, math_to_degrees(0.7853981633974483));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 90.0, math_to_degrees(1.5707963267948966));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 180.0, math_to_degrees(3.1415926535897932));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, 360.0, math_to_degrees(6.2831853071795864));
-    TEST_ASSERT_FLOAT_WITHIN(0.000001, -90.0, math_to_degrees(-1.5707963267948966));
-}
-
 int main(void) {
     UNITY_BEGIN();
+    // Arithmetic
     RUN_TEST(test_math_add_exact);
     RUN_TEST(test_math_sub_exact);
     RUN_TEST(test_math_mul_exact);
     RUN_TEST(test_math_div_exact);
+    // Exponential, logarithmic, and trigonometric functions
     RUN_TEST(test_math_functions);
     RUN_TEST(test_math_trigonometric);
+    RUN_TEST(test_math_to_radians);
+    RUN_TEST(test_math_to_degrees);
+    // Statistics
     RUN_TEST(test_math_mean);
     RUN_TEST(test_math_mean_of);
     RUN_TEST(test_math_median);
     RUN_TEST(test_math_median_of);
+    // Number theory
     RUN_TEST(test_math_gcd);
     RUN_TEST(test_math_lcm);
     RUN_TEST(test_math_factorial);
@@ -602,10 +608,12 @@ int main(void) {
     RUN_TEST(test_math_permutations);
     RUN_TEST(test_math_is_prime);
     RUN_TEST(test_math_is_power_of_two);
+    // Basic operations
     RUN_TEST(test_math_abs);
     RUN_TEST(test_math_min);
     RUN_TEST(test_math_max);
     RUN_TEST(test_math_clamp);
+    // Floating-point manipulation
     RUN_TEST(test_math_sign);
     RUN_TEST(test_math_copysign);
     RUN_TEST(test_math_scalb);
@@ -617,16 +625,17 @@ int main(void) {
     RUN_TEST(test_math_mod);
     RUN_TEST(test_math_fdim);
     RUN_TEST(test_math_fma);
+    // Floating-point Rounding
     RUN_TEST(test_math_round);
     RUN_TEST(test_math_floor);
     RUN_TEST(test_math_ceil);
     RUN_TEST(test_math_trunc);
+    // Floating-point classification and comparison
     RUN_TEST(test_math_is);
     RUN_TEST(test_math_is_close);
+    // Floating-point interpolation, percentages, and random numbers
     RUN_TEST(test_math_lerp);
     RUN_TEST(test_math_percentage);
     RUN_TEST(test_math_random);
-    RUN_TEST(test_math_to_radians);
-    RUN_TEST(test_math_to_degrees);
     return UNITY_END();
 }

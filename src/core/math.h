@@ -245,53 +245,6 @@
 #define math_atan2(y, x) MATH_DISPATCH_FLOATS_TWO_ARGS(atan2, y, x)
 
 /**
- * @brief Calculates the arithmetic mean of an array of values.
- *
- * @param values the array of values
- * @param size the number of values
- *
- * @return the arithmetic mean
- */
-#define math_mean(values, size) MATH_DISPATCH_NUMBERS_POINTER(mean, values, size)
-
-/**
- * @brief Calculates the arithmetic mean of variadic values of a specified type.
- *
- * @param T the type of values
- * @param ... the values to calculate the arithmetic mean of
- *
- * @return the arithmetic mean
- *
- * @note All values must be compatible with the specified type.
- */
-#define math_mean_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(mean, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
-
-/**
- * @brief Calculates the median of a sorted array of values.
- *
- * @param values the array of values sorted in ascending order
- * @param size the number of elements
- *
- * @return the median value, or NAN if the array is empty
- *
- * @note The input array must be sorted in ascending order.
- * @note The input array is not modified.
- */
-#define math_median(values, size) MATH_DISPATCH_NUMBERS_POINTER(median, values, size)
-
-/**
- * @brief Calculates the median of a sorted sequence of values.
- *
- * @param T the type of the values
- * @param ... the values sorted in ascending order
- *
- * @return the median value, or NAN if no values are provided
- *
- * @note The values must be provided in ascending order.
- */
-#define math_median_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(median, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
-
-/**
  * @brief Returns the hyperbolic sine of a value.
  *
  * @param n the value
@@ -344,6 +297,71 @@
  * @return the inverse hyperbolic tangent of n
  */
 #define math_atanh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(atanh, n)
+
+/**
+ * @brief Converts degrees to radians.
+ *
+ * @param degrees the value in degrees
+ *
+ * @return the value in radians
+ */
+#define math_to_radians(degrees) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_radians, degrees)
+
+/**
+ * @brief Converts radians to degrees.
+ *
+ * @param radians the value in radians
+ *
+ * @return the value in degrees
+ */
+#define math_to_degrees(radians) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_degrees, radians)
+
+/**
+ * @brief Calculates the arithmetic mean of an array of values.
+ *
+ * @param values the array of values
+ * @param size the number of values
+ *
+ * @return the arithmetic mean
+ */
+#define math_mean(values, size) MATH_DISPATCH_NUMBERS_POINTER(mean, values, size)
+
+/**
+ * @brief Calculates the arithmetic mean of variadic values of a specified type.
+ *
+ * @param T the type of values
+ * @param ... the values to calculate the arithmetic mean of
+ *
+ * @return the arithmetic mean
+ *
+ * @note All values must be compatible with the specified type.
+ */
+#define math_mean_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(mean, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
+
+/**
+ * @brief Calculates the median of a sorted array of values.
+ *
+ * @param values the array of values sorted in ascending order
+ * @param size the number of elements
+ *
+ * @return the median value, or NAN if the array is empty
+ *
+ * @note The input array must be sorted in ascending order.
+ * @note The input array is not modified.
+ */
+#define math_median(values, size) MATH_DISPATCH_NUMBERS_POINTER(median, values, size)
+
+/**
+ * @brief Calculates the median of a sorted sequence of values.
+ *
+ * @param T the type of the values
+ * @param ... the values sorted in ascending order
+ *
+ * @return the median value, or NAN if no values are provided
+ *
+ * @note The values must be provided in ascending order.
+ */
+#define math_median_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(median, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
 
 /**
  * @brief Returns the greatest common divisor (GCD) of two numbers.
@@ -719,24 +737,6 @@
     ldouble:  math_random_ldouble       \
 )()
 
-/**
- * @brief Converts degrees to radians.
- *
- * @param degrees the value in degrees
- *
- * @return the value in radians
- */
-#define math_to_radians(degrees) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_radians, degrees)
-
-/**
- * @brief Converts radians to degrees.
- *
- * @param radians the value in radians
- *
- * @return the value in degrees
- */
-#define math_to_degrees(radians) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_degrees, radians)
-
 /*---------------------------------------------------------------------------------*/
 
 #define MATH_INVALID_TYPE ((void) 0)
@@ -896,13 +896,13 @@
     T math_sub_exact_##suffix(T a, T b);                    \
     T math_mul_exact_##suffix(T a, T b);                    \
     T math_div_exact_##suffix(T a, T b);                    \
+    double math_mean_##suffix(T* values, uint size);        \
+    double math_median_##suffix(T* values, uint size);      \
     T math_gcd_##suffix(T a, T b);                          \
     T math_lcm_##suffix(T a, T b);                          \
     T math_factorial_##suffix(T n);                         \
     T math_combinations_##suffix(T n, T r);                 \
     T math_permutations_##suffix(T n, T r);                 \
-    double math_mean_##suffix(T* values, uint size);        \
-    double math_median_##suffix(T* values, uint size);      \
     bool math_is_prime_##suffix(T n);                       \
     bool math_is_power_of_two_##suffix(T n);                \
     T math_abs_##suffix(T n);                               \
@@ -935,6 +935,10 @@
     T math_asinh_##suffix(T n);                             \
     T math_acosh_##suffix(T n);                             \
     T math_atanh_##suffix(T n);                             \
+    T math_to_radians_##suffix(T degrees);                  \
+    T math_to_degrees_##suffix(T radians);                  \
+    double math_mean_##suffix(T* values, uint size);        \
+    double math_median_##suffix(T* values, uint size);      \
     T math_abs_##suffix(T n);                               \
     T math_min_##suffix(T a, T b);                          \
     T math_max_##suffix(T a, T b);                          \
@@ -961,11 +965,7 @@
     bool math_is_close_##suffix(T a, T b, T tolerance);     \
     T math_lerp_##suffix(T start, T end, T amount);         \
     T math_percentage_##suffix(T value, T percentage);      \
-    T math_random_##suffix(void);                           \
-    double math_mean_##suffix(T* values, uint size);        \
-    double math_median_##suffix(T* values, uint size);      \
-    T math_to_radians_##suffix(T degrees);                  \
-    T math_to_degrees_##suffix(T radians);
+    T math_random_##suffix(void);
 
 DECLARE_INTEGER_MATH(char, char)
 DECLARE_INTEGER_MATH(schar, schar)

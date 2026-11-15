@@ -393,6 +393,16 @@
         return atanh##t(n);                                                 \
     }
 
+#define DEFINE_MATH_TO_RADIANS(T, suffix, t)                                \
+    T math_to_radians_##suffix(T degrees) {                                 \
+        return degrees * MATH_PI(T) / 180.0##t;                             \
+    }
+
+#define DEFINE_MATH_TO_DEGREES(T, suffix, t)                                \
+    T math_to_degrees_##suffix(T radians) {                                 \
+        return radians * 180.0##t / MATH_PI(T);                             \
+    }
+
 #define DEFINE_MATH_ABS_FLOAT(T, suffix, t)                                 \
     T math_abs_##suffix(T n) {                                              \
         return fabs##t(n);                                                  \
@@ -530,16 +540,6 @@
         return (T) rand() / ((T) RAND_MAX + 1.0##t);                        \
     }
 
-#define DEFINE_MATH_TO_RADIANS(T, suffix, t)                                \
-    T math_to_radians_##suffix(T degrees) {                                 \
-        return degrees * MATH_PI(T) / 180.0##t;                             \
-    }
-
-#define DEFINE_MATH_TO_DEGREES(T, suffix, t)                                \
-    T math_to_degrees_##suffix(T radians) {                                 \
-        return radians * 180.0##t / MATH_PI(T);                             \
-    }
-
 /* -------------------------------------------------------------------------- */
 /* Number type functions                                                      */
 /* -------------------------------------------------------------------------- */
@@ -574,13 +574,13 @@
     DEFINE_MATH_SUB_EXACT_SIGNED(T, suffix, min, max)                       \
     DEFINE_MATH_MUL_EXACT_SIGNED(T, suffix, min, max)                       \
     DEFINE_MATH_DIV_EXACT_SIGNED(T, suffix, min)                            \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_GCD_SIGNED(T, suffix)                                       \
     DEFINE_MATH_LCM_SIGNED(T, suffix)                                       \
     DEFINE_MATH_FACTORIAL_SIGNED(T, suffix, min, max)                       \
     DEFINE_MATH_COMBINATIONS_SIGNED(T, suffix, max)                         \
     DEFINE_MATH_PERMUTATIONS_SIGNED(T, suffix, max)                         \
-    DEFINE_MATH_MEAN(T, suffix)                                             \
-    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_SIGNED(T, suffix)                           \
     DEFINE_MATH_ABS_SIGNED(T, suffix)                                       \
@@ -592,13 +592,13 @@
     DEFINE_MATH_SUB_EXACT_UNSIGNED(T, suffix)                               \
     DEFINE_MATH_MUL_EXACT_UNSIGNED(T, suffix, max)                          \
     DEFINE_MATH_DIV_EXACT_UNSIGNED(T, suffix)                               \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_GCD_UNSIGNED(T, suffix)                                     \
     DEFINE_MATH_LCM_UNSIGNED(T, suffix)                                     \
     DEFINE_MATH_FACTORIAL_UNSIGNED(T, suffix, max)                          \
     DEFINE_MATH_COMBINATIONS_UNSIGNED(T, suffix, max)                       \
     DEFINE_MATH_PERMUTATIONS_UNSIGNED(T, suffix, max)                       \
-    DEFINE_MATH_MEAN(T, suffix)                                             \
-    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_IS_PRIME(T, suffix)                                         \
     DEFINE_MATH_IS_POWER_OF_TWO_UNSIGNED(T, suffix)                         \
     DEFINE_MATH_ABS_UNSIGNED(T, suffix)                                     \
@@ -635,6 +635,10 @@
     DEFINE_MATH_ASINH(T, suffix, t)                                         \
     DEFINE_MATH_ACOSH(T, suffix, t)                                         \
     DEFINE_MATH_ATANH(T, suffix, t)                                         \
+    DEFINE_MATH_TO_RADIANS(T, suffix, t)                                    \
+    DEFINE_MATH_TO_DEGREES(T, suffix, t)                                    \
+    DEFINE_MATH_MEAN(T, suffix)                                             \
+    DEFINE_MATH_MEDIAN(T, suffix)                                           \
     DEFINE_MATH_ABS_FLOAT(T, suffix, t)                                     \
     DEFINE_MATH_MIN_FLOAT(T, suffix, t)                                     \
     DEFINE_MATH_MAX_FLOAT(T, suffix, t)                                     \
@@ -661,11 +665,7 @@
     DEFINE_MATH_IS_CLOSE(T, suffix, t)                                      \
     DEFINE_MATH_LERP(T, suffix)                                             \
     DEFINE_MATH_PERCENTAGE(T, suffix, t)                                    \
-    DEFINE_MATH_RANDOM(T, suffix, t)                                        \
-    DEFINE_MATH_MEAN(T, suffix)                                             \
-    DEFINE_MATH_MEDIAN(T, suffix)                                           \
-    DEFINE_MATH_TO_RADIANS(T, suffix, t)                                    \
-    DEFINE_MATH_TO_DEGREES(T, suffix, t)
+    DEFINE_MATH_RANDOM(T, suffix, t)
 
 /* -------------------------------------------------------------------------- */
 /* Generate implementations                                                   */

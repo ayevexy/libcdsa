@@ -57,7 +57,7 @@ void test_create_formatted_string() {
     TEST_ASSERT_EQUAL_STRING("H3llo W0rld!", string_data(string));
     TEST_ASSERT_EQUAL(strlen(string_data(format)) - 2, string_length(string));
     // clean up
-    string_destroy(&format, &string);
+    string_destroy_all(&format, &string);
 }
 
 void test_hash_string() {
@@ -159,7 +159,7 @@ void test_compare_strings_with_same_length() {
     TEST_ASSERT(equals == 0);
     TEST_ASSERT(lesser < 0);
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_compare_strings_with_different_lengths() {
@@ -173,7 +173,7 @@ void test_compare_strings_with_different_lengths() {
     TEST_ASSERT(greater > 0);
     TEST_ASSERT(lesser < 0);
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_compare_strings_with_same_length_ignore_case() {
@@ -185,7 +185,7 @@ void test_compare_strings_with_same_length_ignore_case() {
     // then
     TEST_ASSERT(equals == 0);
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_compare_strings_with_different_lengths_ignore_case() {
@@ -199,7 +199,7 @@ void test_compare_strings_with_different_lengths_ignore_case() {
     TEST_ASSERT(greater > 0);
     TEST_ASSERT(lesser < 0);
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_string_equals() {
@@ -210,7 +210,7 @@ void test_string_equals() {
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_FALSE(string_equals(string, other_string));
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_string_equals_ignore_case() {
@@ -221,7 +221,7 @@ void test_string_equals_ignore_case() {
     TEST_ASSERT_TRUE(string_equals(string, string));
     TEST_ASSERT_TRUE(string_equals_ignore_case(string, other_string));
     // clean up
-    string_destroy(&string, &other_string);
+    string_destroy_all(&string, &other_string);
 }
 
 void test_string_index_of_char() {
@@ -315,7 +315,7 @@ void test_string_trim() {
     TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(trimmed));
     TEST_ASSERT_EQUAL(strlen("Hello World!"), string_length(trimmed));
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy_all(&string, &trimmed);
 }
 
 void test_string_trim_start() {
@@ -327,7 +327,7 @@ void test_string_trim_start() {
     TEST_ASSERT_EQUAL_STRING("Hello World!  ", string_data(trimmed));
     TEST_ASSERT_EQUAL(strlen("Hello World!  "), string_length(trimmed));
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy_all(&string, &trimmed);
 }
 
 void test_string_trim_end() {
@@ -339,7 +339,7 @@ void test_string_trim_end() {
     TEST_ASSERT_EQUAL_STRING("  Hello World!", string_data(trimmed));
     TEST_ASSERT_EQUAL(strlen("  Hello World!"), string_length(trimmed));
     // clean up
-    string_destroy(&string, &trimmed);
+    string_destroy_all(&string, &trimmed);
 }
 
 void test_string_substring() {
@@ -351,7 +351,7 @@ void test_string_substring() {
     TEST_ASSERT_EQUAL_STRING("ello", string_data(substring));
     TEST_ASSERT_EQUAL(strlen("ello"), string_length(substring));
     // clean up
-    string_destroy(&string, &substring);
+    string_destroy_all(&string, &substring);
 }
 
 static void substring_index_out_of_bounds_test_helper(int start, int length) {
@@ -388,7 +388,7 @@ void test_string_concat() {
     TEST_ASSERT_EQUAL_STRING("Hello World!", string_data(hello_world));
     TEST_ASSERT_EQUAL(string_length(hello) + string_length(world), string_length(hello_world));
     // clean up
-    string_destroy(&hello, &world, &hello_world);
+    string_destroy_all(&hello, &world, &hello_world);
 }
 
 void test_string_replace_char() {
@@ -399,7 +399,7 @@ void test_string_replace_char() {
     // then
     TEST_ASSERT_EQUAL_STRING("Hell0 W0rld!", string_data(replaced));
     // clean up
-    string_destroy(&hello, &replaced);
+    string_destroy_all(&hello, &replaced);
 }
 
 void test_string_replace_substring() {
@@ -411,7 +411,7 @@ void test_string_replace_substring() {
     TEST_ASSERT_EQUAL_STRING("He123o Wor123d!", string_data(replaced));
     TEST_ASSERT_EQUAL(strlen("He123o Wor123d!"), string_length(replaced));
     // clean up
-    string_destroy(&hello, &replaced);
+    string_destroy_all(&hello, &replaced);
 }
 
 void test_string_repeat() {
@@ -423,7 +423,7 @@ void test_string_repeat() {
     TEST_ASSERT_EQUAL_STRING("HelloHelloHello", string_data(hello_n_times));
     TEST_ASSERT_EQUAL(strlen("HelloHelloHello"), string_length(hello_n_times));
     // clean up
-    string_destroy(&hello, &hello_n_times);
+    string_destroy_all(&hello, &hello_n_times);
 }
 
 void test_string_repeat_fails_if_times_is_negative() {
@@ -449,7 +449,7 @@ void test_string_join() {
     TEST_ASSERT_EQUAL_STRING("Hello World !!!", string_data(full_hello_world));
     TEST_ASSERT_EQUAL(strlen("Hello World !!!"), string_length(full_hello_world));
     // clean up
-    string_destroy(&hello, &world, &exclamation, &full_hello_world);
+    string_destroy_all(&hello, &world, &exclamation, &full_hello_world);
 }
 
 void test_string_split() {
@@ -504,7 +504,7 @@ void test_string_to_uppercase() {
     // then
     TEST_ASSERT_EQUAL_STRING("HELLO WORLD!", string_data(uppercase));
     // clean up
-    string_destroy(&string, &uppercase);
+    string_destroy_all(&string, &uppercase);
 }
 
 void test_string_to_lowercase() {
@@ -515,7 +515,7 @@ void test_string_to_lowercase() {
     // then
     TEST_ASSERT_EQUAL_STRING("hello world!", string_data(lowercase));
     // clean up
-    string_destroy(&string, &lowercase);
+    string_destroy_all(&string, &lowercase);
 }
 
 // String cleanup is intentionally omitted for simplicity.

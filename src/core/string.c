@@ -87,7 +87,7 @@ String (string_ref)(StringView string) {
     return new_string;
 }
 
-void (string_destroy)(String* string_pointer) {
+void string_destroy(String* string_pointer) {
     if (require_non_null(string_pointer)) return;
     if (require_non_null(*string_pointer)) return;
 
@@ -97,7 +97,7 @@ void (string_destroy)(String* string_pointer) {
     *string_pointer = nullptr;
 }
 
-void string_destroy_all(void) {
+void (string_destroy_all)(void) {
     if (require_non_null(string_memory_allocator)) return;
 
     allocator_reset(string_memory_allocator);

@@ -512,7 +512,7 @@ String hash_map_to_string(const HashMap* hash_map) {
             if (count < hash_map->size - 1) {
                 string_builder_append(builder, ", ");
             }
-            string_destroy(&key_string, &value_string);
+            string_destroy_all(&key_string, &value_string);
         }
     }
     string_builder_append(builder, hash_map->size == 0 ? "]" : " ]");

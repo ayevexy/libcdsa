@@ -88,25 +88,38 @@ String (string_new)(StringView string);
 String (string_ref)(StringView string);
 
 /**
- * @brief Destroys previously allocated strings.
+ * @brief Destroys a previously allocated string.
  *
- * @param ... the strings
+ * @param string_pointer pointer to the string
  *
- * @post &strings[i] == nullptr
+ * @exception NULL_POINTER_ERROR If string_pointer or *string_pointer is null
  *
- * @exception NULL_POINTER_ERROR if &strings[i] || strings[i] is null
+ * @post *string_pointer == nullptr
  */
-#define string_destroy(...) (dispatch_string_destroy(__VA_ARGS__,   \
-    string_destroy_10,                                              \
-    string_destroy_9,                                               \
-    string_destroy_8,                                               \
-    string_destroy_7,                                               \
-    string_destroy_6,                                               \
-    string_destroy_5,                                               \
-    string_destroy_4,                                               \
-    string_destroy_3,                                               \
-    string_destroy_2,                                               \
-    string_destroy_1                                                \
+void string_destroy(String* string_pointer);
+
+/**
+ * @brief Destroys the specified strings, or all previously allocated strings if no arguments are provided.
+ *
+ * @param ... pointers to the strings to destroy (up to 10)
+ *
+ * @exception NULL_POINTER_ERROR If any supplied string pointer or its value is null
+ * @exception UNSUPPORTED_OPERATION_ERROR If the current string memory allocator does not support the reset operation
+ *
+ * @post Each supplied string pointer is set to nullptr
+ */
+#define string_destroy_all(...) (dispatch_string_destroy(__VA_ARGS__ __VA_OPT__(,)  \
+    string_destroy_10,                                                              \
+    string_destroy_9,                                                               \
+    string_destroy_8,                                                               \
+    string_destroy_7,                                                               \
+    string_destroy_6,                                                               \
+    string_destroy_5,                                                               \
+    string_destroy_4,                                                               \
+    string_destroy_3,                                                               \
+    string_destroy_2,                                                               \
+    string_destroy_1,                                                               \
+    string_destroy_0                                                                \
 )(__VA_ARGS__))
 
 #define dispatch_string_destroy(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
@@ -121,15 +134,9 @@ String (string_ref)(StringView string);
 #define string_destroy_3(string, ...) string_destroy(string), string_destroy_2(__VA_ARGS__)
 #define string_destroy_2(string, ...) string_destroy(string), string_destroy_1(__VA_ARGS__)
 #define string_destroy_1(string) string_destroy(string)
+#define string_destroy_0() (string_destroy_all)()
 
-void (string_destroy)(String* string_pointer);
-
-/**
- * @brief Destroys all previously allocated strings.
- *
- * @exception UNSUPPORTED_OPERATION_ERROR If the current string memory allocator does not support the reset operation
- */
-void string_destroy_all(void);
+void (string_destroy_all)(void);
 
 /**
  * @brief Creates a newly allocated formatted string.

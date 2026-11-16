@@ -628,7 +628,7 @@ int main(void) {
         printf("%s ", string_data(words[i])); // Hello World! Code!
     }
 
-    string_destroy(&hello, &world, &sub, &hello_world);
+    string_destroy_all(&hello, &world, &sub, &hello_world);
     array_destroy(&words);
     
     return 0;

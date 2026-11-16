@@ -671,7 +671,7 @@ String tree_map_to_string(const TreeMap* tree_map) {
             string_builder_append(builder, ", ");
         }
         entry = get_successor_entry(tree_map, entry);
-        string_destroy(&key_string, &value_string);
+        string_destroy_all(&key_string, &value_string);
     }
     string_builder_append(builder, tree_map->size == 0 ? "]" : " ]");
 

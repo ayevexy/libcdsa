@@ -202,7 +202,7 @@ void test_date_time_format() {
     // and
     TEST_ASSERT_EQUAL(DATE_TIME_FORMAT_ERROR, attempt(date_time_format(date_time, "%z %d %a")));
     // clean up
-    string_destroy(&format_a, &format_b);
+    string_destroy_all(&format_a, &format_b);
 }
 
 void test_date_time_to_string() {

@@ -159,13 +159,17 @@ Don't forget to prefix includes with `libcdsa/` if installed system-wide.
 
 The following examples demonstrate some of the library's features:
 
+#### Collections
+
+**Lists**
+
 ```c++
 #include "collections/list/list.h"
 #include "core/pointer.h"
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
     list_add_last(list, "Hello");
@@ -176,10 +180,12 @@ int main() {
     
     printf("%s %s\n", hello, world); // Hello World!
 
-    list_destroy(&list);    
+    list_destroy(&list);
     return 0;
 }
 ```
+
+**Maps**
 
 ```c++
 #include "collections/map/map.h"
@@ -187,7 +193,7 @@ int main() {
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     HashMap* map = map_new(DEFAULT_HASH_MAP_OPTIONS());
 
     map_put(map, "Hello", &(int){5});
@@ -203,13 +209,15 @@ int main() {
 }
 ```
 
+**Sets**
+
 ```c++
 #include "collections/set/set.h"
 #include "core/pointer.h"
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     HashSet* set = set_new(DEFAULT_HASH_SET_OPTIONS());
     
     set_add(set, &(int){10});
@@ -223,6 +231,8 @@ int main() {
 }
 ```
 
+**Iterators**
+
 ```c++
 #include "collections/list/list.h"
 #include "collections/iterator.h"
@@ -230,7 +240,7 @@ int main() {
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
     list_add_last(list, "Hello");
@@ -250,6 +260,8 @@ int main() {
 }
 ```
 
+**For Each**
+
 ```c++
 #include "collections/list/list.h"
 #include "collections/for_each.h" // should be included last
@@ -257,7 +269,7 @@ int main() {
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
     list_add_last(list, "Hello");
@@ -271,6 +283,8 @@ int main() {
     return 0;
 }
 ```
+
+**Sequences**
 
 ```c++
 #include "collections/list/list.h"
@@ -294,7 +308,7 @@ void* replace_by_two_times(void* number) {
     return new(int, *(int*) number * 2);
 }
 
-int main() {
+int main(void) {
     ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
     list_add_last(list, &(int){1});
@@ -320,6 +334,8 @@ int main() {
     return 0;
 }
 ```
+
+**Set Operations**
 
 ```c++
 #include "collections/set/set.h"
@@ -347,7 +363,7 @@ static int int_compare_generic(const void* a, const void* b) {
 #define INT_TREE_SET_OPTIONS \
     DEFAULT_TREE_SET_OPTIONS(.compare = int_compare_generic)
 
-int main() {
+int main(void) {
     HashSet* set_a = set_new(INT_HASH_SET_OPTIONS);
     set_add(set_a, &(int){1});
     set_add(set_a, &(int){2});
@@ -377,6 +393,8 @@ int main() {
 }
 ```
 
+**Collection Views and Conversion**
+
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
@@ -384,7 +402,7 @@ int main() {
 
 #include <stdio.h>
 
-int main() {
+int main(void) {
     ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
 
     list_add_last(list, "Hello");
@@ -402,10 +420,13 @@ int main() {
 
     list_destroy(&list);
     list_destroy(&other_list);
-    
     return 0;
 }
 ```
+
+#### Core
+
+**Error Handling**
 
 ```c++
 #include "core/errors.h"
@@ -423,7 +444,8 @@ int divide(int a, int b) {
 }
 
 int main(void) {
-    int value; Error error = attempt(value = divide(10, 0));
+    int value;
+    Error error = attempt(value = divide(10, 0));
 
     if (error) {
         error_print(); // ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0
@@ -442,96 +464,48 @@ int main(void) {
     set_error(INVALID_OPERATION_ERROR); // INVALID_OPERATION_ERROR: no additional details available
                                         //      at main()
     printf("unreachable");
+
     return 0;
 }
 ```
 
+**Assertions**
+
 ```c++
-#include "core/array.h"
-#include <stdio.h>
+#include "core/assertions.h"
 
-int main() {
-    Array(int) array_a = array_new(5, int); // [ 0, 0, 0, 0, 0 ]
-    Array(int) array_b = array_of(int, 1, 2, 3, 4, 5); // [ 1, 2, 3, 4, 5 ]
+int divide(int a, int b) {
+    assert_precondition(b != 0, "divisor must not be zero, received %d", b);
 
-    int n = array_get(array_a, 0); // `int n = array_a[0];` also works
-    printf("%d\n", n); // 0
+    const int result = a / b;
 
-    array_set(array_a, 0, 10); // `array_a[0] = 10;` also works
+    assert_postcondition(result * b == a, "expected %d, received %d", a, result * b);
 
-    for (int i = 0; i < array_length(array_a); i++) {
-        printf("%d ", array_a[i]); // 10, 0, 0, 0, 0
+    return result;
+}
+
+int main(void) {
+    int size = 5;
+    int capacity = 10;
+
+    assert_condition(size > 0, "expected positive size, received %d", size);
+    assert_invariant(size <= capacity, "size (%d) exceeds capacity (%d)", size, capacity);
+
+    divide(10, 2);
+
+    if (false) {
+        assert_unreachable();
     }
-    
-    printf("\n");
 
-    for (int i = 0; i < array_length(array_b); i++) {
-        printf("%d ", array_b[i]); // 1, 2, 3, 4, 5
-    }
-
-    array_destroy(&array_a);
-    array_destroy(&array_b);
-    
     return 0;
 }
 ```
 
-```c++
-#include "core/string.h"
-#include "core/array.h"
-
-#include <stdio.h>
-
-int main() {
-    String hello = string_new("Hello"); // copies "Hello"
-    String world = string_ref("World!"); // references "World!"
-
-    char c = string_char_at(hello, 2);
-    printf("%c\n", c); // l
-
-    String sub = string_substring("literal", 0, 3);
-    printf("%s\n", string_data(sub)); // lit
-
-    // functions accepts both literals and string types
-    String hello_world = string_join(" ", hello, world, "Code!");
-    printf("%s\n", string_data(hello_world)); // Hello World! Code!
-
-    Array(String) words = string_split(hello_world, ' ');
-    for (int i = 0; i < array_length(words); i++) {
-        printf("%s ", string_data(words[i])); // Hello World! Code!
-    }
-
-    string_destroy(&hello, &world, &sub, &hello_world);
-    array_destroy(&words);
-    
-    return 0;
-}
-```
-
-```c++
-#include "core/memory.h"
-#include <stdio.h>
-
-typedef struct {
-    float x, y;
-} Point;
-
-int main() {
-    int* number = new(int, 10); // heap allocated
-    int* local = ref(int, 20); // stack allocated
-    Point* point = new(Point, .x = 10, .y = 20);
-
-    printf("%d\n", *number); // 10
-    printf("%d\n", *local); // 20
-    printf("x: %f, y: %f\n", point->x, point->y); // x: 10, y: 20
-
-    delete(number);
-    delete(point);
-}
-```
+**Constraints**
 
 ```c++
 #include "core/constraints.h"
+
 #include <stdio.h>
 
 // custom constraint
@@ -557,6 +531,157 @@ int main(void) {
 }
 ```
 
+**Memory Management**
+
+```c++
+#include "core/memory.h"
+
+#include <stdio.h>
+
+typedef struct {
+    float x, y;
+} Point;
+
+int main(void) {
+    int* number = new(int, 10); // heap allocated
+    int* local = ref(int, 20); // stack allocated
+    Point* point = new(Point, .x = 10, .y = 20);
+
+    printf("%d\n", *number); // 10
+    printf("%d\n", *local); // 20
+    printf("x: %f, y: %f\n", point->x, point->y); // x: 10, y: 20
+
+    delete(number);
+    delete(point);
+}
+```
+
+**Arrays**
+
+```c++
+#include "core/array.h"
+#include <stdio.h>
+
+int main(void) {
+    Array(int) array_a = array_new(5, int); // [ 0, 0, 0, 0, 0 ]
+    Array(int) array_b = array_of(int, 1, 2, 3, 4, 5); // [ 1, 2, 3, 4, 5 ]
+
+    int n = array_get(array_a, 0); // `int n = array_a[0];` also works
+    printf("%d\n", n); // 0
+
+    array_set(array_a, 0, 10); // `array_a[0] = 10;` also works
+
+    for (int i = 0; i < array_length(array_a); i++) {
+        printf("%d ", array_a[i]); // 10, 0, 0, 0, 0
+    }
+    
+    printf("\n");
+
+    for (int i = 0; i < array_length(array_b); i++) {
+        printf("%d ", array_b[i]); // 1, 2, 3, 4, 5
+    }
+
+    array_destroy(&array_a);
+    array_destroy(&array_b);
+    
+    return 0;
+}
+```
+
+**Strings**
+
+```c++
+#include "core/string.h"
+#include "core/array.h"
+
+#include <stdio.h>
+
+int main(void) {
+    String hello = string_new("Hello"); // copies "Hello"
+    String world = string_ref("World!"); // references "World!"
+
+    char c = string_char_at(hello, 2);
+    printf("%c\n", c); // l
+
+    String sub = string_substring("literal", 0, 3);
+    printf("%s\n", string_data(sub)); // lit
+
+    // functions accept both literals and string types
+    String hello_world = string_join(" ", hello, world, "Code!");
+    printf("%s\n", string_data(hello_world)); // Hello World! Code!
+
+    Array(String) words = string_split(hello_world, ' ');
+    for (int i = 0; i < array_length(words); i++) {
+        printf("%s ", string_data(words[i])); // Hello World! Code!
+    }
+
+    string_destroy(&hello, &world, &sub, &hello_world);
+    array_destroy(&words);
+    
+    return 0;
+}
+```
+
+**System**
+
+```c++
+#include "core/system.h"
+#include "core/string.h"
+
+#include <inttypes.h>
+
+void* hello_thread(void*) {
+    system_write_line("I'm a thread!");
+    return nullptr;
+}
+
+int main(void) {
+    // input/output operations
+    system_write_line("What's up?");
+
+    String response = system_read_line();
+    system_write_line(response);
+
+    string_destroy(&response);
+
+    // process management
+    const intptr process_id = system_process_create("echo", "I'm a child process!");
+
+    system_process_wait(process_id);
+
+    // multithreading
+    const intptr thread_id = system_thread_create(hello_thread);
+
+    system_thread_join(thread_id);
+
+    // environment variables
+    system_set_environment_variable("LIBCDSA_TEST_ENV", "0");
+
+    const char* env = system_get_environment_variable("LIBCDSA_TEST_ENV");
+    system_write_line("LIBCDSA_TEST_ENV: %s", env);
+
+    system_remove_environment_variable("LIBCDSA_TEST_ENV");
+
+    // platform information
+    system_write_line(system_platform_name());
+    system_write_line(system_platform_version());
+    system_write_line(system_platform_architecture());
+
+    // time measurement
+    uint64 milliseconds = system_current_time(); // milliseconds elapsed since the Unix epoch.
+    uint64 nanoseconds = system_elapsed_time(); // nanoseconds suitable for measuring elapsed time.
+
+    system_write_line("%" PRIu64 "", milliseconds);
+    system_write_line("%" PRIu64 "", nanoseconds);
+
+    return 0;
+}
+```
+
+#### Util
+
+**File Operations**
+
 ```c++
 #include "util/file.h"
 #include "core/string.h"
@@ -565,7 +690,6 @@ int main(void) {
 #include <stdio.h>
 
 int main(void) {
-
     // file operations
     file_create("test_file.txt");
 
@@ -620,65 +744,7 @@ int main(void) {
 }
 ```
 
-```c++
-#include "core/system.h"
-#include "core/string.h"
-
-#include <inttypes.h>
-
-void* hello_thread(void*) {
-    system_write_line("I'm a thread!");
-    return nullptr;
-}
-
-int main() {
-
-    // input/output operations
-    system_write_line("What's up?");
-
-    String response = system_read_line();
-    system_write_line(response);
-
-    string_destroy(&response);
-
-
-    // process management
-    const intptr process_id = system_process_create("echo", "I'm a child process!");
-
-    system_process_wait(process_id);
-
-
-    // multithreading
-    const intptr thread_id = system_thread_create(hello_thread);
-
-    system_thread_join(thread_id);
-
-
-    // environment variables
-    system_set_environment_variable("LIBCDSA_TEST_ENV", "0");
-
-    const char* env = system_get_environment_variable("LIBCDSA_TEST_ENV");
-    system_write_line("LIBCDSA_TEST_ENV: %s", env);
-
-    system_remove_environment_variable("LIBCDSA_TEST_ENV");
-
-
-    // platform information
-    system_write_line(system_platform_name());
-    system_write_line(system_platform_version());
-    system_write_line(system_platform_architecture());
-
-
-    // time measurement
-    uint64 milliseconds = system_current_time(); // milliseconds elapsed since the Unix epoch.
-    uint64 nanoseconds = system_elapsed_time(); // nanoseconds suitable for measuring elapsed time.
-
-    system_write_line("%" PRIu64 "", milliseconds);
-    system_write_line("%" PRIu64 "", nanoseconds);
-
-    return 0;
-}
-```
+**Memory Allocators**
 
 ```c++
 #include "util/allocators.h"
@@ -730,6 +796,8 @@ int main(void) {
 }
 ```
 
+**Logging**
+
 ```c++
 #include "util/logging.h"
 
@@ -758,6 +826,8 @@ int main(void) {
     return 0;
 }
 ```
+
+**Date and Time**
 
 ```c++
 #include "util/temporal.h"
@@ -803,36 +873,6 @@ int main(void) {
         printf("The launch is in the future.\n");
     } else if (date_time_is_before(now, launch)) {
         printf("The launch has passed.\n");
-    }
-
-    return 0;
-}
-```
-
-```c++
-#include "core/assertions.h"
-
-int divide(int a, int b) {
-    assert_precondition(b != 0, "divisor must not be zero, received %d", b);
-
-    const int result = a / b;
-
-    assert_postcondition(result * b == a, "expected %d, received %d", a, result * b);
-
-    return result;
-}
-
-int main(void) {
-    int size = 5;
-    int capacity = 10;
-
-    assert_condition(size > 0, "expected positive size, received %d", size);
-    assert_invariant(size <= capacity, "size (%d) exceeds capacity (%d)", size, capacity);
-
-    divide(10, 2);
-
-    if (false) {
-        assert_unreachable();
     }
 
     return 0;

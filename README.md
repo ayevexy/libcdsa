@@ -71,8 +71,8 @@ Fundamental abstractions and functionality used throughout the library:
 - [Types](src/core/types.h): Common type aliases.
 - [Limits](src/core/limits.h): Typed numeric limit aliases.
 - [Macros](src/core/macros.h): General-purpose utility macros.
-- [Assertions](src/core/assertions.h): Custom assertion utilities.
 - [Errors](src/core/errors.h): Built-in error handling system.
+- [Assertions](src/core/assertions.h): Custom assertion utilities.
 - [Constraints](src/core/constraints.h): Precondition checks.
 - [Memory](src/core/memory.h): Memory management abstractions.
 - [Math](src/core/math.h): Mathematical functions, constants, and utilities.

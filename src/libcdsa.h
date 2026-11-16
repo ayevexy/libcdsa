@@ -47,11 +47,11 @@
 /** @brief Utility macros */
 #include "core/macros.h"
 
-/** @brief Custom assertions */
-#include "core/assertions.h"
-
 /** @brief Error handling mechanism */
 #include "core/errors.h"
+
+/** @brief Custom assertions */
+#include "core/assertions.h"
 
 /** @brief Validation and constraint utilities */
 #include "core/constraints.h"

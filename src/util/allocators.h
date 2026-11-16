@@ -22,6 +22,7 @@ typedef struct MemoryArena MemoryArena;
  *
  * @return the newly created arena, or nullptr on failure
  *
+ * @exception ILLEGAL_ARGUMENT_ERROR if capacity is zero
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
  */
 MemoryArena* memory_arena_new(bytes capacity);
@@ -83,7 +84,7 @@ typedef struct MemoryPool MemoryPool;
  *
  * @return the newly created memory pool, or nullptr on failure
  *
- * @exception ILLEGAL_ARGUMENT_ERROR If block_size or capacity is zero
+ * @exception ILLEGAL_ARGUMENT_ERROR If capacity or block_size is zero
  * @exception MEMORY_ALLOCATION_ERROR If memory allocation fails
  */
 MemoryPool* memory_pool_new(usize capacity, bytes block_size);

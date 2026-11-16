@@ -31,6 +31,8 @@ static void arena_reset_callback(void* arena) {
 }
 
 MemoryArena* memory_arena_new(bytes capacity) {
+    if (require_positive(capacity)) return nullptr;
+
     MemoryArena* arena = memory_try_alloc(sizeof(MemoryArena) + capacity);
     if (!arena) {
         set_error(MEMORY_ALLOCATION_ERROR, "failed to allocate memory for 'arena'");
@@ -138,10 +140,8 @@ static bool contains(const MemoryPool* pool, const void* pointer) {
 }
 
 MemoryPool* memory_pool_new(usize capacity, bytes block_size) {
-    if (block_size == 0 || capacity == 0) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "'capacity' and 'block_size' must be greater than zero");
-        return nullptr;
-    }
+    if (require_positive(capacity)) return nullptr;
+    if (require_positive(block_size)) return nullptr;
 
     block_size = align_block_size(block_size);
 

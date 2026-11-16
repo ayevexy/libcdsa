@@ -900,6 +900,19 @@ void (string_builder_insert)(StringBuilder* builder, int index, StringView strin
 String string_builder_to_string(StringBuilder* builder);
 
 /**
+ * @brief Builds a string from the string builder character sequence and closes it.
+ *
+ * @param builder the string builder
+ *
+ * @return a new allocated string
+ *
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @note The StringBuilder becomes invalid after this operation.
+ */
+String string_builder_build(StringBuilder* builder);
+
+/**
  * @brief Destroy a string builder and its internal buffer.
  *
  * @param builder pointer to a string builder

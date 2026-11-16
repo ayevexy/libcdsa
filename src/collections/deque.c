@@ -417,9 +417,7 @@ String deque_to_string(const Deque* deque) {
     }
     string_builder_append(builder, deque->size == 0 ? "|" : " |");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static int next_power_of_two(int x) {

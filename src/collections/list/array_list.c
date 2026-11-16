@@ -710,9 +710,7 @@ String array_list_to_string(const ArrayList* array_list) {
     }
     string_builder_append(builder, array_list->size == 0 ? "]" : " ]");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static bool ensure_capacity(ArrayList* array_list, int capacity) {

@@ -566,9 +566,7 @@ String tree_set_to_string(const TreeSet* tree_set) {
     }
     string_builder_append(builder, tree_set->size == 0 ? ")" : " )");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static TreeSet* create_tree_set_like(const TreeSet* tree_set) {

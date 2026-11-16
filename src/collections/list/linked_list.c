@@ -724,9 +724,7 @@ String linked_list_to_string(const LinkedList* linked_list) {
     }
     string_builder_append(builder, linked_list->size == 0 ? "]" : " ]");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static Node* create_node(const void* element) {

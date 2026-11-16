@@ -767,6 +767,15 @@ String string_builder_to_string(StringBuilder* builder) {
     return string_new(builder->buffer);
 }
 
+String string_builder_build(StringBuilder* builder) {
+    if (require_non_null(builder)) return nullptr;
+
+    String string = string_new(builder->buffer);
+
+    string_builder_close(builder);
+    return string;
+}
+
 void string_builder_close(StringBuilder* builder) {
     if (require_non_null(builder)) return;
     memory_dealloc(builder->buffer);

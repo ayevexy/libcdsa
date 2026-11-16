@@ -335,9 +335,7 @@ String priority_queue_to_string(const PriorityQueue* priority_queue) {
     }
     string_builder_append(builder, priority_queue->size == 0 ? "|" : " |");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static bool ensure_capacity(PriorityQueue* priority_queue, int capacity) {

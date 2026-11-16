@@ -405,9 +405,7 @@ String hash_set_to_string(const HashSet* hash_set) {
     }
     string_builder_append(builder, hash_set->size == 0 ? ")" : " )");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static int next_power_of_two(int x) {

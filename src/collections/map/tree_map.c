@@ -665,9 +665,7 @@ String tree_map_to_string(const TreeMap* tree_map) {
     }
     string_builder_append(builder, tree_map->size == 0 ? "]" : " ]");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static TreeMap* create_tree_map_like(const TreeMap* tree_map) {

@@ -508,9 +508,7 @@ String hash_map_to_string(const HashMap* hash_map) {
     }
     string_builder_append(builder, hash_map->size == 0 ? "]" : " ]");
 
-    String string = string_builder_to_string(builder);
-    string_builder_destroy(&builder);
-    return string;
+    return string_builder_build(builder);
 }
 
 static int next_power_of_two(int x) {

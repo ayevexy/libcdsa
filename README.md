@@ -7,6 +7,7 @@
 
 - [Overview](#overview)
   - [Features](#features)
+  - [Strengths](#strengths)
   - [Limitations](#limitations)
   - [Technologies](#technologies)
 - [Getting Started](#getting-started)
@@ -91,6 +92,18 @@ Additional functionality for common programming tasks:
 - [Allocators](src/util/allocators.h): Custom memory allocators.
 - [Logging](src/util/logging.h): Simple logging utility.
 - [Temporal](src/util/temporal.h): Date/Time abstractions.
+
+### Strengths
+
+Some of the library's strengths:
+
+- Rich feature set covering a wide range of data structures, algorithms, and utilities.
+- High-level abstractions designed to make C development easier.
+- Consistent and intuitive API design.
+- Modular architecture with independent headers.
+- No external dependencies.
+- Comprehensive documentation and test coverage.
+- Strictly C23 conformance.
 
 ### Limitations
 

@@ -45,7 +45,9 @@ Lock* lock_new(void) {
 }
 
 void lock_destroy(Lock** lock_pointer) {
-    if (require_non_null(lock_pointer, *lock_pointer)) return;
+    if (require_non_null(lock_pointer)) return;
+    if (require_non_null(*lock_pointer)) return;
+
     Lock* lock = *lock_pointer;
 
     const int mutex_status = pthread_mutex_destroy(&lock->mutex);
@@ -145,7 +147,9 @@ Monitor* monitor_new(void) {
 }
 
 void monitor_destroy(Monitor** monitor_pointer) {
-    if (require_non_null(monitor_pointer, *monitor_pointer)) return;
+    if (require_non_null(monitor_pointer)) return;
+    if (require_non_null(*monitor_pointer)) return;
+
     Monitor* monitor = *monitor_pointer;
 
     const int condition_status = pthread_cond_destroy(&monitor->condition);
@@ -251,7 +255,9 @@ Semaphore* semaphore_new(int permits) {
 }
 
 void semaphore_destroy(Semaphore** semaphore_pointer) {
-    if (require_non_null(semaphore_pointer, *semaphore_pointer)) return;
+    if (require_non_null(semaphore_pointer)) return;
+    if (require_non_null(*semaphore_pointer)) return;
+
     Semaphore* semaphore = *semaphore_pointer;
 
     const int status = sem_destroy(&semaphore->semaphore);
@@ -327,7 +333,9 @@ Barrier* barrier_new(int count) {
 }
 
 void barrier_destroy(Barrier** barrier_pointer) {
-    if (require_non_null(barrier_pointer, *barrier_pointer)) return;
+    if (require_non_null(barrier_pointer)) return;
+    if (require_non_null(*barrier_pointer)) return;
+
     Barrier* barrier = *barrier_pointer;
 
     const int status = pthread_barrier_destroy(&barrier->barrier);

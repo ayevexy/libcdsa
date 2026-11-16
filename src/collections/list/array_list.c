@@ -126,7 +126,8 @@ ArrayList* array_list_from(Collection collection, const ArrayListOptions* option
 }
 
 void array_list_destroy(ArrayList** array_list_pointer) {
-    if (require_non_null(array_list_pointer, *array_list_pointer)) return;
+    if (require_non_null(array_list_pointer)) return;
+    if (require_non_null(*array_list_pointer)) return;
     ArrayList* array_list = *array_list_pointer;
     for (int i = 0; i < array_list->size; i++) {
         array_list->destruct(array_list->elements[i]);
@@ -142,7 +143,8 @@ void (*array_list_destructor(ArrayList* array_list))(void*) {
 }
 
 void array_list_change_destructor(ArrayList* array_list, void (*destruct)(void*)) {
-    if (require_non_null(array_list, destruct)) return;
+    if (require_non_null(array_list)) return;
+    if (require_non_null(destruct)) return;
     array_list->destruct = destruct;
 }
 
@@ -340,7 +342,8 @@ int array_list_remove_range(ArrayList* array_list, int start_index, int end_inde
 }
 
 int array_list_remove_if(ArrayList* array_list, Predicate condition) {
-    if (require_non_null(array_list, condition)) return 0;
+    if (require_non_null(array_list)) return 0;
+    if (require_non_null(condition)) return 0;
     int count = 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
@@ -352,7 +355,8 @@ int array_list_remove_if(ArrayList* array_list, Predicate condition) {
 }
 
 void array_list_replace_all(ArrayList* array_list, Operator operator) {
-    if (require_non_null(array_list, operator)) return;
+    if (require_non_null(array_list)) return;
+    if (require_non_null(operator)) return;
     for (int i = 0; i < array_list->size; i++) {
         void* old_element = array_list->elements[i];
         void* new_element = operator(old_element);
@@ -423,7 +427,8 @@ Iterator* array_list_iterator_at(const ArrayList* array_list, int position) {
 }
 
 bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array_list) {
-    if (require_non_null(array_list, other_array_list)) return false;
+    if (require_non_null(array_list)) return false;
+    if (require_non_null(other_array_list)) return false;
     if (array_list == other_array_list) {
         return true;
     }
@@ -439,14 +444,16 @@ bool array_list_equals(const ArrayList* array_list, const ArrayList* other_array
 }
 
 void array_list_for_each(ArrayList* array_list, Consumer action) {
-    if (require_non_null(array_list, action)) return;
+    if (require_non_null(array_list)) return;
+    if (require_non_null(action)) return;
     for (int i = 0; i < array_list->size; i++) {
         action(array_list->elements[i]);
     }
 }
 
 void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgorithm algorithm) {
-    if (require_non_null(array_list, comparator)) return;
+    if (require_non_null(array_list)) return;
+    if (require_non_null(comparator)) return;
     if (array_list->size < 2) {
         return;
     }
@@ -461,7 +468,8 @@ void array_list_sort(ArrayList* array_list, Comparator comparator, SortingAlgori
 }
 
 void array_list_shuffle(ArrayList* array_list, int (*random)(void), ShufflingAlgorithm algorithm) {
-    if (require_non_null(array_list, random)) return;
+    if (require_non_null(array_list)) return;
+    if (require_non_null(random)) return;
     switch (algorithm) {
         case DURSTENFELD_SHUFFLE:  durstenfeld_shuffle(array_list, random);                 break;
         case SATTOLO_SHUFFLE:      sattolo_shuffle(array_list, random);                     break;
@@ -501,7 +509,8 @@ void array_list_clear(ArrayList* array_list) {
 }
 
 Optional array_list_find(const ArrayList* array_list, Predicate condition) {
-    if (require_non_null(array_list, condition)) return optional_empty();
+    if (require_non_null(array_list)) return optional_empty();
+    if (require_non_null(condition)) return optional_empty();
     for (int i = 0; i < array_list->size; i++) {
         void* element = array_list->elements[i];
         if (condition(element)) {
@@ -512,7 +521,8 @@ Optional array_list_find(const ArrayList* array_list, Predicate condition) {
 }
 
 Optional array_list_find_last(const ArrayList* array_list, Predicate condition) {
-    if (require_non_null(array_list, condition)) return optional_empty();
+    if (require_non_null(array_list)) return optional_empty();
+    if (require_non_null(condition)) return optional_empty();
     for (int i = array_list->size - 1; i >= 0; i--) {
         void* element = array_list->elements[i];
         if (condition(element)) {
@@ -523,7 +533,8 @@ Optional array_list_find_last(const ArrayList* array_list, Predicate condition) 
 }
 
 int array_list_index_where(const ArrayList* array_list, Predicate condition) {
-    if (require_non_null(array_list, condition)) return 0;
+    if (require_non_null(array_list)) return 0;
+    if (require_non_null(condition)) return 0;
     for (int i = 0; i < array_list->size; i++) {
         if (condition(array_list->elements[i])) {
             return i;
@@ -533,7 +544,8 @@ int array_list_index_where(const ArrayList* array_list, Predicate condition) {
 }
 
 int array_list_last_index_where(const ArrayList* array_list, Predicate condition) {
-    if (require_non_null(array_list, condition)) return 0;
+    if (require_non_null(array_list)) return 0;
+    if (require_non_null(condition)) return 0;
     for (int i = array_list->size - 1; i >= 0; i--) {
         if (condition(array_list->elements[i])) {
             return i;
@@ -568,7 +580,8 @@ bool array_list_contains_all(const ArrayList* array_list, Collection collection)
 }
 
 void* array_list_reduce(const ArrayList* array_list, void* identity, BiOperator accumulator) {
-    if (require_non_null(array_list, accumulator)) return nullptr;
+    if (require_non_null(array_list)) return nullptr;
+    if (require_non_null(accumulator)) return nullptr;
     void* result = identity;
     for (int i = 0; i < array_list->size; i++) {
         result = accumulator(result, array_list->elements[i]);
@@ -608,8 +621,8 @@ int array_list_last_index_of(const ArrayList* array_list, const void* element) {
 }
 
 int array_list_binary_search(const ArrayList* array_list, const void* element, Comparator compare) {
-    if (require_non_null(array_list, compare)) return 0;
-
+    if (require_non_null(array_list)) return 0;
+    if (require_non_null(compare)) return 0;
     int start_index = 0;
     int end_index = array_list->size - 1;
 

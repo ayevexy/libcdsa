@@ -105,7 +105,8 @@ int iterator_size(Iterator* iterator) {
 }
 
 void iterator_for_each_remaining(Iterator* iterator, Consumer action) {
-    if (require_non_null(iterator, action)) return;
+    if (require_non_null(iterator)) return;
+    if (require_non_null(action)) return;
 
     while (iterator_has_next(iterator)) {
         action(iterator_next(iterator));
@@ -113,7 +114,9 @@ void iterator_for_each_remaining(Iterator* iterator, Consumer action) {
 }
 
 void iterator_destroy(Iterator** iterator_pointer) {
-    if (require_non_null(iterator_pointer, *iterator_pointer)) return;
+    if (require_non_null(iterator_pointer)) return;
+    if (require_non_null(*iterator_pointer)) return;
+
     const Iterator* iterator = *iterator_pointer;
 
     memory_dealloc(iterator->iteration_context);

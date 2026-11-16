@@ -55,7 +55,8 @@ int (array_length)(const void* array) {
 }
 
 bool array_equals(const Array(void) array, const Array(void) other) {
-    if (require_non_null(array, other)) return false;
+    if (require_non_null(array)) return false;
+    if (require_non_null(other)) return false;
 
     if (array_length(array) != array_length(other)){
         return false;

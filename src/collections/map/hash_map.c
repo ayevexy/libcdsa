@@ -141,7 +141,8 @@ HashMap* hash_map_from(Collection entry_collection, const HashMapOptions* option
 }
 
 void hash_map_destroy(HashMap** hash_map_pointer) {
-    if (require_non_null(hash_map_pointer, *hash_map_pointer)) return;
+    if (require_non_null(hash_map_pointer)) return;
+    if (require_non_null(*hash_map_pointer)) return;
     HashMap* hash_map = *hash_map_pointer;
     destroy_entries(hash_map);
     memory_dealloc(hash_map->buckets);
@@ -155,7 +156,8 @@ void (*hash_map_key_destructor(HashMap* hash_map))(void*) {
 }
 
 void hash_map_change_key_destructor(HashMap* hash_map, void(*destruct)(void*)) {
-    if (require_non_null(hash_map, destruct)) return;
+    if (require_non_null(hash_map)) return;
+    if (require_non_null(destruct)) return;
     hash_map->key_destruct = destruct;
 }
 
@@ -165,12 +167,14 @@ void (*hash_map_value_destructor(HashMap* hash_map))(void*) {
 }
 
 void hash_map_change_value_destructor(HashMap* hash_map, void(*destruct)(void*)) {
-    if (require_non_null(hash_map, destruct)) return;
+    if (require_non_null(hash_map)) return;
+    if (require_non_null(destruct)) return;
     hash_map->value_destruct = destruct;
 }
 
 void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) {
-    if (require_non_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     void* old_value = hash_map_get(hash_map, key);
     void* new_value = remapper((void*) key, old_value);
     if (new_value) {
@@ -182,7 +186,8 @@ void* hash_map_compute(HashMap* hash_map, const void* key, BiOperator remapper) 
 }
 
 void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator mapper) {
-    if (require_non_null(hash_map, mapper)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
+    if (require_non_null(mapper)) return nullptr;
     if (!hash_map_contains_key(hash_map, key)) {
         void* new_value = mapper((void*) key);
         if (new_value) {
@@ -194,7 +199,8 @@ void* hash_map_compute_if_absent(HashMap* hash_map, const void* key, Operator ma
 }
 
 void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator remapper) {
-    if (require_non_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     if (hash_map_contains_key(hash_map, key)) {
         return hash_map_compute(hash_map, key, remapper);
     }
@@ -202,7 +208,8 @@ void* hash_map_compute_if_present(HashMap* hash_map, const void* key, BiOperator
 }
 
 void* hash_map_merge(HashMap* hash_map, const void* key, const void* value, BiOperator remapper) {
-    if (require_non_null(hash_map, remapper)) return nullptr;
+    if (require_non_null(hash_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     void* old_value = hash_map_get(hash_map, key);
     void* new_value = !old_value ? (void*) value : remapper(old_value, (void*) value);
     if (!new_value) {
@@ -332,7 +339,8 @@ bool hash_map_remove_if_equals(HashMap* hash_map, const void* key, const void* v
 }
 
 void hash_map_replace_all(HashMap* hash_map, BiOperator bi_operator) {
-    if (require_non_null(hash_map, bi_operator)) return;
+    if (require_non_null(hash_map)) return;
+    if (require_non_null(bi_operator)) return;
     for (int i = 0; i < hash_map->capacity; i++) {
         for (Entry* entry = hash_map->buckets[i]; entry; entry = entry->next) {
             void* old_value = entry->value;
@@ -366,7 +374,8 @@ Iterator* hash_map_iterator(const HashMap* hash_map) {
 }
 
 bool hash_map_equals(const HashMap* hash_map, const HashMap* other_hash_map) {
-    if (require_non_null(hash_map, other_hash_map)) return false;
+    if (require_non_null(hash_map)) return false;
+    if (require_non_null(other_hash_map)) return false;
     if (hash_map == other_hash_map) {
         return true;
     }

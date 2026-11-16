@@ -120,7 +120,8 @@ HashSet* hash_set_from(Collection collection, const HashSetOptions* options) {
 }
 
 void hash_set_destroy(HashSet** hash_set_pointer) {
-    if (require_non_null(hash_set_pointer, *hash_set_pointer)) return;
+    if (require_non_null(hash_set_pointer)) return;
+    if (require_non_null(*hash_set_pointer)) return;
     HashSet* hash_set = *hash_set_pointer;
     destroy_nodes(hash_set);
     memory_dealloc(hash_set->buckets);
@@ -134,7 +135,8 @@ void (*hash_set_destructor(HashSet* hash_set))(void*) {
 }
 
 void hash_set_change_destructor(HashSet* hash_set, void (*destruct)(void*)) {
-    if (require_non_null(hash_set, destruct)) return;
+    if (require_non_null(hash_set)) return;
+    if (require_non_null(destruct)) return;
     hash_set->destruct = destruct;
 }
 
@@ -214,7 +216,8 @@ int hash_set_remove_all(HashSet* hash_set, Collection collection) {
 }
 
 int hash_set_remove_if(HashSet* hash_set, Predicate condition) {
-    if (require_non_null(hash_set, condition)) return false;
+    if (require_non_null(hash_set)) return false;
+    if (require_non_null(condition)) return false;
     int count = 0;
     for (int i = 0; i < hash_set->capacity; i++) {
         for (Node* node = hash_set->buckets[i], * prev = nullptr, * next; node; node = next) {
@@ -268,7 +271,8 @@ Iterator* hash_set_iterator(const HashSet* hash_set) {
 }
 
 bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
-    if (require_non_null(hash_set, other_hash_set)) return false;
+    if (require_non_null(hash_set)) return false;
+    if (require_non_null(other_hash_set)) return false;
     if (hash_set == other_hash_set) {
         return true;
     }
@@ -286,7 +290,8 @@ bool hash_set_equals(const HashSet* hash_set, const HashSet* other_hash_set) {
 }
 
 void hash_set_for_each(HashSet* hash_set, Consumer action) {
-    if (require_non_null(hash_set, action)) return;
+    if (require_non_null(hash_set)) return;
+    if (require_non_null(action)) return;
     for (int i = 0; i < hash_set->capacity; i++) {
         for (const Node* node = hash_set->buckets[i]; node; node = node->next) {
             action(node->element);

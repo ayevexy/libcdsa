@@ -102,7 +102,8 @@ Deque* deque_from(Collection collection, const DequeOptions* options) {
 }
 
 void deque_destroy(Deque** deque_pointer) {
-    if (require_non_null(deque_pointer, *deque_pointer)) return;
+    if (require_non_null(deque_pointer)) return;
+    if (require_non_null(*deque_pointer)) return;
     Deque* deque = *deque_pointer;
     for (int i = 0; i < deque->size; i++) {
         const int index = (deque->first + i) & (deque->capacity - 1);
@@ -119,7 +120,8 @@ void (*deque_destructor(Deque* deque))(void*) {
 }
 
 void deque_change_destructor(Deque* deque, void (*destruct)(void*)) {
-    if (require_non_null(deque, destruct)) return;
+    if (require_non_null(deque)) return;
+    if (require_non_null(destruct)) return;
     deque->destruct = destruct;
 }
 
@@ -269,7 +271,8 @@ Iterator* deque_iterator_at(const Deque* deque, int position) {
 }
 
 bool deque_equals(const Deque* deque, const Deque* other_deque) {
-    if (require_non_null(deque, other_deque)) return false;
+    if (require_non_null(deque)) return false;
+    if (require_non_null(other_deque)) return false;
     if (deque == other_deque) {
         return true;
     }
@@ -287,7 +290,8 @@ bool deque_equals(const Deque* deque, const Deque* other_deque) {
 }
 
 void deque_for_each(Deque* deque, Consumer action) {
-    if (require_non_null(deque, action)) return;
+    if (require_non_null(deque)) return;
+    if (require_non_null(action)) return;
     for (int i = 0; i < deque->size; i++) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         action(deque->elements[index]);

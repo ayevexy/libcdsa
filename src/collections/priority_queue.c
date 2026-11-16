@@ -102,7 +102,8 @@ PriorityQueue* priority_queue_from(Collection collection, const PriorityQueueOpt
 }
 
 void priority_queue_destroy(PriorityQueue** priority_queue_pointer) {
-    if (require_non_null(priority_queue_pointer, *priority_queue_pointer)) return;
+    if (require_non_null(priority_queue_pointer)) return;
+    if (require_non_null(*priority_queue_pointer)) return;
     PriorityQueue* priority_queue = *priority_queue_pointer;
     for (int i = 0; i < priority_queue->size; i++) {
         priority_queue->destruct(priority_queue->elements[i]);
@@ -118,7 +119,8 @@ void (*priority_queue_destructor(PriorityQueue* priority_queue))(void*) {
 }
 
 void priority_queue_change_destructor(PriorityQueue* priority_queue, void (*destruct)(void*)) {
-    if (require_non_null(priority_queue, destruct)) return;
+    if (require_non_null(priority_queue)) return;
+    if (require_non_null(destruct)) return;
     priority_queue->destruct = destruct;
 }
 
@@ -207,7 +209,8 @@ Iterator* priority_queue_iterator(const PriorityQueue* priority_queue) {
 }
 
 bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQueue* other_priority_queue) {
-    if (require_non_null(priority_queue, other_priority_queue)) return false;
+    if (require_non_null(priority_queue)) return false;
+    if (require_non_null(other_priority_queue)) return false;
     if (priority_queue == other_priority_queue) {
         return true;
     }
@@ -223,7 +226,8 @@ bool priority_queue_equals(const PriorityQueue* priority_queue, const PriorityQu
 }
 
 void priority_queue_for_each(PriorityQueue* priority_queue, Consumer action) {
-    if (require_non_null(priority_queue, action)) return;
+    if (require_non_null(priority_queue)) return;
+    if (require_non_null(action)) return;
     for (int i = 0; i < priority_queue->size; i++) {
         action(priority_queue->elements[i]);
     }

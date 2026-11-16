@@ -132,7 +132,8 @@ TreeSet* tree_set_from(Collection collection, const TreeSetOptions* options) {
 }
 
 void tree_set_destroy(TreeSet** tree_set_pointer) {
-    if (require_non_null(tree_set_pointer, *tree_set_pointer)) return;
+    if (require_non_null(tree_set_pointer)) return;
+    if (require_non_null(*tree_set_pointer)) return;
     TreeSet* tree_set = *tree_set_pointer;
     destroy_nodes(tree_set, tree_set->root);
     memory_dealloc(tree_set->sentinel);
@@ -146,7 +147,8 @@ void (*tree_set_destructor(TreeSet* tree_set))(void*) {
 }
 
 void tree_set_change_destructor(TreeSet* tree_set, void(*destruct)(void*)) {
-    if (require_non_null(tree_set, destruct)) return;
+    if (require_non_null(tree_set)) return;
+    if (require_non_null(destruct)) return;
     tree_set->destruct = destruct;
 }
 
@@ -273,7 +275,8 @@ int tree_set_remove_all(TreeSet* tree_set, Collection collection) {
 }
 
 int tree_set_remove_if(TreeSet* tree_set, Predicate condition) {
-    if (require_non_null(tree_set, condition)) return false;
+    if (require_non_null(tree_set)) return false;
+    if (require_non_null(condition)) return false;
     int count = 0;
     Node* node = get_lower_node(tree_set, tree_set->root);
     while (node != tree_set->sentinel) {
@@ -327,7 +330,8 @@ Iterator* tree_set_iterator_at(const TreeSet* tree_set, int position) {
 }
 
 bool tree_set_equals(const TreeSet* tree_set, const TreeSet* other_tree_set) {
-    if (require_non_null(tree_set, other_tree_set)) return false;
+    if (require_non_null(tree_set)) return false;
+    if (require_non_null(other_tree_set)) return false;
     if (tree_set == other_tree_set) {
         return true;
     }
@@ -348,7 +352,8 @@ bool tree_set_equals(const TreeSet* tree_set, const TreeSet* other_tree_set) {
 }
 
 void tree_set_for_each(TreeSet* tree_set, Consumer action) {
-    if (require_non_null(tree_set, action)) return;
+    if (require_non_null(tree_set)) return;
+    if (require_non_null(action)) return;
     Node* node = get_lower_node(tree_set, tree_set->root);
     while (node != tree_set->sentinel) {
         action(node->element);

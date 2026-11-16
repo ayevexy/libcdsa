@@ -49,7 +49,9 @@ MemoryArena* memory_arena_new(bytes capacity) {
 }
 
 void memory_arena_destroy(MemoryArena** arena_pointer) {
-    if (require_non_null(arena_pointer, *arena_pointer)) return;
+    if (require_non_null(arena_pointer)) return;
+    if (require_non_null(*arena_pointer)) return;
+
     MemoryArena* arena = *arena_pointer;
 
     memory_dealloc(arena);
@@ -185,7 +187,9 @@ MemoryPool* memory_pool_new(usize capacity, bytes block_size) {
 }
 
 void memory_pool_destroy(MemoryPool** pool_pointer) {
-    if (require_non_null(pool_pointer, *pool_pointer)) return;
+    if (require_non_null(pool_pointer)) return;
+    if (require_non_null(*pool_pointer)) return;
+
     MemoryPool* pool = *pool_pointer;
 
     memory_dealloc(pool);
@@ -207,7 +211,8 @@ void* memory_pool_alloc(MemoryPool* pool) {
 }
 
 void memory_pool_dealloc(MemoryPool* pool, void* pointer) {
-    if (require_non_null(pool, pointer)) return;
+    if (require_non_null(pool)) return;
+    if (require_non_null(pointer)) return;
 
     if (!contains(pool, pointer)) {
         set_error(ILLEGAL_ARGUMENT_ERROR, "the pointer does not belong to the memory pool");

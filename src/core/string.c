@@ -88,7 +88,9 @@ String (string_ref)(StringView string) {
 }
 
 void (string_destroy)(String* string_pointer) {
-    if (require_non_null(string_pointer, *string_pointer)) return;
+    if (require_non_null(string_pointer)) return;
+    if (require_non_null(*string_pointer)) return;
+
     String string = *string_pointer;
 
     string_memory_dealloc(string);
@@ -163,7 +165,8 @@ bool (string_is_blank)(StringView string) {
 }
 
 int (string_compare)(StringView string, StringView other_string) {
-    if (require_non_null(string.data, other_string.data)) return 0;
+    if (require_non_null(string.data)) return 0;
+    if (require_non_null(other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
     if(string.length < other_string.length) return -1;
@@ -172,7 +175,8 @@ int (string_compare)(StringView string, StringView other_string) {
 }
 
 int (string_compare_ignore_case)(StringView string, StringView other_string) {
-    if (require_non_null(string.data, other_string.data)) return 0;
+    if (require_non_null(string.data)) return 0;
+    if (require_non_null(other_string.data)) return 0;
 
     if(string.length > other_string.length) return 1;
     if(string.length < other_string.length) return -1;
@@ -207,7 +211,8 @@ int (string_last_index_of_char)(StringView string, char character) {
 }
 
 int (string_index_of_substring)(StringView string, StringView substring) {
-    if (require_non_null(string.data, substring.data)) return 0;
+    if (require_non_null(string.data)) return 0;
+    if (require_non_null(substring.data)) return 0;
 
     if (substring.length == 0) return 0;
     if (substring.length > string.length) return -1;
@@ -221,7 +226,8 @@ int (string_index_of_substring)(StringView string, StringView substring) {
 }
 
 int (string_last_index_of_substring)(StringView string, StringView substring) {
-    if (require_non_null(string.data, substring.data)) return 0;
+    if (require_non_null(string.data)) return 0;
+    if (require_non_null(substring.data)) return 0;
 
     if (substring.length == 0) return 0;
     if (substring.length > string.length) return -1;
@@ -239,13 +245,15 @@ bool (string_contains)(StringView string, StringView substring) {
 }
 
 bool (string_starts_with)(StringView string, StringView prefix) {
-    if (require_non_null(string.data, prefix.data)) return false;
+    if (require_non_null(string.data)) return false;
+    if (require_non_null(prefix.data)) return false;
 
     return string.length >= prefix.length && memcmp(string.data, prefix.data, (bytes) prefix.length) == 0;
 }
 
 bool (string_ends_with)(StringView string, StringView suffix) {
-    if (require_non_null(string.data, suffix.data)) return false;
+    if (require_non_null(string.data)) return false;
+    if (require_non_null(suffix.data)) return false;
 
     return string.length >= suffix.length
         && memcmp(string.data + string.length - suffix.length, suffix.data, (bytes) suffix.length) == 0;
@@ -314,7 +322,8 @@ String (string_substring)(StringView string, int start, int length) {
 }
 
 String (string_concat)(StringView string, StringView other_string) {
-    if (require_non_null(string.data, other_string.data)) return nullptr;
+    if (require_non_null(string.data)) return nullptr;
+    if (require_non_null(other_string.data)) return nullptr;
 
     const int length = string.length + other_string.length;
 
@@ -346,7 +355,10 @@ String (string_replace_char)(StringView string, char character, char replacement
 }
 
 String (string_replace_substring)(StringView string, StringView target, StringView replacement) {
-    if (require_non_null(string.data, target.data, replacement.data)) return nullptr;
+    if (require_non_null(string.data)) return nullptr;
+    if (require_non_null(target.data)) return nullptr;
+    if (require_non_null(replacement.data)) return nullptr;
+
     if (target.length == 0) return nullptr;
 
     int count = 0;

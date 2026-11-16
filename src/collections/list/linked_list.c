@@ -129,7 +129,8 @@ LinkedList* linked_list_from(Collection collection, const LinkedListOptions* opt
 }
 
 void linked_list_destroy(LinkedList** linked_list_pointer) {
-    if (require_non_null(linked_list_pointer, *linked_list_pointer)) return;
+    if (require_non_null(linked_list_pointer)) return;
+    if (require_non_null(*linked_list_pointer)) return;
     LinkedList* linked_list = *linked_list_pointer;
     destroy_nodes(linked_list);
     memory_dealloc(linked_list);
@@ -142,7 +143,8 @@ void (*linked_list_destructor(LinkedList* linked_list))(void*) {
 }
 
 void linked_list_change_destructor(LinkedList* linked_list, void (*destruct)(void*)) {
-    if (require_non_null(linked_list, destruct)) return;
+    if (require_non_null(linked_list)) return;
+    if (require_non_null(destruct)) return;
     linked_list->destruct = destruct;
 }
 
@@ -370,7 +372,8 @@ int linked_list_remove_range(LinkedList* linked_list, int start_index, int end_i
 }
 
 int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
-    if (require_non_null(linked_list, condition)) return 0;
+    if (require_non_null(linked_list)) return 0;
+    if (require_non_null(condition)) return 0;
     int count = 0;
     for (Node* node = linked_list->head, * next; node; node = next) {
         next = node->next;
@@ -383,7 +386,8 @@ int linked_list_remove_if(LinkedList* linked_list, Predicate condition) {
 }
 
 void linked_list_replace_all(LinkedList* linked_list, Operator operator) {
-    if (require_non_null(linked_list, operator)) return;
+    if (require_non_null(linked_list)) return;
+    if (require_non_null(operator)) return;
     for (Node* node = linked_list->head; node; node = node->next) {
         void* old_element = node->element;
         void* new_element = operator(old_element);
@@ -432,7 +436,8 @@ Iterator* linked_list_iterator_at(const LinkedList* linked_list, int position) {
 }
 
 bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_linked_list) {
-    if (require_non_null(linked_list, other_linked_list)) return false;
+    if (require_non_null(linked_list)) return false;
+    if (require_non_null(other_linked_list)) return false;
     if (linked_list == other_linked_list) {
         return true;
     }
@@ -451,14 +456,16 @@ bool linked_list_equals(const LinkedList* linked_list, const LinkedList* other_l
 }
 
 void linked_list_for_each(LinkedList* linked_list, Consumer action) {
-    if (require_non_null(linked_list, action)) return;
+    if (require_non_null(linked_list)) return;
+    if (require_non_null(action)) return;
     for (const Node* node = linked_list->head; node; node = node->next) {
         action(node->element);
     }
 }
 
 void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlgorithm algorithm) {
-    if (require_non_null(linked_list, comparator)) return;
+    if (require_non_null(linked_list)) return;
+    if (require_non_null(comparator)) return;
     if (linked_list->size < 2) {
         return;
     }
@@ -473,7 +480,8 @@ void linked_list_sort(LinkedList* linked_list, Comparator comparator, SortingAlg
 }
 
 void linked_list_shuffle(LinkedList* linked_list, int (*random)(void), ShufflingAlgorithm algorithm) {
-    if (require_non_null(linked_list, random)) return;
+    if (require_non_null(linked_list)) return;
+    if (require_non_null(random)) return;
     bool shuffled = false;
     switch (algorithm) {
         case DURSTENFELD_SHUFFLE:  shuffled = durstenfeld_shuffle(linked_list, random);     break;
@@ -531,7 +539,8 @@ void linked_list_clear(LinkedList* linked_list) {
 }
 
 Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
-    if (require_non_null(linked_list, condition)) return optional_empty();
+    if (require_non_null(linked_list)) return optional_empty();
+    if (require_non_null(condition)) return optional_empty();
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
             return optional_of(node->element);
@@ -541,7 +550,8 @@ Optional linked_list_find(const LinkedList* linked_list, Predicate condition) {
 }
 
 Optional linked_list_find_last(const LinkedList* linked_list, Predicate condition) {
-    if (require_non_null(linked_list, condition)) return optional_empty();
+    if (require_non_null(linked_list)) return optional_empty();
+    if (require_non_null(condition)) return optional_empty();
     for (const Node* node = linked_list->tail; node; node = node->prev) {
         if (condition(node->element)) {
             return optional_of(node->element);
@@ -551,7 +561,8 @@ Optional linked_list_find_last(const LinkedList* linked_list, Predicate conditio
 }
 
 int linked_list_index_where(const LinkedList* linked_list, Predicate condition) {
-    if (require_non_null(linked_list, condition)) return 0;
+    if (require_non_null(linked_list)) return 0;
+    if (require_non_null(condition)) return 0;
     int index = 0;
     for (const Node* node = linked_list->head; node; node = node->next) {
         if (condition(node->element)) {
@@ -563,7 +574,8 @@ int linked_list_index_where(const LinkedList* linked_list, Predicate condition) 
 }
 
 int linked_list_last_index_where(const LinkedList* linked_list, Predicate condition) {
-    if (require_non_null(linked_list, condition)) return 0;
+    if (require_non_null(linked_list)) return 0;
+    if (require_non_null(condition)) return 0;
     int index = linked_list->size - 1;
     for (const Node* node = linked_list->tail; node; node = node->prev) {
         if (condition(node->element)) {
@@ -600,7 +612,8 @@ bool linked_list_contains_all(const LinkedList* linked_list, Collection collecti
 }
 
 void* linked_list_reduce(const LinkedList* linked_list, void* identity, BiOperator accumulator) {
-    if (require_non_null(linked_list, accumulator)) return nullptr;
+    if (require_non_null(linked_list)) return nullptr;
+    if (require_non_null(accumulator)) return nullptr;
     void* result = identity;
     for (const Node* node = linked_list->head; node; node = node->next) {
         result = accumulator(result, node->element);

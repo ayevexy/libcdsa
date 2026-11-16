@@ -152,7 +152,8 @@ TreeMap* tree_map_from(Collection entry_collection, const TreeMapOptions* option
 }
 
 void tree_map_destroy(TreeMap** tree_map_pointer) {
-    if (require_non_null(tree_map_pointer, *tree_map_pointer)) return;
+    if (require_non_null(tree_map_pointer)) return;
+    if (require_non_null(*tree_map_pointer)) return;
     TreeMap* tree_map = *tree_map_pointer;
     destroy_entries(tree_map, tree_map->root);
     memory_dealloc(tree_map->sentinel);
@@ -166,7 +167,8 @@ void (*tree_map_key_destructor(TreeMap* tree_map))(void*) {
 }
 
 void tree_map_change_key_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
-    if (require_non_null(tree_map, destruct)) return;
+    if (require_non_null(tree_map)) return;
+    if (require_non_null(destruct)) return;
     tree_map->key_destruct = destruct;
 }
 
@@ -176,12 +178,14 @@ void (*tree_map_value_destructor(TreeMap* tree_map))(void*) {
 }
 
 void tree_map_change_value_destructor(TreeMap* tree_map, void(*destruct)(void*)) {
-    if (require_non_null(tree_map, destruct)) return;
+    if (require_non_null(tree_map)) return;
+    if (require_non_null(destruct)) return;
     tree_map->value_destruct = destruct;
 }
 
 void* tree_map_compute(TreeMap* tree_map, const void* key, BiOperator remapper) {
-    if (require_non_null(tree_map, remapper)) return nullptr;
+    if (require_non_null(tree_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     void* old_value = tree_map_get(tree_map, key);
     void* new_value = remapper((void*) key, old_value);
     if (new_value) {
@@ -193,7 +197,8 @@ void* tree_map_compute(TreeMap* tree_map, const void* key, BiOperator remapper) 
 }
 
 void* tree_map_compute_if_absent(TreeMap* tree_map, const void* key, Operator mapper) {
-    if (require_non_null(tree_map, mapper)) return nullptr;
+    if (require_non_null(tree_map)) return nullptr;
+    if (require_non_null(mapper)) return nullptr;
     if (!tree_map_contains_key(tree_map, key)) {
         void* new_value = mapper((void*) key);
         if (new_value) {
@@ -205,7 +210,8 @@ void* tree_map_compute_if_absent(TreeMap* tree_map, const void* key, Operator ma
 }
 
 void* tree_map_compute_if_present(TreeMap* tree_map, const void* key, BiOperator remapper) {
-    if (require_non_null(tree_map, remapper)) return nullptr;
+    if (require_non_null(tree_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     if (tree_map_contains_key(tree_map, key)) {
         return tree_map_compute(tree_map, key, remapper);
     }
@@ -213,7 +219,8 @@ void* tree_map_compute_if_present(TreeMap* tree_map, const void* key, BiOperator
 }
 
 void* tree_map_merge(TreeMap* tree_map, const void* key, const void* value, BiOperator remapper) {
-    if (require_non_null(tree_map, remapper)) return nullptr;
+    if (require_non_null(tree_map)) return nullptr;
+    if (require_non_null(remapper)) return nullptr;
     void* old_value = tree_map_get(tree_map, key);
     void* new_value = !old_value ? (void*) value : remapper(old_value, (void*) value);
     if (!new_value) {
@@ -379,7 +386,8 @@ MapEntry tree_map_remove_last(TreeMap* tree_map) {
 }
 
 void tree_map_replace_all(TreeMap* tree_map, BiOperator bi_operator) {
-    if (require_non_null(tree_map, bi_operator)) return;
+    if (require_non_null(tree_map)) return;
+    if (require_non_null(bi_operator)) return;
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
     while (entry != tree_map->sentinel) {
         void* old_value = entry->value;
@@ -417,7 +425,8 @@ Iterator* tree_map_iterator_at(const TreeMap* tree_map, int position) {
 }
 
 bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
-    if (require_non_null(tree_map, other_tree_map)) return false;
+    if (require_non_null(tree_map)) return false;
+    if (require_non_null(other_tree_map)) return false;
     if (tree_map == other_tree_map) {
         return true;
     }
@@ -440,7 +449,8 @@ bool tree_map_equals(const TreeMap* tree_map, const TreeMap* other_tree_map) {
 }
 
 void tree_map_for_each(TreeMap* tree_map, BiConsumer action) {
-    if (require_non_null(tree_map, action)) return;
+    if (require_non_null(tree_map)) return;
+    if (require_non_null(action)) return;
     Entry* entry = get_lower_entry(tree_map, tree_map->root);
     while (entry != tree_map->sentinel) {
         action((void*) entry->key, entry->value);

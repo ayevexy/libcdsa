@@ -106,6 +106,9 @@ struct Sequence {
 
 const Error SEQUENCE_PROCESSING_ERROR = ERROR("SEQUENCE_PROCESSING_ERROR", "an error occurred while processing the sequence pipeline");
 
+#define require_operation_limit(sequence) \
+    require((sequence)->pipeline.operation_count < OPERATION_LIMIT, ILLEGAL_STATE_ERROR, "Sequence has exceeded the operation limit")
+
 typedef struct IterationContextOptions IterationContextOptions;
 
 static SequencePipeLineResult process_sequence_pipeline(Sequence*);
@@ -201,7 +204,8 @@ Sequence* sequence_generate(Supplier generator, int limit) {
 }
 
 Sequence* sequence_iterate(void* seed, Predicate has_next, Operator next) {
-    if (require_non_null(has_next, next)) return nullptr;
+    if (require_non_null(has_next)) return nullptr;
+    if (require_non_null(next)) return nullptr;
     return sequence_create(create_iterator((IterationContextOptions) { .seed = seed, .test = has_next, .operate = next }));
 }
 
@@ -209,64 +213,66 @@ void sequence_close(Sequence* sequence) {
     release_pipeline_resources(sequence);
 }
 
-static bool require_operation_count(Sequence* sequence) {
-    if (sequence->pipeline.operation_count >= OPERATION_LIMIT) {
-        set_error(ILLEGAL_STATE_ERROR, "Sequence has more than 15 chained operations", OPERATION_LIMIT);
-        return true;
-    }
-    return false;
-}
-
 void sequence_filter(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(predicate)) return;
+    if (require_operation_limit(sequence)) return;
 
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = FILTER, .filter = { predicate } };
 }
 
 void sequence_map(Sequence* sequence, Operator operator) {
-    if (require_non_null(sequence, operator) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(operator)) return;
+    if (require_operation_limit(sequence)) return;
 
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = MAP, .map = { operator } };
 }
 
 void sequence_peek(Sequence* sequence, Consumer action) {
-    if (require_non_null(sequence, action) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(action)) return;
+    if (require_operation_limit(sequence)) return;
 
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = PEEK, .peek = { action } };
 }
 
 void sequence_limit(Sequence* sequence, int max_size) {
-    if (require_non_null(sequence) || require_operation_count(sequence)) return;
-    if (max_size < 0) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "'max_size' can't be negative");
-        return;
-    }
+    if (require_non_null(sequence)) return;
+    if (require_non_negative(max_size)) return;
+    if (require_operation_limit(sequence)) return;
+
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = LIMIT, .limit = { 0, max_size } };
 }
 
 void sequence_skip(Sequence* sequence, int count) {
-    if (require_non_null(sequence) || require_operation_count(sequence)) return;
-    if (count < 0) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "'count' can't be negative");
-        return;
-    }
+    if (require_non_null(sequence)) return;
+    if (require_non_negative(count)) return;
+    if (require_operation_limit(sequence)) return;
+
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = SKIP, .skip = { 0, count } };
 }
 
 void sequence_take_while(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(predicate)) return;
+    if (require_operation_limit(sequence)) return;
 
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = TAKE_WHILE, .take_while = { predicate } };
 }
 
 void sequence_drop_while(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(predicate)) return;
+    if (require_operation_limit(sequence)) return;
 
     sequence->pipeline.operations[sequence->pipeline.operation_count++] = (Operation) { .type = DROP_WHILE, .drop_while = { predicate } };
 }
 
 void sequence_distinct(Sequence* sequence, bool (*equals)(const void*, const void*)) {
-    if (require_non_null(sequence, equals) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(equals)) return;
+    if (require_operation_limit(sequence)) return;
 
     if (!sequence->pipeline.distinct) {
         HashSet* set; Error error = attempt(set = set_new((&(HashSetOptions) {
@@ -287,7 +293,9 @@ void sequence_distinct(Sequence* sequence, bool (*equals)(const void*, const voi
 }
 
 void sequence_sort(Sequence* sequence, Comparator comparator, SortingAlgorithm algorithm) {
-    if (require_non_null(sequence, comparator) || require_operation_count(sequence)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(comparator)) return;
+    if (require_operation_limit(sequence)) return;
 
     if (sequence->pipeline.sort_count >= SORT_OPERATION_LIMIT) {
         set_error(ILLEGAL_STATE_ERROR, "Sequence has more than 5 chained sort operations", SORT_OPERATION_LIMIT);
@@ -303,14 +311,19 @@ void sequence_sort(Sequence* sequence, Comparator comparator, SortingAlgorithm a
 }
 
 void sequence_for_each(Sequence* sequence, Consumer action) {
-    if (require_non_null(sequence, action)) return;
+    if (require_non_null(sequence)) return;
+    if (require_non_null(action)) return;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = FOR_EACH, .for_each = { action } };
 
     process_sequence_pipeline(sequence);
 }
 
 void* sequence_reduce(Sequence* sequence, void* identity, BiOperator accumulator) {
-    if (require_non_null(sequence, identity, accumulator)) return nullptr;
+    if (require_non_null(sequence)) return nullptr;
+    if (require_non_null(identity)) return nullptr;
+    if (require_non_null(accumulator)) return nullptr;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = REDUCE, .reduce = { identity, accumulator } };
 
     return process_sequence_pipeline(sequence).element;
@@ -318,41 +331,52 @@ void* sequence_reduce(Sequence* sequence, void* identity, BiOperator accumulator
 
 Optional sequence_find(Sequence* sequence) {
     if (require_non_null(sequence)) return optional_empty();
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = FIND, .find = { nullptr, false } };
 
     return process_sequence_pipeline(sequence).optional;
 }
 
 Optional sequence_max(Sequence* sequence, Comparator comparator) {
-    if (require_non_null(sequence, comparator)) return optional_empty();
+    if (require_non_null(sequence)) return optional_empty();
+    if (require_non_null(comparator)) return optional_empty();
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = MAX, .max_min = { nullptr, false, comparator } };
 
     return process_sequence_pipeline(sequence).optional;
 }
 
 Optional sequence_min(Sequence* sequence, Comparator comparator) {
-    if (require_non_null(sequence, comparator)) return optional_empty();
+    if (require_non_null(sequence)) return optional_empty();
+    if (require_non_null(comparator)) return optional_empty();
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = MIN, .max_min = { nullptr, false, comparator } };
 
     return process_sequence_pipeline(sequence).optional;
 }
 
 bool sequence_all_match(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate)) return false;
+    if (require_non_null(sequence)) return false;
+    if (require_non_null(predicate)) return false;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = ALL_MATCH, .match = { .test = predicate } };
 
     return process_sequence_pipeline(sequence).match;
 }
 
 bool sequence_any_match(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate)) return false;
+    if (require_non_null(sequence)) return false;
+    if (require_non_null(predicate)) return false;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = ANY_MATCH, .match = { .test = predicate } };
 
     return process_sequence_pipeline(sequence).match;
 }
 
 bool sequence_none_match(Sequence* sequence, Predicate predicate) {
-    if (require_non_null(sequence, predicate)) return false;
+    if (require_non_null(sequence)) return false;
+    if (require_non_null(predicate)) return false;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = NONE_MATCH, .match = { .test = predicate } };
 
     return process_sequence_pipeline(sequence).match;
@@ -360,6 +384,7 @@ bool sequence_none_match(Sequence* sequence, Predicate predicate) {
 
 int sequence_count(Sequence* sequence) {
     if (require_non_null(sequence)) return 0;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = COUNT, .count = { 0 } };
 
     return process_sequence_pipeline(sequence).count;
@@ -367,6 +392,7 @@ int sequence_count(Sequence* sequence) {
 
 Array(void*) sequence_to_array(Sequence* sequence) {
     if (require_non_null(sequence)) return nullptr;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = TO_ARRAY, .to_array = { list_new(DEFAULT_ARRAY_LIST_OPTIONS()) } };
 
     return process_sequence_pipeline(sequence).array;
@@ -374,6 +400,7 @@ Array(void*) sequence_to_array(Sequence* sequence) {
 
 void* sequence_collect(Sequence* sequence, Collection collection) {
     if (require_non_null(sequence)) return nullptr;
+
     sequence->pipeline.terminal_operation = (TerminalOperation) { .type = COLLECT, .collect = { (void*) collection.data_structure, collection.type } } ;
 
     return process_sequence_pipeline(sequence).data_structure;

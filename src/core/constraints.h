@@ -9,38 +9,15 @@
 #include "core/errors.h"
 
 /**
- * @brief Requires one or more pointers to be non-null.
+ * @brief Requires a pointer to be not null.
  *
- * Sets NULL_POINTER_ERROR if any of the specified pointers is null.
+ * Sets NULL_POINTER_ERROR if the specified pointer is null.
  *
- * This macro accepts one to six pointer arguments.
- *
- * @param ... one or more pointers to validate
+ * @param pointer the pointer to validate
  *
  * @return true if the requirement is violated, false otherwise
  */
-#define require_non_null(...) dispatch_require_non_null(__VA_ARGS__,    \
-    require_non_null_6,                                                 \
-    require_non_null_5,                                                 \
-    require_non_null_4,                                                 \
-    require_non_null_3,                                                 \
-    require_non_null_2,                                                 \
-    require_non_null_1                                                  \
-)(__VA_ARGS__)
-
-#define dispatch_require_non_null(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
-
-#define require_non_null_6(pointer, ...) (require_non_null_1(pointer) || require_non_null_5(__VA_ARGS__))
-
-#define require_non_null_5(pointer, ...) (require_non_null_1(pointer) || require_non_null_4(__VA_ARGS__))
-
-#define require_non_null_4(pointer, ...) (require_non_null_1(pointer) || require_non_null_3(__VA_ARGS__))
-
-#define require_non_null_3(pointer, ...) (require_non_null_1(pointer) || require_non_null_2(__VA_ARGS__))
-
-#define require_non_null_2(pointer, ...) (require_non_null_1(pointer) || require_non_null_1(__VA_ARGS__))
-
-#define require_non_null_1(pointer) \
+#define require_non_null(pointer) \
     require((pointer) != nullptr, NULL_POINTER_ERROR, "'"#pointer"'"" must not be null")
 
 /**

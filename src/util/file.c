@@ -213,7 +213,8 @@ void file_close(File* file) {
 }
 
 bytes file_read(File* file, void* buffer, bytes size) {
-    if (require_non_null(file, buffer)) return 0;
+    if (require_non_null(file)) return 0;
+    if (require_non_null(buffer)) return 0;
 
     const bytes read = fread(buffer, 1, size, file->self);
 
@@ -235,7 +236,8 @@ int file_read_char(File* file) {
 }
 
 String (file_read_line)(File* file, char* buffer, bytes size) {
-    if (require_non_null(file, buffer)) return nullptr;
+    if (require_non_null(file)) return nullptr;
+    if (require_non_null(buffer)) return nullptr;
 
     const char* line = fgets(buffer, (int) size, file->self);
     if (!line && ferror(file->self)) {
@@ -246,7 +248,8 @@ String (file_read_line)(File* file, char* buffer, bytes size) {
 }
 
 bytes file_write(File* file, const void* buffer, bytes size) {
-    if (require_non_null(file, buffer)) return -1;
+    if (require_non_null(file)) return -1;
+    if (require_non_null(buffer)) return -1;
 
     const bytes written = fwrite(buffer, 1, size, file->self);
 
@@ -268,7 +271,8 @@ int file_write_char(File* file, int character) {
 }
 
 int (file_write_string)(File* file, StringView string, ...) {
-    if (require_non_null(file, string.data)) return -1;
+    if (require_non_null(file)) return -1;
+    if (require_non_null(string.data)) return -1;
 
     va_list parameters = {};
     va_start(parameters, string);
@@ -283,7 +287,8 @@ int (file_write_string)(File* file, StringView string, ...) {
 }
 
 int file_write_string_variadic(File* file, StringView string, va_list parameters) {
-    if (require_non_null(file, string.data)) return -1;
+    if (require_non_null(file)) return -1;
+    if (require_non_null(string.data)) return -1;
 
     const int bytes = vfprintf(file->self, string.data, parameters);
     if (bytes < 0) {
@@ -422,7 +427,8 @@ FileInfo file_info(const char* path) {
 #endif
 
 void file_copy(const char* source, const char* destination) {
-    if (require_non_null(source, destination)) return;
+    if (require_non_null(source)) return;
+    if (require_non_null(destination)) return;
 
     FILE* input = nullptr, * output = nullptr;
     errno = 0;
@@ -459,7 +465,8 @@ void file_copy(const char* source, const char* destination) {
 }
 
 void file_move(const char* old_path, const char* new_path) {
-    if (require_non_null(old_path, new_path)) return;
+    if (require_non_null(old_path)) return;
+    if (require_non_null(new_path)) return;
 
     if (rename(old_path, new_path) == -1) {
         file_set_error(errno);

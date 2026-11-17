@@ -17,7 +17,7 @@ typedef struct Allocator Allocator;
  *
  * @details By default it points to the `global_memory_allocator`.
  */
-extern Allocator* string_memory_allocator;
+extern thread_local Allocator* string_memory_allocator;
 
 /**
  * @brief String type abstraction over c-strings. The String type is immutable

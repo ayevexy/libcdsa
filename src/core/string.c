@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <limits.h>
 
-Allocator* string_memory_allocator = &global_memory_allocator;
+thread_local Allocator* string_memory_allocator = &global_memory_allocator;
 
 static void* string_memory_try_alloc(bytes size) {
     if (require_non_null(string_memory_allocator)) return nullptr;

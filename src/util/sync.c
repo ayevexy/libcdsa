@@ -233,10 +233,7 @@ struct Semaphore {
 };
 
 Semaphore* semaphore_new(int permits) {
-    if (permits < 0) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "number of permits can't be negative");
-        return nullptr;
-    }
+    if (require_non_negative(permits)) return nullptr;
     Semaphore* semaphore = memory_try_alloc(sizeof(Semaphore));
 
     if (!semaphore) {
@@ -310,11 +307,7 @@ struct Barrier {
 };
 
 Barrier* barrier_new(int count) {
-    if (count <= 0) {
-        set_error(ILLEGAL_ARGUMENT_ERROR, "count can't be zero or negative");
-        return nullptr;
-    }
-
+    if (require_positive(count)) return nullptr;
     Barrier* barrier = memory_try_alloc(sizeof(Barrier));
 
     if (!barrier) {

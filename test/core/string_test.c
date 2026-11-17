@@ -518,26 +518,31 @@ void test_string_to_lowercase() {
     string_destroy_all(&string, &lowercase);
 }
 
-// String cleanup is intentionally omitted for simplicity.
+#define ASSERT_STRING_VALUE(expected, value) do {               \
+    String string = string_value_of(value);                     \
+    TEST_ASSERT_EQUAL_STRING(expected, string_data(string));    \
+    string_destroy(&string);                                    \
+} while (false)
+
 void test_string_value_of() {
-    TEST_ASSERT_EQUAL_STRING("true", string_data(string_value_of(true)));
-    TEST_ASSERT_EQUAL_STRING("\n", string_data(string_value_of((char) 10)));
+    ASSERT_STRING_VALUE("true", true);
+    ASSERT_STRING_VALUE("\n", (char) 10);
 
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((short) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ushort) 10)));
+    ASSERT_STRING_VALUE("10", (short) 10);
+    ASSERT_STRING_VALUE("10", (ushort) 10);
 
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((int) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((uint) 10)));
+    ASSERT_STRING_VALUE("10", (int) 10);
+    ASSERT_STRING_VALUE("10", (uint) 10);
 
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((long) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ulong) 10)));
+    ASSERT_STRING_VALUE("10", (long) 10);
+    ASSERT_STRING_VALUE("10", (ulong) 10);
 
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((llong) 10)));
-    TEST_ASSERT_EQUAL_STRING("10", string_data(string_value_of((ullong) 10)));
+    ASSERT_STRING_VALUE("10", (llong) 10);
+    ASSERT_STRING_VALUE("10", (ullong) 10);
 
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((float) 10)));
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((double) 10)));
-    TEST_ASSERT_EQUAL_STRING("10.000000", string_data(string_value_of((ldouble) 10)));
+    ASSERT_STRING_VALUE("10.000000", (float) 10);
+    ASSERT_STRING_VALUE("10.000000", (double) 10);
+    ASSERT_STRING_VALUE("10.000000", (ldouble) 10);
 }
 
 void test_string_to_number() {

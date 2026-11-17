@@ -39,6 +39,20 @@ typedef struct StringView {
 } StringView;
 
 /**
+ * @brief The StringBuilder type represent a mutable resizable sequence of characters.
+ * It should be used to dynamically create custom strings of variable size.
+ * Accessing its fields directly is discouraged.
+ *
+ * Memory ownership:
+ * - StringBuilder must be freed using `string_builder_destroy()`.
+ */
+typedef struct {
+    char* buffer;
+    int length;
+    int capacity;
+} StringBuilder;
+
+/**
  * @brief Creates a string view.
  *
  * @param string the string
@@ -841,20 +855,6 @@ void string_destroy_generic(void* string);
  * @return the string
  */
 String string_to_string_generic(const void* string);
-
-/**
- * @brief The StringBuilder type represent a mutable resizable sequence of characters.
- * It should be used to dynamically create custom strings of variable size.
- * Accessing its fields directly is discouraged.
- *
- * Memory ownership:
- * - StringBuilder must be freed using `string_builder_destroy()`.
- */
-typedef struct {
-    char* buffer;
-    int length;
-    int capacity;
-} StringBuilder;
 
 /**
  * @brief Creates a new string builder with a default capacity of ten.

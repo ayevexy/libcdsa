@@ -110,7 +110,8 @@
 #define math_pow(base, exponent) _Generic((base) + (exponent), \
     float:    math_pow_float,                                  \
     double:   math_pow_double,                                 \
-    ldouble:  math_pow_ldouble                                 \
+    ldouble:  math_pow_ldouble,                                \
+    default:  math_pow_double                                  \
 )(base, exponent)
 
 /**
@@ -128,13 +129,15 @@
 #define math_log_natural(n) _Generic((n), \
     float:    math_log_natural_float,     \
     double:   math_log_natural_double,    \
-    ldouble:  math_log_natural_ldouble    \
+    ldouble:  math_log_natural_ldouble,   \
+    default:  math_log_natural_double     \
 )(n)
 
 #define math_log_base(n, base) _Generic((n) + (base), \
     float:    math_log_base_float,                    \
     double:   math_log_base_double,                   \
-    ldouble:  math_log_base_ldouble                   \
+    ldouble:  math_log_base_ldouble,                  \
+    default:  math_log_base_double                    \
 )(n, base)
 
 /**
@@ -147,7 +150,8 @@
 #define math_log2(n) _Generic((n), \
     float:    math_log2_float,     \
     double:   math_log2_double,    \
-    ldouble:  math_log2_ldouble    \
+    ldouble:  math_log2_ldouble,   \
+    default:  math_log2_double     \
 )(n)
 
 /**
@@ -160,7 +164,8 @@
 #define math_log10(n) _Generic((n), \
     float:    math_log10_float,     \
     double:   math_log10_double,    \
-    ldouble:  math_log10_ldouble    \
+    ldouble:  math_log10_ldouble,   \
+    default:  math_log10_double     \
 )(n)
 
 /**
@@ -173,7 +178,8 @@
 #define math_log1p(n) _Generic((n), \
     float:    math_log1p_float,     \
     double:   math_log1p_double,    \
-    ldouble:  math_log1p_ldouble    \
+    ldouble:  math_log1p_ldouble,   \
+    default:  math_log1p_double     \
 )(n)
 
 /**
@@ -186,7 +192,8 @@
 #define math_exp(n) _Generic((n), \
     float:    math_exp_float,     \
     double:   math_exp_double,    \
-    ldouble:  math_exp_ldouble    \
+    ldouble:  math_exp_ldouble,   \
+    default:  math_exp_double     \
 )(n)
 
 /**
@@ -199,7 +206,8 @@
 #define math_exp2(n) _Generic((n), \
     float:    math_exp2_float,     \
     double:   math_exp2_double,    \
-    ldouble:  math_exp2_ldouble    \
+    ldouble:  math_exp2_ldouble,   \
+    default:  math_exp2_double     \
 )(n)
 
 /**
@@ -212,7 +220,8 @@
 #define math_expm1(n) _Generic((n), \
     float:    math_expm1_float,     \
     double:   math_expm1_double,    \
-    ldouble:  math_expm1_ldouble    \
+    ldouble:  math_expm1_ldouble,   \
+    default:  math_expm1_double     \
 )(n)
 
 /**
@@ -225,7 +234,8 @@
 #define math_sqrt(n) _Generic((n), \
     float:    math_sqrt_float,     \
     double:   math_sqrt_double,    \
-    ldouble:  math_sqrt_ldouble    \
+    ldouble:  math_sqrt_ldouble,   \
+    default:  math_sqrt_double     \
 )(n)
 
 /**
@@ -238,7 +248,8 @@
 #define math_cbrt(n) _Generic((n), \
     float:    math_cbrt_float,     \
     double:   math_cbrt_double,    \
-    ldouble:  math_cbrt_ldouble    \
+    ldouble:  math_cbrt_ldouble,   \
+    default:  math_cbrt_double     \
 )(n)
 
 /**
@@ -252,7 +263,8 @@
 #define math_hypot(x, y) _Generic((x) + (y), \
     float:    math_hypot_float,              \
     double:   math_hypot_double,             \
-    ldouble:  math_hypot_ldouble             \
+    ldouble:  math_hypot_ldouble,            \
+    default:  math_hypot_double              \
 )(x, y)
 
 /**
@@ -265,7 +277,8 @@
 #define math_sin(n) _Generic((n), \
     float:    math_sin_float,     \
     double:   math_sin_double,    \
-    ldouble:  math_sin_ldouble    \
+    ldouble:  math_sin_ldouble,   \
+    default:  math_sin_double     \
 )(n)
 
 /**
@@ -278,7 +291,8 @@
 #define math_cos(n) _Generic((n), \
     float:    math_cos_float,     \
     double:   math_cos_double,    \
-    ldouble:  math_cos_ldouble    \
+    ldouble:  math_cos_ldouble,   \
+    default:  math_cos_double     \
 )(n)
 
 /**
@@ -291,7 +305,8 @@
 #define math_tan(n) _Generic((n), \
     float:    math_tan_float,     \
     double:   math_tan_double,    \
-    ldouble:  math_tan_ldouble    \
+    ldouble:  math_tan_ldouble,   \
+    default:  math_tan_double     \
 )(n)
 
 /**
@@ -304,7 +319,8 @@
 #define math_asin(n) _Generic((n), \
     float:    math_asin_float,     \
     double:   math_asin_double,    \
-    ldouble:  math_asin_ldouble    \
+    ldouble:  math_asin_ldouble,   \
+    default:  math_asin_double     \
 )(n)
 
 /**
@@ -317,7 +333,8 @@
 #define math_acos(n) _Generic((n), \
     float:    math_acos_float,     \
     double:   math_acos_double,    \
-    ldouble:  math_acos_ldouble    \
+    ldouble:  math_acos_ldouble,   \
+    default:  math_acos_double     \
 )(n)
 
 /**
@@ -330,7 +347,8 @@
 #define math_atan(n) _Generic((n), \
     float:    math_atan_float,     \
     double:   math_atan_double,    \
-    ldouble:  math_atan_ldouble    \
+    ldouble:  math_atan_ldouble,   \
+    default:  math_atan_double     \
 )(n)
 
 /**
@@ -345,7 +363,8 @@
 #define math_atan2(y, x) _Generic((y) + (x), \
     float:    math_atan2_float,              \
     double:   math_atan2_double,             \
-    ldouble:  math_atan2_ldouble             \
+    ldouble:  math_atan2_ldouble,            \
+    default:  math_atan2_double              \
 )(y, x)
 
 /**
@@ -358,7 +377,8 @@
 #define math_sinh(n) _Generic((n), \
     float:    math_sinh_float,     \
     double:   math_sinh_double,    \
-    ldouble:  math_sinh_ldouble    \
+    ldouble:  math_sinh_ldouble,   \
+    default:  math_sinh_double     \
 )(n)
 
 /**
@@ -371,7 +391,8 @@
 #define math_cosh(n) _Generic((n), \
     float:    math_cosh_float,     \
     double:   math_cosh_double,    \
-    ldouble:  math_cosh_ldouble    \
+    ldouble:  math_cosh_ldouble,   \
+    default:  math_cosh_double     \
 )(n)
 
 /**
@@ -384,7 +405,8 @@
 #define math_tanh(n) _Generic((n), \
     float:    math_tanh_float,     \
     double:   math_tanh_double,    \
-    ldouble:  math_tanh_ldouble    \
+    ldouble:  math_tanh_ldouble,   \
+    default:  math_tanh_double     \
 )(n)
 
 /**
@@ -397,7 +419,8 @@
 #define math_asinh(n) _Generic((n), \
     float:    math_asinh_float,     \
     double:   math_asinh_double,    \
-    ldouble:  math_asinh_ldouble    \
+    ldouble:  math_asinh_ldouble,   \
+    default:  math_asinh_double     \
 )(n)
 
 /**
@@ -410,7 +433,8 @@
 #define math_acosh(n) _Generic((n), \
     float:    math_acosh_float,     \
     double:   math_acosh_double,    \
-    ldouble:  math_acosh_ldouble    \
+    ldouble:  math_acosh_ldouble,   \
+    default:  math_acosh_double     \
 )(n)
 
 /**
@@ -423,7 +447,8 @@
 #define math_atanh(n) _Generic((n), \
     float:    math_atanh_float,     \
     double:   math_atanh_double,    \
-    ldouble:  math_atanh_ldouble    \
+    ldouble:  math_atanh_ldouble,   \
+    default:  math_atanh_double     \
 )(n)
 
 /**
@@ -436,7 +461,8 @@
 #define math_to_radians(degrees) _Generic((degrees), \
     float:    math_to_radians_float,                 \
     double:   math_to_radians_double,                \
-    ldouble:  math_to_radians_ldouble                \
+    ldouble:  math_to_radians_ldouble,               \
+    default:  math_to_radians_double                 \
 )(degrees)
 
 /**
@@ -449,7 +475,8 @@
 #define math_to_degrees(radians) _Generic((radians), \
     float:    math_to_degrees_float,                 \
     double:   math_to_degrees_double,                \
-    ldouble:  math_to_degrees_ldouble                \
+    ldouble:  math_to_degrees_ldouble,               \
+    default:  math_to_degrees_double                 \
 )(radians)
 
 /**
@@ -740,7 +767,8 @@
 #define math_sign(n) _Generic((n), \
     float:    math_sign_float,     \
     double:   math_sign_double,    \
-    ldouble:  math_sign_ldouble    \
+    ldouble:  math_sign_ldouble,   \
+    default:  math_sign_double     \
 )(n)
 
 /**
@@ -754,7 +782,8 @@
 #define math_copysign(value, sign) _Generic((value) + (sign), \
     float:    math_copysign_float,                            \
     double:   math_copysign_double,                           \
-    ldouble:  math_copysign_ldouble                           \
+    ldouble:  math_copysign_ldouble,                          \
+    default:  math_copysign_double                            \
 )(value, sign)
 
 /**
@@ -765,10 +794,11 @@
  *
  * @return the result of scaling `n` by `2^exponent`
  */
-#define math_scalb(n, exponent) _Generic((n),                                            \
-    float:    _Generic((exponent), int: math_scalbn_float,   long: math_scalbln_float),  \
-    double:   _Generic((exponent), int: math_scalbn_double,  long: math_scalbln_double), \
-    ldouble:  _Generic((exponent), int: math_scalbn_ldouble, long: math_scalbln_ldouble) \
+#define math_scalb(n, exponent) _Generic((n),                                             \
+    float:    _Generic((exponent), int: math_scalbn_float,   long: math_scalbln_float),   \
+    double:   _Generic((exponent), int: math_scalbn_double,  long: math_scalbln_double),  \
+    ldouble:  _Generic((exponent), int: math_scalbn_ldouble, long: math_scalbln_ldouble), \
+    default:  _Generic((exponent), int: math_scalbn_double,  long: math_scalbln_double)   \
 )(n, exponent)
 
 /**
@@ -782,7 +812,8 @@
 #define math_frexp(n, exponent) _Generic((n), \
     float:    math_frexp_float,               \
     double:   math_frexp_double,              \
-    ldouble:  math_frexp_ldouble              \
+    ldouble:  math_frexp_ldouble,             \
+    default:  math_frexp_double               \
 )(n, exponent)
 
 /**
@@ -796,7 +827,8 @@
 #define math_ldexp(n, exponent) _Generic((n), \
     float:    math_ldexp_float,               \
     double:   math_ldexp_double,              \
-    ldouble:  math_ldexp_ldouble              \
+    ldouble:  math_ldexp_ldouble,             \
+    default:  math_ldexp_double               \
 )(n, exponent)
 
 /**
@@ -810,7 +842,8 @@
 #define math_next_after(from, to) _Generic((from) + (to), \
     float:    math_next_after_float,                      \
     double:   math_next_after_double,                     \
-    ldouble:  math_next_after_ldouble                     \
+    ldouble:  math_next_after_ldouble,                    \
+    default:  math_next_after_double                      \
 )(from, to)
 
 /**
@@ -824,7 +857,8 @@
 #define math_next_toward(from, to) _Generic((from) + (to), \
     float:    math_next_toward_float,                      \
     double:   math_next_toward_double,                     \
-    ldouble:  math_next_toward_ldouble                     \
+    ldouble:  math_next_toward_ldouble,                    \
+    default:  math_next_toward_double                      \
 )(from, to)
 
 /**
@@ -838,7 +872,8 @@
 #define math_remainder(a, b) _Generic((a) + (b), \
     float:    math_remainder_float,              \
     double:   math_remainder_double,             \
-    ldouble:  math_remainder_ldouble             \
+    ldouble:  math_remainder_ldouble,            \
+    default:  math_remainder_double              \
 )(a, b)
 
 /**
@@ -852,7 +887,8 @@
 #define math_mod(a, b) _Generic((a) + (b), \
     float:    math_mod_float,              \
     double:   math_mod_double,             \
-    ldouble:  math_mod_ldouble             \
+    ldouble:  math_mod_ldouble,            \
+    default:  math_mod_double              \
 )(a, b)
 
 /**
@@ -866,7 +902,8 @@
 #define math_fdim(a, b) _Generic((a) + (b), \
     float:    math_fdim_float,              \
     double:   math_fdim_double,             \
-    ldouble:  math_fdim_ldouble             \
+    ldouble:  math_fdim_ldouble,            \
+    default:  math_fdim_double              \
 )(a, b)
 
 /**
@@ -881,7 +918,8 @@
 #define math_fma(a, b, c) _Generic((a) + (b) + (c), \
     float:    math_fma_float,                       \
     double:   math_fma_double,                      \
-    ldouble:  math_fma_ldouble                      \
+    ldouble:  math_fma_ldouble,                     \
+    default:  math_fma_double                       \
 )(a, b, c)
 
 /**
@@ -894,7 +932,8 @@
 #define math_round(n) _Generic((n), \
     float:    math_round_float,     \
     double:   math_round_double,    \
-    ldouble:  math_round_ldouble    \
+    ldouble:  math_round_ldouble,   \
+    default:  math_round_double     \
 )(n)
 
 /**
@@ -907,7 +946,8 @@
 #define math_floor(n) _Generic((n), \
     float:    math_floor_float,     \
     double:   math_floor_double,    \
-    ldouble:  math_floor_ldouble    \
+    ldouble:  math_floor_ldouble,   \
+    default:  math_floor_double     \
 )(n)
 
 /**
@@ -920,7 +960,8 @@
 #define math_ceil(n) _Generic((n), \
     float:    math_ceil_float,     \
     double:   math_ceil_double,    \
-    ldouble:  math_ceil_ldouble    \
+    ldouble:  math_ceil_ldouble,   \
+    default:  math_ceil_double     \
 )(n)
 
 /**
@@ -933,7 +974,8 @@
 #define math_trunc(n) _Generic((n), \
     float:    math_trunc_float,     \
     double:   math_trunc_double,    \
-    ldouble:  math_trunc_ldouble    \
+    ldouble:  math_trunc_ldouble,   \
+    default:  math_trunc_double     \
 )(n)
 
 /**
@@ -946,7 +988,8 @@
 #define math_is_nan(n) _Generic((n), \
     float:    math_is_nan_float,     \
     double:   math_is_nan_double,    \
-    ldouble:  math_is_nan_ldouble    \
+    ldouble:  math_is_nan_ldouble,   \
+    default:  math_is_nan_double     \
 )(n)
 
 /**
@@ -959,7 +1002,8 @@
 #define math_is_infinite(n) _Generic((n), \
     float:    math_is_infinite_float,     \
     double:   math_is_infinite_double,    \
-    ldouble:  math_is_infinite_ldouble    \
+    ldouble:  math_is_infinite_ldouble,   \
+    default:  math_is_infinite_double     \
 )(n)
 
 /**
@@ -972,7 +1016,8 @@
 #define math_is_finite(n) _Generic((n), \
     float:    math_is_finite_float,     \
     double:   math_is_finite_double,    \
-    ldouble:  math_is_finite_ldouble    \
+    ldouble:  math_is_finite_ldouble,   \
+    default:  math_is_finite_double     \
 )(n)
 
 /**
@@ -985,7 +1030,8 @@
 #define math_is_normal(n) _Generic((n), \
     float:    math_is_normal_float,     \
     double:   math_is_normal_double,    \
-    ldouble:  math_is_normal_ldouble    \
+    ldouble:  math_is_normal_ldouble,   \
+    default:  math_is_normal_double     \
 )(n)
 
 /**
@@ -1000,7 +1046,8 @@
 #define math_is_close(a, b, tolerance) _Generic((a) + (b) + (tolerance), \
     float:    math_is_close_float,                                       \
     double:   math_is_close_double,                                      \
-    ldouble:  math_is_close_ldouble                                      \
+    ldouble:  math_is_close_ldouble,                                     \
+    default:  math_is_close_double                                       \
 )(a, b, tolerance)
 
 /**
@@ -1015,9 +1062,9 @@
 #define math_lerp(start, end, amount) _Generic((start) + (end) + (amount), \
     float:    math_lerp_float,                                             \
     double:   math_lerp_double,                                            \
-    ldouble:  math_lerp_ldouble                                            \
+    ldouble:  math_lerp_ldouble,                                           \
+    default:  math_lerp_double                                             \
 )(start, end, amount)
-
 
 /**
  * @brief Calculates a percentage of a floating-point number.
@@ -1030,7 +1077,8 @@
 #define math_percentage(value, percentage_) _Generic((value) + (percentage_), \
     float:    math_percentage_float,                                          \
     double:   math_percentage_double,                                         \
-    ldouble:  math_percentage_ldouble                                         \
+    ldouble:  math_percentage_ldouble,                                        \
+    default:  math_percentage_double                                         \
 )(value, percentage_)
 
 /**
@@ -1049,7 +1097,8 @@
 #define math_random_(T, state, ...) _Generic((T) 0, \
     float:    math_random_float,                    \
     double:   math_random_double,                   \
-    ldouble:  math_random_ldouble                   \
+    ldouble:  math_random_ldouble,                  \
+    default:  math_random_double                    \
 )(state)
 
 /*-----------------------------------------------------------------------------------------*/

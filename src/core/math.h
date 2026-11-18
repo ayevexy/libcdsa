@@ -1078,7 +1078,7 @@
     float:    math_percentage_float,                                          \
     double:   math_percentage_double,                                         \
     ldouble:  math_percentage_ldouble,                                        \
-    default:  math_percentage_double                                         \
+    default:  math_percentage_double                                          \
 )(value, percentage_)
 
 /**

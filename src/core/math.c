@@ -4,6 +4,7 @@
 #include "core/errors.h"
 
 #include <math.h>
+#include <time.h>
 
 /* -------------------------------------------------------------------------- */
 /* Signed integer functions                                                   */
@@ -535,7 +536,11 @@
     }
 
 static uint64 splitmix64_next(uint64* state) {
-    static thread_local uint64 default_state = 0xDEADBEEF;
+    static thread_local uint64 default_state = 0;
+
+    if (default_state == 0) {
+        default_state = (uint64) time(nullptr) ^ (uintptr_t) &default_state;
+    }
 
     uint64* current_state = state ? state : &default_state;
 

@@ -33,7 +33,14 @@
  *
  * @exception ARITHMETIC_ERROR if the addition overflows
  */
-#define math_add_exact(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(add_exact, a, b)
+#define math_add_exact(a, b) _Generic((a) + (b), \
+    int:     math_add_exact_int,                 \
+    uint:    math_add_exact_uint,                \
+    long:    math_add_exact_long,                \
+    ulong:   math_add_exact_ulong,               \
+    llong:   math_add_exact_llong,               \
+    ullong:  math_add_exact_ullong               \
+)(a, b)
 
 /**
  * @brief Subtracts the second number from the first, checking for arithmetic overflow or underflow.
@@ -45,7 +52,14 @@
  *
  * @exception ARITHMETIC_ERROR if the subtraction overflows or underflows
  */
-#define math_sub_exact(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(sub_exact, a, b)
+#define math_sub_exact(a, b) _Generic((a) + (b), \
+    int:     math_sub_exact_int,                 \
+    uint:    math_sub_exact_uint,                \
+    long:    math_sub_exact_long,                \
+    ulong:   math_sub_exact_ulong,               \
+    llong:   math_sub_exact_llong,               \
+    ullong:  math_sub_exact_ullong               \
+)(a, b)
 
 /**
  * @brief Multiplies two numbers, checking for arithmetic overflow.
@@ -57,7 +71,14 @@
  *
  * @exception ARITHMETIC_ERROR if the multiplication overflows
  */
-#define math_mul_exact(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(mul_exact, a, b)
+#define math_mul_exact(a, b) _Generic((a) + (b), \
+    int:     math_mul_exact_int,                 \
+    uint:    math_mul_exact_uint,                \
+    long:    math_mul_exact_long,                \
+    ulong:   math_mul_exact_ulong,               \
+    llong:   math_mul_exact_llong,               \
+    ullong:  math_mul_exact_ullong               \
+)(a, b)
 
 /**
  * @brief Divides the first number by the second, checking for division by zero and arithmetic overflow.
@@ -69,7 +90,14 @@
  *
  * @exception ARITHMETIC_ERROR if the divisor is zero or the division overflows
  */
-#define math_div_exact(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(div_exact, a, b)
+#define math_div_exact(a, b) _Generic((a) + (b), \
+    int:     math_div_exact_int,                 \
+    uint:    math_div_exact_uint,                \
+    long:    math_div_exact_long,                \
+    ulong:   math_div_exact_ulong,               \
+    llong:   math_div_exact_llong,               \
+    ullong:  math_div_exact_ullong               \
+)(a, b)
 
 /**
  * @brief Raises a number to a given power.
@@ -79,7 +107,11 @@
  *
  * @return the result of raising the base to the exponent
  */
-#define math_pow(base, exponent) MATH_DISPATCH_FLOATS_TWO_ARGS(pow, base, exponent)
+#define math_pow(base, exponent) _Generic((base) + (exponent), \
+    float:    math_pow_float,                                  \
+    double:   math_pow_double,                                 \
+    ldouble:  math_pow_ldouble                                 \
+)(base, exponent)
 
 /**
  * @brief Computes the natural or base-specific logarithm of a number.
@@ -93,9 +125,17 @@
 
 #define dispatch_math_log(_1, _2, NAME, ...) NAME
 
-#define math_log_natural(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log_natural, n)
+#define math_log_natural(n) _Generic((n), \
+    float:    math_log_natural_float,     \
+    double:   math_log_natural_double,    \
+    ldouble:  math_log_natural_ldouble    \
+)(n)
 
-#define math_log_base(n, base) MATH_DISPATCH_FLOATS_TWO_ARGS(log_base, n, base)
+#define math_log_base(n, base) _Generic((n) + (base), \
+    float:    math_log_base_float,                    \
+    double:   math_log_base_double,                   \
+    ldouble:  math_log_base_ldouble                   \
+)(n, base)
 
 /**
  * @brief Computes the base-2 logarithm of a number.
@@ -104,7 +144,11 @@
  *
  * @return the base-2 logarithm of n
  */
-#define math_log2(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log2, n)
+#define math_log2(n) _Generic((n), \
+    float:    math_log2_float,     \
+    double:   math_log2_double,    \
+    ldouble:  math_log2_ldouble    \
+)(n)
 
 /**
  * @brief Computes the base-10 logarithm of a number.
@@ -113,7 +157,11 @@
  *
  * @return the base-10 logarithm of n
  */
-#define math_log10(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log10, n)
+#define math_log10(n) _Generic((n), \
+    float:    math_log10_float,     \
+    double:   math_log10_double,    \
+    ldouble:  math_log10_ldouble    \
+)(n)
 
 /**
  * @brief Computes the natural logarithm of one plus a number.
@@ -122,7 +170,11 @@
  *
  * @return the natural logarithm of one plus n
  */
-#define math_log1p(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(log1p, n)
+#define math_log1p(n) _Generic((n), \
+    float:    math_log1p_float,     \
+    double:   math_log1p_double,    \
+    ldouble:  math_log1p_ldouble    \
+)(n)
 
 /**
  * @brief Computes the exponential of a number.
@@ -131,7 +183,11 @@
  *
  * @return e raised to the power of n
  */
-#define math_exp(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(exp, n)
+#define math_exp(n) _Generic((n), \
+    float:    math_exp_float,     \
+    double:   math_exp_double,    \
+    ldouble:  math_exp_ldouble    \
+)(n)
 
 /**
  * @brief Computes two raised to the power of a number.
@@ -140,7 +196,11 @@
  *
  * @return two raised to the power of n
  */
-#define math_exp2(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(exp2, n)
+#define math_exp2(n) _Generic((n), \
+    float:    math_exp2_float,     \
+    double:   math_exp2_double,    \
+    ldouble:  math_exp2_ldouble    \
+)(n)
 
 /**
  * @brief Computes the exponential of a number minus one.
@@ -149,7 +209,11 @@
  *
  * @return e raised to the power of n, minus one
  */
-#define math_expm1(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(expm1, n)
+#define math_expm1(n) _Generic((n), \
+    float:    math_expm1_float,     \
+    double:   math_expm1_double,    \
+    ldouble:  math_expm1_ldouble    \
+)(n)
 
 /**
  * @brief Computes the square root of a number.
@@ -158,7 +222,11 @@
  *
  * @return the square root of n
  */
-#define math_sqrt(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(sqrt, n)
+#define math_sqrt(n) _Generic((n), \
+    float:    math_sqrt_float,     \
+    double:   math_sqrt_double,    \
+    ldouble:  math_sqrt_ldouble    \
+)(n)
 
 /**
  * @brief Computes the cube root of a number.
@@ -167,7 +235,11 @@
  *
  * @return the cube root of n
  */
-#define math_cbrt(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(cbrt, n)
+#define math_cbrt(n) _Generic((n), \
+    float:    math_cbrt_float,     \
+    double:   math_cbrt_double,    \
+    ldouble:  math_cbrt_ldouble    \
+)(n)
 
 /**
  * @brief Computes the hypotenuse of a right triangle.
@@ -177,7 +249,11 @@
  *
  * @return the length of the hypotenuse
  */
-#define math_hypot(x, y) MATH_DISPATCH_FLOATS_TWO_ARGS(hypot, x, y)
+#define math_hypot(x, y) _Generic((x) + (y), \
+    float:    math_hypot_float,              \
+    double:   math_hypot_double,             \
+    ldouble:  math_hypot_ldouble             \
+)(x, y)
 
 /**
  * @brief Returns the sine of an angle in radians.
@@ -186,7 +262,11 @@
  *
  * @return the sine of n
  */
-#define math_sin(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(sin, n)
+#define math_sin(n) _Generic((n), \
+    float:    math_sin_float,     \
+    double:   math_sin_double,    \
+    ldouble:  math_sin_ldouble    \
+)(n)
 
 /**
  * @brief Returns the cosine of an angle in radians.
@@ -195,7 +275,11 @@
  *
  * @return the cosine of n
  */
-#define math_cos(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(cos, n)
+#define math_cos(n) _Generic((n), \
+    float:    math_cos_float,     \
+    double:   math_cos_double,    \
+    ldouble:  math_cos_ldouble    \
+)(n)
 
 /**
  * @brief Returns the tangent of an angle in radians.
@@ -204,7 +288,11 @@
  *
  * @return the tangent of n
  */
-#define math_tan(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(tan, n)
+#define math_tan(n) _Generic((n), \
+    float:    math_tan_float,     \
+    double:   math_tan_double,    \
+    ldouble:  math_tan_ldouble    \
+)(n)
 
 /**
  * @brief Returns the arc sine of a value.
@@ -213,7 +301,11 @@
  *
  * @return the arc sine of n in radians
  */
-#define math_asin(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(asin, n)
+#define math_asin(n) _Generic((n), \
+    float:    math_asin_float,     \
+    double:   math_asin_double,    \
+    ldouble:  math_asin_ldouble    \
+)(n)
 
 /**
  * @brief Returns the arc cosine of a value.
@@ -222,7 +314,11 @@
  *
  * @return the arc cosine of n in radians
  */
-#define math_acos(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(acos, n)
+#define math_acos(n) _Generic((n), \
+    float:    math_acos_float,     \
+    double:   math_acos_double,    \
+    ldouble:  math_acos_ldouble    \
+)(n)
 
 /**
  * @brief Returns the arc tangent of a value.
@@ -231,7 +327,11 @@
  *
  * @return the arc tangent of n in radians
  */
-#define math_atan(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(atan, n)
+#define math_atan(n) _Generic((n), \
+    float:    math_atan_float,     \
+    double:   math_atan_double,    \
+    ldouble:  math_atan_ldouble    \
+)(n)
 
 /**
  * @brief Returns the arc tangent of y / x, using the signs of both arguments
@@ -242,7 +342,11 @@
  *
  * @return the arc tangent of y / x in radians
  */
-#define math_atan2(y, x) MATH_DISPATCH_FLOATS_TWO_ARGS(atan2, y, x)
+#define math_atan2(y, x) _Generic((y) + (x), \
+    float:    math_atan2_float,              \
+    double:   math_atan2_double,             \
+    ldouble:  math_atan2_ldouble             \
+)(y, x)
 
 /**
  * @brief Returns the hyperbolic sine of a value.
@@ -251,7 +355,11 @@
  *
  * @return the hyperbolic sine of n
  */
-#define math_sinh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(sinh, n)
+#define math_sinh(n) _Generic((n), \
+    float:    math_sinh_float,     \
+    double:   math_sinh_double,    \
+    ldouble:  math_sinh_ldouble    \
+)(n)
 
 /**
  * @brief Returns the hyperbolic cosine of a value.
@@ -260,7 +368,11 @@
  *
  * @return the hyperbolic cosine of n
  */
-#define math_cosh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(cosh, n)
+#define math_cosh(n) _Generic((n), \
+    float:    math_cosh_float,     \
+    double:   math_cosh_double,    \
+    ldouble:  math_cosh_ldouble    \
+)(n)
 
 /**
  * @brief Returns the hyperbolic tangent of a value.
@@ -269,7 +381,11 @@
  *
  * @return the hyperbolic tangent of n
  */
-#define math_tanh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(tanh, n)
+#define math_tanh(n) _Generic((n), \
+    float:    math_tanh_float,     \
+    double:   math_tanh_double,    \
+    ldouble:  math_tanh_ldouble    \
+)(n)
 
 /**
  * @brief Returns the inverse hyperbolic sine of a value.
@@ -278,7 +394,11 @@
  *
  * @return the inverse hyperbolic sine of n
  */
-#define math_asinh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(asinh, n)
+#define math_asinh(n) _Generic((n), \
+    float:    math_asinh_float,     \
+    double:   math_asinh_double,    \
+    ldouble:  math_asinh_ldouble    \
+)(n)
 
 /**
  * @brief Returns the inverse hyperbolic cosine of a value.
@@ -287,7 +407,11 @@
  *
  * @return the inverse hyperbolic cosine of n
  */
-#define math_acosh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(acosh, n)
+#define math_acosh(n) _Generic((n), \
+    float:    math_acosh_float,     \
+    double:   math_acosh_double,    \
+    ldouble:  math_acosh_ldouble    \
+)(n)
 
 /**
  * @brief Returns the inverse hyperbolic tangent of a value.
@@ -296,7 +420,11 @@
  *
  * @return the inverse hyperbolic tangent of n
  */
-#define math_atanh(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(atanh, n)
+#define math_atanh(n) _Generic((n), \
+    float:    math_atanh_float,     \
+    double:   math_atanh_double,    \
+    ldouble:  math_atanh_ldouble    \
+)(n)
 
 /**
  * @brief Converts degrees to radians.
@@ -305,7 +433,11 @@
  *
  * @return the value in radians
  */
-#define math_to_radians(degrees) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_radians, degrees)
+#define math_to_radians(degrees) _Generic((degrees), \
+    float:    math_to_radians_float,                 \
+    double:   math_to_radians_double,                \
+    ldouble:  math_to_radians_ldouble                \
+)(degrees)
 
 /**
  * @brief Converts radians to degrees.
@@ -314,7 +446,11 @@
  *
  * @return the value in degrees
  */
-#define math_to_degrees(radians) MATH_DISPATCH_FLOATS_SINGLE_ARG(to_degrees, radians)
+#define math_to_degrees(radians) _Generic((radians), \
+    float:    math_to_degrees_float,                 \
+    double:   math_to_degrees_double,                \
+    ldouble:  math_to_degrees_ldouble                \
+)(radians)
 
 /**
  * @brief Calculates the arithmetic mean of an array of values.
@@ -324,7 +460,17 @@
  *
  * @return the arithmetic mean
  */
-#define math_mean(values, size) MATH_DISPATCH_NUMBERS_POINTER(mean, values, size)
+#define math_mean(values, size) _Generic(*(values), \
+    int:      math_mean_int,                        \
+    uint:     math_mean_uint,                       \
+    long:     math_mean_long,                       \
+    ulong:    math_mean_ulong,                      \
+    llong:    math_mean_llong,                      \
+    ullong:   math_mean_ullong,                     \
+    float:    math_mean_float,                      \
+    double:   math_mean_double,                     \
+    ldouble:  math_mean_ldouble                     \
+)(values, size)
 
 /**
  * @brief Calculates the arithmetic mean of variadic values of a specified type.
@@ -336,7 +482,7 @@
  *
  * @note All values must be compatible with the specified type.
  */
-#define math_mean_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(mean, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
+#define math_mean_of(T, ...) math_mean(((T[]){__VA_ARGS__}), count_args(__VA_ARGS__))
 
 /**
  * @brief Calculates the median of a sorted array of values.
@@ -349,7 +495,17 @@
  * @note The input array must be sorted in ascending order.
  * @note The input array is not modified.
  */
-#define math_median(values, size) MATH_DISPATCH_NUMBERS_POINTER(median, values, size)
+#define math_median(values, size) _Generic(*(values), \
+    int:      math_median_int,                        \
+    uint:     math_median_uint,                       \
+    long:     math_median_long,                       \
+    ulong:    math_median_ulong,                      \
+    llong:    math_median_llong,                      \
+    ullong:   math_median_ullong,                     \
+    float:    math_median_float,                      \
+    double:   math_median_double,                     \
+    ldouble:  math_median_ldouble                     \
+)(values, size)
 
 /**
  * @brief Calculates the median of a sorted sequence of values.
@@ -361,7 +517,7 @@
  *
  * @note The values must be provided in ascending order.
  */
-#define math_median_of(T, ...) MATH_DISPATCH_NUMBERS_POINTER(median, ((T[]) {__VA_ARGS__}), count_args(__VA_ARGS__))
+#define math_median_of(T, ...) math_median(((T[]){__VA_ARGS__}), count_args(__VA_ARGS__))
 
 /**
  * @brief Returns the greatest common divisor (GCD) of two numbers.
@@ -371,7 +527,14 @@
  *
  * @return the greatest common divisor
  */
-#define math_gcd(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(gcd, a, b)
+#define math_gcd(a, b) _Generic((a) + (b), \
+    int:     math_gcd_int,                 \
+    uint:    math_gcd_uint,                \
+    long:    math_gcd_long,                \
+    ulong:   math_gcd_ulong,               \
+    llong:   math_gcd_llong,               \
+    ullong:  math_gcd_ullong               \
+)(a, b)
 
 /**
  * @brief Returns the least common multiple (LCM) of two numbers.
@@ -381,7 +544,14 @@
  *
  * @return the least common multiple
  */
-#define math_lcm(a, b) MATH_DISPATCH_INTEGERS_TWO_ARGS(lcm, a, b)
+#define math_lcm(a, b) _Generic((a) + (b), \
+    int:     math_lcm_int,                 \
+    uint:    math_lcm_uint,                \
+    long:    math_lcm_long,                \
+    ulong:   math_lcm_ulong,               \
+    llong:   math_lcm_llong,               \
+    ullong:  math_lcm_ullong               \
+)(a, b)
 
 /**
  * @brief Calculates the factorial of a number.
@@ -393,7 +563,14 @@
  * @note Returns the minimum value of the type for negative inputs
  *       and the maximum value if the result overflows.
  */
-#define math_factorial(n) MATH_DISPATCH_INTEGERS_SINGLE_ARG(factorial, n)
+#define math_factorial(n) _Generic((n), \
+    int:     math_factorial_int,        \
+    uint:    math_factorial_uint,       \
+    long:    math_factorial_long,       \
+    ulong:   math_factorial_ulong,      \
+    llong:   math_factorial_llong,      \
+    ullong:  math_factorial_ullong      \
+)(n)
 
 /**
  * @brief Calculates the number of ways to select r elements from n elements.
@@ -405,7 +582,14 @@
  *
  * @note The order of selected elements does not matter.
  */
-#define math_combinations(n, r) MATH_DISPATCH_INTEGERS_TWO_ARGS(combinations, n, r)
+#define math_combinations(n, r) _Generic((n) + (r), \
+    int:     math_combinations_int,                 \
+    uint:    math_combinations_uint,                \
+    long:    math_combinations_long,                \
+    ulong:   math_combinations_ulong,               \
+    llong:   math_combinations_llong,               \
+    ullong:  math_combinations_ullong               \
+)(n, r)
 
 /**
  * @brief Calculates the number of ways to arrange r elements selected from n elements.
@@ -417,7 +601,14 @@
  *
  * @note The order of selected elements matters.
  */
-#define math_permutations(n, r) MATH_DISPATCH_INTEGERS_TWO_ARGS(permutations, n, r)
+#define math_permutations(n, r) _Generic((n) + (r), \
+    int:     math_permutations_int,                 \
+    uint:    math_permutations_uint,                \
+    long:    math_permutations_long,                \
+    ulong:   math_permutations_ulong,               \
+    llong:   math_permutations_llong,               \
+    ullong:  math_permutations_ullong               \
+)(n, r)
 
 /**
  * @brief Checks whether a number is even.
@@ -426,7 +617,7 @@
  *
  * @return true if even, false otherwise
  */
-#define math_is_even(n) (n % 2 == 0)
+#define math_is_even(n) ((n) % 2 == 0)
 
 /**
  * @brief Checks whether a number is odd.
@@ -435,7 +626,7 @@
  *
  * @return true if odd, false otherwise
  */
-#define math_is_odd(n) (n % 2 != 0)
+#define math_is_odd(n) ((n) % 2 != 0)
 
 /**
  * @brief Checks whether a number is prime.
@@ -444,7 +635,14 @@
  *
  * @return true if prime, false otherwise
  */
-#define math_is_prime(n) MATH_DISPATCH_INTEGERS_SINGLE_ARG(is_prime, n)
+#define math_is_prime(n) _Generic((n), \
+    int:     math_is_prime_int,        \
+    uint:    math_is_prime_uint,       \
+    long:    math_is_prime_long,       \
+    ulong:   math_is_prime_ulong,      \
+    llong:   math_is_prime_llong,      \
+    ullong:  math_is_prime_ullong      \
+)(n)
 
 /**
  * @brief Checks whether a number is power of two.
@@ -453,7 +651,14 @@
  *
  * @return true if n is power of two, false otherwise
  */
-#define math_is_power_of_two(n) MATH_DISPATCH_INTEGERS_SINGLE_ARG(is_power_of_two, n)
+#define math_is_power_of_two(n) _Generic((n), \
+    int:     math_is_power_of_two_int,        \
+    uint:    math_is_power_of_two_uint,       \
+    long:    math_is_power_of_two_long,       \
+    ulong:   math_is_power_of_two_ulong,      \
+    llong:   math_is_power_of_two_llong,      \
+    ullong:  math_is_power_of_two_ullong      \
+)(n)
 
 /**
  * @brief Returns the absolute value of a number.
@@ -462,7 +667,17 @@
  *
  * @return the absolute value of n
  */
-#define math_abs(n) MATH_DISPATCH_NUMBERS_SINGLE_ARG(abs, n)
+#define math_abs(n) _Generic((n), \
+    int:      math_abs_int,       \
+    uint:     math_abs_uint,      \
+    long:     math_abs_long,      \
+    ulong:    math_abs_ulong,     \
+    llong:    math_abs_llong,     \
+    ullong:   math_abs_ullong,    \
+    float:    math_abs_float,     \
+    double:   math_abs_double,    \
+    ldouble:  math_abs_ldouble    \
+)(n)
 
 /**
  * @brief Returns the minimum of two numbers.
@@ -472,7 +687,17 @@
  *
  * @return the minimum number
  */
-#define math_min(a, b) MATH_DISPATCH_NUMBERS_TWO_ARGS(min, a, b)
+#define math_min(a, b) _Generic((a) + (b), \
+    int:      math_min_int,                \
+    uint:     math_min_uint,               \
+    long:     math_min_long,               \
+    ulong:    math_min_ulong,              \
+    llong:    math_min_llong,              \
+    ullong:   math_min_ullong,             \
+    float:    math_min_float,              \
+    double:   math_min_double,             \
+    ldouble:  math_min_ldouble             \
+)(a, b)
 
 /**
  * @brief Returns the maximum of two numbers.
@@ -482,7 +707,17 @@
  *
  * @return the maximum number
  */
-#define math_max(a, b) MATH_DISPATCH_NUMBERS_TWO_ARGS(max, a, b)
+#define math_max(a, b) _Generic((a) + (b), \
+    int:      math_max_int,                \
+    uint:     math_max_uint,               \
+    long:     math_max_long,               \
+    ulong:    math_max_ulong,              \
+    llong:    math_max_llong,              \
+    ullong:   math_max_ullong,             \
+    float:    math_max_float,              \
+    double:   math_max_double,             \
+    ldouble:  math_max_ldouble             \
+)(a, b)
 
 /**
  * @brief Restricts a value to a specified range.
@@ -502,7 +737,11 @@
  *
  * @return -1 if n is negative, 0 if n is zero, or 1 if n is positive
  */
-#define math_sign(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(sign, n)
+#define math_sign(n) _Generic((n), \
+    float:    math_sign_float,     \
+    double:   math_sign_double,    \
+    ldouble:  math_sign_ldouble    \
+)(n)
 
 /**
  * @brief Returns a value with the magnitude of one floating-point number and the sign of another.
@@ -512,7 +751,11 @@
  *
  * @return the value with the magnitude of value and the sign of sign
  */
-#define math_copysign(value, sign) MATH_DISPATCH_FLOATS_TWO_ARGS(copysign, value, sign)
+#define math_copysign(value, sign) _Generic((value) + (sign), \
+    float:    math_copysign_float,                            \
+    double:   math_copysign_double,                           \
+    ldouble:  math_copysign_ldouble                           \
+)(value, sign)
 
 /**
  * @brief Scales a floating-point number by a power of two, computing `n * 2^exponent`.
@@ -522,9 +765,10 @@
  *
  * @return the result of scaling `n` by `2^exponent`
  */
-#define math_scalb(n, exponent) _Generic((exponent),                                                            \
-    int:  _Generic((n), float: math_scalbn_float, double: math_scalbn_double, ldouble: math_scalbn_ldouble),    \
-    long: _Generic((n), float: math_scalbln_float, double: math_scalbln_double, ldouble: math_scalbln_ldouble)  \
+#define math_scalb(n, exponent) _Generic((n),                                            \
+    float:    _Generic((exponent), int: math_scalbn_float,   long: math_scalbln_float),  \
+    double:   _Generic((exponent), int: math_scalbn_double,  long: math_scalbln_double), \
+    ldouble:  _Generic((exponent), int: math_scalbn_ldouble, long: math_scalbln_ldouble) \
 )(n, exponent)
 
 /**
@@ -535,10 +779,10 @@
  *
  * @return the normalized fraction
  */
-#define math_frexp(n, exponent) _Generic((n),   \
-    float:    math_frexp_float,                 \
-    double:   math_frexp_double,                \
-    ldouble:  math_frexp_ldouble                \
+#define math_frexp(n, exponent) _Generic((n), \
+    float:    math_frexp_float,               \
+    double:   math_frexp_double,              \
+    ldouble:  math_frexp_ldouble              \
 )(n, exponent)
 
 /**
@@ -549,10 +793,10 @@
  *
  * @return the result of scaling `n` by `2^exponent`
  */
-#define math_ldexp(n, exponent) _Generic((n),   \
-    float:    math_ldexp_float,                 \
-    double:   math_ldexp_double,                \
-    ldouble:  math_ldexp_ldouble                \
+#define math_ldexp(n, exponent) _Generic((n), \
+    float:    math_ldexp_float,               \
+    double:   math_ldexp_double,              \
+    ldouble:  math_ldexp_ldouble              \
 )(n, exponent)
 
 /**
@@ -563,7 +807,11 @@
  *
  * @return the next representable floating-point number after `from` in the direction of `to`
  */
-#define math_next_after(from, to) MATH_DISPATCH_FLOATS_TWO_ARGS(next_after, from, to)
+#define math_next_after(from, to) _Generic((from) + (to), \
+    float:    math_next_after_float,                      \
+    double:   math_next_after_double,                     \
+    ldouble:  math_next_after_ldouble                     \
+)(from, to)
 
 /**
  * @brief Returns the next representable floating-point number after `from` in the direction of `to`.
@@ -573,10 +821,10 @@
  *
  * @return the next representable floating-point number after `from` in the direction of `to`
  */
-#define math_next_toward(from, to) _Generic((from),     \
-    float:    math_next_toward_float,                   \
-    double:   math_next_toward_double,                  \
-    ldouble:  math_next_toward_ldouble                  \
+#define math_next_toward(from, to) _Generic((from) + (to), \
+    float:    math_next_toward_float,                      \
+    double:   math_next_toward_double,                     \
+    ldouble:  math_next_toward_ldouble                     \
 )(from, to)
 
 /**
@@ -587,7 +835,11 @@
  *
  * @return the remainder of a divided by b
  */
-#define math_remainder(a, b) MATH_DISPATCH_FLOATS_TWO_ARGS(remainder, a, b)
+#define math_remainder(a, b) _Generic((a) + (b), \
+    float:    math_remainder_float,              \
+    double:   math_remainder_double,             \
+    ldouble:  math_remainder_ldouble             \
+)(a, b)
 
 /**
  * @brief Computes the floating-point remainder of a division.
@@ -597,7 +849,11 @@
  *
  * @return the remainder of dividing a by b
  */
-#define math_mod(a, b) MATH_DISPATCH_FLOATS_TWO_ARGS(mod, a, b)
+#define math_mod(a, b) _Generic((a) + (b), \
+    float:    math_mod_float,              \
+    double:   math_mod_double,             \
+    ldouble:  math_mod_ldouble             \
+)(a, b)
 
 /**
  * @brief Computes the positive difference between two floating-point numbers.
@@ -607,7 +863,11 @@
  *
  * @return `a - b` if `a > b`; otherwise, `+0.0`
  */
-#define math_fdim(a, b) MATH_DISPATCH_FLOATS_TWO_ARGS(fdim, a, b)
+#define math_fdim(a, b) _Generic((a) + (b), \
+    float:    math_fdim_float,              \
+    double:   math_fdim_double,             \
+    ldouble:  math_fdim_ldouble             \
+)(a, b)
 
 /**
  * @brief Computes the fused multiply-add operation: a * b + c.
@@ -618,7 +878,11 @@
  *
  * @return the result of a * b + c, computed with a single rounding
  */
-#define math_fma(a, b, c) MATH_DISPATCH_FLOATS_THREE_ARGS(fma, a, b, c)
+#define math_fma(a, b, c) _Generic((a) + (b) + (c), \
+    float:    math_fma_float,                       \
+    double:   math_fma_double,                      \
+    ldouble:  math_fma_ldouble                      \
+)(a, b, c)
 
 /**
  * @brief Rounds a floating-point number to the nearest integer.
@@ -627,7 +891,11 @@
  *
  * @return the rounded number
  */
-#define math_round(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(round, n)
+#define math_round(n) _Generic((n), \
+    float:    math_round_float,     \
+    double:   math_round_double,    \
+    ldouble:  math_round_ldouble    \
+)(n)
 
 /**
  * @brief Rounds a floating-point number down to the nearest integer.
@@ -636,7 +904,11 @@
  *
  * @return the rounded number
  */
-#define math_floor(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(floor, n)
+#define math_floor(n) _Generic((n), \
+    float:    math_floor_float,     \
+    double:   math_floor_double,    \
+    ldouble:  math_floor_ldouble    \
+)(n)
 
 /**
  * @brief Rounds a floating-point number up to the nearest integer.
@@ -645,7 +917,11 @@
  *
  * @return the rounded number
  */
-#define math_ceil(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(ceil, n)
+#define math_ceil(n) _Generic((n), \
+    float:    math_ceil_float,     \
+    double:   math_ceil_double,    \
+    ldouble:  math_ceil_ldouble    \
+)(n)
 
 /**
  * @brief Truncates the fractional part of a floating-point number.
@@ -654,7 +930,11 @@
  *
  * @return the truncated number
  */
-#define math_trunc(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(trunc, n)
+#define math_trunc(n) _Generic((n), \
+    float:    math_trunc_float,     \
+    double:   math_trunc_double,    \
+    ldouble:  math_trunc_ldouble    \
+)(n)
 
 /**
  * @brief Checks whether a floating-point number is NaN.
@@ -663,7 +943,11 @@
  *
  * @return true if n is NaN, false otherwise
  */
-#define math_is_nan(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(is_nan, n)
+#define math_is_nan(n) _Generic((n), \
+    float:    math_is_nan_float,     \
+    double:   math_is_nan_double,    \
+    ldouble:  math_is_nan_ldouble    \
+)(n)
 
 /**
  * @brief Checks whether a floating-point number is infinite.
@@ -672,7 +956,11 @@
  *
  * @return true if n is infinite, false otherwise
  */
-#define math_is_infinite(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(is_infinite, n)
+#define math_is_infinite(n) _Generic((n), \
+    float:    math_is_infinite_float,     \
+    double:   math_is_infinite_double,    \
+    ldouble:  math_is_infinite_ldouble    \
+)(n)
 
 /**
  * @brief Checks whether a floating-point number is finite.
@@ -681,7 +969,11 @@
  *
  * @return true if n is finite, false otherwise
  */
-#define math_is_finite(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(is_finite, n)
+#define math_is_finite(n) _Generic((n), \
+    float:    math_is_finite_float,     \
+    double:   math_is_finite_double,    \
+    ldouble:  math_is_finite_ldouble    \
+)(n)
 
 /**
  * @brief Checks whether a floating-point number is normal.
@@ -690,7 +982,11 @@
  *
  * @return true if n is normal, false otherwise
  */
-#define math_is_normal(n) MATH_DISPATCH_FLOATS_SINGLE_ARG(is_normal, n)
+#define math_is_normal(n) _Generic((n), \
+    float:    math_is_normal_float,     \
+    double:   math_is_normal_double,    \
+    ldouble:  math_is_normal_ldouble    \
+)(n)
 
 /**
  * @brief Checks whether two floating-point numbers are approximately equal.
@@ -701,7 +997,11 @@
  *
  * @return true if the absolute difference between a and b is within tolerance, false otherwise
  */
-#define math_is_close(a, b, tolerance) MATH_DISPATCH_FLOATS_THREE_ARGS(is_close, a, b, tolerance)
+#define math_is_close(a, b, tolerance) _Generic((a) + (b) + (tolerance), \
+    float:    math_is_close_float,                                       \
+    double:   math_is_close_double,                                      \
+    ldouble:  math_is_close_ldouble                                      \
+)(a, b, tolerance)
 
 /**
  * @brief Linearly interpolates between two floating-point numbers.
@@ -712,7 +1012,12 @@
  *
  * @return the interpolated value
  */
-#define math_lerp(start, end, amount) MATH_DISPATCH_FLOATS_THREE_ARGS(lerp, start, end, amount)
+#define math_lerp(start, end, amount) _Generic((start) + (end) + (amount), \
+    float:    math_lerp_float,                                             \
+    double:   math_lerp_double,                                            \
+    ldouble:  math_lerp_ldouble                                            \
+)(start, end, amount)
+
 
 /**
  * @brief Calculates a percentage of a floating-point number.
@@ -722,7 +1027,11 @@
  *
  * @return the calculated percentage of the value
  */
-#define math_percentage(value, percentage_) MATH_DISPATCH_FLOATS_TWO_ARGS(percentage, value, percentage_)
+#define math_percentage(value, percentage_) _Generic((value) + (percentage_), \
+    float:    math_percentage_float,                                          \
+    double:   math_percentage_double,                                         \
+    ldouble:  math_percentage_ldouble                                         \
+)(value, percentage_)
 
 /**
  * @brief Generates a pseudo-random floating-point number.
@@ -737,165 +1046,13 @@
  */
 #define math_random(T, ...) math_random_(T, __VA_OPT__(__VA_ARGS__,) nullptr, __VA_ARGS__)
 
-#define math_random_(T, state, ...) _Generic((T) 0,     \
-    float:    math_random_float,                        \
-    double:   math_random_double,                       \
-    ldouble:  math_random_ldouble                       \
+#define math_random_(T, state, ...) _Generic((T) 0, \
+    float:    math_random_float,                    \
+    double:   math_random_double,                   \
+    ldouble:  math_random_ldouble                   \
 )(state)
 
-/*---------------------------------------------------------------------------------*/
-
-#define MATH_INVALID_TYPE ((void) 0)
-
-#define MATH_INTEGER_TYPES(operation)       \
-    char:    math_##operation##_char,       \
-    schar:   math_##operation##_schar,      \
-    uchar:   math_##operation##_uchar,      \
-    short:   math_##operation##_short,      \
-    ushort:  math_##operation##_ushort,     \
-    int:     math_##operation##_int,        \
-    uint:    math_##operation##_uint,       \
-    long:    math_##operation##_long,       \
-    ulong:   math_##operation##_ulong,      \
-    llong:   math_##operation##_llong,      \
-    ullong:  math_##operation##_ullong
-
-#define MATH_FLOAT_TYPES(operation)         \
-    float:   math_##operation##_float,      \
-    double:  math_##operation##_double,     \
-    ldouble: math_##operation##_ldouble
-
-#define MATH_NUMBER_TYPES(operation)        \
-    MATH_INTEGER_TYPES(operation),          \
-    MATH_FLOAT_TYPES(operation)
-
-#define MATH_INTEGER_MATCH(operation, T, b) \
-    T: _Generic((b), T: math_##operation##_##T, default: MATH_INVALID_TYPE)
-
-#define MATH_FLOAT_MATCH(operation, T, b) \
-    T: _Generic((b), T: math_##operation##_##T, default: MATH_INVALID_TYPE)
-
-#define MATH_INTEGER_MATCH_THREE(operation, T, b, c) \
-    T: _Generic((b), T: _Generic((c), T: math_##operation##_##T, default: MATH_INVALID_TYPE), default: MATH_INVALID_TYPE)
-
-#define MATH_FLOAT_MATCH_THREE(operation, T, b, c) \
-    T: _Generic((b), T: _Generic((c), T: math_##operation##_##T, default: MATH_INVALID_TYPE), default: MATH_INVALID_TYPE)
-
-/* Integers */
-
-#define MATH_DISPATCH_INTEGERS_SINGLE_ARG(operation, a) \
-    _Generic((a), MATH_INTEGER_TYPES(operation))(a)
-
-#define MATH_DISPATCH_INTEGERS_TWO_ARGS(operation, a, b)    \
-    _Generic((a),                                           \
-        MATH_INTEGER_MATCH(operation, char, b),             \
-        MATH_INTEGER_MATCH(operation, schar, b),            \
-        MATH_INTEGER_MATCH(operation, uchar, b),            \
-        MATH_INTEGER_MATCH(operation, short, b),            \
-        MATH_INTEGER_MATCH(operation, ushort, b),           \
-        MATH_INTEGER_MATCH(operation, int, b),              \
-        MATH_INTEGER_MATCH(operation, uint, b),             \
-        MATH_INTEGER_MATCH(operation, long, b),             \
-        MATH_INTEGER_MATCH(operation, ulong, b),            \
-        MATH_INTEGER_MATCH(operation, llong, b),            \
-        MATH_INTEGER_MATCH(operation, ullong, b)            \
-    )(a, b)
-
-/* Floats */
-
-#define MATH_DISPATCH_FLOATS_SINGLE_ARG(operation, a, ...) \
-    _Generic((a), MATH_FLOAT_TYPES(operation))(a __VA_OPT__(,) __VA_ARGS__)
-
-#define MATH_DISPATCH_FLOATS_TWO_ARGS(operation, a, b)  \
-    _Generic((a),                                       \
-        MATH_FLOAT_MATCH(operation, float, b),          \
-        MATH_FLOAT_MATCH(operation, double, b),         \
-        MATH_FLOAT_MATCH(operation, ldouble, b)         \
-    )(a, b)
-
-#define MATH_DISPATCH_FLOATS_THREE_ARGS(operation, a, b, c)     \
-    _Generic((a),                                               \
-        MATH_FLOAT_MATCH_THREE(operation, float, b, c),         \
-        MATH_FLOAT_MATCH_THREE(operation, double, b, c),        \
-        MATH_FLOAT_MATCH_THREE(operation, ldouble, b, c)        \
-    )(a, b, c)
-
-/* Numbers */
-
-#define MATH_DISPATCH_NUMBERS_SINGLE_ARG(operation, a, ...) \
-    _Generic((a), MATH_NUMBER_TYPES(operation))(a __VA_OPT__(,) __VA_ARGS__)
-
-#define MATH_DISPATCH_NUMBERS_TWO_ARGS(operation, a, b)     \
-    _Generic((a),                                           \
-        MATH_INTEGER_MATCH(operation, char, b),             \
-        MATH_INTEGER_MATCH(operation, schar, b),            \
-        MATH_INTEGER_MATCH(operation, uchar, b),            \
-        MATH_INTEGER_MATCH(operation, short, b),            \
-        MATH_INTEGER_MATCH(operation, ushort, b),           \
-        MATH_INTEGER_MATCH(operation, int, b),              \
-        MATH_INTEGER_MATCH(operation, uint, b),             \
-        MATH_INTEGER_MATCH(operation, long, b),             \
-        MATH_INTEGER_MATCH(operation, ulong, b),            \
-        MATH_INTEGER_MATCH(operation, llong, b),            \
-        MATH_INTEGER_MATCH(operation, ullong, b),           \
-        MATH_FLOAT_MATCH(operation, float, b),              \
-        MATH_FLOAT_MATCH(operation, double, b),             \
-        MATH_FLOAT_MATCH(operation, ldouble, b)             \
-    )(a, b)
-
-/* Array pointers */
-
-#define MATH_INTEGER_POINTER_TYPES(operation) \
-    char*:    math_##operation##_char,        \
-    schar*:   math_##operation##_schar,       \
-    uchar*:   math_##operation##_uchar,       \
-    short*:   math_##operation##_short,       \
-    ushort*:  math_##operation##_ushort,      \
-    int*:     math_##operation##_int,         \
-    uint*:    math_##operation##_uint,        \
-    long*:    math_##operation##_long,        \
-    ulong*:   math_##operation##_ulong,       \
-    llong*:   math_##operation##_llong,       \
-    ullong*:  math_##operation##_ullong
-
-#define MATH_FLOAT_POINTER_TYPES(operation)     \
-    float*:   math_##operation##_float,         \
-    double*:  math_##operation##_double,        \
-    ldouble*: math_##operation##_ldouble
-
-#define MATH_NUMBER_POINTER_TYPES(operation)    \
-    MATH_INTEGER_POINTER_TYPES(operation),      \
-    MATH_FLOAT_POINTER_TYPES(operation)
-
-#define MATH_INTEGER_CONST_POINTER_TYPES(operation) \
-    const char*:    math_##operation##_char,        \
-    const schar*:   math_##operation##_schar,       \
-    const uchar*:   math_##operation##_uchar,       \
-    const short*:   math_##operation##_short,       \
-    const ushort*:  math_##operation##_ushort,      \
-    const int*:     math_##operation##_int,         \
-    const uint*:    math_##operation##_uint,        \
-    const long*:    math_##operation##_long,        \
-    const ulong*:   math_##operation##_ulong,       \
-    const llong*:   math_##operation##_llong,       \
-    const ullong*:  math_##operation##_ullong
-
-#define MATH_FLOAT_CONST_POINTER_TYPES(operation)   \
-    const float*:   math_##operation##_float,       \
-    const double*:  math_##operation##_double,      \
-    const ldouble*: math_##operation##_ldouble
-
-#define MATH_NUMBER_CONST_POINTER_TYPES(operation)      \
-    MATH_INTEGER_CONST_POINTER_TYPES(operation),        \
-    MATH_FLOAT_CONST_POINTER_TYPES(operation)
-
-#define MATH_DISPATCH_NUMBERS_POINTER(operation, values, size)      \
-    _Generic((values),                                              \
-        MATH_NUMBER_POINTER_TYPES(operation),                       \
-        MATH_NUMBER_CONST_POINTER_TYPES(operation)                  \
-    )(values, size)
-
-/* Declarations */
+/*-----------------------------------------------------------------------------------------*/
 
 #define DECLARE_INTEGER_MATH(T, suffix)                     \
     T math_add_exact_##suffix(T a, T b);                    \
@@ -972,13 +1129,6 @@
     T math_lerp_##suffix(T start, T end, T amount);         \
     T math_percentage_##suffix(T value, T percentage);      \
     T math_random_##suffix(uint64* state);
-
-DECLARE_INTEGER_MATH(char, char)
-DECLARE_INTEGER_MATH(schar, schar)
-DECLARE_INTEGER_MATH(uchar, uchar)
-
-DECLARE_INTEGER_MATH(short, short)
-DECLARE_INTEGER_MATH(ushort, ushort)
 
 DECLARE_INTEGER_MATH(int, int)
 DECLARE_INTEGER_MATH(uint, uint)

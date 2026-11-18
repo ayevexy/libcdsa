@@ -1,7 +1,5 @@
 #include "core/math.h"
 
-#include <time.h>
-
 #include "core/limits.h"
 #include "core/errors.h"
 
@@ -17,133 +15,93 @@ void tearDown() {
 
 void test_math_add_exact() {
     // then: unsigned integers
-    TEST_ASSERT_EQUAL((uchar) 145, math_add_exact((uchar) 70, (uchar) 75));
-    TEST_ASSERT_EQUAL((ushort) 1000, math_add_exact((ushort) 400, (ushort) 600));
-    TEST_ASSERT_EQUAL((uint) 3000, math_add_exact((uint) 1000, (uint) 2000));
-    TEST_ASSERT_EQUAL((ulong) 300000, math_add_exact((ulong) 100000, (ulong) 200000));
-    TEST_ASSERT_EQUAL((ullong) 3000000, math_add_exact((ullong) 1000000, (ullong) 2000000));
+    TEST_ASSERT_EQUAL(3000u, math_add_exact(1000u, 2000u));
+    TEST_ASSERT_EQUAL(300000ul, math_add_exact(100000ul, 200000ul));
+    TEST_ASSERT_EQUAL(3000000ull, math_add_exact(1000000ull, 2000000ull));
     // then: signed integers
-    TEST_ASSERT_EQUAL((schar) 15, math_add_exact((schar) 7, (schar) 8));
-    TEST_ASSERT_EQUAL((short) 150, math_add_exact((short) 70, (short) 80));
     TEST_ASSERT_EQUAL(1500, math_add_exact(700, 800));
-    TEST_ASSERT_EQUAL((long) 15000, math_add_exact((long) 7000, (long) 8000));
-    TEST_ASSERT_EQUAL((llong) 150000, math_add_exact((llong) 70000, (llong) 80000));
-    // and: unsigned integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(UCHAR_MAX_VALUE, (uchar) 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(USHORT_MAX_VALUE, (ushort) 1)));
+    TEST_ASSERT_EQUAL(15000l, math_add_exact(7000l, 8000l));
+    TEST_ASSERT_EQUAL(150000ll, math_add_exact(70000ll, 80000ll));
+    // then: unsigned integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(UINT_MAX_VALUE, 1u)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(ULONG_MAX_VALUE, 1ul)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(ULLONG_MAX_VALUE, 1ull)));
-    // and: signed integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(SCHAR_MAX_VALUE, (schar) 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(SHORT_MAX_VALUE, (short) 1)));
+    // then: signed integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(INT_MAX_VALUE, 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LONG_MAX_VALUE, 1L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LLONG_MAX_VALUE, 1LL)));
-    // and: signed integer underflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(SCHAR_MIN_VALUE, (schar) -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(SHORT_MIN_VALUE, (short) -1)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LONG_MAX_VALUE, 1l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LLONG_MAX_VALUE, 1ll)));
+    // then: signed integer underflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(INT_MIN_VALUE, -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LONG_MIN_VALUE, -1L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LLONG_MIN_VALUE, -1LL)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LONG_MIN_VALUE, -1l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LLONG_MIN_VALUE, -1ll)));
 }
 
 void test_math_sub_exact() {
     // then: unsigned integers
-    TEST_ASSERT_EQUAL((uchar) 5, math_sub_exact((uchar) 75, (uchar) 70));
-    TEST_ASSERT_EQUAL((ushort) 200, math_sub_exact((ushort) 600, (ushort) 400));
-    TEST_ASSERT_EQUAL((uint) 1000, math_sub_exact((uint) 3000, (uint) 2000));
-    TEST_ASSERT_EQUAL((ulong) 100000, math_sub_exact((ulong) 200000, (ulong) 100000));
-    TEST_ASSERT_EQUAL((ullong) 1000000, math_sub_exact((ullong) 3000000, (ullong) 2000000));
+    TEST_ASSERT_EQUAL(1000u, math_sub_exact(3000u, 2000u));
+    TEST_ASSERT_EQUAL(100000ul, math_sub_exact(200000ul, 100000ul));
+    TEST_ASSERT_EQUAL(1000000ull, math_sub_exact(3000000ull, 2000000ull));
     // then: signed integers
-    TEST_ASSERT_EQUAL((schar) -1, math_sub_exact((schar) 7, (schar) 8));
-    TEST_ASSERT_EQUAL((short) -10, math_sub_exact((short) 70, (short) 80));
     TEST_ASSERT_EQUAL(-100, math_sub_exact(700, 800));
-    TEST_ASSERT_EQUAL((long) -1000, math_sub_exact((long) 7000, (long) 8000));
-    TEST_ASSERT_EQUAL((llong) -10000, math_sub_exact((llong) 70000, (llong) 80000));
-    // and: unsigned integer underflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact((uchar) 0, (uchar) 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact((ushort) 0, (ushort) 1)));
+    TEST_ASSERT_EQUAL(-1000l, math_sub_exact(7000l, 8000l));
+    TEST_ASSERT_EQUAL(-10000ll, math_sub_exact(70000ll, 80000ll));
+    // then: unsigned integer underflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(0u, 1u)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(0ul, 1ul)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(0ull, 1ull)));
-    // and: signed integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(SCHAR_MAX_VALUE, (schar) -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(SHORT_MAX_VALUE, (short) -1)));
+    // then: signed integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(INT_MAX_VALUE, -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LONG_MAX_VALUE, -1L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LLONG_MAX_VALUE, -1LL)));
-    // and: signed integer underflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(SCHAR_MIN_VALUE, (schar) 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(SHORT_MIN_VALUE, (short) 1)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LONG_MAX_VALUE, -1l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LLONG_MAX_VALUE, -1ll)));
+    // then: signed integer underflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(INT_MIN_VALUE, 1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LONG_MIN_VALUE, 1L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LLONG_MIN_VALUE, 1LL)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LONG_MIN_VALUE, 1l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LLONG_MIN_VALUE, 1ll)));
 }
 
 void test_math_mul_exact() {
     // then: unsigned integers
-    TEST_ASSERT_EQUAL((uchar) 150, math_mul_exact((uchar) 15, (uchar) 10));
-    TEST_ASSERT_EQUAL((ushort) 2000, math_mul_exact((ushort) 100, (ushort) 20));
-    TEST_ASSERT_EQUAL((uint) 20000, math_mul_exact((uint) 100, (uint) 200));
-    TEST_ASSERT_EQUAL((ulong) 200000, math_mul_exact((ulong) 1000, (ulong) 200));
-    TEST_ASSERT_EQUAL((ullong) 2000000, math_mul_exact((ullong) 1000, (ullong) 2000));
+    TEST_ASSERT_EQUAL(20000u, math_mul_exact(100u, 200u));
+    TEST_ASSERT_EQUAL(200000ul, math_mul_exact(1000ul, 200ul));
+    TEST_ASSERT_EQUAL(2000000ull, math_mul_exact(1000ull, 2000ull));
     // then: signed integers
-    TEST_ASSERT_EQUAL((schar) -35, math_mul_exact((schar) -7, (schar) 5));
-    TEST_ASSERT_EQUAL((short) -500, math_mul_exact((short) -25, (short) 20));
     TEST_ASSERT_EQUAL(-5000, math_mul_exact(-100, 50));
-    TEST_ASSERT_EQUAL((long) -50000, math_mul_exact((long) -250, (long) 200));
-    TEST_ASSERT_EQUAL((llong) -500000, math_mul_exact((llong) -250, (llong) 2000));
-    // and: unsigned integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(UCHAR_MAX_VALUE, (uchar) 2)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(USHORT_MAX_VALUE, (ushort) 2)));
+    TEST_ASSERT_EQUAL(-50000l, math_mul_exact(-250l, 200l));
+    TEST_ASSERT_EQUAL(-500000ll, math_mul_exact(-250ll, 2000ll));
+    // then: unsigned integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(UINT_MAX_VALUE, 2u)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(ULONG_MAX_VALUE, 2ul)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(ULLONG_MAX_VALUE, 2ull)));
-    // and: signed integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(SCHAR_MAX_VALUE, (schar) 2)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(SHORT_MAX_VALUE, (short) 2)));
+    // then: signed integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(INT_MAX_VALUE, 2)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LONG_MAX_VALUE, 2L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LLONG_MAX_VALUE, 2LL)));
-    // and: signed integer underflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(SCHAR_MIN_VALUE, (schar) 2)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(SHORT_MIN_VALUE, (short) 2)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LONG_MAX_VALUE, 2l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LLONG_MAX_VALUE, 2ll)));
+    // then: signed integer underflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(INT_MIN_VALUE, 2)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LONG_MIN_VALUE, 2L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LLONG_MIN_VALUE, 2LL)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LONG_MIN_VALUE, 2l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LLONG_MIN_VALUE, 2ll)));
 }
 
 void test_math_div_exact() {
     // then: unsigned integers
-    TEST_ASSERT_EQUAL((uchar) 7, math_div_exact((uchar) 70, (uchar) 10));
-    TEST_ASSERT_EQUAL((ushort) 20, math_div_exact((ushort) 400, (ushort) 20));
-    TEST_ASSERT_EQUAL((uint) 10, math_div_exact((uint) 1000, (uint) 100));
-    TEST_ASSERT_EQUAL((ulong) 100, math_div_exact((ulong) 100000, (ulong) 1000));
-    TEST_ASSERT_EQUAL((ullong) 1000, math_div_exact((ullong) 1000000, (ullong) 1000));
+    TEST_ASSERT_EQUAL(10u, math_div_exact(1000u, 100u));
+    TEST_ASSERT_EQUAL(100ul, math_div_exact(100000ul, 1000ul));
+    TEST_ASSERT_EQUAL(1000ull, math_div_exact(1000000ull, 1000ull));
     // then: signed integers
-    TEST_ASSERT_EQUAL((schar) -7, math_div_exact((schar) -70, (schar) 10));
-    TEST_ASSERT_EQUAL((short) -20, math_div_exact((short) -400, (short) 20));
     TEST_ASSERT_EQUAL(-10, math_div_exact(-1000, 100));
-    TEST_ASSERT_EQUAL((long) -100, math_div_exact((long) -100000, (long) 1000));
-    TEST_ASSERT_EQUAL((llong) -1000, math_div_exact((llong) -1000000, (llong) 1000));
-    // and: division by zero
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact((uchar) 1, (uchar) 0)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact((ushort) 1, (ushort) 0)));
+    TEST_ASSERT_EQUAL(-100l, math_div_exact(-100000l, 1000l));
+    TEST_ASSERT_EQUAL(-1000ll, math_div_exact(-1000000ll, 1000ll));
+    // then: division by zero
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1u, 0u)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1ul, 0ul)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1ull, 0ull)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact((schar) 1, (schar) 0)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact((short) 1, (short) 0)));
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1, 0)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1L, 0L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1LL, 0LL)));
-    // and: signed integer overflow
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(SCHAR_MIN_VALUE, (schar) -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(SHORT_MIN_VALUE, (short) -1)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1l, 0l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(1ll, 0ll)));
+    // then: signed integer overflow
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(INT_MIN_VALUE, -1)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(LONG_MIN_VALUE, -1L)));
-    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(LLONG_MIN_VALUE, -1LL)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(LONG_MIN_VALUE, -1l)));
+    TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_div_exact(LLONG_MIN_VALUE, -1ll)));
 }
 
 #define TEST_MATH_FUNCTIONS(T, tolerance, e)                                \

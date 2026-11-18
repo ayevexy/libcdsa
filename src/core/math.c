@@ -683,18 +683,6 @@ static uint64 splitmix64_next(uint64* state) {
 /* Generate implementations                                                   */
 /* -------------------------------------------------------------------------- */
 
-#if CHAR_MIN < 0
-DEFINE_SIGNED_MATH(char, char, CHAR_MIN_VALUE, CHAR_MAX_VALUE)
-#else
-DEFINE_UNSIGNED_MATH(char, char, CHAR_MAX_VALUE)
-#endif
-
-DEFINE_SIGNED_MATH(schar, schar, SCHAR_MIN_VALUE, SCHAR_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(uchar, uchar, UCHAR_MAX_VALUE)
-
-DEFINE_SIGNED_MATH(short, short, SHORT_MIN_VALUE, SHORT_MAX_VALUE)
-DEFINE_UNSIGNED_MATH(ushort, ushort, USHORT_MAX_VALUE)
-
 DEFINE_SIGNED_MATH(int, int, INT_MIN_VALUE, INT_MAX_VALUE)
 DEFINE_UNSIGNED_MATH(uint, uint, UINT_MAX_VALUE)
 

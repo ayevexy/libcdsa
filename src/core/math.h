@@ -1085,11 +1085,14 @@
  * @brief Generates a pseudo-random floating-point number.
  *
  * @param T the floating-point type of the generated number
- * @param state the optional state used to generate the sequence (an uint64*)
+ * @param state optional pointer to the PRNG state (uint64*)
  *
  * @return a pseudo-random number in the range [0.0, 1.0)
  *
  * @note If state is nullptr, an internal thread-local state is used.
+ * @note The provided state is updated during generation.
+ * @note The same initial state produces the same sequence of values.
+ * @note Uses the SplitMix64 pseudo-random number generator (PRNG).
  * @note This function is not suitable for cryptographic purposes.
  */
 #define math_random(T, ...) math_random_(T, __VA_OPT__(__VA_ARGS__,) nullptr, __VA_ARGS__)

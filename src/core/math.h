@@ -1103,80 +1103,80 @@
 
 /*-----------------------------------------------------------------------------------------*/
 
-#define DECLARE_INTEGER_MATH(T, suffix)                     \
-    T math_add_exact_##suffix(T a, T b);                    \
-    T math_sub_exact_##suffix(T a, T b);                    \
-    T math_mul_exact_##suffix(T a, T b);                    \
-    T math_div_exact_##suffix(T a, T b);                    \
-    double math_mean_##suffix(T* values, uint size);        \
-    double math_median_##suffix(T* values, uint size);      \
-    T math_gcd_##suffix(T a, T b);                          \
-    T math_lcm_##suffix(T a, T b);                          \
-    T math_factorial_##suffix(T n);                         \
-    T math_combinations_##suffix(T n, T r);                 \
-    T math_permutations_##suffix(T n, T r);                 \
-    bool math_is_prime_##suffix(T n);                       \
-    bool math_is_power_of_two_##suffix(T n);                \
-    T math_abs_##suffix(T n);                               \
-    T math_min_##suffix(T a, T b);                          \
+#define DECLARE_INTEGER_MATH(T, suffix)                      \
+    T math_add_exact_##suffix(T a, T b);                     \
+    T math_sub_exact_##suffix(T a, T b);                     \
+    T math_mul_exact_##suffix(T a, T b);                     \
+    T math_div_exact_##suffix(T a, T b);                     \
+    double math_mean_##suffix(const T* values, uint size);   \
+    double math_median_##suffix(const T* values, uint size); \
+    T math_gcd_##suffix(T a, T b);                           \
+    T math_lcm_##suffix(T a, T b);                           \
+    T math_factorial_##suffix(T n);                          \
+    T math_combinations_##suffix(T n, T r);                  \
+    T math_permutations_##suffix(T n, T r);                  \
+    bool math_is_prime_##suffix(T n);                        \
+    bool math_is_power_of_two_##suffix(T n);                 \
+    T math_abs_##suffix(T n);                                \
+    T math_min_##suffix(T a, T b);                           \
     T math_max_##suffix(T a, T b);
 
-#define DECLARE_FLOAT_MATH(T, suffix)                       \
-    T math_pow_##suffix(T base, T exponent);                \
-    T math_log_natural_##suffix(T n);                       \
-    T math_log_base_##suffix(T n, T base);                  \
-    T math_log2_##suffix(T n);                              \
-    T math_log10_##suffix(T n);                             \
-    T math_log1p_##suffix(T n);                             \
-    T math_exp_##suffix(T n);                               \
-    T math_exp2_##suffix(T n);                              \
-    T math_expm1_##suffix(T n);                             \
-    T math_sqrt_##suffix(T n);                              \
-    T math_cbrt_##suffix(T n);                              \
-    T math_hypot_##suffix(T x, T y);                        \
-    T math_sin_##suffix(T n);                               \
-    T math_cos_##suffix(T n);                               \
-    T math_tan_##suffix(T n);                               \
-    T math_asin_##suffix(T n);                              \
-    T math_acos_##suffix(T n);                              \
-    T math_atan_##suffix(T n);                              \
-    T math_atan2_##suffix(T y, T x);                        \
-    T math_sinh_##suffix(T n);                              \
-    T math_cosh_##suffix(T n);                              \
-    T math_tanh_##suffix(T n);                              \
-    T math_asinh_##suffix(T n);                             \
-    T math_acosh_##suffix(T n);                             \
-    T math_atanh_##suffix(T n);                             \
-    T math_to_radians_##suffix(T degrees);                  \
-    T math_to_degrees_##suffix(T radians);                  \
-    double math_mean_##suffix(T* values, uint size);        \
-    double math_median_##suffix(T* values, uint size);      \
-    T math_abs_##suffix(T n);                               \
-    T math_min_##suffix(T a, T b);                          \
-    T math_max_##suffix(T a, T b);                          \
-    T math_sign_##suffix(T n);                              \
-    T math_copysign_##suffix(T value, T sign);              \
-    T math_scalbn_##suffix(T n, int exponent);              \
-    T math_scalbln_##suffix(T n, long exponent);            \
-    T math_frexp_##suffix(T n, int* exponent);              \
-    T math_ldexp_##suffix(T n, int exponent);               \
-    T math_next_after_##suffix(T from, T to);               \
-    T math_next_toward_##suffix(T from, ldouble to);        \
-    T math_remainder_##suffix(T a, T b);                    \
-    T math_mod_##suffix(T a, T b);                          \
-    T math_fdim_##suffix(T a, T b);                         \
-    T math_fma_##suffix(T a, T b, T c);                     \
-    T math_round_##suffix(T n);                             \
-    T math_floor_##suffix(T n);                             \
-    T math_ceil_##suffix(T n);                              \
-    T math_trunc_##suffix(T n);                             \
-    bool math_is_nan_##suffix(T n);                         \
-    bool math_is_infinite_##suffix(T n);                    \
-    bool math_is_finite_##suffix(T n);                      \
-    bool math_is_normal_##suffix(T n);                      \
-    bool math_is_close_##suffix(T a, T b, T tolerance);     \
-    T math_lerp_##suffix(T start, T end, T amount);         \
-    T math_percentage_##suffix(T value, T percentage);      \
+#define DECLARE_FLOAT_MATH(T, suffix)                        \
+    T math_pow_##suffix(T base, T exponent);                 \
+    T math_log_natural_##suffix(T n);                        \
+    T math_log_base_##suffix(T n, T base);                   \
+    T math_log2_##suffix(T n);                               \
+    T math_log10_##suffix(T n);                              \
+    T math_log1p_##suffix(T n);                              \
+    T math_exp_##suffix(T n);                                \
+    T math_exp2_##suffix(T n);                               \
+    T math_expm1_##suffix(T n);                              \
+    T math_sqrt_##suffix(T n);                               \
+    T math_cbrt_##suffix(T n);                               \
+    T math_hypot_##suffix(T x, T y);                         \
+    T math_sin_##suffix(T n);                                \
+    T math_cos_##suffix(T n);                                \
+    T math_tan_##suffix(T n);                                \
+    T math_asin_##suffix(T n);                               \
+    T math_acos_##suffix(T n);                               \
+    T math_atan_##suffix(T n);                               \
+    T math_atan2_##suffix(T y, T x);                         \
+    T math_sinh_##suffix(T n);                               \
+    T math_cosh_##suffix(T n);                               \
+    T math_tanh_##suffix(T n);                               \
+    T math_asinh_##suffix(T n);                              \
+    T math_acosh_##suffix(T n);                              \
+    T math_atanh_##suffix(T n);                              \
+    T math_to_radians_##suffix(T degrees);                   \
+    T math_to_degrees_##suffix(T radians);                   \
+    double math_mean_##suffix(const T* values, uint size);   \
+    double math_median_##suffix(const T* values, uint size); \
+    T math_abs_##suffix(T n);                                \
+    T math_min_##suffix(T a, T b);                           \
+    T math_max_##suffix(T a, T b);                           \
+    T math_sign_##suffix(T n);                               \
+    T math_copysign_##suffix(T value, T sign);               \
+    T math_scalbn_##suffix(T n, int exponent);               \
+    T math_scalbln_##suffix(T n, long exponent);             \
+    T math_frexp_##suffix(T n, int* exponent);               \
+    T math_ldexp_##suffix(T n, int exponent);                \
+    T math_next_after_##suffix(T from, T to);                \
+    T math_next_toward_##suffix(T from, ldouble to);         \
+    T math_remainder_##suffix(T a, T b);                     \
+    T math_mod_##suffix(T a, T b);                           \
+    T math_fdim_##suffix(T a, T b);                          \
+    T math_fma_##suffix(T a, T b, T c);                      \
+    T math_round_##suffix(T n);                              \
+    T math_floor_##suffix(T n);                              \
+    T math_ceil_##suffix(T n);                               \
+    T math_trunc_##suffix(T n);                              \
+    bool math_is_nan_##suffix(T n);                          \
+    bool math_is_infinite_##suffix(T n);                     \
+    bool math_is_finite_##suffix(T n);                       \
+    bool math_is_normal_##suffix(T n);                       \
+    bool math_is_close_##suffix(T a, T b, T tolerance);      \
+    T math_lerp_##suffix(T start, T end, T amount);          \
+    T math_percentage_##suffix(T value, T percentage);       \
     T math_random_##suffix(uint64* state);
 
 DECLARE_INTEGER_MATH(int, int)

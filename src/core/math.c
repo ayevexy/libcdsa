@@ -557,7 +557,7 @@ static uint64 splitmix64_next(uint64* state) {
 /* -------------------------------------------------------------------------- */
 
 #define DEFINE_MATH_MEAN(T, suffix)                                         \
-    double math_mean_##suffix(T* values, uint size) {                       \
+    double math_mean_##suffix(const T* values, uint size) {                 \
         double result = 0;                                                  \
         for (uint i = 0; i < size; i++) {                                   \
             result += values[i];                                            \
@@ -566,7 +566,7 @@ static uint64 splitmix64_next(uint64* state) {
     }
 
 #define DEFINE_MATH_MEDIAN(T, suffix)                                       \
-    double math_median_##suffix(T* values, uint size) {                     \
+    double math_median_##suffix(const T* values, uint size) {               \
         if (size == 0) {                                                    \
             return NAN;                                                     \
         }                                                                   \

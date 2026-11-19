@@ -2,12 +2,12 @@
 
 #include "collections/collection.h"
 #include "collections/iterator.h"
+#include "collections/pointer.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
-#include "core/pointer.h"
 
 static constexpr int MIN_CAPACITY = 8;
 static constexpr int MAX_CAPACITY = 1'073'741'824;

@@ -3,11 +3,11 @@
 #include "collections/map/map_entry.h"
 #include "collections/collection.h"
 #include "collections/iterator.h"
+#include "collections/pointer.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 #include "core/memory.h"
 #include "core/string.h"
-#include "core/pointer.h"
 
 typedef enum {
     RED, BLACK

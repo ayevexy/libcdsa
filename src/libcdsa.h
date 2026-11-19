@@ -71,9 +71,6 @@
 /** @brief Generic function pointer types for functional-style operations */
 #include "core/functions.h"
 
-/** @brief Pointer functions */
-#include "core/pointer.h"
-
 /** @brief Optional value container */
 #include "core/optional.h"
 
@@ -85,6 +82,9 @@
 
 /** @brief Collection abstraction view */
 #include "collections/collection.h"
+
+/** @brief Pointer functions */
+#include "collections/pointer.h"
 
 /** @brief Sequence API */
 #include "collections/sequence.h"

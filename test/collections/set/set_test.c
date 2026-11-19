@@ -1,8 +1,8 @@
 #include "collections/set/set.h"
 
 #include "collections/collection.h"
+#include "collections/pointer.h"
 #include "core/memory.h"
-#include "core/pointer.h"
 
 #include "test_utilities.h"
 #include "unity.h"

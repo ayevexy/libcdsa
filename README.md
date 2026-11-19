@@ -63,6 +63,7 @@ Additional collection-related functionality:
 - [Sequence](src/collections/sequence.h): Declarative pipeline processing of collections.
 - [For Each](src/collections/for_each.h): Macro abstraction for iterating through collections.
 - [Algorithms](src/collections/algorithms.h): Enumerations defining available sorting and shuffling algorithms.
+- [Pointer](src/collections/pointer.h): Default function implementations for library containers.
 
 #### Core
 
@@ -79,7 +80,6 @@ Fundamental abstractions and functionality used throughout the library:
 - [Array](src/core/array.h): Built-in custom array implementation.
 - [String](src/core/string.h): Built-in custom string implementation.
 - [Functions](src/core/functions.h): Generic function pointer typedefs.
-- [Pointer](src/core/pointer.h): Default function implementations for library containers.
 - [Optional](src/core/optional.h): A container type which may or may not contain a value.
 - [System](src/core/system.h): Runtime system abstraction.
 
@@ -178,7 +178,7 @@ The following examples demonstrate some of the library's features:
 
 ```c++
 #include "collections/list/list.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -202,7 +202,7 @@ int main(void) {
 
 ```c++
 #include "collections/map/map.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -226,7 +226,7 @@ int main(void) {
 
 ```c++
 #include "collections/set/set.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -249,7 +249,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/iterator.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -278,7 +278,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/for_each.h" // should be included last
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -302,10 +302,10 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
+#include "collections/pointer.h"
 #include "collections/sequence.h"
 #include "core/memory.h"
 #include "core/array.h"
-#include "core/pointer.h"
 
 #include <stdio.h>
 
@@ -354,7 +354,7 @@ int main(void) {
 #include "collections/set/set.h"
 #include "collections/collection.h"
 #include "collections/for_each.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 
@@ -411,7 +411,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
-#include "core/pointer.h"
+#include "collections/pointer.h"
 
 #include <stdio.h>
 

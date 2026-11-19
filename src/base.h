@@ -18,7 +18,6 @@
 #include "core/array.h"
 #include "core/string.h"
 #include "core/functions.h"
-#include "core/pointer.h"
 #include "core/optional.h"
 #include "core/system.h"
 

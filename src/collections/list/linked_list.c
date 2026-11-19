@@ -2,13 +2,13 @@
 
 #include "collections/collection.h"
 #include "collections/iterator.h"
+#include "collections/pointer.h"
 #include "core/macros.h"
 #include "core/errors.h"
 #include "core/constraints.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/string.h"
-#include "core/pointer.h"
 #include "core/optional.h"
 
 typedef struct Node {

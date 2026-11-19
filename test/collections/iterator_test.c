@@ -1,9 +1,9 @@
 #include "collections/iterator.h"
 
 #include "collections/list/array_list.h"
+#include "collections/pointer.h"
 #include "core/errors.h"
 #include "core/memory.h"
-#include "core/pointer.h"
 
 #include "test_utilities.h"
 #include "unity.h"

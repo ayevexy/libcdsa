@@ -2,9 +2,9 @@
 
 #include "collections/list/list.h"
 #include "collections/collection.h"
+#include "collections/pointer.h"
 #include "core/memory.h"
 #include "core/array.h"
-#include "core/pointer.h"
 #include "core/optional.h"
 
 #include "test_utilities.h"

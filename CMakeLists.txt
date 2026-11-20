@@ -135,8 +135,10 @@ target_include_directories(unity_test_framework PUBLIC
 
 enable_testing()
 
+# ---- Unit ----
+
 file(GLOB_RECURSE TEST_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/test/*.c"
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/unit/*.c"
 )
 
 foreach(TEST_FILE ${TEST_FILES})
@@ -145,7 +147,7 @@ foreach(TEST_FILE ${TEST_FILES})
     get_filename_component(TEST_DIR ${TEST_DIR} NAME)
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
-    set(EXECUTABLE "${TEST_DIR}.${TEST_NAME}")
+    set(EXECUTABLE "unit.${TEST_DIR}.${TEST_NAME}")
     add_executable(${EXECUTABLE} ${TEST_FILE})
 
     target_include_directories(${EXECUTABLE} PRIVATE
@@ -155,6 +157,35 @@ foreach(TEST_FILE ${TEST_FILES})
     target_link_libraries(${EXECUTABLE} PRIVATE
             ${PROJECT_NAME}
             unity_test_framework
+    )
+
+    add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
+
+endforeach()
+
+# ---- Benchmarks ----
+
+file(GLOB_RECURSE BENCH_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/test/perf/*.c"
+)
+
+foreach(BENCH_FILE ${BENCH_FILES})
+
+    get_filename_component(BENCH_DIR ${BENCH_FILE} DIRECTORY)
+    get_filename_component(BENCH_DIR ${BENCH_DIR} NAME)
+    get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
+
+    set(EXECUTABLE "perf.${BENCH_DIR}.${BENCH_NAME}")
+    add_executable(${EXECUTABLE} ${BENCH_FILE})
+
+    target_include_directories(${EXECUTABLE} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/perf
+    )
+
+    target_compile_options(${EXECUTABLE} PRIVATE -O2 -DNDEBUG)
+
+    target_link_libraries(${EXECUTABLE} PRIVATE
+            ${PROJECT_NAME}
     )
 
     add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})

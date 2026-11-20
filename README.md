@@ -17,6 +17,7 @@
     - [Documentation](#documentation)
     - [Building](#building)
     - [Tests](#tests)
+    - [Benchmarks](#benchmarks)
     - [Installing System-Wide](#installing-system-wide)
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [License](#license)
@@ -901,10 +902,18 @@ To compile it as a shared library instead, add the following flag:
 
 ### Tests
 
-To run tests, execute the following command:
+To run unit tests, execute the following command:
 
 ```bash
-  ctest --test-dir build
+  ctest --test-dir build -R "unit.*\\.c"
+```
+
+### Benchmarks
+
+To run benchmarks, execute the following command:
+
+```bash
+  ctest --test-dir build -R "perf.*\\.c" --verbose
 ```
 
 ### Installing System-Wide

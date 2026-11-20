@@ -237,7 +237,6 @@ void priority_queue_clear(PriorityQueue* priority_queue) {
     if (require_non_null(priority_queue)) return;
     for (int i = 0; i < priority_queue->size; i++) {
         priority_queue->destruct(priority_queue->elements[i]);
-        priority_queue->elements[i] = nullptr;
     }
     priority_queue->size = 0;
     priority_queue->modification_count++;

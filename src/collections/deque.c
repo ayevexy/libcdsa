@@ -215,7 +215,6 @@ void* deque_remove_first(Deque* deque) {
     }
     void* element = deque->elements[deque->first];
     deque->destruct(element);
-    deque->elements[deque->first] = nullptr;
 
     deque->first = (deque->first + 1) & (deque->capacity - 1);
     deque->size--;
@@ -233,7 +232,6 @@ void* deque_remove_last(Deque* deque) {
 
     void* element = deque->elements[last];
     deque->destruct(element);
-    deque->elements[last] = nullptr;
 
     deque->last = last;
     deque->size--;
@@ -315,7 +313,6 @@ void deque_clear(Deque* deque) {
     for (int i = 0; i < deque->size; i++) {
         const int index = (deque->first + i) & (deque->capacity - 1);
         deque->destruct(deque->elements[index]);
-        deque->elements[index] = nullptr;
     }
     deque->first = 0;
     deque->last = 0;

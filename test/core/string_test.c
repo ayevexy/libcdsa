@@ -468,7 +468,7 @@ void test_string_split() {
     TEST_ASSERT_EQUAL(strlen("!!!"), string_length(strings[2]));
     // clean up
     string_destroy(&string);
-    array_destroy(&strings);
+    array_obliterate(&strings, string_destroy);
 }
 
 void test_string_split_single_word() {
@@ -481,7 +481,7 @@ void test_string_split_single_word() {
     TEST_ASSERT_EQUAL(strlen("Hello"), string_length(strings[0]));
     // clean up
     string_destroy(&string);
-    array_destroy(&strings);
+    array_obliterate(&strings, string_destroy);
 }
 
 void test_string_split_empty() {
@@ -493,7 +493,7 @@ void test_string_split_empty() {
     TEST_ASSERT_EQUAL_STRING_LEN("", string_data(strings[0]), string_length(strings[0]));
     // clean up
     string_destroy(&string);
-    array_destroy(&strings);
+    array_obliterate(&strings, string_destroy);
 }
 
 void test_string_to_uppercase() {

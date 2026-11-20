@@ -50,7 +50,7 @@ void test_file_list_directory() {
     TEST_ASSERT_EQUAL_STRING("file_2.txt", string_data(files[0]));
     TEST_ASSERT_EQUAL_STRING("file_1.txt", string_data(files[1]));
     // clean up
-    array_destroy(&files);
+    array_obliterate(&files, string_destroy);
     file_delete("test_dir/file_1.txt");
     file_delete("test_dir/file_2.txt");
     file_delete("test_dir");

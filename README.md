@@ -604,7 +604,7 @@ int main(void) {
     printf("\n");
 
     string_destroy_all(&hello, &world, &sub, &hello_world);
-    array_destroy(&words);
+    array_obliterate(&words, string_destroy);
     
     return 0;
 }
@@ -704,7 +704,7 @@ int main(void) {
         printf("%s\n", string_data(files[i]));
     }
 
-    array_destroy(&files);
+    array_obliterate(&files, string_destroy);
 
     // path operations
     bool exists = file_exists("test_dir/file_2.txt");

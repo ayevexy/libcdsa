@@ -133,10 +133,25 @@ Array(void) array_copy(const Array(void) array);
  *
  * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
  */
-#define array_destroy(array) (_Generic((array),     \
-    Array(String)*: string_array_destroy,           \
-    default: (array_destroy)                        \
-)(*array), *array = nullptr)
+#define array_destroy(array) ((array_destroy)(*array), *array = nullptr)
+
+/**
+ * @brief Destroys each array element using the provided destructor, then destroys the array.
+ *
+ * @param array pointer to the array
+ * @param destruct function applied to each element
+ *
+ * @exception NULL_POINTER_ERROR if *array is null
+ *
+ * @post *array == nullptr
+ *
+ * @warning this should only be called on arrays created by `array_new()` or `array_of()`, otherwise it's undefined behavior
+ */
+#define array_obliterate(array, destruct) do {      \
+    for (int i = 0; i < array_length(*array); i++)  \
+        destruct(array[i]);                         \
+    array_destroy(array);                           \
+} while (false)
 
 /*------------------------------------------------------------------------------------------------*/
 
@@ -147,9 +162,5 @@ bool array_check_bounds(const void*, int);
 int (array_length)(const void*);
 
 void (array_destroy)(void*);
-
-typedef struct String * String;
-
-extern void string_array_destroy(Array(String));
 
 #endif

@@ -682,13 +682,6 @@ ldouble (string_to_ldouble)(StringView string) {
     return value;
 }
 
-void string_array_destroy(Array(String) strings) {
-    for (int i = 0; i < array_length(strings); i++) {
-        string_destroy(&strings[i]);
-    }
-    (array_destroy)(strings);
-}
-
 /* --------------------------------------------------------------------------------- */
 
 static constexpr int INITIAL_CAPACITY = 10;

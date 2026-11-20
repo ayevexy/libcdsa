@@ -11,6 +11,11 @@
 #include "test_utilities.h"
 #include "unity.h"
 
+typedef struct {
+    char key;
+    int value;
+} CharIntEntry;
+
 #define POPULATE_HASH_MAP(hash_map, T, ...)                     \
     do {                                                        \
         auto array = (T[]){__VA_ARGS__};                        \

@@ -15,10 +15,4 @@
         }                                                           \
     } while (false)
 
-static inline int int_compare_reversed_generic(const void* a, const void* b) {
-    return int_compare_generic(b, a);
-}
-
-typedef struct { char key; int value; } CharIntEntry;
-
 #endif

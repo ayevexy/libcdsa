@@ -267,6 +267,10 @@ void test_sort_elements_of_sequence() {
     array_destroy(&elements);
 }
 
+static inline int int_compare_reversed_generic(const void* a, const void* b) {
+    return int_compare_generic(b, a);
+}
+
 void test_chain_sequence_operations() {
     // given
     list_clear(list);

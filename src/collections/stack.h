@@ -36,6 +36,16 @@ typedef DequeOptions StackOptions;
 #define DEFAULT_STACK_OPTIONS DEFAULT_DEQUE_OPTIONS
 
 /**
+ * @brief Utility macro providing typed StackOptions.
+ *
+ * Alias of DEQUE_OPTIONS. Optional overrides can be provided.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define STACK_OPTIONS DEQUE_OPTIONS
+
+/**
  * @brief Creates a new empty stack using the specified options.
  *
  * @param options pointer to a StackOptions structure

@@ -106,6 +106,22 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default HashSetOptions for typed elements.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define HASH_SET_OPTIONS(prefix, ...) &(HashSetOptions) {   \
+    .initial_capacity = 16,                                 \
+    .load_factor = 0.75f,                                   \
+    .hash = prefix##_hash_generic,                          \
+    .destruct = noop_destruct,                              \
+    .equals = prefix##_equals_generic,                      \
+    .to_string = prefix##_to_string_generic,                \
+    __VA_ARGS__                                             \
+}
+
+/**
  * @brief Creates a new empty hash set using the specified options.
  *
  * @param options pointer to a HashSetOptions structure

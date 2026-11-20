@@ -1,19 +1,11 @@
 #include "collections/list/array_list.h"
 
 #include "collections/for_each.h" // should be included after all data structures
+#include "collections/callbacks.h"
 #include "core/memory.h"
 
 #include "test_utilities.h"
 #include "unity.h"
-
-#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
-    .initial_capacity = 10,                             \
-    .growth_factor = 2.0f,                              \
-    .destruct = delete,                                 \
-    .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic,                 \
-    .use_memory_realloc = true                          \
-}
 
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
     do {                                                            \
@@ -27,7 +19,8 @@
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
+    array_list_change_destructor(array_list, delete);
 }
 
 void tearDown() {

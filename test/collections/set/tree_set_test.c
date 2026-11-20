@@ -11,12 +11,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_TREE_SET_OPTIONS &(TreeSetOptions) {    \
-    .destruct = noop_destruct,                      \
-    .compare = int_compare_generic,                 \
-    .to_string = int_to_string_generic              \
-}
-
 #define POPULATE_TREE_SET(tree_set, T, ...)                 \
     do {                                                    \
         auto array = (T[]){__VA_ARGS__};                    \
@@ -47,7 +41,7 @@
 static TreeSet* tree_set;
 
 void setUp() {
-    tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     tree_set_change_destructor(tree_set, delete);
 }
 
@@ -71,7 +65,7 @@ void test_create_tree_set_from_collection() {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
-    TreeSet* new_tree_set = tree_set_from(tree_set_to_collection(tree_set), INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_from(tree_set_to_collection(tree_set), TREE_SET_OPTIONS(int));
     // then
     TEST_ASSERT_NOT_NULL(new_tree_set);
     TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(new_tree_set, int, 1, 2, 3, 4, 5);
@@ -91,7 +85,7 @@ void test_do_not_create_tree_set_with_invalid_options_from_collection() {
 
 void test_destroy_tree_set_set_it_to_null() {
     // given
-    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // when
     tree_set_destroy(&new_tree_set);
     // then
@@ -129,7 +123,7 @@ void test_do_not_add_element_to_tree_set_if_already_present() {
 
 void test_add_all_elements_to_tree_set() {
     // given
-    TreeSet* existing_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* existing_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(existing_tree_set, int, 10, 20, 30);
@@ -144,7 +138,7 @@ void test_add_all_elements_to_tree_set() {
 
 void test_do_not_add_all_elements_to_tree_set_if_already_present() {
     // given
-    TreeSet* existing_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* existing_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(existing_tree_set, int, 1, 2, 3, 4, 5);
@@ -283,7 +277,7 @@ void test_remove_last_element_from_empty_tree_set_fails() {
 
 void test_remove_all_elements_from_tree_set_matching_collection() {
     // given
-    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(new_tree_set, int, 2, 3, 4);
@@ -315,7 +309,7 @@ void test_remove_elements_from_tree_set_matching_predicate() {
 
 void test_retain_all_elements_from_collection_in_tree_set() {
     // given
-    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(new_tree_set, int, 2, 4);
@@ -533,7 +527,7 @@ void test_tree_set_is_equal_to_it_self() {
 
 void test_tree_set_is_equal_to_another_tree_set() {
     // given
-    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(other_tree_set, int, 1, 2, 3, 4, 5);
@@ -548,7 +542,7 @@ void test_tree_set_is_equal_to_another_tree_set() {
 
 void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
     // given
-    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(other_tree_set, int, 1, 2, 3, 4, 5);
@@ -565,7 +559,7 @@ void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
 
 void test_tree_set_is_not_equal_to_another_tree_set_with_different_elements() {
     // given
-    TreeSet* other_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(other_tree_set, int, 2, 3, 4, 5, 6);
@@ -671,7 +665,7 @@ void test_tree_set_does_not_contains_element() {
 
 void test_tree_set_contains_all_elements() {
     // given
-    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     POPULATE_TREE_SET(new_tree_set, int, 2, 3, 4);
@@ -686,7 +680,7 @@ void test_tree_set_contains_all_elements() {
 
 void test_empty_tree_set_contains_all_elements_of_empty_collection() {
     // given
-    TreeSet* new_tree_set = tree_set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // when
     bool contains_all = tree_set_contains_all(tree_set, tree_set_to_collection(new_tree_set));
     // then

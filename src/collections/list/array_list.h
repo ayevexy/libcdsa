@@ -106,6 +106,22 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default ArrayListOptions for typed elements.
+ *
+ * @param prefix the type callback prefix
+ * @param ... optional field overrides
+ */
+#define ARRAY_LIST_OPTIONS(prefix, ...) &(ArrayListOptions) {       \
+    .initial_capacity = 10,                                         \
+    .growth_factor = 2.0f,                                          \
+    .destruct = noop_destruct,                                      \
+    .equals = prefix##_equals_generic,                              \
+    .to_string = prefix##_to_string_generic,                        \
+    .use_memory_realloc = true,                                     \
+    __VA_ARGS__                                                     \
+}
+
+/**
  * @brief Creates a new empty array list using the specified options.
  *
  * @param options pointer to an ArrayListOptions structure

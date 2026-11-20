@@ -97,6 +97,21 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default PriorityQueueOptions for typed elements.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define PRIORITY_QUEUE_OPTIONS(prefix, ...) &(PriorityQueueOptions) {   \
+    .initial_capacity = 10,                                             \
+    .growth_factor = 2.0f,                                              \
+    .destruct = noop_destruct,                                          \
+    .compare = prefix##_compare_generic,                                \
+    .to_string = prefix##_to_string_generic,                            \
+    __VA_ARGS__                                                         \
+}
+
+/**
  * @brief Creates a new empty priority queue using the specified options.
  *
  * @param options pointer to a PriorityQueueOptions structure

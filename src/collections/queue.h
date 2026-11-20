@@ -36,6 +36,16 @@ typedef DequeOptions QueueOptions;
 #define DEFAULT_QUEUE_OPTIONS DEFAULT_DEQUE_OPTIONS
 
 /**
+ * @brief Utility macro providing typed QueueOptions.
+ *
+ * Alias of DEQUE_OPTIONS. Optional overrides can be provided.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define QUEUE_OPTIONS DEQUE_OPTIONS
+
+/**
  * @brief Creates a new empty queue using the specified options.
  *
  * @param options pointer to a QueueOptions structure

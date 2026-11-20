@@ -10,15 +10,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
-    .initial_capacity = 10,                             \
-    .growth_factor = 2.0f,                              \
-    .destruct = delete,                                 \
-    .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic,                 \
-    .use_memory_realloc = true                          \
-}
-
 #define POPULATE_LIST(list, T, ...)                     \
     do {                                                \
         auto array = (T[]){__VA_ARGS__};                \
@@ -61,8 +52,10 @@ static ArrayList* list;
 static ArrayList* empty_list;
 
 void setUp() {
-    list = list_new(INT_ARRAY_LIST_OPTIONS);
-    empty_list = list_new(INT_ARRAY_LIST_OPTIONS);
+    list = list_new(ARRAY_LIST_OPTIONS(int));
+    list_change_destructor(list, delete);
+
+    empty_list = list_new(ARRAY_LIST_OPTIONS(int));
 
     POPULATE_LIST(list, int, 1, 2, 3, 4, 5);
 }

@@ -93,6 +93,19 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default LinkedListOptions for typed elements.
+ *
+ * @param prefix the type callback prefix
+ * @param ... optional field overrides
+ */
+#define LINKED_LIST_OPTIONS(prefix, ...) &(LinkedListOptions) {     \
+    .destruct = noop_destruct,                                      \
+    .equals = prefix##_equals_generic,                              \
+    .to_string = prefix##_to_string_generic,                        \
+    __VA_ARGS__                                                     \
+}
+
+/**
  * @brief Creates a new empty linked list using the specified options.
  *
  * @param options pointer to an LinkedListOptions structure

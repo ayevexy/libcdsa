@@ -11,15 +11,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define CHAR_INT_TREE_MAP_OPTIONS &(TreeMapOptions) {   \
-    .key_destruct = noop_destruct,                      \
-    .key_compare = char_compare_generic,                \
-    .key_to_string = char_to_string_generic,            \
-    .value_destruct = noop_destruct,                    \
-    .value_equals = int_equals_generic,                 \
-    .value_to_string = int_to_string_generic            \
-}
-
 #define POPULATE_TREE_MAP(tree_map, T, ...)                     \
     do {                                                        \
         auto array = (T[]){__VA_ARGS__};                        \
@@ -54,7 +45,7 @@
 static TreeMap* tree_map;
 
 void setUp() {
-    tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     
     tree_map_change_key_destructor(tree_map, delete);
     tree_map_change_value_destructor(tree_map, delete);
@@ -82,7 +73,7 @@ void test_create_tree_map_from_entry_collection() {
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
     );
     // when
-    TreeMap* new_tree_map = tree_map_from(tree_map_entries(tree_map), CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* new_tree_map = tree_map_from(tree_map_entries(tree_map), TREE_MAP_OPTIONS(char, int));
     // then
     TEST_ASSERT_TREE_MAP_ENTRIES_EQUALS(new_tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -93,7 +84,7 @@ void test_create_tree_map_from_entry_collection() {
 
 void test_destroy_tree_map_set_it_to_null() {
     // given
-    TreeMap* new_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* new_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // when
     tree_map_destroy(&new_tree_map);
     // then
@@ -347,7 +338,7 @@ void test_do_not_put_entry_to_tree_map_if_key_is_not_absent() {
 
 void test_put_all_entries_to_tree_map() {
     // given
-    TreeMap* new_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* new_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
     POPULATE_TREE_MAP(new_tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -920,7 +911,7 @@ void test_tree_map_is_equal_to_it_self() {
 
 void test_tree_map_is_equal_to_another_tree_map() {
     // given
-    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -940,7 +931,7 @@ void test_tree_map_is_equal_to_another_tree_map() {
 
 void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
     // given
-    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -962,7 +953,7 @@ void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
 
 void test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings() {
     // given
-    TreeMap* other_tree_map = tree_map_new(CHAR_INT_TREE_MAP_OPTIONS);
+    TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }

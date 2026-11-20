@@ -83,6 +83,19 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default TreeSetOptions for typed elements.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define TREE_SET_OPTIONS(prefix, ...) &(TreeSetOptions) {   \
+    .destruct = noop_destruct,                              \
+    .compare = prefix##_compare_generic,                    \
+    .to_string = prefix##_to_string_generic,                \
+    __VA_ARGS__                                             \
+}
+
+/**
  * @brief Creates a new empty tree set using the specified options.
  *
  * @param options pointer to a TreeSetOptions structure

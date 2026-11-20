@@ -9,15 +9,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
-    .initial_capacity = 10,                             \
-    .growth_factor = 2.0f,                              \
-    .destruct = noop_destruct,                          \
-    .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic,                 \
-    .use_memory_realloc = true                          \
-}
-
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
@@ -40,7 +31,7 @@
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     array_list_change_destructor(array_list, delete);
 }
 
@@ -65,7 +56,7 @@ void test_collection_for_each() {
 
 void test_collection_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
@@ -82,7 +73,7 @@ void test_collection_contains_all_elements() {
 
 void test_empty_collection_contains_all_elements_of_empty_collection() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     Collection collection = array_list_to_collection(array_list);
     // when
@@ -95,7 +86,7 @@ void test_empty_collection_contains_all_elements_of_empty_collection() {
 
 void test_collection_does_not_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 10, 4);

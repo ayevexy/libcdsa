@@ -11,18 +11,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define CHAR_INT_HASH_MAP_OPTIONS &(HashMapOptions) {   \
-    .initial_capacity = 16,                             \
-    .load_factor = 0.75f,                               \
-    .hash = char_hash_generic,                          \
-    .key_destruct = noop_destruct,                      \
-    .key_equals = char_equals_generic,                  \
-    .key_to_string = char_to_string_generic,            \
-    .value_destruct = noop_destruct,                    \
-    .value_equals = int_equals_generic,                 \
-    .value_to_string = int_to_string_generic            \
-}
-
 #define POPULATE_HASH_MAP(hash_map, T, ...)                     \
     do {                                                        \
         auto array = (T[]){__VA_ARGS__};                        \
@@ -57,7 +45,7 @@
 static HashMap* hash_map;
 
 void setUp() {
-    hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
 
     hash_map_change_key_destructor(hash_map, delete);
     hash_map_change_value_destructor(hash_map, delete);
@@ -85,7 +73,7 @@ void test_create_hash_map_from_entry_collection() {
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
     );
     // when
-    HashMap* new_hash_map = hash_map_from(hash_map_entries(hash_map), CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* new_hash_map = hash_map_from(hash_map_entries(hash_map), HASH_MAP_OPTIONS(char, int));
     // then
     TEST_ASSERT_HASH_MAP_ENTRIES_EQUALS(new_hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -96,7 +84,7 @@ void test_create_hash_map_from_entry_collection() {
 
 void test_destroy_hash_map_set_it_to_null() {
     // given
-    HashMap* new_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* new_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // when
     hash_map_destroy(&new_hash_map);
     // then
@@ -350,7 +338,7 @@ void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
 
 void test_put_all_entries_to_hash_map() {
     // given
-    HashMap* new_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* new_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
     POPULATE_HASH_MAP(new_hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -749,7 +737,7 @@ void test_hash_map_is_equal_to_it_self() {
 
 void test_hash_map_is_equal_to_another_hash_map() {
     // given
-    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -769,7 +757,7 @@ void test_hash_map_is_equal_to_another_hash_map() {
 
 void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
     // given
-    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -791,7 +779,7 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
 
 void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
     // given
-    HashMap* other_hash_map = hash_map_new(CHAR_INT_HASH_MAP_OPTIONS);
+    HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }

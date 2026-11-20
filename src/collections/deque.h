@@ -96,6 +96,20 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default DequeOptions for typed elements.
+ *
+ * @param prefix the element type callback prefix
+ * @param ... optional field overrides
+ */
+#define DEQUE_OPTIONS(prefix, ...) &(DequeOptions) {    \
+    .initial_capacity = 8,                              \
+    .destruct = noop_destruct,                          \
+    .equals = prefix##_equals_generic,                  \
+    .to_string = prefix##_to_string_generic,            \
+    __VA_ARGS__                                         \
+}
+
+/**
  * @brief Creates a new empty deque using the specified options.
  *
  * @param options pointer to a DequeOptions structure

@@ -102,6 +102,23 @@ typedef struct {
 }
 
 /**
+ * @brief Provides default TreeMapOptions for typed keys and values.
+ *
+ * @param key_prefix the key type callback prefix
+ * @param value_prefix the value type callback prefix
+ * @param ... optional field overrides
+ */
+#define TREE_MAP_OPTIONS(key_prefix, value_prefix, ...) &(TreeMapOptions) {     \
+    .key_destruct = noop_destruct,                                              \
+    .key_compare = key_prefix##_compare_generic,                                \
+    .key_to_string = key_prefix##_to_string_generic,                            \
+    .value_destruct = noop_destruct,                                            \
+    .value_equals = value_prefix##_equals_generic,                              \
+    .value_to_string = value_prefix##_to_string_generic,                        \
+    __VA_ARGS__                                                                 \
+}
+
+/**
  * @brief Creates a new empty tree map using the specified options.
  *
  * @param options pointer to a TreeMapOptions structure

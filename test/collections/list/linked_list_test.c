@@ -12,12 +12,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_LINKED_LIST_OPTIONS &(LinkedListOptions) {  \
-    .destruct = noop_destruct,                          \
-    .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic                  \
-}
-
 #define POPULATE_LINKED_LIST(linked_list, T, ...)                   \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
@@ -40,7 +34,7 @@
 static LinkedList* linked_list;
 
 void setUp() {
-    linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     linked_list_change_destructor(linked_list, delete);
 }
 
@@ -64,7 +58,7 @@ void test_create_linked_list_from_collection() {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
-    LinkedList* new_linked_list = linked_list_from(linked_list_to_collection(linked_list), INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_from(linked_list_to_collection(linked_list), LINKED_LIST_OPTIONS(int));
     // then
     TEST_ASSERT_NOT_NULL(new_linked_list);
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(new_linked_list, int, 1, 2, 3, 4, 5);
@@ -84,7 +78,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
 
 void test_destroy_linked_list_set_it_to_null() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // when
     linked_list_destroy(&new_linked_list);
     // then
@@ -147,7 +141,7 @@ void test_add_element_at_end_of_linked_list() {
 
 void test_add_all_elements_from_collection_at_index_in_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(existing_linked_list, int, 10, 20, 30);
@@ -161,7 +155,7 @@ void test_add_all_elements_from_collection_at_index_in_linked_list() {
 
 void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(existing_linked_list, int, 10, 20, 30);
@@ -175,7 +169,7 @@ void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
 
 void test_add_all_elements_from_collection_at_end_of_linked_list() {
     // given
-    LinkedList* existing_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(existing_linked_list, int, 10, 20, 30);
@@ -454,7 +448,7 @@ void test_remove_element_from_linked_list_nonexistent_element_fails() {
 
 void test_remove_all_elements_from_linked_list_matching_collection() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(new_linked_list, int, 2, 3, 4);
@@ -530,7 +524,7 @@ void test_replace_all_elements_from_linked_list() {
 
 void test_retain_all_elements_from_collection_in_linked_list() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(new_linked_list, int, 2, 4); // empty value between `2` and `4` to ensure `3` will not be skipped
@@ -775,7 +769,7 @@ void test_linked_list_is_equal_to_it_self() {
 
 void test_linked_list_is_equal_to_another_linked_list() {
     // given
-    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(other_linked_list, int, 1, 2, 3, 4, 5);
@@ -790,7 +784,7 @@ void test_linked_list_is_equal_to_another_linked_list() {
 
 void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() {
     // given
-    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(other_linked_list, int, 1, 2, 3, 4, 5);
@@ -807,7 +801,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
 
 void test_linked_list_is_not_equal_to_another_linked_list_with_different_elements() {
     // given
-    LinkedList* other_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(other_linked_list, int, 2, 3, 4, 5, 6);
@@ -1027,7 +1021,7 @@ void test_linked_list_does_not_contains_element() {
 
 void test_linked_list_contains_all_elements() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(new_linked_list, int, 2, 3, 4);
@@ -1042,7 +1036,7 @@ void test_linked_list_contains_all_elements() {
 
 void test_empty_linked_list_contains_all_elements_of_empty_collection() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // when
     bool contains_all = linked_list_contains_all(linked_list, linked_list_to_collection(new_linked_list));
     // then
@@ -1053,7 +1047,7 @@ void test_empty_linked_list_contains_all_elements_of_empty_collection() {
 
 void test_linked_list_does_not_contains_all_elements() {
     // given
-    LinkedList* new_linked_list = linked_list_new(INT_LINKED_LIST_OPTIONS);
+    LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     POPULATE_LINKED_LIST(new_linked_list, int, 2, 10, 4);

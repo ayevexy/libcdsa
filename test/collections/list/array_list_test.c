@@ -12,15 +12,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_ARRAY_LIST_OPTIONS &(ArrayListOptions) {    \
-    .initial_capacity = 10,                             \
-    .growth_factor = 2.0f,                              \
-    .destruct = noop_destruct,                          \
-    .equals = int_equals_generic,                       \
-    .to_string = int_to_string_generic,                 \
-    .use_memory_realloc = true                          \
-}
-
 #define POPULATE_ARRAY_LIST(array_list, T, ...)                     \
     do {                                                            \
         auto array = (T[]){__VA_ARGS__};                            \
@@ -43,7 +34,7 @@
 static ArrayList* array_list;
 
 void setUp() {
-    array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     array_list_change_destructor(array_list, delete);
 }
 
@@ -67,7 +58,7 @@ void test_create_array_list_from_collection() {
     // given
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
-    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_from(array_list_to_collection(array_list), ARRAY_LIST_OPTIONS(int));
     // then
     TEST_ASSERT_NOT_NULL(new_array_list);
     TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(new_array_list, int, 1, 2, 3, 4, 5);
@@ -87,7 +78,7 @@ void test_do_not_create_array_list_with_invalid_options_from_collection() {
 
 void test_destroy_array_list_set_it_to_null() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // when
     array_list_destroy(&new_array_list);
     // then
@@ -160,7 +151,7 @@ void test_add_element_at_end_of_array_list() {
 
 void test_add_all_elements_from_collection_at_index_in_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* existing_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
@@ -174,7 +165,7 @@ void test_add_all_elements_from_collection_at_index_in_array_list() {
 
 void test_add_all_elements_from_collection_at_beginning_of_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* existing_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
@@ -188,7 +179,7 @@ void test_add_all_elements_from_collection_at_beginning_of_array_list() {
 
 void test_add_all_elements_from_collection_at_end_of_array_list() {
     // given
-    ArrayList* existing_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* existing_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(existing_array_list, int, 10, 20, 30);
@@ -468,7 +459,7 @@ void test_remove_element_from_array_list_nonexistent_element_fails() {
 
 void test_remove_all_elements_from_array_list_matching_collection() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
@@ -544,7 +535,7 @@ void test_replace_all_elements_from_array_list() {
 
 void test_retain_all_elements_from_collection_in_array_list() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 4); // empty value between `2` and `4` to ensure `3` will not be skipped
@@ -834,7 +825,7 @@ void test_array_list_is_equal_to_it_self() {
 
 void test_array_list_is_equal_to_another_array_list() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* other_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(other_array_list, int, 1, 2, 3, 4, 5);
@@ -849,7 +840,7 @@ void test_array_list_is_equal_to_another_array_list() {
 
 void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* other_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(other_array_list, int, 1, 2, 3, 4, 5);
@@ -866,7 +857,7 @@ void test_array_list_is_not_equal_to_another_array_list_with_different_size() {
 
 void test_array_list_is_not_equal_to_another_array_list_with_different_elements() {
     // given
-    ArrayList* other_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* other_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(other_array_list, int, 2, 3, 4, 5, 6);
@@ -1086,7 +1077,7 @@ void test_array_list_does_not_contains_element() {
 
 void test_array_list_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 3, 4);
@@ -1101,7 +1092,7 @@ void test_array_list_contains_all_elements() {
 
 void test_empty_array_list_contains_all_elements_of_empty_collection() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // when
     bool contains_all = array_list_contains_all(array_list, array_list_to_collection(new_array_list));
     // then
@@ -1112,7 +1103,7 @@ void test_empty_array_list_contains_all_elements_of_empty_collection() {
 
 void test_array_list_does_not_contains_all_elements() {
     // given
-    ArrayList* new_array_list = array_list_new(INT_ARRAY_LIST_OPTIONS);
+    ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     POPULATE_ARRAY_LIST(new_array_list, int, 2, 10, 4);

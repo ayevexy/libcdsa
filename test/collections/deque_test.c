@@ -11,13 +11,6 @@
 #include "test_utilities.h"
 #include "unity.h"
 
-#define INT_DEQUE_OPTIONS &(DequeOptions) {     \
-    .initial_capacity = 8,                      \
-    .destruct = noop_destruct,                  \
-    .equals = int_equals_generic,               \
-    .to_string = int_to_string_generic          \
-}
-
 #define POPULATE_DEQUE(deque, T, ...)                   \
     do {                                                \
         auto array = (T[]){__VA_ARGS__};                \
@@ -51,7 +44,7 @@
 static Deque* deque;
 
 void setUp() {
-    deque = deque_new(INT_DEQUE_OPTIONS);
+    deque = deque_new(DEQUE_OPTIONS(int));
     deque_change_destructor(deque, delete);
 }
 
@@ -75,7 +68,7 @@ void test_create_deque_from_collection() {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5 );
     // when
-    Deque* new_deque = deque_from(deque_to_collection(deque), INT_DEQUE_OPTIONS);
+    Deque* new_deque = deque_from(deque_to_collection(deque), DEQUE_OPTIONS(int));
     // then
     TEST_ASSERT_NOT_NULL(new_deque);
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(new_deque, int, 1, 2, 3, 4, 5);
@@ -95,7 +88,7 @@ void test_do_not_create_deque_with_invalid_options_from_collection() {
 
 void test_destroy_deque_set_it_to_null() {
     // given
-    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // when
     deque_destroy(&new_deque);
     // then
@@ -141,7 +134,7 @@ void test_add_element_to_deque_exceeding_capacity_resize_it() {
 
 void test_add_all_elements_from_collection_at_beginning_of_deque() {
     // given
-    Deque* existing_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* existing_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5 );
     POPULATE_DEQUE(existing_deque, int, 10, 20, 30);
@@ -155,7 +148,7 @@ void test_add_all_elements_from_collection_at_beginning_of_deque() {
 
 void test_add_all_elements_from_collection_at_end_of_deque() {
     // given
-    Deque* existing_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* existing_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(existing_deque, int, 10, 20, 30);
@@ -416,7 +409,7 @@ void test_deque_is_equal_to_it_self() {
 
 void test_deque_is_equal_to_another_deque() {
     // given
-    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(other_deque, int, 1, 2, 3, 4, 5);
@@ -431,7 +424,7 @@ void test_deque_is_equal_to_another_deque() {
 
 void test_deque_is_not_equal_to_another_deque_with_different_size() {
     // given
-    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(other_deque, int, 1, 2, 3, 4, 5);
@@ -448,7 +441,7 @@ void test_deque_is_not_equal_to_another_deque_with_different_size() {
 
 void test_deque_is_not_equal_to_another_deque_with_different_elements() {
     // given
-    Deque* other_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(other_deque, int, 2, 3, 4, 5, 6);
@@ -514,7 +507,7 @@ void test_deque_does_not_contains_element() {
 
 void test_deque_contains_all_elements() {
     // given
-    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(new_deque, int, 2, 3, 4);
@@ -529,7 +522,7 @@ void test_deque_contains_all_elements() {
 
 void test_empty_deque_contains_all_elements_of_empty_collection() {
     // given
-    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // when
     bool contains_all = deque_contains_all(deque, deque_to_collection(new_deque));
     // then
@@ -540,7 +533,7 @@ void test_empty_deque_contains_all_elements_of_empty_collection() {
 
 void test_deque_does_not_contains_all_elements() {
     // given
-    Deque* new_deque = deque_new(INT_DEQUE_OPTIONS);
+    Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // and
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     POPULATE_DEQUE(new_deque, int, 2, 10, 4);

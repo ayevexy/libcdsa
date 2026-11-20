@@ -16,6 +16,7 @@
  *
  * @return the hashed value
  */
+[[maybe_unused]]
 static inline uint64 pointer_hash(const void* pointer) {
     return (uintptr) pointer * 0x9e3779b97f4a7c15ULL;
 }
@@ -28,6 +29,7 @@ static inline uint64 pointer_hash(const void* pointer) {
  *
  * @return true if a == b, false otherwise
  */
+[[maybe_unused]]
 static inline bool pointer_equals(const void* pointer_a, const void* pointer_b) {
     return pointer_a == pointer_b;
 }
@@ -40,6 +42,7 @@ static inline bool pointer_equals(const void* pointer_a, const void* pointer_b) 
  *
  * @return negative if a < b, 0 if a == b, positive if a > b
  */
+[[maybe_unused]]
 static inline int pointer_compare(const void* pointer_a, const void* pointer_b) {
     return ((uintptr) pointer_a > (uintptr) pointer_b) - ((uintptr) pointer_a < (uintptr) pointer_b);
 }
@@ -51,6 +54,7 @@ static inline int pointer_compare(const void* pointer_a, const void* pointer_b) 
  *
  * @return a newly allocated string
  */
+[[maybe_unused]]
 static inline String pointer_to_string(const void* pointer) {
     return string_format("%p", pointer);
 }
@@ -60,6 +64,7 @@ static inline String pointer_to_string(const void* pointer) {
  *
  * @param pointer the pointer to ignore
  */
+[[maybe_unused]]
 static inline void noop_destruct(void* pointer) {
     (void) pointer;
 }
@@ -69,16 +74,19 @@ static inline void noop_destruct(void* pointer) {
 #define DECLARE_PRIMITIVE_CALLBACKS(T, suffix, format)                                          \
                                                                                                 \
     /** @brief Calculate a hash value of a primitive value. */                                  \
+    [[maybe_unused]]                                                                            \
     static inline uint64 suffix##_hash_generic(const void* value) {                             \
         return (uint64) *(const T*) value;                                                      \
     }                                                                                           \
                                                                                                 \
     /** @brief Check if two primitive values are equal. */                                      \
+    [[maybe_unused]]                                                                            \
     static inline bool suffix##_equals_generic(const void* value_a, const void* value_b) {      \
         return *(const T*) value_a == *(const T*) value_b;                                      \
     }                                                                                           \
                                                                                                 \
     /** @brief Compare two primitive values. */                                                 \
+    [[maybe_unused]]                                                                            \
     static inline int suffix##_compare_generic(const void* value_a, const void* value_b) {      \
         T a = *(const T*) value_a;                                                              \
         T b = *(const T*) value_b;                                                              \
@@ -86,6 +94,7 @@ static inline void noop_destruct(void* pointer) {
     }                                                                                           \
                                                                                                 \
     /** @brief Convert a primitive value to string. */                                          \
+    [[maybe_unused]]                                                                            \
     static inline String suffix##_to_string_generic(const void* value) {                        \
         return string_format(format, *(const T*) value);                                        \
     }
@@ -118,6 +127,7 @@ DECLARE_PRIMITIVE_CALLBACKS(ldouble, ldouble, "%Lg")
  *
  * @return the hashed value
  */
+[[maybe_unused]]
 static inline uint64 cstring_hash_generic(const void* string) {
     return string_hash((const char*) string);
 }
@@ -130,6 +140,7 @@ static inline uint64 cstring_hash_generic(const void* string) {
  *
  * @return true if equal, false otherwise
  */
+[[maybe_unused]]
 static inline bool cstring_equals_generic(const void* string, const void* other_string) {
     return string_equals((const char*) string, (const char*) other_string);
 }
@@ -142,6 +153,7 @@ static inline bool cstring_equals_generic(const void* string, const void* other_
  *
  * @return 0 if equal; negative if the first string is less; positive if greater
  */
+[[maybe_unused]]
 static inline int cstring_compare_generic(const void* string, const void* other_string) {
     return string_compare((const char*) string, (const char*) other_string);
 }
@@ -153,6 +165,7 @@ static inline int cstring_compare_generic(const void* string, const void* other_
  *
  * @return a newly allocated String
  */
+[[maybe_unused]]
 static inline String cstring_to_string_generic(const void* string) {
     return string_new((const char*) string);
 }
@@ -164,6 +177,7 @@ static inline String cstring_to_string_generic(const void* string) {
  *
  * @return the hashed value
  */
+[[maybe_unused]]
 static inline uint64 string_hash_generic(const void* string) {
     return string_hash((String) string);
 }
@@ -176,6 +190,7 @@ static inline uint64 string_hash_generic(const void* string) {
  *
  * @return true if equal, false otherwise
  */
+[[maybe_unused]]
 static inline bool string_equals_generic(const void* string, const void* other_string) {
     return string_equals((String) string, (String) other_string);
 }
@@ -188,6 +203,7 @@ static inline bool string_equals_generic(const void* string, const void* other_s
  *
  * @return 0 if equal; negative if the first string is less; positive if greater
  */
+[[maybe_unused]]
 static inline int string_compare_generic(const void* string, const void* other_string) {
     return string_compare((String) string, (String) other_string);
 }
@@ -197,6 +213,7 @@ static inline int string_compare_generic(const void* string, const void* other_s
  *
  * @param string the string
  */
+[[maybe_unused]]
 static inline void string_destroy_generic(void* string) {
     string_destroy(&(String) { (String) string });
 }
@@ -208,6 +225,7 @@ static inline void string_destroy_generic(void* string) {
  *
  * @return the string
  */
+[[maybe_unused]]
 static inline String string_to_string_generic(const void* string) {
     return (String) string;
 }

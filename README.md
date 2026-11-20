@@ -179,11 +179,10 @@ The following examples demonstrate some of the library's features:
 ```c++
 #include "collections/list/list.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    ArrayList* list = list_new(ARRAY_LIST_OPTIONS(cstring));
 
     list_add_last(list, "Hello");
     list_add_last(list, "World!");
@@ -203,11 +202,10 @@ int main(void) {
 ```c++
 #include "collections/map/map.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    HashMap* map = map_new(DEFAULT_HASH_MAP_OPTIONS());
+    HashMap* map = map_new(HASH_MAP_OPTIONS(cstring, int));
 
     map_put(map, "Hello", &(int){5});
     map_put(map, "World!", &(int){6});
@@ -227,11 +225,10 @@ int main(void) {
 ```c++
 #include "collections/set/set.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    HashSet* set = set_new(DEFAULT_HASH_SET_OPTIONS());
+    HashSet* set = set_new(HASH_SET_OPTIONS(int));
     
     set_add(set, &(int){10});
     set_add(set, &(int){20});
@@ -250,11 +247,10 @@ int main(void) {
 #include "collections/list/list.h"
 #include "collections/iterator.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    ArrayList* list = list_new(ARRAY_LIST_OPTIONS(cstring));
 
     list_add_last(list, "Hello");
     list_add_last(list, "World!");
@@ -265,6 +261,7 @@ int main(void) {
         const char* string = iterator_next(iter);
         printf("%s ", string); // Hello World!
     }
+    printf("\n");
 
     iterator_destroy(&iter);
 
@@ -279,11 +276,10 @@ int main(void) {
 #include "collections/list/list.h"
 #include "collections/for_each.h" // should be included last
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    ArrayList* list = list_new(ARRAY_LIST_OPTIONS(cstring));
 
     list_add_last(list, "Hello");
     list_add_last(list, "World!");
@@ -291,6 +287,7 @@ int main(void) {
     for_each (const char* string, list) {
         printf("%s ", string); // Hello World!
     }
+    printf("\n");
 
     list_destroy(&list);
     return 0;
@@ -306,23 +303,22 @@ int main(void) {
 #include "collections/sequence.h"
 #include "core/memory.h"
 #include "core/array.h"
-
 #include <stdio.h>
 
-bool is_even(const void* number) {
+static bool is_even(const void* number) {
     return *(int*) number % 2 == 0;
 }
 
-void add_one(void* number) {
+static void add_one(void* number) {
     *(int*) number += 1;
 }
 
-void* replace_by_two_times(void* number) {
+static void* replace_by_two_times(void* number) {
     return new(int, *(int*) number * 2);
 }
 
 int main(void) {
-    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    ArrayList* list = list_new(ARRAY_LIST_OPTIONS(int));
 
     list_add_last(list, &(int){1});
     list_add_last(list, &(int){2});
@@ -339,8 +335,9 @@ int main(void) {
     Array(void*) array = sequence_to_array(sequence);
 
     for (int i = 0; i < array_length(array); i++) {
-        printf("%d\n", *(int*) array[i]); // 6, 10
+        printf("%d ", *(int*) array[i]); // 6, 10
     }
+    printf("\n");
 
     list_destroy(&list);
     array_destroy(&array);
@@ -355,41 +352,22 @@ int main(void) {
 #include "collections/collection.h"
 #include "collections/for_each.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
-static inline uint64 int_hash_generic(const void* number) {
-    return *(int*) number * 0x9e3779b97f4a7c15ULL;
-}
-
-static bool int_equals_generic(const void* a, const void* b) {
-    return *(int*) a == *(int*) b;
-}
-
-static int int_compare_generic(const void* a, const void* b) {
-    return (*(int*) a > *(int*) b) - (*(int*) a < *(int*) b);
-}
-
-#define INT_HASH_SET_OPTIONS \
-    DEFAULT_HASH_SET_OPTIONS(.hash = int_hash_generic, .equals = int_equals_generic)
-
-#define INT_TREE_SET_OPTIONS \
-    DEFAULT_TREE_SET_OPTIONS(.compare = int_compare_generic)
-
 int main(void) {
-    HashSet* set_a = set_new(INT_HASH_SET_OPTIONS);
+    HashSet* set_a = set_new(HASH_SET_OPTIONS(int));
     set_add(set_a, &(int){1});
     set_add(set_a, &(int){2});
     set_add(set_a, &(int){3});
 
-    TreeSet* set_b = set_new(INT_TREE_SET_OPTIONS);
+    TreeSet* set_b = set_new(TREE_SET_OPTIONS(int));
     set_add(set_b, &(int){3});
     set_add(set_b, &(int){4});
     set_add(set_b, &(int){5});
 
-    TreeSet* union_set = sets_union(set_a, set_b, set_new(INT_TREE_SET_OPTIONS)); // 1, 2, 3, 4, 5
-    HashSet* intersection_set = sets_intersection(set_a, set_b, set_new(INT_HASH_SET_OPTIONS)); // 3
-    TreeSet* difference_set = sets_difference(set_a, set_b, set_new(INT_TREE_SET_OPTIONS)); // 1, 2
+    TreeSet* union_set = sets_union(set_a, set_b, set_new(TREE_SET_OPTIONS(int))); // 1, 2, 3, 4, 5
+    HashSet* intersection_set = sets_intersection(set_a, set_b, set_new(HASH_SET_OPTIONS(int))); // 3
+    TreeSet* difference_set = sets_difference(set_a, set_b, set_new(TREE_SET_OPTIONS(int))); // 1, 2
 
     for_each (int* e, union_set) printf("%d ", *e); // 1, 2, 3, 4, 5
     printf("\n");
@@ -412,18 +390,17 @@ int main(void) {
 #include "collections/list/list.h"
 #include "collections/collection.h"
 #include "collections/callbacks.h"
-
 #include <stdio.h>
 
 int main(void) {
-    ArrayList* list = list_new(DEFAULT_ARRAY_LIST_OPTIONS());
+    ArrayList* list = list_new(ARRAY_LIST_OPTIONS(cstring));
 
     list_add_last(list, "Hello");
     list_add_last(list, "World!");
 
     Collection collection = list_to_collection(list);
 
-    LinkedList* other_list = list_new(DEFAULT_LINKED_LIST_OPTIONS());
+    LinkedList* other_list = list_new(LINKED_LIST_OPTIONS(cstring));
     list_add_all_last(other_list, collection);
 
     const char* hello = list_get(other_list, 0);
@@ -487,7 +464,7 @@ int main(void) {
 ```c++
 #include "core/assertions.h"
 
-int divide(int a, int b) {
+static int divide(int a, int b) {
     assert_precondition(b != 0, "divisor must not be zero, received %d", b);
 
     const int result = a / b;
@@ -518,14 +495,13 @@ int main(void) {
 
 ```c++
 #include "core/constraints.h"
-
 #include <stdio.h>
 
 // custom constraint
 #define require_different_accounts(source, destination) \
     require((source) != (destination), ILLEGAL_ARGUMENT_ERROR, "source and destination accounts must be different")
 
-bool transfer(int source_account_id, int destination_account_id, double amount) {
+static bool transfer(int source_account_id, int destination_account_id, double amount) {
     if (require_positive(amount)) return false;
     if (require_different_accounts(source_account_id, destination_account_id)) return false;
 
@@ -548,7 +524,6 @@ int main(void) {
 
 ```c++
 #include "core/memory.h"
-
 #include <stdio.h>
 
 typedef struct {
@@ -586,13 +561,13 @@ int main(void) {
 
     for (int i = 0; i < array_length(array_a); i++) {
         printf("%d ", array_a[i]); // 10, 0, 0, 0, 0
-    }
-    
+    }    
     printf("\n");
 
     for (int i = 0; i < array_length(array_b); i++) {
         printf("%d ", array_b[i]); // 1, 2, 3, 4, 5
     }
+    printf("\n");
 
     array_destroy(&array_a);
     array_destroy(&array_b);
@@ -606,7 +581,6 @@ int main(void) {
 ```c++
 #include "core/string.h"
 #include "core/array.h"
-
 #include <stdio.h>
 
 int main(void) {
@@ -627,6 +601,7 @@ int main(void) {
     for (int i = 0; i < array_length(words); i++) {
         printf("%s ", string_data(words[i])); // Hello World! Code!
     }
+    printf("\n");
 
     string_destroy_all(&hello, &world, &sub, &hello_world);
     array_destroy(&words);
@@ -640,10 +615,9 @@ int main(void) {
 ```c++
 #include "core/system.h"
 #include "core/string.h"
-
 #include <inttypes.h>
 
-void* hello_thread(void*) {
+static void* hello_thread(void*) {
     system_write_line("I'm a thread!");
     return nullptr;
 }
@@ -699,7 +673,6 @@ int main(void) {
 #include "util/file.h"
 #include "core/string.h"
 #include "core/array.h"
-
 #include <stdio.h>
 
 int main(void) {
@@ -761,7 +734,6 @@ int main(void) {
 
 ```c++
 #include "util/allocators.h"
-
 #include <stdio.h>
 #include <string.h>
 
@@ -845,7 +817,6 @@ int main(void) {
 ```c++
 #include "util/temporal.h"
 #include "core/string.h"
-
 #include <stdio.h>
 
 int main(void) {

@@ -112,6 +112,52 @@ DECLARE_PRIMITIVE_CALLBACKS(ldouble, ldouble, "%Lg")
 #undef DECLARE_PRIMITIVE_CALLBACKS
 
 /**
+ * @brief C string hash function to be used in containers.
+ *
+ * @param string the C string
+ *
+ * @return the hashed value
+ */
+static inline uint64 cstring_hash_generic(const void* string) {
+    return string_hash((const char*) string);
+}
+
+/**
+ * @brief C string equality function to be used in containers (case-sensitive).
+ *
+ * @param string first C string
+ * @param other_string second C string
+ *
+ * @return true if equal, false otherwise
+ */
+static inline bool cstring_equals_generic(const void* string, const void* other_string) {
+    return string_equals((const char*) string, (const char*) other_string);
+}
+
+/**
+ * @brief C string comparator function to be used in containers (case-sensitive).
+ *
+ * @param string first C string
+ * @param other_string second C string
+ *
+ * @return 0 if equal; negative if the first string is less; positive if greater
+ */
+static inline int cstring_compare_generic(const void* string, const void* other_string) {
+    return string_compare((const char*) string, (const char*) other_string);
+}
+
+/**
+ * @brief C string to string function to be used in containers.
+ *
+ * @param string the C string
+ *
+ * @return a newly allocated String
+ */
+static inline String cstring_to_string_generic(const void* string) {
+    return string_new((const char*) string);
+}
+
+/**
  * @brief String hash function to be used in containers.
  *
  * @param string the string

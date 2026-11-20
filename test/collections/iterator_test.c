@@ -1,7 +1,7 @@
 #include "collections/iterator.h"
 
 #include "collections/list/array_list.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/errors.h"
 #include "core/memory.h"
 

@@ -3,7 +3,7 @@
 #include "collections/map/map_entry.h"
 #include "collections/collection.h"
 #include "collections/iterator.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/string.h"
@@ -616,12 +616,6 @@ void test_hash_map_iterator_forward_iteration() {
     Iterator* iterator = hash_map_iterator(hash_map);
     // then
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
-    // and
-    TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
-    // and
-    TEST_ASSERT_TRUE(iterator_has_next(iterator));
     TEST_ASSERT_ENTRY_EQUALS('a', 1, iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
@@ -629,6 +623,12 @@ void test_hash_map_iterator_forward_iteration() {
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
     TEST_ASSERT_ENTRY_EQUALS('c', 3, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
@@ -674,10 +674,10 @@ void test_hash_map_iterator_remove_element() {
     Iterator* iterator = hash_map_iterator(hash_map);
     iterator_next(iterator);
     // when
-    iterator_remove(iterator); // { 'd', 4 }
+    iterator_remove(iterator); // { 'a', 1 }
     // then
     TEST_ASSERT_HASH_MAP_ENTRIES_EQUALS(hash_map, CharIntEntry,
-        { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 }
+        { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
     );
     // clean up
     iterator_destroy(&iterator);
@@ -715,7 +715,7 @@ void test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
     // then
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
     TEST_ASSERT_HASH_MAP_ENTRIES_EQUALS(hash_map, CharIntEntry,
-        { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 }
+        { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
     );
     iterator_destroy(&iterator);
 }
@@ -731,7 +731,7 @@ void test_hash_map_iterator_reset() {
     // when
     iterator_reset(iterator);
     // then
-    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('a', 1, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -920,11 +920,11 @@ void test_get_hash_map_entries() {
     Collection entries_2 = hash_map_entries(hash_map);
     // then
     Iterator* iterator = collection_iterator(entries_2); // iteration order is not guaranteed
-    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
-    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
     TEST_ASSERT_ENTRY_EQUALS('a', 1, iterator_next(iterator));
     TEST_ASSERT_ENTRY_EQUALS('b', 2, iterator_next(iterator));
     TEST_ASSERT_ENTRY_EQUALS('c', 3, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('d', 4, iterator_next(iterator));
+    TEST_ASSERT_ENTRY_EQUALS('e', 5, iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -938,11 +938,11 @@ void test_get_hash_map_keys() {
     Collection keys = hash_map_keys(hash_map);
     // then
     Iterator* iterator = collection_iterator(keys); // iteration order is not guaranteed
-    TEST_ASSERT_EQUAL('d', *(char*) iterator_next(iterator));
-    TEST_ASSERT_EQUAL('e', *(char*) iterator_next(iterator));
     TEST_ASSERT_EQUAL('a', *(char*) iterator_next(iterator));
     TEST_ASSERT_EQUAL('b', *(char*) iterator_next(iterator));
     TEST_ASSERT_EQUAL('c', *(char*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL('d', *(char*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL('e', *(char*) iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -956,11 +956,11 @@ void test_get_hash_map_values() {
     Collection values = hash_map_values(hash_map);
     // then
     Iterator* iterator = collection_iterator(values); // iteration order is not guaranteed
-    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
-    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -988,7 +988,7 @@ void test_get_hash_map_string_representation() {
     // when
     String string = hash_map_to_string(hash_map);
     // then
-    TEST_ASSERT_EQUAL_STRING("[ d = 4, e = 5, a = 1, b = 2, c = 3 ]", string_data(string));
+    TEST_ASSERT_EQUAL_STRING("[ a = 1, b = 2, c = 3, d = 4, e = 5 ]", string_data(string));
     // clean up
     string_destroy(&string);
 }

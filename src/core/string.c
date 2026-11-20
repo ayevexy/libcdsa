@@ -520,11 +520,6 @@ String string_value_of_bool(bool value) {
     return string_new(value ? "true" : "false");
 }
 
-// I don't know why this shit is here...
-String pointer_to_string(const void* pointer) {
-    return string_format("%p", pointer);
-}
-
 DEFINE_STRING_VALUE_OF(char, char, "%c")
 
 DEFINE_STRING_VALUE_OF(int, int, "%d")
@@ -685,26 +680,6 @@ ldouble (string_to_ldouble)(StringView string) {
         return 0.0L;
     }
     return value;
-}
-
-uint64 string_hash_generic(const void* string) {
-    return string_hash((String) string);
-}
-
-bool string_equals_generic(const void* string, const void* other_string) {
-    return string_equals((String) string, (String) other_string);
-}
-
-int string_compare_generic(const void* string, const void* other_string) {
-    return string_compare((String) string, (String) other_string);
-}
-
-void string_destroy_generic(void* string) {
-    string_memory_dealloc(string);
-}
-
-String string_to_string_generic(const void* string) {
-    return (String) string;
 }
 
 void string_array_destroy(Array(String) strings) {

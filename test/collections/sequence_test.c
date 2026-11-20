@@ -2,7 +2,7 @@
 
 #include "collections/list/list.h"
 #include "collections/collection.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/memory.h"
 #include "core/array.h"
 #include "core/optional.h"

@@ -1,7 +1,7 @@
 #include "collections/set/set.h"
 
 #include "collections/collection.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/memory.h"
 
 #include "test_utilities.h"

@@ -2,7 +2,7 @@
 
 #include "collections/collection.h"
 #include "collections/iterator.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -281,9 +281,6 @@ void test_hash_set_iterator_forward_iteration() {
     Iterator* iterator = hash_set_iterator(hash_set);
     // then
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
-    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
-    // and
-    TEST_ASSERT_TRUE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
@@ -294,6 +291,9 @@ void test_hash_set_iterator_forward_iteration() {
     // and
     TEST_ASSERT_TRUE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    // and
+    TEST_ASSERT_TRUE(iterator_has_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // and
     TEST_ASSERT_FALSE(iterator_has_next(iterator));
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(iterator_next(iterator)));
@@ -335,8 +335,8 @@ void test_hash_set_iterator_remove_element() {
     // when
     iterator_remove(iterator); // 5
     // then
-    TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4);
-    TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 5);
+    TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 2, 3, 4, 5);
+    TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 1);
     // clean up
     iterator_destroy(&iterator);
 }
@@ -366,8 +366,8 @@ void test_hash_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
     Error error = attempt(iterator_remove(iterator));
     // then
     TEST_ASSERT_EQUAL(ILLEGAL_STATE_ERROR, error);
-    TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4);
-    TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 5);
+    TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 2, 3, 4, 5);
+    TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 1);
     // clean up
     iterator_destroy(&iterator);
 }
@@ -381,7 +381,7 @@ void test_hash_set_iterator_reset() {
     // when
     iterator_reset(iterator);
     // then
-    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -544,11 +544,11 @@ void test_hash_set_to_collection() {
     Collection collection = hash_set_to_collection(hash_set);
     // then
     Iterator* iterator = collection_iterator(collection); // iteration order is not guaranteed
-    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(1, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(2, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(3, *(int*) iterator_next(iterator));
     TEST_ASSERT_EQUAL(4, *(int*) iterator_next(iterator));
+    TEST_ASSERT_EQUAL(5, *(int*) iterator_next(iterator));
     // clean up
     iterator_destroy(&iterator);
 }
@@ -559,7 +559,7 @@ void test_convert_hash_set_to_array() {
     // when
     Array(void*) element_array = hash_set_to_array(hash_set);
     // then
-    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(element_array, int, 5, 1, 2, 3, 4);
+    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(element_array, int, 1, 2, 3, 4, 5);
     // clean up
     array_destroy(&element_array);
 }
@@ -570,7 +570,7 @@ void test_get_hash_set_string_representation() {
     // when
     String string = hash_set_to_string(hash_set);
     // then
-    TEST_ASSERT_EQUAL_STRING("( 5, 1, 2, 3, 4 )", string_data(string));
+    TEST_ASSERT_EQUAL_STRING("( 1, 2, 3, 4, 5 )", string_data(string));
     // clean up
     string_destroy(&string);
 }

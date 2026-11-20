@@ -3,7 +3,7 @@
 #include "collections/map/map_entry.h"
 #include "collections/collection.h"
 #include "collections/iterator.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "core/errors.h"
 #include "core/memory.h"
 #include "core/string.h"

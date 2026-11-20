@@ -63,7 +63,7 @@ Additional collection-related functionality:
 - [Sequence](src/collections/sequence.h): Declarative pipeline processing of collections.
 - [For Each](src/collections/for_each.h): Macro abstraction for iterating through collections.
 - [Algorithms](src/collections/algorithms.h): Enumerations defining available sorting and shuffling algorithms.
-- [Pointer](src/collections/pointer.h): Default function implementations for library containers.
+- [Callbacks](src/collections/callbacks.h): Default function implementations for library containers.
 
 #### Core
 
@@ -178,7 +178,7 @@ The following examples demonstrate some of the library's features:
 
 ```c++
 #include "collections/list/list.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -202,7 +202,7 @@ int main(void) {
 
 ```c++
 #include "collections/map/map.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -226,7 +226,7 @@ int main(void) {
 
 ```c++
 #include "collections/set/set.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -249,7 +249,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/iterator.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -278,7 +278,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/for_each.h" // should be included last
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -302,7 +302,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 #include "collections/sequence.h"
 #include "core/memory.h"
 #include "core/array.h"
@@ -354,7 +354,7 @@ int main(void) {
 #include "collections/set/set.h"
 #include "collections/collection.h"
 #include "collections/for_each.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 
@@ -411,7 +411,7 @@ int main(void) {
 ```c++
 #include "collections/list/list.h"
 #include "collections/collection.h"
-#include "collections/pointer.h"
+#include "collections/callbacks.h"
 
 #include <stdio.h>
 

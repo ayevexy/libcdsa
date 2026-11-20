@@ -83,8 +83,8 @@
 /** @brief Collection abstraction view */
 #include "collections/collection.h"
 
-/** @brief Pointer functions */
-#include "collections/pointer.h"
+/** @brief Generic callbacks for pointers, primitive types and strings */
+#include "collections/callbacks.h"
 
 /** @brief Sequence API */
 #include "collections/sequence.h"

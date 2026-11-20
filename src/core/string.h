@@ -812,51 +812,6 @@ double (string_to_double)(StringView string);
 ldouble (string_to_ldouble)(StringView string);
 
 /**
- * @brief String hash function to be used in containers.
- *
- * @param raw_string the string
- *
- * @return the hashed value
- */
-uint64 string_hash_generic(const void* raw_string);
-
-/**
- * @brief String equality function to be used in containers (case-sensitive).
- *
- * @param string first string
- * @param other_string second string]
- *
- * @return true if equal, false otherwise
- */
-bool string_equals_generic(const void* string, const void* other_string);
-
-/**
- * @brief String comparator function to be used in containers (case-sensitive).
- *
- * @param string first string
- * @param other_string second string
- *
- * @return 0 if equal; negative if the first string is less; positive if greater
- */
-int string_compare_generic(const void* string, const void* other_string);
-
-/**
- * @brief String destructor function to be used in containers.
- *
- * @param string the string
- */
-void string_destroy_generic(void* string);
-
-/**
- * @brief String to string function to be used in containers.
- *
- * @param string the string
- *
- * @return the string
- */
-String string_to_string_generic(const void* string);
-
-/**
  * @brief Creates a new string builder with a default capacity of ten.
  *
  * @return a newly created string builder.

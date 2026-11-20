@@ -149,7 +149,7 @@ foreach(TEST_FILE ${TEST_FILES})
     add_executable(${EXECUTABLE} ${TEST_FILE})
 
     target_include_directories(${EXECUTABLE} PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/test
+            ${CMAKE_CURRENT_SOURCE_DIR}/test/unit
     )
 
     target_link_libraries(${EXECUTABLE} PRIVATE

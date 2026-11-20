@@ -4,8 +4,8 @@
 
 #include "benchmark_utilities.h"
 
-#define ELEMENT_COUNT 100'000'000
-#define BENCHMARK_RUNS 1 // replace by 11 for a more precise result (it will take more time to finish)
+#define ELEMENT_COUNT 10'000'000
+#define BENCHMARK_RUNS 11
 
 static Deque* deque = nullptr;
 static int num = 10;

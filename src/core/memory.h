@@ -103,7 +103,7 @@ extern Allocator global_memory_allocator;
  *
  * @param pointer pointer to the memory block
  */
-#define delete(pointer) ((delete)(pointer), pointer = nullptr)
+#define delete(pointer) ((delete)((void*) pointer), pointer = nullptr)
 
 /**
  * @brief Allocate `size` bytes of memory.

@@ -63,6 +63,7 @@ int main(void) {
     populate = false;
     BENCHMARK("deque_destroy()", 1, deque_destroy(&deque));
 
+    instantiate = populate = false;
     BENCHMARK_END();
     return 0;
 }

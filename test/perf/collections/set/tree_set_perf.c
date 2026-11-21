@@ -67,6 +67,7 @@ int main(void) {
     populate = false;
     BENCHMARK("tree_set_destroy()", 1, tree_set_destroy(&tree_set));
 
+    instantiate = populate = false;
     BENCHMARK_END();
     return 0;
 }

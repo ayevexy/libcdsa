@@ -71,6 +71,7 @@ int main(void) {
     populate = false;
     BENCHMARK("array_list_destroy()", 1, array_list_destroy(&array_list));
 
+    instantiate = populate = populate_slow = false;
     BENCHMARK_END();
     return 0;
 }

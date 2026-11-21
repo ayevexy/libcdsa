@@ -64,6 +64,7 @@ int main(void) {
     populate = false;
     BENCHMARK("linked_list_destroy()", 1, linked_list_destroy(&linked_list));
 
+    instantiate = populate = false;
     BENCHMARK_END();
     return 0;
 }

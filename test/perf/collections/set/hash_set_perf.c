@@ -67,6 +67,7 @@ int main(void) {
     populate = false;
     BENCHMARK("hash_set_destroy()", 1, hash_set_destroy(&hash_set));
 
+    instantiate = populate = false;
     BENCHMARK_END();
     return 0;
 }

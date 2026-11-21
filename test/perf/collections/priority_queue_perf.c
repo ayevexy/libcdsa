@@ -67,6 +67,7 @@ int main(void) {
 
     BENCHMARK("priority_queue_destroy()", 1, priority_queue_destroy(&priority_queue));
 
+    instantiate = populate = false;
     BENCHMARK_END();
     return 0;
 }

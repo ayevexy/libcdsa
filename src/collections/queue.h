@@ -56,6 +56,7 @@ typedef DequeOptions QueueOptions;
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
+[[maybe_unused]]
 static inline Queue* queue_new(const QueueOptions* options) {
     return deque_new(options);
 }
@@ -72,6 +73,7 @@ static inline Queue* queue_new(const QueueOptions* options) {
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation or creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline Queue* queue_from(Collection collection, const QueueOptions* options) {
     return deque_from(collection, options);
 }
@@ -85,6 +87,7 @@ static inline Queue* queue_from(Collection collection, const QueueOptions* optio
  *
  * @post *queue_pointer == nullptr
  */
+[[maybe_unused]]
 static inline void queue_destroy(Queue** queue_pointer) {
     deque_destroy(queue_pointer);
 }
@@ -98,6 +101,7 @@ static inline void queue_destroy(Queue** queue_pointer) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline void (*queue_destructor(Queue* queue))(void*) {
     return deque_destructor(queue);
 }
@@ -110,6 +114,7 @@ static inline void (*queue_destructor(Queue* queue))(void*) {
  *
  * @exception NULL_POINTER_ERROR if queue or destruct is null
  */
+[[maybe_unused]]
 static inline void queue_change_destructor(Queue* queue, void (*destruct)(void*)) {
     deque_change_destructor(queue, destruct);
 }
@@ -123,6 +128,7 @@ static inline void queue_change_destructor(Queue* queue, void (*destruct)(void*)
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
+[[maybe_unused]]
 static inline void queue_enqueue(Queue* queue, const void* element) {
     deque_add_last(queue, element);
 }
@@ -136,6 +142,7 @@ static inline void queue_enqueue(Queue* queue, const void* element) {
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception MEMORY_ALLOCATION_ERROR if resizing or creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline void queue_enqueue_all(Queue* queue, Collection collection) {
     deque_add_all_last(queue, collection);
 }
@@ -150,6 +157,7 @@ static inline void queue_enqueue_all(Queue* queue, Collection collection) {
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception NO_SUCH_ELEMENT_ERROR if queue is empty
  */
+[[maybe_unused]]
 static inline void* queue_peek(const Queue* queue) {
     return deque_get_first(queue);
 }
@@ -167,6 +175,7 @@ static inline void* queue_peek(const Queue* queue) {
  * @note this function calls the element destruct before returning.
  *       If the destruct frees the element, the returned pointer becomes invalid.
  */
+[[maybe_unused]]
 static inline void* queue_dequeue(Queue* queue) {
     return deque_remove_first(queue);
 }
@@ -180,6 +189,7 @@ static inline void* queue_dequeue(Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline int queue_size(const Queue* queue) {
     return deque_size(queue);
 }
@@ -193,6 +203,7 @@ static inline int queue_size(const Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline int queue_capacity(const Queue* queue) {
     return deque_capacity(queue);
 }
@@ -206,6 +217,7 @@ static inline int queue_capacity(const Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline bool queue_is_empty(const Queue* queue) {
     return deque_is_empty(queue);
 }
@@ -222,6 +234,7 @@ static inline bool queue_is_empty(const Queue* queue) {
  *
  * @note the iterator does not support the following operations: add(), set(), and remove()
  */
+[[maybe_unused]]
 static inline Iterator* queue_iterator(const Queue* queue) {
     return deque_iterator(queue);
 }
@@ -241,6 +254,7 @@ static inline Iterator* queue_iterator(const Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if either queue is null
  */
+[[maybe_unused]]
 static inline bool queue_equals(const Queue* queue, const Queue* other_queue) {
     return deque_equals(queue, other_queue);
 }
@@ -253,6 +267,7 @@ static inline bool queue_equals(const Queue* queue, const Queue* other_queue) {
  *
  * @exception NULL_POINTER_ERROR if queue or action is null
  */
+[[maybe_unused]]
 static inline void queue_for_each(Queue* queue, Consumer action) {
     deque_for_each(queue, action);
 }
@@ -266,6 +281,7 @@ static inline void queue_for_each(Queue* queue, Consumer action) {
  *
  * @note this function calls the element destruct
  */
+[[maybe_unused]]
 static inline void queue_clear(Queue* queue) {
     deque_clear(queue);
 }
@@ -280,6 +296,7 @@ static inline void queue_clear(Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline bool queue_contains(const Queue* queue, const void* element) {
     return deque_contains(queue, element);
 }
@@ -295,6 +312,7 @@ static inline bool queue_contains(const Queue* queue, const void* element) {
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline bool queue_contains_all(const Queue* queue, Collection collection) {
     return deque_contains_all(queue, collection);
 }
@@ -311,6 +329,7 @@ static inline bool queue_contains_all(const Queue* queue, Collection collection)
  * @exception NULL_POINTER_ERROR if queue is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
+[[maybe_unused]]
 static inline Queue* queue_clone(const Queue* queue) {
     return deque_clone(queue);
 }
@@ -324,6 +343,7 @@ static inline Queue* queue_clone(const Queue* queue) {
  *
  * @exception NULL_POINTER_ERROR if queue is null
  */
+[[maybe_unused]]
 static inline Collection queue_to_collection(const Queue* queue) {
     Collection collection = deque_to_collection(queue);
     return (Collection) {
@@ -347,6 +367,7 @@ static inline Collection queue_to_collection(const Queue* queue) {
  *
  * @note the created array must be freed manually (by `array_destroy()`)
  */
+[[maybe_unused]]
 static inline Array(void*) queue_to_array(const Queue* queue) {
     return deque_to_array(queue);
 }
@@ -363,6 +384,7 @@ static inline Array(void*) queue_to_array(const Queue* queue) {
  *
  * @note the created string must be freed manually
  */
+[[maybe_unused]]
 static inline String queue_to_string(const Queue* queue) {
     return deque_to_string(queue);
 }

@@ -56,6 +56,7 @@ typedef DequeOptions StackOptions;
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates required constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
+[[maybe_unused]]
 static inline Stack* stack_new(const StackOptions* options) {
     return deque_new(options);
 }
@@ -72,6 +73,7 @@ static inline Stack* stack_new(const StackOptions* options) {
  * @exception ILLEGAL_ARGUMENT_ERROR if options violates constraints
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation or creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline Stack* stack_from(Collection collection, const StackOptions* options) {
     return deque_from(collection, options);
 }
@@ -85,6 +87,7 @@ static inline Stack* stack_from(Collection collection, const StackOptions* optio
  *
  * @post *stack_pointer == nullptr
  */
+[[maybe_unused]]
 static inline void stack_destroy(Stack** stack_pointer) {
     deque_destroy(stack_pointer);
 }
@@ -98,6 +101,7 @@ static inline void stack_destroy(Stack** stack_pointer) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline void (*stack_destructor(Stack* stack))(void*) {
     return deque_destructor(stack);
 }
@@ -110,6 +114,7 @@ static inline void (*stack_destructor(Stack* stack))(void*) {
  *
  * @exception NULL_POINTER_ERROR if stack or destruct is null
  */
+[[maybe_unused]]
 static inline void stack_change_destructor(Stack* stack, void (*destruct)(void*)) {
     deque_change_destructor(stack, destruct);
 }
@@ -123,6 +128,7 @@ static inline void stack_change_destructor(Stack* stack, void (*destruct)(void*)
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception MEMORY_ALLOCATION_ERROR if resizing fails
  */
+[[maybe_unused]]
 static inline void stack_push(Stack* stack, const void* element) {
     deque_add_last(stack, element);
 }
@@ -136,6 +142,7 @@ static inline void stack_push(Stack* stack, const void* element) {
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception MEMORY_ALLOCATION_ERROR if resizing or creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline void stack_push_all(Stack* stack, Collection collection) {
     deque_add_all_last(stack, collection);
 }
@@ -150,6 +157,7 @@ static inline void stack_push_all(Stack* stack, Collection collection) {
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception NO_SUCH_ELEMENT_ERROR if stack is empty
  */
+[[maybe_unused]]
 static inline void* stack_peek(const Stack* stack) {
     return deque_get_last(stack);
 }
@@ -167,6 +175,7 @@ static inline void* stack_peek(const Stack* stack) {
  * @note this function calls the element destruct before returning.
  *       If the destruct frees the element, the returned pointer becomes invalid.
  */
+[[maybe_unused]]
 static inline void* stack_pop(Stack* stack) {
     return deque_remove_last(stack);
 }
@@ -180,6 +189,7 @@ static inline void* stack_pop(Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline int stack_size(const Stack* stack) {
     return deque_size(stack);
 }
@@ -193,6 +203,7 @@ static inline int stack_size(const Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline int stack_capacity(const Stack* stack) {
     return deque_capacity(stack);
 }
@@ -206,6 +217,7 @@ static inline int stack_capacity(const Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline bool stack_is_empty(const Stack* stack) {
     return deque_is_empty(stack);
 }
@@ -222,6 +234,7 @@ static inline bool stack_is_empty(const Stack* stack) {
  *
  * @note the iterator does not support the following operations: add(), set(), and remove()
  */
+[[maybe_unused]]
 static inline Iterator* stack_iterator(const Stack* stack) {
     return deque_iterator(stack);
 }
@@ -241,6 +254,7 @@ static inline Iterator* stack_iterator(const Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if either stack is null
  */
+[[maybe_unused]]
 static inline bool stack_equals(const Stack* stack, const Stack* other_stack) {
     return deque_equals(stack, other_stack);
 }
@@ -253,6 +267,7 @@ static inline bool stack_equals(const Stack* stack, const Stack* other_stack) {
  *
  * @exception NULL_POINTER_ERROR if stack or action is null
  */
+[[maybe_unused]]
 static inline void stack_for_each(Stack* stack, Consumer action) {
     deque_for_each(stack, action);
 }
@@ -266,6 +281,7 @@ static inline void stack_for_each(Stack* stack, Consumer action) {
  *
  * @note this function calls the element destruct
  */
+[[maybe_unused]]
 static inline void stack_clear(Stack* stack) {
     deque_clear(stack);
 }
@@ -280,6 +296,7 @@ static inline void stack_clear(Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline bool stack_contains(const Stack* stack, const void* element) {
     return deque_contains(stack, element);
 }
@@ -295,6 +312,7 @@ static inline bool stack_contains(const Stack* stack, const void* element) {
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception MEMORY_ALLOCATION_ERROR if creation of the collection iterator fails
  */
+[[maybe_unused]]
 static inline bool stack_contains_all(const Stack* stack, Collection collection) {
     return deque_contains_all(stack, collection);
 }
@@ -311,6 +329,7 @@ static inline bool stack_contains_all(const Stack* stack, Collection collection)
  * @exception NULL_POINTER_ERROR if stack is null
  * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
  */
+[[maybe_unused]]
 static inline Stack* stack_clone(const Stack* stack) {
     return deque_clone(stack);
 }
@@ -324,6 +343,7 @@ static inline Stack* stack_clone(const Stack* stack) {
  *
  * @exception NULL_POINTER_ERROR if stack is null
  */
+[[maybe_unused]]
 static inline Collection stack_to_collection(const Stack* stack) {
     Collection collection = deque_to_collection(stack);
     return (Collection) {
@@ -347,6 +367,7 @@ static inline Collection stack_to_collection(const Stack* stack) {
  *
  * @note the created array must be freed manually (by `array_destroy()`)
  */
+[[maybe_unused]]
 static inline Array(void*) stack_to_array(const Stack* stack) {
     return deque_to_array(stack);
 }
@@ -363,6 +384,7 @@ static inline Array(void*) stack_to_array(const Stack* stack) {
  *
  * @note the created string must be freed manually
  */
+[[maybe_unused]]
 static inline String stack_to_string(const Stack* stack) {
     return deque_to_string(stack);
 }

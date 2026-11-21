@@ -871,7 +871,7 @@ For usage examples, see the corresponding test file in the `test` folder.
 
 ### Building
 
-If you want to build the project locally follow these steps instead:
+To build the project locally follow these steps:
 
 Clone the project:
 
@@ -885,35 +885,31 @@ Go to the project directory:
   cd libcdsa
 ```
 
-Build the project with CMake:
+Configure and build the project with CMake:
 
 ```bash
-  mkdir build
-  cmake -S . -B build
-  cmake --build build
+  cmake --preset debug
+  cmake --build --preset debug
 ```
 
-It will compile the library as a static library by default.
-To compile it as a shared library instead, add the following flag:
-
-```bash
-  cmake -S . -B build -DBUILD_SHARED_LIBS=ON
-```
+Replace `debug` with `release` to build in Release mode.
 
 ### Tests
 
 To run unit tests, execute the following command:
 
 ```bash
-  ctest --test-dir build -R "unit.*\\.c"
+  ctest --preset debug
 ```
+
+Use `release` instead to run them in Release mode.
 
 ### Benchmarks
 
-To run benchmarks, execute the following command:
+To run benchmarks, execute the following command (Release mode only):
 
 ```bash
-  ctest --test-dir build -R "perf.*\\.c" --verbose
+  ctest --preset benchmark
 ```
 
 ### Installing System-Wide
@@ -921,13 +917,13 @@ To run benchmarks, execute the following command:
 To install the library system-wide in `/usr/local`, execute the following command:
 
 ```bash
-  sudo cmake --install build
+  sudo cmake --install build/release
 ```
 
-Instead, to install to a custom directory in the home folder:
+Alternatively, to install to a custom directory in the home folder:
 
 ```bash
-  cmake --install build --prefix $HOME/my-libraries
+  cmake --install build/release --prefix "$HOME/my-libraries"
 ```
 
 ## Frequently Asked Questions

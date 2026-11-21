@@ -123,7 +123,7 @@ install(FILES
 FetchContent_Declare(
         unity
         GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-        GIT_TAG v2.6.1
+        GIT_TAG v2.7.0
         EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(unity)

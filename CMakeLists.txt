@@ -61,12 +61,14 @@ target_link_libraries(libcdsa PRIVATE m)
 
 # ---- Development ----
 
-target_compile_options(${PROJECT_NAME} PRIVATE
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE
         -Wall
         -Wextra
         -Wpedantic
         -Werror
-)
+    )
+endif()
 
 option(ENABLE_SANITIZERS "Enable sanitizers" OFF)
 

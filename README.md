@@ -127,29 +127,36 @@ This project is being built using the following technologies:
 
 ## Getting Started
 
-There are several ways of adding the library to your project:
+There are several ways to integrate the library into your project:
 
 ### Prerequisites
 
-* C Compiler (C Standard 23)
-* CMake Build Tool (Version 4.0)
+- C Compiler with C23 support.
+- CMake 4.0 or later (optional, required only for building the library locally).
 
 ### Installing
 
-Add the library to your `CMakeLists.txt` and link it to your project:
+**Using CMake FetchContent**
+
+Add the following to your `CMakeLists.txt` to download and build the library automatically:
 
 ```cmake
+include(FetchContent)
+
 FetchContent_Declare(
-        libcdsa
-        GIT_REPOSITORY https://github.com/ayevexy/libcdsa.git
-        GIT_TAG master # replace with the current version, e.g.: v1.0.0
+    libcdsa
+    GIT_REPOSITORY https://github.com/ayevexy/libcdsa.git
+    GIT_TAG master # # Replace with the desired version, e.g.: v1.0.0
 )
+
 FetchContent_MakeAvailable(libcdsa)
 
 target_link_libraries(your_project PRIVATE libcdsa)
 ```
 
-Instead, if installed system-wide:
+**Using a local installation**
+
+If the library is already installed on your machine (see [Building](#building)), use `find_package()`:
 
 ```cmake
 find_package(libcdsa REQUIRED)
@@ -157,13 +164,22 @@ find_package(libcdsa REQUIRED)
 target_link_libraries(your_project PRIVATE libcdsa::libcdsa)
 ```
 
-The library is also distributed as a header/source pair files in [Releases](https://github.com/ayevexy/libcdsa/releases/latest). Just grab them:
+**Using source files directly**
 
-```
+The library is also available as a header/source pair in [Releases](https://github.com/ayevexy/libcdsa/releases/latest).
+Download the files and add them directly to your project:
+
+```text
 your-project/
-  libcdsa.h
-  libcdsa.c
-  main.c
+├── libcdsa.h
+├── libcdsa.c
+└── main.c
+```
+
+When compiling manually on Linux and other Unix-like systems, link against the C standard math library using the -lm flag:
+
+```bash
+  gcc main.c libcdsa.c -lm -o main
 ```
 
 ### Usage

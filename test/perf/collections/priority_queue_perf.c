@@ -1,4 +1,5 @@
 #include "collections/priority_queue.h"
+
 #include "collections/callbacks.h"
 #include "collections/for_each.h"
 
@@ -8,6 +9,7 @@
 #define BENCHMARK_RUNS 11
 
 static PriorityQueue* priority_queue = nullptr;
+
 static int num = 10;
 static bytes result = 0;
 
@@ -21,7 +23,7 @@ static void benchmark_setup(void) {
 
     if (!populate) return;
 
-    for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+    for (int i = 0; i < ELEMENT_COUNT; i++) {
         priority_queue_enqueue(priority_queue, &num);
     }
 }

@@ -1,4 +1,5 @@
 #include "collections/map/tree_map.h"
+
 #include "collections/map/map_entry.h"
 #include "collections/callbacks.h"
 #include "collections/for_each.h"
@@ -14,6 +15,7 @@ typedef struct {
 } Entry;
 
 static TreeMap* tree_map = nullptr;
+
 static Entry entries[ELEMENT_COUNT];
 static int idx = 0;
 static bytes result = 0;
@@ -39,7 +41,7 @@ static void benchmark_setup(void) {
 
     if (!populate) return;
 
-    for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+    for (int i = 0; i < ELEMENT_COUNT; i++) {
         tree_map_put(tree_map, &entries[i].key, &entries[i].value);
     }
 }

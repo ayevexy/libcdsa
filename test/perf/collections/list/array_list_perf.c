@@ -1,4 +1,5 @@
 #include "collections/list/array_list.h"
+
 #include "collections/callbacks.h"
 #include "collections/for_each.h"
 
@@ -9,6 +10,7 @@
 #define BENCHMARK_RUNS 11
 
 static ArrayList* array_list = nullptr;
+
 static int num = 10;
 static bytes result = 0;
 
@@ -23,9 +25,9 @@ static void benchmark_setup(void) {
 
     if (!populate) return;
 
-    size_t max = populate_slow ? ELEMENT_COUNT_SLOW : ELEMENT_COUNT;
+    const int max = populate_slow ? ELEMENT_COUNT_SLOW : ELEMENT_COUNT;
 
-    for (size_t i = 0; i < max; i++) {
+    for (int i = 0; i < max; i++) {
         array_list_add_last(array_list, &num);
     }
 }

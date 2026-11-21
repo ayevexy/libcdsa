@@ -1,4 +1,5 @@
 #include "collections/set/hash_set.h"
+
 #include "collections/callbacks.h"
 #include "collections/for_each.h"
 
@@ -8,6 +9,7 @@
 #define BENCHMARK_RUNS 11
 
 static HashSet* hash_set = nullptr;
+
 static int numbers[ELEMENT_COUNT];
 static int idx = 0;
 static bytes result = 0;
@@ -28,7 +30,7 @@ static void benchmark_setup(void) {
 
     if (!populate) return;
 
-    for (size_t i = 0; i < ELEMENT_COUNT; i++) {
+    for (int i = 0; i < ELEMENT_COUNT; i++) {
         hash_set_add(hash_set, &numbers[i]);
     }
 }

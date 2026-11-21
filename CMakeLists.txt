@@ -186,8 +186,6 @@ foreach(BENCH_FILE ${BENCH_FILES})
             ${CMAKE_CURRENT_SOURCE_DIR}/test/perf
     )
 
-    target_compile_options(${EXECUTABLE} PRIVATE -O2 -DNDEBUG)
-
     target_link_libraries(${EXECUTABLE} PRIVATE
             ${PROJECT_NAME}
     )

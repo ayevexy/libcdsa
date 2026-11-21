@@ -169,27 +169,31 @@ endforeach()
 
 # ---- Benchmarks ----
 
-file(GLOB_RECURSE BENCH_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/test/perf/*.c"
-)
+option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
-foreach(BENCH_FILE ${BENCH_FILES})
-
-    get_filename_component(BENCH_DIR ${BENCH_FILE} DIRECTORY)
-    get_filename_component(BENCH_DIR ${BENCH_DIR} NAME)
-    get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
-
-    set(EXECUTABLE "perf.${BENCH_DIR}.${BENCH_NAME}")
-    add_executable(${EXECUTABLE} ${BENCH_FILE})
-
-    target_include_directories(${EXECUTABLE} PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/test/perf
+if(BUILD_BENCHMARKS)
+    file(GLOB_RECURSE BENCH_FILES
+            "${CMAKE_CURRENT_SOURCE_DIR}/test/perf/*.c"
     )
 
-    target_link_libraries(${EXECUTABLE} PRIVATE
-            ${PROJECT_NAME}
-    )
+    foreach(BENCH_FILE ${BENCH_FILES})
 
-    add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
+        get_filename_component(BENCH_DIR ${BENCH_FILE} DIRECTORY)
+        get_filename_component(BENCH_DIR ${BENCH_DIR} NAME)
+        get_filename_component(BENCH_NAME ${BENCH_FILE} NAME_WE)
 
-endforeach()
+        set(EXECUTABLE "perf.${BENCH_DIR}.${BENCH_NAME}")
+        add_executable(${EXECUTABLE} ${BENCH_FILE})
+
+        target_include_directories(${EXECUTABLE} PRIVATE
+                ${CMAKE_CURRENT_SOURCE_DIR}/test/perf
+        )
+
+        target_link_libraries(${EXECUTABLE} PRIVATE
+                ${PROJECT_NAME}
+        )
+
+        add_test(NAME ${EXECUTABLE} COMMAND ${EXECUTABLE})
+
+    endforeach()
+endif()

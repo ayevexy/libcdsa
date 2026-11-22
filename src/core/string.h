@@ -7,6 +7,7 @@
  */
 
 #include "core/types.h"
+#include <stdarg.h>
 
 typedef struct Allocator Allocator;
 
@@ -169,6 +170,21 @@ void (string_destroy_all)(void);
 #define string_format(format, ...) string_format(string_view(format), __VA_ARGS__)
 
 String (string_format)(StringView format, ...);
+
+/**
+ * @brief Creates a newly allocated formatted string.
+ *
+ * @param format the format
+ * @param parameters arguments
+ *
+ * @return a new allocated string
+ *
+ * @exception NULL_POINTER_ERROR if format.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ */
+#define string_format_variadic(format, parameters) string_format_variadic(string_view(format), parameters)
+
+String (string_format_variadic)(StringView format, va_list parameters);
 
 /**
  * @brief Calculates the hash value of a string.
@@ -561,6 +577,23 @@ String (string_repeat)(StringView string, int times);
 #define string_join_1(s) string_view(s), (StringView) {} // sentinel
 
 String (string_join)(StringView separator, ...);
+
+/**
+ * @brief Concatenates n strings repeatedly inserting the specified separator between them.
+ *
+ * @param separator the separator
+ * @param parameters a string list (terminated by a null string `(StringView) {}`)
+ *
+ * @return a new allocated string
+ *
+ * @exception NULL_POINTER_ERROR if separator.data is null
+ * @exception MEMORY_ALLOCATION_ERROR if memory allocation fails
+ *
+ * @warning the string list MUST be terminated by a `(StringView) {}` element, otherwise, it's undefined behavior.
+ */
+#define string_join_variadic(separator, parameters) string_join_variadic(string_view(separator), parameters)
+
+String (string_join_variadic)(StringView separator, va_list parameters);
 
 /**
  * @brief Split a string into n strings by the specified delimiter.

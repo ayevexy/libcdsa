@@ -114,20 +114,30 @@ void (string_destroy_all)(void) {
 }
 
 String (string_format)(StringView format, ...) {
-    if (require_non_null(format.data)) return nullptr;
-
     va_list parameters = {};
     va_start(parameters, format);
-    const int length = vsnprintf(nullptr, 0, format.data, parameters);
+
+    String string = string_format_variadic(format, parameters);
     va_end(parameters);
+
+    return string;
+}
+
+String (string_format_variadic)(StringView format, va_list parameters) {
+    if (require_non_null(format.data)) return nullptr;
+
+    va_list parameters_copy;
+    va_copy(parameters_copy, parameters);
+    const int length = vsnprintf(nullptr, 0, format.data, parameters_copy);
+    va_end(parameters_copy);
 
     const String string = string_create(length);
 
     if (!string) return nullptr;
 
-    va_start(parameters, format);
-    vsnprintf(string->buffer, length + NULL_TERMINATOR, format.data, parameters);
-    va_end(parameters);
+    va_copy(parameters_copy, parameters);
+    vsnprintf(string->buffer, length + NULL_TERMINATOR, format.data, parameters_copy);
+    va_end(parameters_copy);
 
     return string;
 }
@@ -420,30 +430,40 @@ String (string_repeat)(StringView string, int times) {
 }
 
 String (string_join)(StringView separator, ...) {
+    va_list parameters = {};
+    va_start(parameters, separator);
+
+    String string = string_join_variadic(separator, parameters);
+    va_end(parameters);
+
+    return string;
+}
+
+String (string_join_variadic)(StringView separator, va_list parameters) {
     if (require_non_null(separator.data)) return nullptr;
 
-    va_list parameters = {};
     int total_length = 0;
 
-    va_start(parameters, separator);
+    va_list parameters_copy;
+    va_copy(parameters_copy, parameters);
     while (true) {
-        const StringView string = va_arg(parameters, StringView);
+        const StringView string = va_arg(parameters_copy, StringView);
 
         if (!string.data) break;
 
         total_length += string.length + separator.length;
     }
     total_length -= separator.length;
-    va_end(parameters);
+    va_end(parameters_copy);
 
     const String new_string = string_create(total_length);
 
     if (!new_string) return nullptr;
 
-    va_start(parameters, separator);
+    va_copy(parameters_copy, parameters);
     int offset = 0;
     while (true) {
-        const StringView string = va_arg(parameters, StringView);
+        const StringView string = va_arg(parameters_copy, StringView);
 
         if (!string.data) break;
 
@@ -454,7 +474,7 @@ String (string_join)(StringView separator, ...) {
         }
         offset += string.length + separator.length;
     }
-    va_end(parameters);
+    va_end(parameters_copy);
 
     return new_string;
 }

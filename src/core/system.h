@@ -8,6 +8,7 @@
 
 #include "core/types.h"
 #include "core/macros.h"
+#include <stdarg.h>
 
 typedef struct File File;
 typedef struct Error* Error;
@@ -140,6 +141,58 @@ void (system_write_error)(StringView string, ...);
 #define system_write_error_line(string, ...) system_write_error_line(string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
 void (system_write_error_line)(StringView string, ...);
+
+/**
+ * @brief Writes a string to the system output stream.
+ *
+ * @param string the string
+ * @param parameters additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define system_write_variadic(string, parameters) system_write_variadic(string_view(string), parameters)
+
+void (system_write_variadic)(StringView string, va_list parameters);
+
+/**
+ * @brief Writes a string to the system output stream, then terminates the line.
+ *
+ * @param string the string
+ * @param parameters additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define system_write_line_variadic(string, parameters) system_write_line_variadic(string_view(string), parameters)
+
+void (system_write_line_variadic)(StringView string, va_list parameters);
+
+/**
+ * @brief Writes a string to the system error stream.
+ *
+ * @param string the string
+ * @param parameters additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define system_write_error_variadic(string, parameters) system_write_error_variadic(string_view(string), parameters)
+
+void (system_write_error_variadic)(StringView string, va_list parameters);
+
+/**
+ * @brief Writes a string to the system error stream, then terminates the line.
+ *
+ * @param string the string
+ * @param parameters additional arguments
+ *
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define system_write_error_line_variadic(string, parameters) system_write_error_line_variadic(string_view(string), parameters)
+
+void (system_write_error_line_variadic)(StringView string, va_list parameters);
 
 /**
  * @brief Retrieves an environment variable value as a string.

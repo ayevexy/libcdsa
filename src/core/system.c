@@ -79,7 +79,7 @@ void (system_write)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    file_write_string_variadic(system_output(), string, parameters);
+    system_write_variadic(string, parameters);
     va_end(parameters);
 }
 
@@ -87,17 +87,15 @@ void (system_write_line)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    file_write_string_variadic(system_output(), string, parameters);
+    system_write_line_variadic(string, parameters);
     va_end(parameters);
-
-    file_write_char(system_output(), '\n');
 }
 
 void (system_write_error)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    file_write_string_variadic(system_error(), string, parameters);
+    system_write_error_variadic(string, parameters);
     va_end(parameters);
 }
 
@@ -105,9 +103,25 @@ void (system_write_error_line)(StringView string, ...) {
     va_list parameters = {};
     va_start(parameters, string);
 
-    file_write_string_variadic(system_error(), string, parameters);
+    system_write_error_line_variadic(string, parameters);
     va_end(parameters);
+}
 
+void (system_write_variadic)(StringView string, va_list parameters) {
+    file_write_string_variadic(system_output(), string, parameters);
+}
+
+void (system_write_line_variadic)(StringView string, va_list parameters) {
+    file_write_string_variadic(system_output(), string, parameters);
+    file_write_char(system_output(), '\n');
+}
+
+void (system_write_error_variadic)(StringView string, va_list parameters) {
+    file_write_string_variadic(system_error(), string, parameters);
+}
+
+void (system_write_error_line_variadic)(StringView string, va_list parameters) {
+    file_write_string_variadic(system_error(), string, parameters);
     file_write_char(system_error(), '\n');
 }
 

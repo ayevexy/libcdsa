@@ -37,11 +37,21 @@ struct String {
 };
 
 StringView string_view_from_string(String string) {
-    return (StringView) { string ? string->length : 0, string ? string->data : nullptr };
+    return (StringView) {
+        .length = string ? string->length : 0,
+        .data = string ? string->data : nullptr
+    };
+}
+
+StringView string_view_from_string_view(StringView string) {
+    return string;
 }
 
 StringView string_view_from_raw_string(const char* raw_string) {
-    return (StringView) { strlen(raw_string), (char*) raw_string };
+    return (StringView) {
+        .length = raw_string ? strlen(raw_string) : 0,
+        .data = raw_string
+    };
 }
 
 char string_view_ignore_char(char c) {

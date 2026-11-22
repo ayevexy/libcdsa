@@ -61,6 +61,7 @@ typedef struct {
  */
 #define string_view(string) (_Generic((string),     \
     String: string_view_from_string,                \
+    StringView: string_view_from_string_view,       \
     const char*: string_view_from_raw_string,       \
     char*: string_view_from_raw_string,             \
     int: string_view_ignore_char,                   \
@@ -68,6 +69,8 @@ typedef struct {
 )(string))
 
 StringView string_view_from_string(String string);
+
+StringView string_view_from_string_view(StringView string);
 
 StringView string_view_from_raw_string(const char* raw_string);
 

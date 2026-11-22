@@ -7,6 +7,7 @@
  */
 
 #include "core/types.h"
+#include <stdarg.h>
 
 typedef struct Error* Error;
 typedef struct String* String;
@@ -214,6 +215,23 @@ int file_write_char(File* file, int character);
 #define file_write_string(file, string, ...) file_write_string(file, string_view(string) __VA_OPT__(,) __VA_ARGS__)
 
 int (file_write_string)(File* file, StringView string, ...);
+
+/**
+ * @brief Writes a formatted string to a file.
+ *
+ * @param file the file to write to
+ * @param string the string format
+ * @param parameters optional arguments
+ *
+ * @return the number of characters written, or a negative value if the operation fails
+ *
+ * @exception NULL_POINTER_ERROR if file or string.data is null
+ * @exception FILE_INPUT_OUTPUT_ERROR if an input/output error occurs
+ * @exception FILE_SYSTEM_ERROR if a file system error occurs
+ */
+#define file_write_string_variadic(file, string, parameters) file_write_string_variadic(file, string_view(string), parameters)
+
+int (file_write_string_variadic)(File* file, StringView string, va_list parameters);
 
 /**
  * @brief Enumeration of file seek origins.

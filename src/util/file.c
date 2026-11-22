@@ -286,7 +286,7 @@ int (file_write_string)(File* file, StringView string, ...) {
     return bytes;
 }
 
-int file_write_string_variadic(File* file, StringView string, va_list parameters) {
+int (file_write_string_variadic)(File* file, StringView string, va_list parameters) {
     if (require_non_null(file)) return -1;
     if (require_non_null(string.data)) return -1;
 

@@ -22,8 +22,6 @@ static File* system_output_stream;
 
 static File* system_error_stream;
 
-extern int file_write_string_variadic(File*, StringView, va_list);
-
 File* system_input(void) {
     static File system_standard_input_stream;
 

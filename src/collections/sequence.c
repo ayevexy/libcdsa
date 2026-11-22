@@ -449,13 +449,12 @@ static void execute_pipeline_operations(Sequence* sequence) {
 
 static void replace_pipeline_source(Sequence* sequence) {
     auto sort = sequence->pipeline.sort[sequence->pipeline.sort_index++]->sort;
-    Error error;
-    if ((error = attempt(list_sort(sort.list, sort.comparator, sort.algorithm)))) {
+    if (NO_ERROR != attempt(list_sort(sort.list, sort.comparator, sort.algorithm))) {
         sequence->pipeline.state = ABORTED;
         return;
     }
     Iterator* iterator;
-    if ((error = attempt(iterator = list_iterator(sort.list)))) {
+    if (NO_ERROR != attempt(iterator = list_iterator(sort.list))) {
         sequence->pipeline.state = ABORTED;
         return;
     }

@@ -679,16 +679,16 @@ String tree_map_to_string(const TreeMap* tree_map) {
 }
 
 static TreeMap* create_tree_map_like(const TreeMap* tree_map) {
-    TreeMap* new_tree_map; Error error;
+    TreeMap* new_tree_map;
 
-    if ((error = attempt(new_tree_map = tree_map_new(&(TreeMapOptions) {
+    if (NO_ERROR != attempt(new_tree_map = tree_map_new(&(TreeMapOptions) {
        .key_destruct = noop_destruct,
        .key_compare = tree_map->key_compare,
        .key_to_string = tree_map->key_to_string,
        .value_destruct = noop_destruct,
        .value_equals = tree_map->value_equals,
        .value_to_string = tree_map->value_to_string
-    })))) {
+    }))) {
         return nullptr;
     }
     return new_tree_map;

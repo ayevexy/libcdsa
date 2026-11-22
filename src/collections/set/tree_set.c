@@ -575,13 +575,13 @@ String tree_set_to_string(const TreeSet* tree_set) {
 }
 
 static TreeSet* create_tree_set_like(const TreeSet* tree_set) {
-    TreeSet* new_tree_set; Error error;
+    TreeSet* new_tree_set;
 
-    if ((error = attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
+    if (NO_ERROR != attempt(new_tree_set = tree_set_new(&(TreeSetOptions){
        .destruct = noop_destruct,
        .compare = tree_set->compare,
        .to_string = tree_set->to_string
-    })))) {
+    }))) {
         return nullptr;
     }
     return new_tree_set;

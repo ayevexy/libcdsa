@@ -64,12 +64,7 @@ endif()
 # ---- Development ----
 
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-    )
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 endif()
 
 option(ENABLE_SANITIZERS "Enable sanitizers" OFF)

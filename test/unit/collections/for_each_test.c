@@ -46,6 +46,7 @@ void test_iterate_through_empty_data_structure() {
     int count = 0;
     // when
     for_each (int* element, array_list) {
+        (void) element;
         count++;
     }
     // then

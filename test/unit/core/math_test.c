@@ -216,7 +216,7 @@ void test_math_median() {
     TEST_ASSERT_EQUAL(2.5, math_median(((double[]) {1.5, 2.5, 3.5}), 3));
     TEST_ASSERT_EQUAL(2.25, math_median(((double[]) {1.5, 2.0, 2.5, 3.0}), 4));
     // then: empty array
-    TEST_ASSERT_TRUE(math_is_nan(math_median((double[]){}, 0)));
+    TEST_ASSERT_TRUE(math_is_nan(math_median((double[]){1}, 0)));
 }
 
 void test_math_median_of() {

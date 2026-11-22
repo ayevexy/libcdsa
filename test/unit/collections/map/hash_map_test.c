@@ -105,11 +105,11 @@ void test_destroy_null_hash_map_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-static void* remapper_return_null(void* key, void* value) {
+static void* remapper_return_null(void*, void*) {
     return nullptr;
 }
 
-static void* remapper_return_new_value(void* key, void* value) {
+static void* remapper_return_new_value(void*, void*) {
     return new(int, 10);
 }
 
@@ -162,7 +162,7 @@ void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_
     );
 }
 
-static void* mapper(void* key) {
+static void* mapper(void*) {
     return new(int, 10);
 }
 
@@ -555,7 +555,7 @@ void test_remove_entry_from_hash_map_no_matching_value_fails() {
     );
 }
 
-static void* replace_by_2_times_original(void* key, void* value) {
+static void* replace_by_2_times_original(void*, void* value) {
     *(int*) value *= 2;
     return value;
 }

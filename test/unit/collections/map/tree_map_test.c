@@ -105,11 +105,11 @@ void test_destroy_null_tree_map_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-static void* remapper_return_null(void* key, void* value) {
+static void* remapper_return_null(void*, void*) {
     return nullptr;
 }
 
-static void* remapper_return_new_value(void* key, void* value) {
+static void* remapper_return_new_value(void*, void*) {
     return new(int, 10);
 }
 
@@ -162,7 +162,7 @@ void test_compute_mapping_of_tree_map_if_key_is_absent_and_remapper_return_null_
     );
 }
 
-static void* mapper(void* key) {
+static void* mapper(void*) {
     return new(int, 10);
 }
 
@@ -668,7 +668,7 @@ void test_remove_last_entry_from_empty_tree_map_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-static void* replace_by_2_times_original(void* key, void* value) {
+static void* replace_by_2_times_original(void*, void* value) {
     *(int*) value *= 2;
     return value;
 }

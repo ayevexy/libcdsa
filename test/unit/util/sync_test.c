@@ -46,8 +46,9 @@ void test_simple_lock() {
     // then
     TEST_ASSERT_EQUAL(2'000'000, counter);
 }
+
 static int readers = 0;
-static int reads = 0;
+static volatile int reads = 0;
 
 void* reader(void*) {
     lock_lock(lock, READ_LOCK);
@@ -184,7 +185,7 @@ void test_barrier() {
     TEST_ASSERT_EQUAL(2, counter);
 }
 
-DEFINE_ONCE(initializer);
+DEFINE_ONCE(initializer)
 
 void initializer() {
     counter++;

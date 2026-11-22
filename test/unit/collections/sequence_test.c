@@ -411,7 +411,7 @@ void test_convert_empty_sequence_to_array() {
     // when
     Array(void*) elements = sequence_to_array(sequence);
     // then
-    TEST_ASSERT_POINTER_ARRAY_ELEMENTS_EQUALS(elements, int);
+    TEST_ASSERT_EQUAL(0, array_length(elements));
     // clean up
     array_destroy(&elements);
 }

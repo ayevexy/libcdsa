@@ -435,7 +435,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements() {
 
 static int action_count = 0;
 
-static void action(void* element) {
+static void action(void*) {
     action_count++;
 }
 

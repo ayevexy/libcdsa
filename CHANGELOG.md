@@ -5,6 +5,103 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 🎉 [v1.0.0-beta.13]() — 2026-11-22
+
+A major update introducing a comprehensive Generic Math API, improving memory management across collections and strings,
+and expanding collection configuration and callback capabilities.
+This release also brings significant improvements to the testing infrastructure,
+performance benchmarks, and overall project organization.
+
+### ✨ Features
+- Introduced the Generic Math API (`core/math.h`), featuring:
+  - Mathematical constants, including `MATH_PI`, `MATH_E`, `MATH_TAU` and `MATH_SQRT1_2`.
+  - Safe arithmetic through `add_exact()`, `sub_exact()`, `mul_exact()` and `div_exact()`.
+  - Logarithmic, exponential and power operations through `pow()`, `log()`, `log2()`, `log10()`, `exp()` and related functions.
+  - Trigonometric operations, including `sin()`, `cos()`, `tan()` and their inverse and hyperbolic variants. 
+  - Angle conversion through `to_radians()` and `to_degrees()`. 
+  - Statistical operations through `mean()`, `mean_of()`, `median()` and `median_of()`. 
+  - Integer utilities through `gcd()`, `lcm()`, `factorial()`, `is_even()`, `is_odd()`, `is_prime()` and `is_power_of_two()`. 
+  - Combinatorial operations through `combinations()` and `permutations()`.
+  - Basic operations through `abs()`, `min()`, `max()`, `clamp()`, `sign()`, `mod()`, etc.
+  - Rounding operations through `round()`, `floor()`, `ceil()` and `trunc()`.
+  - Floating-point utilities through `is_nan()`, `is_infinite()`, `is_finite()`, `is_normal()`, `is_close()` and `lerp()`.
+  - Floating-point percentage calculation through `percentage()`.
+  - Floating-point manipulation through `copysign()`, `remainder()`, `fdim()`, `frexp()`, `fma()`, `ldexp()`, `scalb()`, `next_after()` and `next_toward()`.
+  - Random number generation through `random()`, supporting custom random states and automatic time-based seeding.
+- Introduced typed collection options macros, allowing collection options to be declared using the appropriate collection type.
+- Added callbacks for C strings and primitive types to `collections/callbacks.h`.
+- Added `array_obliterate()` to destroy an array and its elements using a callback.
+- Added `string_builder_build()` to construct a `String` from a `StringBuilder` and release the builder.
+- Added the `swap()` macro for swapping values (`core/macros.h`).
+- Introduced typed limit aliases in `core/limits.h`.
+- Added `schar`, `llong`, `ullong` and `ldouble` type aliases to `core/types.h`.
+- Introduced `base.h` as an umbrella header for core functionality.
+- Added `file_write_string_variadic()` to `util/file.h`.
+- Added variadic versions of `string_format()` and `string_join()` to `core/string.h`.
+- Added variadic counterparts for `system_write()`, `system_write_line()`, `system_write_error()` and `system_write_error_line()`.
+
+### ✏️ Changes
+- Collection API:
+  - Removed custom allocator support from collections and their iterators.
+- String API:
+  - Made the String allocator thread-local.
+  - Separated individual string destruction from bulk string destruction.
+  - Moved the `StringBuilder` definition alongside the other string-related structures.
+  - Removed `string_static()` and `string_local()` to ensure strict C23 conformance.
+  - Moved string callbacks to `collections/callbacks.h`.
+  - Allowed `string_view()` to accept a StringView argument.
+- Error handling:
+  - Added source file and line information to errors.
+  - Made `set_error(NO_ERROR)` a no-op.
+  - Expanded the error context buffer and introduced `INTERNAL_ERROR` when its capacity is exceeded.
+  - Introduced `ASSERTION_ERROR` and integrated assertion failures into the error system.
+  - Improved error documentation and handling behavior.
+- Project structure:
+  - Renamed `pointer.h` to `callbacks.h` and moved it from `core/` to `collections/`.
+  - Moved `sequence.h` from `util/` to `collections/`.
+  - Improved modularity by replacing unnecessary includes with forward declarations and removing unused includes.
+  - Moved Optional function definitions from `core/optional.h` into `core/optional.c`.
+- Removed `system_random()` from the System API.
+- Improved error messages in the Sequence API.
+- Simplified `require_non_null()` to accept a single pointer argument (`core/constraints.h`).
+- Changed `array_destroy()` to no longer destroy string elements (`core/array.h`).
+
+### 🪲 Bug Fixes
+- Fixed missing pointer casts in `array_new()` and `array_of()` (`core/array.h`).
+- Fixed capacity validation in `memory_arena_new()`.
+- Fixed algorithm parameter validation in the `sort()` and `shuffle()` operations of ArrayList and LinkedList.
+- Fixed missing cast in `delete()` of `core/memory.h`.
+
+### 🧪 Testing
+- Introduced reusable utilities for performance benchmarking.
+- Added basic performance benchmarks at `test/perf/` for:
+  - ArrayList
+  - LinkedList
+  - HashMap
+  - TreeMap
+  - HashSet
+  - TreeSet
+  - Deque
+  - PriorityQueue
+- Reorganized unit tests under `test/unit/`.
+- Fixed memory leaks in `test_string_value_of()`.
+
+### 📚 Documentation
+- Updated the README to better reflect the project's current scope.
+- Added a Strengths section to the README.
+- Reorganized the Usage section and added labels to code examples.
+- Updated README examples to use typed collection options macros.
+- Improved the Getting Started section with clearer installation instructions.
+- Updated README build instructions to use CMake presets.
+
+### ⚙️ Build
+- Added `CMakePresets.json` with predefined build configurations.
+- Added the `BUILD_BENCHMARKS` CMake option to control benchmark compilation.
+- Improved compiler portability by applying development compiler options only to supported compilers.
+- Improved platform compatibility by conditionally linking the math library on Linux.
+- Updated Unity Test Framework dependency to v2.7.0.
+- Enforced strict compiler warnings across development targets.
+
 ---
 
 ## 🎉 [v1.0.0-beta.12]() — 2026-11-01
@@ -386,7 +483,7 @@ Also adds the StringBuilder to the String API.
 
 ### 📚 Documentation
 - Update usage examples and the Feature section in README to reflect the new Array API and the String API changes.
-- Added github issues templates, code of conduct, contributing guidelines and security policy.
+- Added GitHub issues templates, code of conduct, contributing guidelines and security policy.
 
 ---
 

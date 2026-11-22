@@ -40,20 +40,20 @@
 
 static HashSet* hash_set;
 
-void setUp() {
+void setUp(void) {
     hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     hash_set_change_destructor(hash_set, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     hash_set_destroy(&hash_set);
 }
 
-void test_create_hash_set() {
+static void test_create_hash_set(void) {
     TEST_ASSERT_NOT_NULL(hash_set);
 }
 
-void test_do_not_create_hash_set_with_invalid_options() {
+static void test_do_not_create_hash_set_with_invalid_options(void) {
     // when
     HashSet* new_hash_set; Error error = attempt(new_hash_set = hash_set_new(ref(HashSetOptions)));
     // then
@@ -61,7 +61,7 @@ void test_do_not_create_hash_set_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_hash_set_from_collection() {
+static void test_create_hash_set_from_collection(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -73,7 +73,7 @@ void test_create_hash_set_from_collection() {
     hash_set_destroy(&new_hash_set);
 }
 
-void test_do_not_create_hash_set_with_invalid_options_from_collection() {
+static void test_do_not_create_hash_set_with_invalid_options_from_collection(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -83,7 +83,7 @@ void test_do_not_create_hash_set_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_destroy_hash_set_set_it_to_null() {
+static void test_destroy_hash_set_set_it_to_null(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // when
@@ -92,7 +92,7 @@ void test_destroy_hash_set_set_it_to_null() {
     TEST_ASSERT_NULL(new_hash_set);
 }
 
-void test_destroy_null_hash_set_fails() {
+static void test_destroy_null_hash_set_fails(void) {
     // given
     HashSet* new_hash_set = nullptr;
     // when
@@ -101,7 +101,7 @@ void test_destroy_null_hash_set_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-void test_add_element_to_hash_set() {
+static void test_add_element_to_hash_set(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -111,7 +111,7 @@ void test_add_element_to_hash_set() {
     TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4, 5, 10);
 }
 
-void test_do_not_add_element_to_hash_set_if_already_present() {
+static void test_do_not_add_element_to_hash_set_if_already_present(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -121,7 +121,7 @@ void test_do_not_add_element_to_hash_set_if_already_present() {
     TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_add_all_elements_to_hash_set() {
+static void test_add_all_elements_to_hash_set(void) {
     // given
     HashSet* existing_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -136,7 +136,7 @@ void test_add_all_elements_to_hash_set() {
     hash_set_destroy(&existing_hash_set);
 }
 
-void test_do_not_add_all_elements_to_hash_set_if_already_present() {
+static void test_do_not_add_all_elements_to_hash_set_if_already_present(void) {
     // given
     HashSet* existing_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -152,7 +152,7 @@ void test_do_not_add_all_elements_to_hash_set_if_already_present() {
     hash_set_destroy(&existing_hash_set);
 }
 
-void test_add_elements_to_hash_set_exceeding_threshold_resizes_it() {
+static void test_add_elements_to_hash_set_exceeding_threshold_resizes_it(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
     // when
@@ -162,7 +162,7 @@ void test_add_elements_to_hash_set_exceeding_threshold_resizes_it() {
     TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 }
 
-void test_remove_element_from_hash_set() {
+static void test_remove_element_from_hash_set(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -173,7 +173,7 @@ void test_remove_element_from_hash_set() {
     TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 3);
 }
 
-void test_do_not_remove_element_from_hash_set_if_not_present() {
+static void test_do_not_remove_element_from_hash_set_if_not_present(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -183,7 +183,7 @@ void test_do_not_remove_element_from_hash_set_if_not_present() {
     TEST_ASSERT_HASH_SET_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_remove_all_elements_from_hash_set_matching_collection() {
+static void test_remove_all_elements_from_hash_set_matching_collection(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -203,7 +203,7 @@ static bool is_odd(const void* element) {
     return *(int*) element % 2 != 0;
 }
 
-void test_remove_elements_from_hash_set_matching_predicate() {
+static void test_remove_elements_from_hash_set_matching_predicate(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -214,7 +214,7 @@ void test_remove_elements_from_hash_set_matching_predicate() {
     TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 1, 3, 5);
 }
 
-void test_retain_all_elements_from_collection_in_hash_set() {
+static void test_retain_all_elements_from_collection_in_hash_set(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -231,7 +231,7 @@ void test_retain_all_elements_from_collection_in_hash_set() {
     hash_set_destroy(&new_hash_set);
 }
 
-void test_get_hash_set_size() {
+static void test_get_hash_set_size(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -240,7 +240,7 @@ void test_get_hash_set_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
-void test_get_hash_set_capacity() {
+static void test_get_hash_set_capacity(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -249,14 +249,14 @@ void test_get_hash_set_capacity() {
     TEST_ASSERT_EQUAL(16, capacity);
 }
 
-void test_hash_set_is_empty() {
+static void test_hash_set_is_empty(void) {
     // when
     bool empty = hash_set_is_empty(hash_set);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_hash_set_is_not_empty() {
+static void test_hash_set_is_not_empty(void) {
     // given
     hash_set_add(hash_set, new(int, 10));
     // when
@@ -265,7 +265,7 @@ void test_hash_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_hash_set_iterator_forward_iteration() {
+static void test_hash_set_iterator_forward_iteration(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -292,7 +292,7 @@ void test_hash_set_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_backward_iteration_unsupported() {
+static void test_hash_set_iterator_backward_iteration_unsupported(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -304,7 +304,7 @@ void test_hash_set_iterator_backward_iteration_unsupported() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_detects_concurrent_modification() {
+static void test_hash_set_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -317,7 +317,7 @@ void test_hash_set_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_remove_element() {
+static void test_hash_set_iterator_remove_element(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // and
@@ -332,7 +332,7 @@ void test_hash_set_iterator_remove_element() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_remove_element_fails_if_no_next_was_called() {
+static void test_hash_set_iterator_remove_element_fails_if_no_next_was_called(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // and
@@ -346,7 +346,7 @@ void test_hash_set_iterator_remove_element_fails_if_no_next_was_called() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
+static void test_hash_set_iterator_remove_element_fails_if_called_twice_in_a_row(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // and
@@ -363,7 +363,7 @@ void test_hash_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_iterator_reset() {
+static void test_hash_set_iterator_reset(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // and
@@ -377,7 +377,7 @@ void test_hash_set_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_set_is_equal_to_it_self() {
+static void test_hash_set_is_equal_to_it_self(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -386,7 +386,7 @@ void test_hash_set_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_hash_set_is_equal_to_another_hash_set() {
+static void test_hash_set_is_equal_to_another_hash_set(void) {
     // given
     HashSet* other_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -401,7 +401,7 @@ void test_hash_set_is_equal_to_another_hash_set() {
     hash_set_destroy(&other_hash_set);
 }
 
-void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
+static void test_hash_set_is_not_equal_to_another_hash_set_with_different_size(void) {
     // given
     HashSet* other_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -418,7 +418,7 @@ void test_hash_set_is_not_equal_to_another_hash_set_with_different_size() {
     hash_set_destroy(&other_hash_set);
 }
 
-void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements() {
+static void test_hash_set_is_not_equal_to_another_hash_set_with_different_elements(void) {
     // given
     HashSet* other_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -439,7 +439,7 @@ static void action(void*) {
     action_count++;
 }
 
-void test_perform_action_for_each_element_of_hash_set() {
+static void test_perform_action_for_each_element_of_hash_set(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -448,7 +448,7 @@ void test_perform_action_for_each_element_of_hash_set() {
     TEST_ASSERT_EQUAL(5, action_count);
 }
 
-void test_clear_hash_set() {
+static void test_clear_hash_set(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -458,7 +458,7 @@ void test_clear_hash_set() {
     TEST_ASSERT_HASH_SET_DO_NOT_CONTAINS_ELEMENTS(hash_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_hash_set_contains_element() {
+static void test_hash_set_contains_element(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -467,7 +467,7 @@ void test_hash_set_contains_element() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_hash_set_does_not_contains_element() {
+static void test_hash_set_does_not_contains_element(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -476,7 +476,7 @@ void test_hash_set_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_hash_set_contains_all_elements() {
+static void test_hash_set_contains_all_elements(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -491,7 +491,7 @@ void test_hash_set_contains_all_elements() {
     hash_set_destroy(&new_hash_set);
 }
 
-void test_empty_hash_set_contains_all_elements_of_empty_collection() {
+static void test_empty_hash_set_contains_all_elements_of_empty_collection(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // when
@@ -502,7 +502,7 @@ void test_empty_hash_set_contains_all_elements_of_empty_collection() {
     hash_set_destroy(&new_hash_set);
 }
 
-void test_hash_set_does_not_contains_all_elements() {
+static void test_hash_set_does_not_contains_all_elements(void) {
     // given
     HashSet* new_hash_set = hash_set_new(HASH_SET_OPTIONS(int));
     // and
@@ -517,7 +517,7 @@ void test_hash_set_does_not_contains_all_elements() {
     hash_set_destroy(&new_hash_set);
 }
 
-void test_clone_hash_set() {
+static void test_clone_hash_set(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -528,7 +528,7 @@ void test_clone_hash_set() {
     hash_set_destroy(&copy_hash_set);
 }
 
-void test_hash_set_to_collection() {
+static void test_hash_set_to_collection(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -544,7 +544,7 @@ void test_hash_set_to_collection() {
     iterator_destroy(&iterator);
 }
 
-void test_convert_hash_set_to_array() {
+static void test_convert_hash_set_to_array(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -555,7 +555,7 @@ void test_convert_hash_set_to_array() {
     array_destroy(&element_array);
 }
 
-void test_get_hash_set_string_representation() {
+static void test_get_hash_set_string_representation(void) {
     // given
     POPULATE_HASH_SET(hash_set, int, 1, 2, 3, 4, 5);
     // when
@@ -566,7 +566,7 @@ void test_get_hash_set_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_hash_set_string_representation() {
+static void test_get_empty_hash_set_string_representation(void) {
     // when
     String string = hash_set_to_string(hash_set);
     // then

@@ -11,7 +11,7 @@ static File* input;
 static File* output;
 static File* error;
 
-void setUp() {
+void setUp(void) {
     if (!standard_output) standard_output = system_output();
 
     input = file_open_temporary();
@@ -23,13 +23,13 @@ void setUp() {
     system_change_error(error);
 }
 
-void tearDown() {
+void tearDown(void) {
     file_close(input);
     file_close(output);
     file_close(error);
 }
 
-void test_system_read() {
+static void test_system_read(void) {
     // given
     file_write_char(input, 'a');
     file_rewind(input);
@@ -39,7 +39,7 @@ void test_system_read() {
     TEST_ASSERT_EQUAL('a', c);
 }
 
-void test_system_read_line() {
+static void test_system_read_line(void) {
     // given
     file_write_string(input, "Hello World!\n");
     file_rewind(input);
@@ -51,7 +51,7 @@ void test_system_read_line() {
     string_destroy(&string);
 }
 
-void test_system_write() {
+static void test_system_write(void) {
     // when
     system_write("Hello World!");
     system_write("H%dll%d W%drld!", 3, 0, 0);
@@ -63,7 +63,7 @@ void test_system_write() {
     string_destroy(&string);
 }
 
-void test_system_write_line() {
+static void test_system_write_line(void) {
     // when
     system_write_line("Hello World!");
     system_write_line("H%dll%d W%drld!", 3, 0, 0);
@@ -78,7 +78,7 @@ void test_system_write_line() {
     string_destroy(&string);
 }
 
-void test_system_write_error() {
+static void test_system_write_error(void) {
     // when
     system_write_error("Hello World!");
     system_write_error("H%dll%d W%drld!", 3, 0, 0);
@@ -90,7 +90,7 @@ void test_system_write_error() {
     string_destroy(&string);
 }
 
-void test_system_write_error_line() {
+static void test_system_write_error_line(void) {
     // when
     system_write_error_line("Hello World!");
     system_write_error_line("H%dll%d W%drld!", 3, 0, 0);
@@ -107,7 +107,7 @@ void test_system_write_error_line() {
 
 #ifdef __linux
 
-void test_system_environment_variable() {
+static void test_system_environment_variable(void) {
     // given
     system_set_environment_variable("LIBCDSA_TEST_ENV", "0");
     // when
@@ -121,7 +121,7 @@ void test_system_environment_variable() {
 
 #endif
 
-void test_system_platform_info() {
+static void test_system_platform_info(void) {
     system_change_output(standard_output);
     system_write_line(system_platform_name());
     system_write_line(system_platform_version());
@@ -133,7 +133,7 @@ void test_system_platform_info() {
 
 #include <signal.h>
 
-void test_system_process_creation() {
+static void test_system_process_creation(void) {
     // when
     intptr process_id = system_process_create("echo", "I'm a child process!");
     // and
@@ -143,7 +143,7 @@ void test_system_process_creation() {
     TEST_ASSERT_EQUAL(0, exit_code);
 }
 
-void test_system_process_is_alive() {
+static void test_system_process_is_alive(void) {
     // when
     intptr process_id = system_process_create("sleep", "3");
     // then
@@ -154,7 +154,7 @@ void test_system_process_is_alive() {
     TEST_ASSERT_FALSE(system_process_is_alive(process_id));
 }
 
-void test_system_process_wait_timeout() {
+static void test_system_process_wait_timeout(void) {
     // when
     intptr process_id = system_process_create("sleep", "3");
     bool timed_out = false;
@@ -167,7 +167,7 @@ void test_system_process_wait_timeout() {
     system_process_wait(process_id);
 }
 
-void test_system_process_wait_timeout_completed() {
+static void test_system_process_wait_timeout_completed(void) {
     // when
     intptr process_id = system_process_create("true");
     bool timed_out = false;
@@ -177,7 +177,7 @@ void test_system_process_wait_timeout_completed() {
     TEST_ASSERT_FALSE(timed_out);
 }
 
-void test_system_process_exit_code() {
+static void test_system_process_exit_code(void) {
     // when
     intptr process_id = system_process_create("sh", "-c", "exit 42");
     // and
@@ -186,7 +186,7 @@ void test_system_process_exit_code() {
     TEST_ASSERT_EQUAL(42, exit_code);
 }
 
-void test_system_process_suspend_resume() {
+static void test_system_process_suspend_resume(void) {
     // when
     intptr process_id = system_process_create("sleep", "3");
     // and
@@ -202,7 +202,7 @@ void test_system_process_suspend_resume() {
     system_process_wait(process_id);
 }
 
-void test_system_process_terminate() {
+static void test_system_process_terminate(void) {
     // when
     intptr process_id = system_process_create("sleep", "3");
     // and
@@ -213,7 +213,7 @@ void test_system_process_terminate() {
     TEST_ASSERT_EQUAL(-SIGTERM, exit_code);
 }
 
-void test_system_process_kill() {
+static void test_system_process_kill(void) {
     // when
     intptr process_id = system_process_create("sleep", "3");
     // and
@@ -224,7 +224,7 @@ void test_system_process_kill() {
     TEST_ASSERT_EQUAL(-SIGKILL, exit_code);
 }
 
-void* count_to_ten(void* raw_counter) {
+static void* count_to_ten(void* raw_counter) {
     int* counter = raw_counter;
     while (*counter < 10) {
         (*counter)++;
@@ -232,7 +232,7 @@ void* count_to_ten(void* raw_counter) {
     return counter;
 }
 
-void test_system_thread_creation() {
+static void test_system_thread_creation(void) {
     // given
     int counter = 0;
     // when
@@ -247,13 +247,13 @@ void test_system_thread_creation() {
 
 #include <stdatomic.h>
 
-void* increment(void* raw_counter) {
+static void* increment(void* raw_counter) {
     atomic_int* counter = raw_counter;
     atomic_fetch_add(counter, 1);
     return counter;
 }
 
-void test_system_thread_creation_multiple() {
+static void test_system_thread_creation_multiple(void) {
     // given
     atomic_int counter = 0;
     // when
@@ -268,7 +268,7 @@ void test_system_thread_creation_multiple() {
     TEST_ASSERT_EQUAL(3, counter);
 }
 
-void* count_to_ten_seconds(void* raw_counter) {
+static void* count_to_ten_seconds(void* raw_counter) {
     int* counter = raw_counter;
     while (*counter < 10) {
         system_thread_sleep(1000);
@@ -277,7 +277,7 @@ void* count_to_ten_seconds(void* raw_counter) {
     return counter;
 }
 
-void test_system_thread_interrupt() {
+static void test_system_thread_interrupt(void) {
     // given
     int counter = 0;
     // when
@@ -292,7 +292,7 @@ void test_system_thread_interrupt() {
 
 #endif
 
-void test_system_execute() {
+static void test_system_execute(void) {
     // when
     int exit_code = system_execute("echo \"Hello World!\"");
     // then

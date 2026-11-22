@@ -30,12 +30,12 @@
 
 static ArrayList* array_list;
 
-void setUp() {
+void setUp(void) {
     array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     array_list_change_destructor(array_list, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     array_list_destroy(&array_list);
 }
 
@@ -43,7 +43,7 @@ static void action_add_one(void* element) {
     *(int*) element += 1;
 }
 
-void test_collection_for_each() {
+static void test_collection_for_each(void) {
     // given
     POPULATE_ARRAY_LIST(array_list, int,  1, 2, 3, 4, 5);
     // and
@@ -54,7 +54,7 @@ void test_collection_for_each() {
     TEST_ASSERT_ARRAY_LIST_ELEMENTS_EQUALS(array_list, int, 2, 3, 4, 5, 6);
 }
 
-void test_collection_contains_all_elements() {
+static void test_collection_contains_all_elements(void) {
     // given
     ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
@@ -71,7 +71,7 @@ void test_collection_contains_all_elements() {
     array_list_destroy(&new_array_list);
 }
 
-void test_empty_collection_contains_all_elements_of_empty_collection() {
+static void test_empty_collection_contains_all_elements_of_empty_collection(void) {
     // given
     ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
@@ -84,7 +84,7 @@ void test_empty_collection_contains_all_elements_of_empty_collection() {
     array_list_destroy(&new_array_list);
 }
 
-void test_collection_does_not_contains_all_elements() {
+static void test_collection_does_not_contains_all_elements(void) {
     // given
     ArrayList* new_array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     // and
@@ -101,7 +101,7 @@ void test_collection_does_not_contains_all_elements() {
     array_list_destroy(&new_array_list);
 }
 
-void test_collection_to_array() {
+static void test_collection_to_array(void) {
     // given
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
     // when
@@ -112,7 +112,7 @@ void test_collection_to_array() {
     array_destroy(&elements);
 }
 
-void test_collection_as() {
+static void test_collection_as(void) {
     // given
     Collection collection = array_list_to_collection(array_list);
     // then

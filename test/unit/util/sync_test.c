@@ -12,7 +12,7 @@ static Semaphore* semaphore;
 static Barrier* barrier;
 static int counter;
 
-void setUp() {
+void setUp(void) {
     lock = lock_new();
     monitor = monitor_new();
     semaphore = semaphore_new(0);
@@ -20,14 +20,14 @@ void setUp() {
     counter = 0;
 }
 
-void tearDown() {
+void tearDown(void) {
     lock_destroy(&lock);
     monitor_destroy(&monitor);
     semaphore_destroy(&semaphore);
     barrier_destroy(&barrier);
 }
 
-void* lock_synchronized_increment(void*) {
+static void* lock_synchronized_increment(void*) {
     for (int i = 0; i < 1'000'000; i++) {
         lock_lock(lock);
         counter++;
@@ -36,7 +36,7 @@ void* lock_synchronized_increment(void*) {
     return nullptr;
 }
 
-void test_simple_lock() {
+static void test_simple_lock(void) {
     // given
     intptr thread_id_1 = system_thread_create(lock_synchronized_increment);
     intptr thread_id_2 = system_thread_create(lock_synchronized_increment);
@@ -50,7 +50,7 @@ void test_simple_lock() {
 static int readers = 0;
 static volatile int reads = 0;
 
-void* reader(void*) {
+static void* reader(void*) {
     lock_lock(lock, READ_LOCK);
     readers++;
     for (int i = 0; i < 1'000'000; i++) {
@@ -60,7 +60,7 @@ void* reader(void*) {
     return nullptr;
 }
 
-void* writer(void*) {
+static void* writer(void*) {
     for (int i = 0; i < 1'000'000; i++) {
         lock_lock(lock, WRITE_LOCK);
         counter++;
@@ -69,7 +69,7 @@ void* writer(void*) {
     return nullptr;
 }
 
-void test_read_write_lock() {
+static void test_read_write_lock(void) {
     // given
     intptr thread_id_1 = system_thread_create(reader);
     intptr thread_id_2 = system_thread_create(reader);
@@ -83,7 +83,7 @@ void test_read_write_lock() {
     TEST_ASSERT_EQUAL(1'000'000, counter);
 }
 
-void* monitor_synchronized_increment(void*) {
+static void* monitor_synchronized_increment(void*) {
     for (int i = 0; i < 1'000'000; i++) {
         monitor_lock(monitor);
         counter++;
@@ -92,7 +92,7 @@ void* monitor_synchronized_increment(void*) {
     return nullptr;
 }
 
-void test_monitor_lock_unlock() {
+static void test_monitor_lock_unlock(void) {
     // given
     intptr thread_id_1 = system_thread_create(monitor_synchronized_increment);
     intptr thread_id_2 = system_thread_create(monitor_synchronized_increment);
@@ -103,7 +103,7 @@ void test_monitor_lock_unlock() {
     TEST_ASSERT_EQUAL(2'000'000, counter);
 }
 
-void* notifying_producer(void*) {
+static void* notifying_producer(void*) {
     for (int i = 0; i < 1'000'000; i++) {
         monitor_lock(monitor);
         counter++;
@@ -113,7 +113,7 @@ void* notifying_producer(void*) {
     return nullptr;
 }
 
-void* waiting_consumer(void*) {
+static void* waiting_consumer(void*) {
     for (int i = 0; i < 1'000'000; i++) {
         monitor_lock(monitor);
         while (counter == 0) {
@@ -125,7 +125,7 @@ void* waiting_consumer(void*) {
     return nullptr;
 }
 
-void test_monitor_wait_notify() {
+static void test_monitor_wait_notify(void) {
     // given
     intptr thread_id_1 = system_thread_create(notifying_producer);
     intptr thread_id_2 = system_thread_create(waiting_consumer);
@@ -136,13 +136,13 @@ void test_monitor_wait_notify() {
     TEST_ASSERT_EQUAL(0, counter);
 }
 
-void* acquire_worker(void*) {
+static void* acquire_worker(void*) {
     semaphore_acquire(semaphore);
     counter++;
     return nullptr;
 }
 
-void test_semaphore_permits() {
+static void test_semaphore_permits(void) {
     // given
     semaphore_release(semaphore);
     semaphore_release(semaphore);
@@ -156,7 +156,7 @@ void test_semaphore_permits() {
     TEST_ASSERT_TRUE(semaphore_try_acquire(semaphore));
 }
 
-void test_semaphore_blocks_and_unblocks() {
+static void test_semaphore_blocks_and_unblocks(void) {
     // given
     intptr thread_id = system_thread_create(acquire_worker);
     // when
@@ -166,13 +166,13 @@ void test_semaphore_blocks_and_unblocks() {
     TEST_ASSERT_EQUAL(1, counter);
 }
 
-void* barrier_work(void*) {
+static void* barrier_work(void*) {
     barrier_wait(barrier);
     counter++;
     return nullptr;
 }
 
-void test_barrier() {
+static void test_barrier(void) {
     // given
     intptr thread_id_1 = system_thread_create(barrier_work);
     intptr thread_id_2 = system_thread_create(barrier_work);
@@ -187,11 +187,11 @@ void test_barrier() {
 
 DEFINE_ONCE(initializer)
 
-void initializer() {
+static void initializer(void) {
     counter++;
 }
 
-void test_initialize_once(void) {
+static void test_initialize_once(void) {
     // given
     initialize_once(initializer);
     // when

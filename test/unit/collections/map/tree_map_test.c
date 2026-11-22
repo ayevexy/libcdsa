@@ -49,22 +49,22 @@ typedef struct {
 
 static TreeMap* tree_map;
 
-void setUp() {
+void setUp(void) {
     tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     
     tree_map_change_key_destructor(tree_map, delete);
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     tree_map_destroy(&tree_map);
 }
 
-void test_create_tree_map() {
+static void test_create_tree_map(void) {
     TEST_ASSERT_NOT_NULL(tree_map);
 }
 
-void test_do_not_create_tree_map_with_invalid_options() {
+static void test_do_not_create_tree_map_with_invalid_options(void) {
     // when
     TreeMap* new_tree_map; Error error = attempt(new_tree_map = tree_map_new(ref(TreeMapOptions)));
     // then
@@ -72,7 +72,7 @@ void test_do_not_create_tree_map_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_tree_map_from_entry_collection() {
+static void test_create_tree_map_from_entry_collection(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -87,7 +87,7 @@ void test_create_tree_map_from_entry_collection() {
     tree_map_destroy(&new_tree_map);
 }
 
-void test_destroy_tree_map_set_it_to_null() {
+static void test_destroy_tree_map_set_it_to_null(void) {
     // given
     TreeMap* new_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // when
@@ -96,7 +96,7 @@ void test_destroy_tree_map_set_it_to_null() {
     TEST_ASSERT_NULL(new_tree_map);
 }
 
-void test_destroy_null_tree_map_fails() {
+static void test_destroy_null_tree_map_fails(void) {
     // given
     TreeMap* new_tree_map = nullptr;
     // when
@@ -118,7 +118,7 @@ static void* remapper_sum_values(void* old_value, void* new_value) {
     return old_value;
 }
 
-void test_compute_mapping_of_tree_map_if_remapper_return_value_is_null_remove_mapping() {
+static void test_compute_mapping_of_tree_map_if_remapper_return_value_is_null_remove_mapping(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -132,7 +132,7 @@ void test_compute_mapping_of_tree_map_if_remapper_return_value_is_null_remove_ma
     );
 }
 
-void test_compute_mapping_of_tree_map_if_remapper_return_value_is_not_null_put_mapping() {
+static void test_compute_mapping_of_tree_map_if_remapper_return_value_is_not_null_put_mapping(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -148,7 +148,7 @@ void test_compute_mapping_of_tree_map_if_remapper_return_value_is_not_null_put_m
     );
 }
 
-void test_compute_mapping_of_tree_map_if_key_is_absent_and_remapper_return_null_do_nothing() {
+static void test_compute_mapping_of_tree_map_if_key_is_absent_and_remapper_return_null_do_nothing(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -166,7 +166,7 @@ static void* mapper(void*) {
     return new(int, 10);
 }
 
-void test_compute_mapping_of_tree_map_if_absent() {
+static void test_compute_mapping_of_tree_map_if_absent(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -180,7 +180,7 @@ void test_compute_mapping_of_tree_map_if_absent() {
     );
 }
 
-void test_do_not_compute_mapping_of_tree_map_if_not_absent() {
+static void test_do_not_compute_mapping_of_tree_map_if_not_absent(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -194,7 +194,7 @@ void test_do_not_compute_mapping_of_tree_map_if_not_absent() {
     );
 }
 
-void test_compute_mapping_of_tree_map_if_present() {
+static void test_compute_mapping_of_tree_map_if_present(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -208,7 +208,7 @@ void test_compute_mapping_of_tree_map_if_present() {
     );
 }
 
-void test_do_not_compute_mapping_of_tree_map_if_not_present() {
+static void test_do_not_compute_mapping_of_tree_map_if_not_present(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -222,7 +222,7 @@ void test_do_not_compute_mapping_of_tree_map_if_not_present() {
     );
 }
 
-void test_merge_mapping_of_tree_map_if_old_value_is_null_insert_new_value() {
+static void test_merge_mapping_of_tree_map_if_old_value_is_null_insert_new_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -237,7 +237,7 @@ void test_merge_mapping_of_tree_map_if_old_value_is_null_insert_new_value() {
     );
 }
 
-void test_merge_mapping_of_tree_map_if_old_value_is_not_null_merge_with_new_value() {
+static void test_merge_mapping_of_tree_map_if_old_value_is_not_null_merge_with_new_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -251,7 +251,7 @@ void test_merge_mapping_of_tree_map_if_old_value_is_not_null_merge_with_new_valu
     );
 }
 
-void test_merge_mapping_of_tree_map_if_merged_value_is_null_remove_mapping() {
+static void test_merge_mapping_of_tree_map_if_merged_value_is_null_remove_mapping(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -265,7 +265,7 @@ void test_merge_mapping_of_tree_map_if_merged_value_is_null_remove_mapping() {
     );
 }
 
-void test_put_entry_to_tree_map() {
+static void test_put_entry_to_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -279,7 +279,7 @@ void test_put_entry_to_tree_map() {
     );
 }
 
-void test_put_entry_to_tree_map_if_key_already_exists_update_value() {
+static void test_put_entry_to_tree_map_if_key_already_exists_update_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -292,7 +292,7 @@ void test_put_entry_to_tree_map_if_key_already_exists_update_value() {
     );
 }
 
-void test_put_entry_to_tree_map_if_key_already_exists_update_value_no_destruct() {
+static void test_put_entry_to_tree_map_if_key_already_exists_update_value_no_destruct(void) {
     // given
     tree_map_change_value_destructor(tree_map, noop_destruct);
     // and
@@ -311,7 +311,7 @@ void test_put_entry_to_tree_map_if_key_already_exists_update_value_no_destruct()
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void test_put_entry_to_tree_map_if_key_is_absent() {
+static void test_put_entry_to_tree_map_if_key_is_absent(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -327,7 +327,7 @@ void test_put_entry_to_tree_map_if_key_is_absent() {
     );
 }
 
-void test_do_not_put_entry_to_tree_map_if_key_is_not_absent() {
+static void test_do_not_put_entry_to_tree_map_if_key_is_not_absent(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -341,7 +341,7 @@ void test_do_not_put_entry_to_tree_map_if_key_is_not_absent() {
     );
 }
 
-void test_put_all_entries_to_tree_map() {
+static void test_put_all_entries_to_tree_map(void) {
     // given
     TreeMap* new_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
@@ -358,7 +358,7 @@ void test_put_all_entries_to_tree_map() {
     tree_map_destroy(&new_tree_map);
 }
 
-void test_get_value_from_tree_map() {
+static void test_get_value_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -369,7 +369,7 @@ void test_get_value_from_tree_map() {
     TEST_ASSERT_EQUAL(1, *value);
 }
 
-void test_get_value_from_tree_map_no_mapping_fails() {
+static void test_get_value_from_tree_map_no_mapping_fails(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -380,7 +380,7 @@ void test_get_value_from_tree_map_no_mapping_fails() {
     TEST_ASSERT_NULL(value);
 }
 
-void test_get_default_value_from_tree_map() {
+static void test_get_default_value_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -393,7 +393,7 @@ void test_get_default_value_from_tree_map() {
     TEST_ASSERT_EQUAL(10, *value_b);
 }
 
-void test_get_first_entry_from_tree_map() {
+static void test_get_first_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -404,7 +404,7 @@ void test_get_first_entry_from_tree_map() {
     TEST_ASSERT_ENTRY_EQUALS('a', 1, &entry);
 }
 
-void test_get_first_entry_from_empty_tree_map_fails() {
+static void test_get_first_entry_from_empty_tree_map_fails(void) {
     // when
     MapEntry entry; Error error = attempt(entry = tree_map_get_first(tree_map));
     // then
@@ -413,7 +413,7 @@ void test_get_first_entry_from_empty_tree_map_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_last_entry_from_tree_map() {
+static void test_get_last_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -424,7 +424,7 @@ void test_get_last_entry_from_tree_map() {
     TEST_ASSERT_ENTRY_EQUALS('e', 5, &entry);
 }
 
-void test_get_last_entry_from_empty_tree_map_fails() {
+static void test_get_last_entry_from_empty_tree_map_fails(void) {
     // when
     MapEntry entry; Error error = attempt(entry = tree_map_get_last(tree_map));
     // then
@@ -433,7 +433,7 @@ void test_get_last_entry_from_empty_tree_map_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_replace_value_from_tree_map() {
+static void test_replace_value_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -446,7 +446,7 @@ void test_replace_value_from_tree_map() {
     );
 }
 
-void test_replace_value_from_tree_map_no_destruct() {
+static void test_replace_value_from_tree_map_no_destruct(void) {
     // given
     tree_map_change_value_destructor(tree_map, noop_destruct);
     // and
@@ -465,7 +465,7 @@ void test_replace_value_from_tree_map_no_destruct() {
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void test_replace_value_from_tree_map_no_mapping_fails() {
+static void test_replace_value_from_tree_map_no_mapping_fails(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -479,7 +479,7 @@ void test_replace_value_from_tree_map_no_mapping_fails() {
     );
 }
 
-void test_replace_entry_from_tree_map_matching_value() {
+static void test_replace_entry_from_tree_map_matching_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -493,7 +493,7 @@ void test_replace_entry_from_tree_map_matching_value() {
     );
 }
 
-void test_replace_entry_from_tree_map_no_matching_value_fails() {
+static void test_replace_entry_from_tree_map_no_matching_value_fails(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -507,7 +507,7 @@ void test_replace_entry_from_tree_map_no_matching_value_fails() {
     );
 }
 
-void test_remove_entry_from_tree_map() {
+static void test_remove_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -520,7 +520,7 @@ void test_remove_entry_from_tree_map() {
     );
 }
 
-void test_remove_entry_from_tree_map_no_destruct() {
+static void test_remove_entry_from_tree_map_no_destruct(void) {
     // given
     tree_map_change_value_destructor(tree_map, noop_destruct);
     // and
@@ -539,7 +539,7 @@ void test_remove_entry_from_tree_map_no_destruct() {
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void test_remove_entry_from_tree_map_no_mapping_fails() {
+static void test_remove_entry_from_tree_map_no_mapping_fails(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -550,7 +550,7 @@ void test_remove_entry_from_tree_map_no_mapping_fails() {
     TEST_ASSERT_NULL(value);
 }
 
-void test_remove_entry_from_tree_map_matching_value() {
+static void test_remove_entry_from_tree_map_matching_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -564,7 +564,7 @@ void test_remove_entry_from_tree_map_matching_value() {
     );
 }
 
-void test_remove_entry_from_tree_map_no_matching_value_fails() {
+static void test_remove_entry_from_tree_map_no_matching_value_fails(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -578,7 +578,7 @@ void test_remove_entry_from_tree_map_no_matching_value_fails() {
     );
 }
 
-void test_remove_first_entry_from_tree_map() {
+static void test_remove_first_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -591,7 +591,7 @@ void test_remove_first_entry_from_tree_map() {
     );
 }
 
-void test_remove_first_entry_from_tree_map_no_destruct() {
+static void test_remove_first_entry_from_tree_map_no_destruct(void) {
     // given
     tree_map_change_key_destructor(tree_map, noop_destruct);
     tree_map_change_value_destructor(tree_map, noop_destruct);
@@ -614,7 +614,7 @@ void test_remove_first_entry_from_tree_map_no_destruct() {
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void test_remove_first_entry_from_empty_tree_map_fails() {
+static void test_remove_first_entry_from_empty_tree_map_fails(void) {
     // when
     MapEntry entry; Error error = attempt(entry = tree_map_remove_first(tree_map));
     // then
@@ -623,7 +623,7 @@ void test_remove_first_entry_from_empty_tree_map_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_last_entry_from_tree_map() {
+static void test_remove_last_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -636,7 +636,7 @@ void test_remove_last_entry_from_tree_map() {
     );
 }
 
-void test_remove_last_entry_from_tree_map_no_destruct() {
+static void test_remove_last_entry_from_tree_map_no_destruct(void) {
     // given
     tree_map_change_key_destructor(tree_map, noop_destruct);
     tree_map_change_value_destructor(tree_map, noop_destruct);
@@ -659,7 +659,7 @@ void test_remove_last_entry_from_tree_map_no_destruct() {
     tree_map_change_value_destructor(tree_map, delete);
 }
 
-void test_remove_last_entry_from_empty_tree_map_fails() {
+static void test_remove_last_entry_from_empty_tree_map_fails(void) {
     // when
     MapEntry entry; Error error = attempt(entry = tree_map_remove_last(tree_map));
     // then
@@ -673,7 +673,7 @@ static void* replace_by_2_times_original(void*, void* value) {
     return value;
 }
 
-void test_replace_all_values_from_tree_map() {
+static void test_replace_all_values_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -686,7 +686,7 @@ void test_replace_all_values_from_tree_map() {
     );
 }
 
-void test_get_tree_map_size() {
+static void test_get_tree_map_size(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -697,14 +697,14 @@ void test_get_tree_map_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
-void test_tree_map_is_empty() {
+static void test_tree_map_is_empty(void) {
     // when
     bool empty = tree_map_is_empty(tree_map);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_tree_map_is_not_empty() {
+static void test_tree_map_is_not_empty(void) {
     // given
     tree_map_put(tree_map, new(char, 'k'), new(int, 10));
     // when
@@ -713,7 +713,7 @@ void test_tree_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_tree_map_iterator_forward_iteration() {
+static void test_tree_map_iterator_forward_iteration(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -742,7 +742,7 @@ void test_tree_map_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_backward_iteration() {
+static void test_tree_map_iterator_backward_iteration(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -772,7 +772,7 @@ void test_tree_map_iterator_backward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_detects_concurrent_modification() {
+static void test_tree_map_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -788,7 +788,7 @@ void test_tree_map_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_remove_element_after_next() {
+static void test_tree_map_iterator_remove_element_after_next(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -806,7 +806,7 @@ void test_tree_map_iterator_remove_element_after_next() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_remove_element_after_previous() {
+static void test_tree_map_iterator_remove_element_after_previous(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -824,7 +824,7 @@ void test_tree_map_iterator_remove_element_after_previous() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called() {
+static void test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_called(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -842,7 +842,7 @@ void test_tree_map_iterator_remove_element_fails_if_no_next_or_previous_was_call
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
+static void test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -862,7 +862,7 @@ void test_tree_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_reset() {
+static void test_tree_map_iterator_reset(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -878,7 +878,7 @@ void test_tree_map_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_at_specified_position() {
+static void test_tree_map_iterator_at_specified_position(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -892,7 +892,7 @@ void test_tree_map_iterator_at_specified_position() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_map_iterator_at_invalid_position_fails() {
+static void test_tree_map_iterator_at_invalid_position_fails(void) {
     // given
     Iterator* iterator;
     // then
@@ -903,7 +903,7 @@ void test_tree_map_iterator_at_invalid_position_fails() {
     TEST_ASSERT_NULL(iterator);
 }
 
-void test_tree_map_is_equal_to_it_self() {
+static void test_tree_map_is_equal_to_it_self(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -914,7 +914,7 @@ void test_tree_map_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_tree_map_is_equal_to_another_tree_map() {
+static void test_tree_map_is_equal_to_another_tree_map(void) {
     // given
     TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
@@ -934,7 +934,7 @@ void test_tree_map_is_equal_to_another_tree_map() {
     tree_map_destroy(&other_tree_map);
 }
 
-void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
+static void test_tree_map_is_not_equal_to_another_tree_map_with_different_size(void) {
     // given
     TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
@@ -956,7 +956,7 @@ void test_tree_map_is_not_equal_to_another_tree_map_with_different_size() {
     tree_map_destroy(&other_tree_map);
 }
 
-void test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings() {
+static void test_tree_map_is_not_equal_to_another_tree_map_with_different_mappings(void) {
     // given
     TreeMap* other_tree_map = tree_map_new(TREE_MAP_OPTIONS(char, int));
     // and
@@ -985,7 +985,7 @@ static void action_add_one_every_two_keys(void* key, void* value) {
     }
 }
 
-void test_perform_action_for_each_entry_of_tree_map() {
+static void test_perform_action_for_each_entry_of_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -998,7 +998,7 @@ void test_perform_action_for_each_entry_of_tree_map() {
     );
 }
 
-void test_get_higher_entry_from_tree_map() {
+static void test_get_higher_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 }
@@ -1011,7 +1011,7 @@ void test_get_higher_entry_from_tree_map() {
     TEST_ASSERT(!no_successor.key && !no_successor.value);
 }
 
-void test_get_ceiling_entry_from_tree_map() {
+static void test_get_ceiling_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'e', 5 }
@@ -1026,7 +1026,7 @@ void test_get_ceiling_entry_from_tree_map() {
     TEST_ASSERT(!no_successor.key && !no_successor.value);
 }
 
-void test_get_floor_entry_from_tree_map() {
+static void test_get_floor_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1041,7 +1041,7 @@ void test_get_floor_entry_from_tree_map() {
     TEST_ASSERT(!no_predecessor.key && !no_predecessor.value);
 }
 
-void test_get_lower_entry_from_tree_map() {
+static void test_get_lower_entry_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'd', 4 }, { 'e', 5 }
@@ -1054,7 +1054,7 @@ void test_get_lower_entry_from_tree_map() {
     TEST_ASSERT(!no_predecessor.key && !no_predecessor.value);
 }
 
-void test_clear_tree_map() {
+static void test_clear_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }
@@ -1068,7 +1068,7 @@ void test_clear_tree_map() {
     TEST_ASSERT_NULL(tree_map_get(tree_map, ref(char, 'c')));
 }
 
-void test_tree_map_contains_entry() {
+static void test_tree_map_contains_entry(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1079,7 +1079,7 @@ void test_tree_map_contains_entry() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_tree_map_does_not_contains_entry() {
+static void test_tree_map_does_not_contains_entry(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1090,7 +1090,7 @@ void test_tree_map_does_not_contains_entry() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_tree_map_contains_key() {
+static void test_tree_map_contains_key(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1101,7 +1101,7 @@ void test_tree_map_contains_key() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_tree_map_does_not_contains_key() {
+static void test_tree_map_does_not_contains_key(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1112,7 +1112,7 @@ void test_tree_map_does_not_contains_key() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_tree_map_contains_value() {
+static void test_tree_map_contains_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1123,7 +1123,7 @@ void test_tree_map_contains_value() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_tree_map_does_not_contains_value() {
+static void test_tree_map_does_not_contains_value(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1134,7 +1134,7 @@ void test_tree_map_does_not_contains_value() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_get_tree_map_entries() {
+static void test_get_tree_map_entries(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1158,7 +1158,7 @@ void test_get_tree_map_entries() {
     iterator_destroy(&iterator);
 }
 
-void test_get_tree_map_keys() {
+static void test_get_tree_map_keys(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1182,7 +1182,7 @@ void test_get_tree_map_keys() {
     iterator_destroy(&iterator);
 }
 
-void test_get_tree_map_values() {
+static void test_get_tree_map_values(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1206,7 +1206,7 @@ void test_get_tree_map_values() {
     iterator_destroy(&iterator);
 }
 
-void test_create_head_map_from_tree_map() {
+static void test_create_head_map_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1221,7 +1221,7 @@ void test_create_head_map_from_tree_map() {
     tree_map_destroy(&new_tree_map);
 }
 
-void test_create_tail_map_from_tree_map() {
+static void test_create_tail_map_from_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1236,7 +1236,7 @@ void test_create_tail_map_from_tree_map() {
     tree_map_destroy(&new_tree_map);
 }
 
-void test_create_sub_map_of_tree_map() {
+static void test_create_sub_map_of_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1251,7 +1251,7 @@ void test_create_sub_map_of_tree_map() {
     tree_map_destroy(&new_tree_map);
 }
 
-void test_create_empty_sub_map_of_tree_map() {
+static void test_create_empty_sub_map_of_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1276,19 +1276,19 @@ static void sub_map_inexistent_key_test_helper(char* start_key, char* end_key) {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_sub_map_inexistent_end_key_fails() {
+static void test_create_sub_map_inexistent_end_key_fails(void) {
     sub_map_inexistent_key_test_helper(ref(char, 'a'), ref(char, 'f'));
 }
 
-void test_create_sub_map_inexistent_start_key_fails() {
+static void test_create_sub_map_inexistent_start_key_fails(void) {
     sub_map_inexistent_key_test_helper(ref(char, '`'), ref(char, 'e')); // backtick is below 'a' in ASCII
 }
 
-void test_create_sub_map_start_key_greater_than_end_key_fails() {
+static void test_create_sub_map_start_key_greater_than_end_key_fails(void) {
     sub_map_inexistent_key_test_helper(ref(char, 'e'), ref(char, 'c'));
 }
 
-void test_clone_tree_map() {
+static void test_clone_tree_map(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1303,7 +1303,7 @@ void test_clone_tree_map() {
     tree_map_destroy(&copy_tree_map);
 }
 
-void test_get_tree_map_string_representation() {
+static void test_get_tree_map_string_representation(void) {
     // given
     POPULATE_TREE_MAP(tree_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -1316,7 +1316,7 @@ void test_get_tree_map_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_tree_map_string_representation() {
+static void test_get_empty_tree_map_string_representation(void) {
     // when
     String string = tree_map_to_string(tree_map);
     // then

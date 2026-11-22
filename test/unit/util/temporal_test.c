@@ -16,20 +16,20 @@
         TEST_ASSERT_EQUAL(second_, date_time_.second);                                      \
     } while (false)
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
-void test_date_time_now() {
+static void test_date_time_now(void) {
     // then
     TEST_ASSERT_EQUAL(NO_ERROR, attempt(date_time_now()));
 }
 
-void test_date_time_of() {
+static void test_date_time_of(void) {
     // then
     TEST_ASSERT_DATE_TIME(2026, 10, 24, 22, 23, 30, date_time_of(2026, 10, 24, 22, 23, 30));
     TEST_ASSERT_DATE_TIME(2024, 2, 29, 7, 10, 23, date_time_of(2024, 02, 29, 7, 10, 23));
@@ -62,7 +62,7 @@ void test_date_time_of() {
     TEST_ASSERT_EQUAL(DATE_TIME_INVALID_ERROR, attempt(date_time_of(2026, 11, 31, 22, 23, 30)));
 }
 
-void test_date_time_parse() {
+static void test_date_time_parse(void) {
     // then
     TEST_ASSERT_DATE_TIME(2026, 10, 24, 22, 23, 30, date_time_parse("2026-10-24T22:23:30"));
     // and
@@ -70,27 +70,27 @@ void test_date_time_parse() {
     TEST_ASSERT_EQUAL(DATE_TIME_FORMAT_ERROR, attempt(date_time_parse("2026-10-24T22:23:30abc")));
 }
 
-void test_date_time_week_day() {
+static void test_date_time_week_day(void) {
     // then
     TEST_ASSERT_EQUAL(FRIDAY, date_time_week_day(date_time_of(2026, 10, 23, 22, 23, 30)));
     TEST_ASSERT_EQUAL(SATURDAY, date_time_week_day(date_time_of(2026, 10, 24, 22, 23, 30)));
     TEST_ASSERT_EQUAL(SUNDAY, date_time_week_day(date_time_of(2026, 10, 25, 22, 23, 30)));
 }
 
-void test_date_time_year_day() {
+static void test_date_time_year_day(void) {
     // then
     TEST_ASSERT_EQUAL(296, date_time_year_day(date_time_of(2026, 10, 23, 22, 23, 30)));
     TEST_ASSERT_EQUAL(297, date_time_year_day(date_time_of(2026, 10, 24, 22, 23, 30)));
     TEST_ASSERT_EQUAL(298, date_time_year_day(date_time_of(2026, 10, 25, 22, 23, 30)));
 }
 
-void test_date_time_is_leap_year() {
+static void test_date_time_is_leap_year(void) {
     // then
     TEST_ASSERT_TRUE(date_time_is_leap_year(date_time_of(2024, 02, 29, 07, 10, 23)));
     TEST_ASSERT_FALSE(date_time_is_leap_year(date_time_of(2023, 02, 28, 07, 10, 23)));
 }
 
-void test_date_time_is_after() {
+static void test_date_time_is_after(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // then
@@ -109,7 +109,7 @@ void test_date_time_is_after() {
     TEST_ASSERT_FALSE(date_time_is_after(date_time, date_time_of(2026, 10, 24, 22, 31, 47)));
 }
 
-void test_date_time_is_before() {
+static void test_date_time_is_before(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // then
@@ -128,7 +128,7 @@ void test_date_time_is_before() {
     TEST_ASSERT_FALSE(date_time_is_before(date_time, date_time_of(2026, 10, 24, 22, 23, 25)));
 }
 
-void test_date_time_is_equal() {
+static void test_date_time_is_equal(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // then
@@ -136,7 +136,7 @@ void test_date_time_is_equal() {
     TEST_ASSERT_FALSE(date_time_is_equal(date_time, date_time_of(2027, 11, 25, 23, 24, 31)));
 }
 
-void test_date_time_plus() {
+static void test_date_time_plus(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // then
@@ -152,7 +152,7 @@ void test_date_time_plus() {
     TEST_ASSERT_DATE_TIME(2026, 10, 27, 22, 23, 30, date_time_plus(date_time, 3, DAY));
 }
 
-void test_date_time_minus() {
+static void test_date_time_minus(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // then
@@ -168,7 +168,7 @@ void test_date_time_minus() {
     TEST_ASSERT_DATE_TIME(2026, 10, 21, 22, 23, 30, date_time_minus(date_time, 3, DAY));
 }
 
-void test_date_time_difference() {
+static void test_date_time_difference(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     DateTime other = date_time_of(2000, 5, 19, 11, 47, 10);
@@ -190,7 +190,7 @@ void test_date_time_difference() {
     TEST_ASSERT_EQUAL(834'143'780, date_time_difference(other, date_time, SECOND));
 }
 
-void test_date_time_format() {
+static void test_date_time_format(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // when
@@ -205,7 +205,7 @@ void test_date_time_format() {
     string_destroy_all(&format_a, &format_b);
 }
 
-void test_date_time_to_string() {
+static void test_date_time_to_string(void) {
     // given
     DateTime date_time = date_time_of(2026, 10, 24, 22, 23, 30);
     // when

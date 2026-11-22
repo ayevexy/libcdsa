@@ -2,11 +2,11 @@
 
 #include "unity.h"
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
@@ -14,7 +14,7 @@ typedef struct {
     float x, y;
 } Point;
 
-void test_memory_new_and_delete() {
+static void test_memory_new_and_delete(void) {
     // when
     int* n = new(int);
     int* m = new(int, 10);
@@ -41,7 +41,7 @@ void test_memory_new_and_delete() {
     TEST_ASSERT_NULL(c);
 }
 
-void test_memory_copy_and_delete() {
+static void test_memory_copy_and_delete(void) {
     // given
     Point p = { 10, 20 };
     Point* q = &p;
@@ -59,7 +59,7 @@ void test_memory_copy_and_delete() {
     TEST_ASSERT_NULL(s);
 }
 
-void test_memory_ref() {
+static void test_memory_ref(void) {
     // when
     int* n = ref(int);
     int* m = ref(int, 10);

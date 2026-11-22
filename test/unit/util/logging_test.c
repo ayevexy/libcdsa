@@ -8,7 +8,7 @@
 #undef LOG_MODULE
 #define LOG_MODULE "util.logging_test"
 
-void setUp() {
+void setUp(void) {
     const bool success = logger_initialize((LoggerOutput) {
         .console = true,
         .file_name = "log_file.txt"
@@ -19,13 +19,13 @@ void setUp() {
     *logger_options = (LoggerOptions) {};
 }
 
-void tearDown() {
+void tearDown(void) {
     fclose(fopen("log_file.txt", "w"));
 
     logger_finalize();
 }
 
-static const char* read_log_output() {
+static const char* read_log_output(void) {
     static char buffer[4096];
 
     FILE* file = fopen("log_file.txt", "r");
@@ -38,7 +38,7 @@ static const char* read_log_output() {
     return length > 0 ? buffer : nullptr;
 }
 
-void test_logger_log_timestamp() {
+static void test_logger_log_timestamp(void) {
     // given
     logger_options->timestamp = true;
     // when
@@ -50,7 +50,7 @@ void test_logger_log_timestamp() {
     TEST_ASSERT_NOT_NULL(timestamp);
 }
 
-void test_logger_log_level() {
+static void test_logger_log_level(void) {
     // given
     logger_options->level = true;
     // when
@@ -62,7 +62,7 @@ void test_logger_log_level() {
     TEST_ASSERT_NOT_NULL(level);
 }
 
-void test_logger_log_module() {
+static void test_logger_log_module(void) {
     // given
     logger_options->module = true;
     // when
@@ -74,7 +74,7 @@ void test_logger_log_module() {
     TEST_ASSERT_NOT_NULL(module);
 }
 
-void test_logger_log_location() {
+static void test_logger_log_location(void) {
     // given
     logger_options->location = true;
     // when
@@ -86,7 +86,7 @@ void test_logger_log_location() {
     TEST_ASSERT_NOT_NULL(location);
 }
 
-void test_logger_log_message() {
+static void test_logger_log_message(void) {
     // when
     logger_info("Hello %s", "World !");
     logger_flush();
@@ -96,7 +96,7 @@ void test_logger_log_message() {
     TEST_ASSERT_NOT_NULL(message);
 }
 
-void test_logger_log() {
+static void test_logger_log(void) {
     // given
     *logger_options = (LoggerOptions) {
         .timestamp = true,
@@ -113,7 +113,7 @@ void test_logger_log() {
     TEST_ASSERT_NOT_NULL(log);
 }
 
-void test_logger_log_filtered(void) {
+static void test_logger_log_filtered(void) {
     // given
     logger_change_level(LOG_INFO);
     // and
@@ -142,7 +142,7 @@ void test_logger_log_filtered(void) {
     TEST_ASSERT_NOT_NULL(strstr(logs, "FATAL"));
 }
 
-void test_logger_off() {
+static void test_logger_off(void) {
     // given
     logger_change_level(LOG_OFF);
     // and
@@ -160,7 +160,7 @@ void test_logger_off() {
     TEST_ASSERT_NULL(log);
 }
 
-void test_logger_log_pretty() {
+static void test_logger_log_pretty(void) {
     // given
     logger_finalize();
     logger_initialize((LoggerOutput) {
@@ -188,7 +188,7 @@ void test_logger_log_pretty() {
     logger_finalize();
 }
 
-void test_logger_module_disabled() {
+static void test_logger_module_disabled(void) {
     // given
     #undef LOG_MODULE
     #define LOG_MODULE "disabled"

@@ -33,20 +33,20 @@
 
 static LinkedList* linked_list;
 
-void setUp() {
+void setUp(void) {
     linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     linked_list_change_destructor(linked_list, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     linked_list_destroy(&linked_list);
 }
 
-void test_create_linked_list() {
+static void test_create_linked_list(void) {
     TEST_ASSERT_NOT_NULL(linked_list);
 }
 
-void test_do_not_create_linked_list_with_invalid_options() {
+static void test_do_not_create_linked_list_with_invalid_options(void) {
     // when
     LinkedList* new_linked_list; Error error = attempt(new_linked_list = linked_list_new(ref(LinkedListOptions)));
     // then
@@ -54,7 +54,7 @@ void test_do_not_create_linked_list_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_linked_list_from_collection() {
+static void test_create_linked_list_from_collection(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -66,7 +66,7 @@ void test_create_linked_list_from_collection() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_do_not_create_linked_list_with_invalid_options_from_collection() {
+static void test_do_not_create_linked_list_with_invalid_options_from_collection(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -76,7 +76,7 @@ void test_do_not_create_linked_list_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_destroy_linked_list_set_it_to_null() {
+static void test_destroy_linked_list_set_it_to_null(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // when
@@ -85,7 +85,7 @@ void test_destroy_linked_list_set_it_to_null() {
     TEST_ASSERT_NULL(new_linked_list);
 }
 
-void test_destroy_null_linked_list_fails() {
+static void test_destroy_null_linked_list_fails(void) {
     // given
     LinkedList* new_linked_list = nullptr;
     // when
@@ -94,7 +94,7 @@ void test_destroy_null_linked_list_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-void test_add_element_at_index_to_linked_list() {
+static void test_add_element_at_index_to_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -113,15 +113,15 @@ static void add_index_out_of_bounds_test_helper(int index) {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_add_element_at_index_to_linked_list_index_above_bounds_fails() {
+static void test_add_element_at_index_to_linked_list_index_above_bounds_fails(void) {
     add_index_out_of_bounds_test_helper(10);
 }
 
-void test_add_element_at_index_to_linked_list_negative_index_fails() {
+static void test_add_element_at_index_to_linked_list_negative_index_fails(void) {
     add_index_out_of_bounds_test_helper(-1);
 }
 
-void test_add_element_at_beginning_of_linked_list() {
+static void test_add_element_at_beginning_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -130,7 +130,7 @@ void test_add_element_at_beginning_of_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 10, 1, 2, 3, 4, 5);
 }
 
-void test_add_element_at_end_of_linked_list() {
+static void test_add_element_at_end_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -139,7 +139,7 @@ void test_add_element_at_end_of_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 3, 4, 5, 10);
 }
 
-void test_add_all_elements_from_collection_at_index_in_linked_list() {
+static void test_add_all_elements_from_collection_at_index_in_linked_list(void) {
     // given
     LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -153,7 +153,7 @@ void test_add_all_elements_from_collection_at_index_in_linked_list() {
     linked_list_destroy(&existing_linked_list);
 }
 
-void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
+static void test_add_all_elements_from_collection_at_beginning_of_linked_list(void) {
     // given
     LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -167,7 +167,7 @@ void test_add_all_elements_from_collection_at_beginning_of_linked_list() {
     linked_list_destroy(&existing_linked_list);
 }
 
-void test_add_all_elements_from_collection_at_end_of_linked_list() {
+static void test_add_all_elements_from_collection_at_end_of_linked_list(void) {
     // given
     LinkedList* existing_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -181,7 +181,7 @@ void test_add_all_elements_from_collection_at_end_of_linked_list() {
     linked_list_destroy(&existing_linked_list);
 }
 
-void test_get_element_from_linked_list() {
+static void test_get_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -200,15 +200,15 @@ static void get_index_out_of_bounds_test_helper(int index) {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_get_element_from_linked_list_index_above_bounds_fails() {
+static void test_get_element_from_linked_list_index_above_bounds_fails(void) {
     get_index_out_of_bounds_test_helper(10);
 }
 
-void test_get_element_from_linked_list_negative_index_fails() {
+static void test_get_element_from_linked_list_negative_index_fails(void) {
     get_index_out_of_bounds_test_helper(-1);
 }
 
-void test_get_first_element_from_linked_list() {
+static void test_get_first_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -217,7 +217,7 @@ void test_get_first_element_from_linked_list() {
     TEST_ASSERT_EQUAL(1, element);
 }
 
-void test_get_first_element_from_empty_linked_list_fails() {
+static void test_get_first_element_from_empty_linked_list_fails(void) {
     // when
     int* element; Error error = attempt(element = linked_list_get_first(linked_list));
     // then
@@ -225,7 +225,7 @@ void test_get_first_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_last_element_from_linked_list() {
+static void test_get_last_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -234,7 +234,7 @@ void test_get_last_element_from_linked_list() {
     TEST_ASSERT_EQUAL(5, element);
 }
 
-void test_get_last_element_from_empty_linked_list_fails() {
+static void test_get_last_element_from_empty_linked_list_fails(void) {
     // when
     int* element; Error error = attempt(element = linked_list_get_last(linked_list));
     // then
@@ -242,7 +242,7 @@ void test_get_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_set_element_of_linked_list() {
+static void test_set_element_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -251,7 +251,7 @@ void test_set_element_of_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 10, 4, 5);
 }
 
-void test_set_element_of_linked_list_no_desctruct() {
+static void test_set_element_of_linked_list_no_destruct(void) {
     // given
     linked_list_change_destructor(linked_list, noop_destruct);
     // and
@@ -277,15 +277,15 @@ static void set_index_out_of_bounds_test_helper(int index) {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_set_element_of_linked_list_index_above_bounds_fails() {
+static void test_set_element_of_linked_list_index_above_bounds_fails(void) {
     set_index_out_of_bounds_test_helper(10);
 }
 
-void test_set_element_of_linked_list_negative_index_fails() {
+static void test_set_element_of_linked_list_negative_index_fails(void) {
     set_index_out_of_bounds_test_helper(-1);
 }
 
-void test_swap_elements_of_linked_list() {
+static void test_swap_elements_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -304,23 +304,23 @@ static void swap_elements_of_linked_list_index_out_of_bounds_test_helper(int ind
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_swap_elements_of_linked_list_index_a_above_bounds_fails() {
+static void test_swap_elements_of_linked_list_index_a_above_bounds_fails(void) {
     swap_elements_of_linked_list_index_out_of_bounds_test_helper(10, 3);
 }
 
-void test_swap_elements_of_linked_list_negative_index_a_fails() {
+static void test_swap_elements_of_linked_list_negative_index_a_fails(void) {
     swap_elements_of_linked_list_index_out_of_bounds_test_helper(-1, 3);
 }
 
-void test_swap_elements_of_linked_list_index_b_above_bounds_fails() {
+static void test_swap_elements_of_linked_list_index_b_above_bounds_fails(void) {
     swap_elements_of_linked_list_index_out_of_bounds_test_helper(3, 10);
 }
 
-void test_swap_elements_of_linked_list_negative_index_b_fails() {
+static void test_swap_elements_of_linked_list_negative_index_b_fails(void) {
     swap_elements_of_linked_list_index_out_of_bounds_test_helper(3, -1);
 }
 
-void test_remove_element_by_index_from_linked_list() {
+static void test_remove_element_by_index_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -329,7 +329,7 @@ void test_remove_element_by_index_from_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 4, 5);
 }
 
-void test_remove_element_by_index_from_linked_list_no_desctruct() {
+static void test_remove_element_by_index_from_linked_list_no_destruct(void) {
     // given
     linked_list_change_destructor(linked_list, noop_destruct);
     // and
@@ -355,15 +355,15 @@ static void remove_index_out_of_bounds_test_helper(int index) {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_remove_element_by_index_from_linked_list_index_above_bounds_fails() {
+static void test_remove_element_by_index_from_linked_list_index_above_bounds_fails(void) {
     remove_index_out_of_bounds_test_helper(10);
 }
 
-void test_remove_element_by_index_from_linked_list_negative_index_fails() {
+static void test_remove_element_by_index_from_linked_list_negative_index_fails(void) {
     remove_index_out_of_bounds_test_helper(-1);
 }
 
-void test_remove_first_element_from_linked_list() {
+static void test_remove_first_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -372,7 +372,7 @@ void test_remove_first_element_from_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 2, 3, 4, 5);
 }
 
-void test_remove_first_element_from_linked_list_no_desctruct() {
+static void test_remove_first_element_from_linked_list_no_destruct(void) {
     // given
     linked_list_change_destructor(linked_list, noop_destruct);
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
@@ -386,7 +386,7 @@ void test_remove_first_element_from_linked_list_no_desctruct() {
     linked_list_change_destructor(linked_list, delete);
 }
 
-void test_remove_first_element_from_empty_linked_list_fails() {
+static void test_remove_first_element_from_empty_linked_list_fails(void) {
     // when
     int* element; Error error = attempt(element = linked_list_remove_first(linked_list));
     // then
@@ -394,7 +394,7 @@ void test_remove_first_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_last_element_from_linked_list() {
+static void test_remove_last_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -403,7 +403,7 @@ void test_remove_last_element_from_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 3, 4);
 }
 
-void test_remove_last_element_from_linked_list_no_desctruct() {
+static void test_remove_last_element_from_linked_list_no_destruct(void) {
     // given
     linked_list_change_destructor(linked_list, noop_destruct);
     // and
@@ -418,7 +418,7 @@ void test_remove_last_element_from_linked_list_no_desctruct() {
     linked_list_change_destructor(linked_list, delete);
 }
 
-void test_remove_last_element_from_empty_linked_list_fails() {
+static void test_remove_last_element_from_empty_linked_list_fails(void) {
     // when
     int* element; Error error = attempt(element = linked_list_remove_last(linked_list));
     // then
@@ -426,7 +426,7 @@ void test_remove_last_element_from_empty_linked_list_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_element_from_linked_list() {
+static void test_remove_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -436,7 +436,7 @@ void test_remove_element_from_linked_list() {
     TEST_ASSERT_TRUE(removed);
 }
 
-void test_remove_element_from_linked_list_nonexistent_element_fails() {
+static void test_remove_element_from_linked_list_nonexistent_element_fails(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -446,7 +446,7 @@ void test_remove_element_from_linked_list_nonexistent_element_fails() {
     TEST_ASSERT_FALSE(removed);
 }
 
-void test_remove_all_elements_from_linked_list_matching_collection() {
+static void test_remove_all_elements_from_linked_list_matching_collection(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -462,7 +462,7 @@ void test_remove_all_elements_from_linked_list_matching_collection() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_remove_elements_in_range_from_linked_list() {
+static void test_remove_elements_in_range_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -483,15 +483,15 @@ static void remove_elements_in_range_index_out_of_bounds_test_helper(int start_i
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_remove_elements_in_range_from_linked_list_end_index_above_bounds_fails() {
+static void test_remove_elements_in_range_from_linked_list_end_index_above_bounds_fails(void) {
     remove_elements_in_range_index_out_of_bounds_test_helper(0, 10);
 }
 
-void test_remove_elements_in_range_from_linked_list_negative_start_index_fails() {
+static void test_remove_elements_in_range_from_linked_list_negative_start_index_fails(void) {
     remove_elements_in_range_index_out_of_bounds_test_helper(-1, 3);
 }
 
-void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails() {
+static void test_remove_elements_in_range_from_linked_list_start_index_greater_than_end_index_fails(void) {
     remove_elements_in_range_index_out_of_bounds_test_helper(4, 3);
 }
 
@@ -499,7 +499,7 @@ static bool is_odd(const void* element) {
     return *(int*) element % 2 != 0;
 }
 
-void test_remove_elements_from_linked_list_matching_predicate() {
+static void test_remove_elements_from_linked_list_matching_predicate(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 3, 4, 5); // the duplicated 3 ensure it will not be skipped
     // when
@@ -513,7 +513,7 @@ static void* replace_by_2_times_original(void* element) {
     return new(int, *(int*) element * 2);
 }
 
-void test_replace_all_elements_from_linked_list() {
+static void test_replace_all_elements_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -522,7 +522,7 @@ void test_replace_all_elements_from_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 2, 4, 6, 8, 10);
 }
 
-void test_retain_all_elements_from_collection_in_linked_list() {
+static void test_retain_all_elements_from_collection_in_linked_list(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -538,7 +538,7 @@ void test_retain_all_elements_from_collection_in_linked_list() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_get_linked_list_size() {
+static void test_get_linked_list_size(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -547,14 +547,14 @@ void test_get_linked_list_size() {
     TEST_ASSERT_EQUAL(size, 5);
 }
 
-void test_linked_list_is_empty() {
+static void test_linked_list_is_empty(void) {
     // when
     bool empty = linked_list_is_empty(linked_list);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_linked_list_is_not_empty() {
+static void test_linked_list_is_not_empty(void) {
     // given
     linked_list_add_last(linked_list, new(int, 10));
     // when
@@ -563,7 +563,7 @@ void test_linked_list_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_linked_list_iterator_forward_iteration() {
+static void test_linked_list_iterator_forward_iteration(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -590,7 +590,7 @@ void test_linked_list_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_backward_iteration() {
+static void test_linked_list_iterator_backward_iteration(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -619,7 +619,7 @@ void test_linked_list_iterator_backward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_detects_concurrent_modification() {
+static void test_linked_list_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -635,7 +635,7 @@ void test_linked_list_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_insert_element() {
+static void test_linked_list_iterator_insert_element(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -649,7 +649,7 @@ void test_linked_list_iterator_insert_element() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_replace_element() {
+static void test_linked_list_iterator_replace_element(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -663,7 +663,7 @@ void test_linked_list_iterator_replace_element() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_replace_element_fails_if_no_previous_or_next_was_called() {
+static void test_linked_list_iterator_replace_element_fails_if_no_previous_or_next_was_called(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -677,7 +677,7 @@ void test_linked_list_iterator_replace_element_fails_if_no_previous_or_next_was_
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_remove_element() {
+static void test_linked_list_iterator_remove_element(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -691,7 +691,7 @@ void test_linked_list_iterator_remove_element() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_remove_element_fails_if_no_previous_or_next_was_called() {
+static void test_linked_list_iterator_remove_element_fails_if_no_previous_or_next_was_called(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -705,7 +705,7 @@ void test_linked_list_iterator_remove_element_fails_if_no_previous_or_next_was_c
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
+static void test_linked_list_iterator_remove_element_fails_if_called_twice_in_a_row(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -721,7 +721,7 @@ void test_linked_list_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_reset() {
+static void test_linked_list_iterator_reset(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // and
@@ -735,7 +735,7 @@ void test_linked_list_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_at_specified_position() {
+static void test_linked_list_iterator_at_specified_position(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -747,7 +747,7 @@ void test_linked_list_iterator_at_specified_position() {
     iterator_destroy(&iterator);
 }
 
-void test_linked_list_iterator_at_invalid_position_fails() {
+static void test_linked_list_iterator_at_invalid_position_fails(void) {
     // given
     Iterator* iterator;
     // then
@@ -758,7 +758,7 @@ void test_linked_list_iterator_at_invalid_position_fails() {
     TEST_ASSERT_NULL(iterator);
 }
 
-void test_linked_list_is_equal_to_it_self() {
+static void test_linked_list_is_equal_to_it_self(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -767,7 +767,7 @@ void test_linked_list_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_linked_list_is_equal_to_another_linked_list() {
+static void test_linked_list_is_equal_to_another_linked_list(void) {
     // given
     LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -782,7 +782,7 @@ void test_linked_list_is_equal_to_another_linked_list() {
     linked_list_destroy(&other_linked_list);
 }
 
-void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() {
+static void test_linked_list_is_not_equal_to_another_linked_list_with_different_size(void) {
     // given
     LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -799,7 +799,7 @@ void test_linked_list_is_not_equal_to_another_linked_list_with_different_size() 
     linked_list_destroy(&other_linked_list);
 }
 
-void test_linked_list_is_not_equal_to_another_linked_list_with_different_elements() {
+static void test_linked_list_is_not_equal_to_another_linked_list_with_different_elements(void) {
     // given
     LinkedList* other_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -818,7 +818,7 @@ static void action_add_one(void* element) {
     *(int*) element += 1;
 }
 
-void test_perform_action_for_each_element_of_linked_list() {
+static void test_perform_action_for_each_element_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -836,23 +836,23 @@ static void sort_linked_list_test_helper(SortingAlgorithm sorting_algorithm) {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 }
 
-void test_bubble_sort_linked_list() {
+static void test_bubble_sort_linked_list(void) {
     sort_linked_list_test_helper(BUBBLE_SORT);
 }
 
-void test_selection_sort_linked_list() {
+static void test_selection_sort_linked_list(void) {
     sort_linked_list_test_helper(SELECTION_SORT);
 }
 
-void test_insertion_sort_linked_list() {
+static void test_insertion_sort_linked_list(void) {
     sort_linked_list_test_helper(INSERTION_SORT);
 }
 
-void test_merge_sort_linked_list() {
+static void test_merge_sort_linked_list(void) {
     sort_linked_list_test_helper(MERGE_SORT);
 }
 
-void test_quick_sort_linked_list() {
+static void test_quick_sort_linked_list(void) {
     sort_linked_list_test_helper(QUICK_SORT);
 }
 
@@ -861,7 +861,7 @@ static int random_number(void) {
     return count++;
 }
 
-void test_durstenfeld_shuffle_linked_list() {
+static void test_durstenfeld_shuffle_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
@@ -870,7 +870,7 @@ void test_durstenfeld_shuffle_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 7, 6, 9, 8, 10, 5, 4, 3, 2, 1);
 }
 
-void test_sattolo_shuffle_linked_list() {
+static void test_sattolo_shuffle_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
@@ -879,7 +879,7 @@ void test_sattolo_shuffle_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 2, 8, 6, 7, 9, 4, 10, 5, 3, 1);
 }
 
-void test_naive_shuffle_linked_list() {
+static void test_naive_shuffle_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
@@ -888,7 +888,7 @@ void test_naive_shuffle_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 3, 4, 5, 6, 7, 8, 1, 2, 9, 10);
 }
 
-void test_reverse_linked_list() {
+static void test_reverse_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -897,7 +897,7 @@ void test_reverse_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 5, 4, 3, 2, 1);
 }
 
-void test_rotate_linked_list() {
+static void test_rotate_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -906,7 +906,7 @@ void test_rotate_linked_list() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 4, 5, 1, 2, 3);
 }
 
-void test_rotate_linked_list_backward() {
+static void test_rotate_linked_list_backward(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -915,7 +915,7 @@ void test_rotate_linked_list_backward() {
     TEST_ASSERT_LINKED_LIST_ELEMENTS_EQUALS(linked_list, int, 3, 4, 5, 1, 2);
 }
 
-void test_clear_linked_list() {
+static void test_clear_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3);
     // when
@@ -927,7 +927,7 @@ void test_clear_linked_list() {
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, attempt(linked_list_get(linked_list, 2)));
 }
 
-void test_find_element_matching_predicate_in_linked_list() {
+static void test_find_element_matching_predicate_in_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -937,7 +937,7 @@ void test_find_element_matching_predicate_in_linked_list() {
     TEST_ASSERT_TRUE(result.present);
 }
 
-void test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
+static void test_find_element_matching_predicate_in_linked_list_nonexistent_element_returns_null(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 2, 4, 6, 8, 10);
     // when
@@ -946,7 +946,7 @@ void test_find_element_matching_predicate_in_linked_list_nonexistent_element_ret
     TEST_ASSERT_FALSE(result.present);
 }
 
-void test_find_last_element_matching_predicate_in_linked_list() {
+static void test_find_last_element_matching_predicate_in_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -956,7 +956,7 @@ void test_find_last_element_matching_predicate_in_linked_list() {
     TEST_ASSERT_TRUE(result.present);
 }
 
-void test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null() {
+static void test_find_last_element_matching_predicate_in_linked_list_nonexistent_element_returns_null(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 2, 4, 6, 8, 10);
     // when
@@ -965,7 +965,7 @@ void test_find_last_element_matching_predicate_in_linked_list_nonexistent_elemen
     TEST_ASSERT_FALSE(result.present);
 }
 
-void test_get_index_matching_predicate_in_linked_list() {
+static void test_get_index_matching_predicate_in_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -974,7 +974,7 @@ void test_get_index_matching_predicate_in_linked_list() {
     TEST_ASSERT_EQUAL(0, index);
 }
 
-void test_get_index_matching_predicate_in_linked_list_no_matching_returns_negative_one() {
+static void test_get_index_matching_predicate_in_linked_list_no_matching_returns_negative_one(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 2, 4, 6, 8, 10);
     // when
@@ -983,7 +983,7 @@ void test_get_index_matching_predicate_in_linked_list_no_matching_returns_negati
     TEST_ASSERT_EQUAL(-1, index);
 }
 
-void test_get_last_index_matching_predicate_in_linked_list() {
+static void test_get_last_index_matching_predicate_in_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -992,7 +992,7 @@ void test_get_last_index_matching_predicate_in_linked_list() {
     TEST_ASSERT_EQUAL(4, index);
 }
 
-void test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_negative_one() {
+static void test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_negative_one(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 2, 4, 6, 8, 10);
     // when
@@ -1001,7 +1001,7 @@ void test_get_last_index_matching_predicate_in_linked_list_no_matching_returns_n
     TEST_ASSERT_EQUAL(-1, index);
 }
 
-void test_linked_list_contains_element() {
+static void test_linked_list_contains_element(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1010,7 +1010,7 @@ void test_linked_list_contains_element() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_linked_list_does_not_contains_element() {
+static void test_linked_list_does_not_contains_element(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1019,7 +1019,7 @@ void test_linked_list_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_linked_list_contains_all_elements() {
+static void test_linked_list_contains_all_elements(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -1034,7 +1034,7 @@ void test_linked_list_contains_all_elements() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_empty_linked_list_contains_all_elements_of_empty_collection() {
+static void test_empty_linked_list_contains_all_elements_of_empty_collection(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // when
@@ -1045,7 +1045,7 @@ void test_empty_linked_list_contains_all_elements_of_empty_collection() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_linked_list_does_not_contains_all_elements() {
+static void test_linked_list_does_not_contains_all_elements(void) {
     // given
     LinkedList* new_linked_list = linked_list_new(LINKED_LIST_OPTIONS(int));
     // and
@@ -1065,7 +1065,7 @@ static void* sum(void* result, void* next) {
     return result;
 }
 
-void test_reduce_linked_list() {
+static void test_reduce_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1074,7 +1074,7 @@ void test_reduce_linked_list() {
     TEST_ASSERT_EQUAL(15, *result);
 }
 
-void test_get_occurrences_of_element_in_linked_list() {
+static void test_get_occurrences_of_element_in_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
@@ -1083,7 +1083,7 @@ void test_get_occurrences_of_element_in_linked_list() {
     TEST_ASSERT_EQUAL(3, count);
 }
 
-void test_get_index_of_element_from_linked_list() {
+static void test_get_index_of_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1092,7 +1092,7 @@ void test_get_index_of_element_from_linked_list() {
     TEST_ASSERT_EQUAL(2, index);
 }
 
-void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one() {
+static void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1101,7 +1101,7 @@ void test_get_index_of_nonexistent_element_from_linked_list_returns_negative_one
     TEST_ASSERT_EQUAL(-1, index);
 }
 
-void test_get_last_index_of_element_from_linked_list() {
+static void test_get_last_index_of_element_from_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
@@ -1110,7 +1110,7 @@ void test_get_last_index_of_element_from_linked_list() {
     TEST_ASSERT_EQUAL(4, last_index);
 }
 
-void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negative_one() {
+static void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negative_one(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 3, 3, 4, 5);
     // when
@@ -1119,7 +1119,7 @@ void test_get_last_index_of_nonexistent_element_from_linked_list_returns_negativ
     TEST_ASSERT_EQUAL(-1, last_index);
 }
 
-void test_clone_linked_list() {
+static void test_clone_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1130,7 +1130,7 @@ void test_clone_linked_list() {
     linked_list_destroy(&copy_linked_list);
 }
 
-void test_create_sub_list_of_linked_list() {
+static void test_create_sub_list_of_linked_list(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1141,7 +1141,7 @@ void test_create_sub_list_of_linked_list() {
     linked_list_destroy(&new_linked_list);
 }
 
-void test_create_empty_sub_list_of_linked_list() {
+static void test_create_empty_sub_list_of_linked_list(void) {
     // when
     LinkedList* new_linked_list = linked_list_sub_list(linked_list, 0, 0);
     // then
@@ -1160,19 +1160,19 @@ static void sub_list_index_out_of_bounds_test_helper(int start_index, int end_in
     TEST_ASSERT_EQUAL(INDEX_OUT_OF_BOUNDS_ERROR, error);
 }
 
-void test_create_sub_list_end_index_above_bounds_fails() {
+static void test_create_sub_list_end_index_above_bounds_fails(void) {
     sub_list_index_out_of_bounds_test_helper(0, 10);
 }
 
-void test_create_sub_list_negative_start_index_fails() {
+static void test_create_sub_list_negative_start_index_fails(void) {
     sub_list_index_out_of_bounds_test_helper(-1, 4);
 }
 
-void test_create_sub_list_start_index_greater_than_end_index_fails() {
+static void test_create_sub_list_start_index_greater_than_end_index_fails(void) {
     sub_list_index_out_of_bounds_test_helper(4, 3);
 }
 
-void test_convert_linked_list_to_collection() {
+static void test_convert_linked_list_to_collection(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1190,7 +1190,7 @@ void test_convert_linked_list_to_collection() {
     iterator_destroy(&iter_b);
 }
 
-void test_convert_linked_list_to_array() {
+static void test_convert_linked_list_to_array(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1201,7 +1201,7 @@ void test_convert_linked_list_to_array() {
     array_destroy(&elements);
 }
 
-void test_get_linked_list_string_representation() {
+static void test_get_linked_list_string_representation(void) {
     // given
     POPULATE_LINKED_LIST(linked_list, int, 1, 2, 3, 4, 5);
     // when
@@ -1212,7 +1212,7 @@ void test_get_linked_list_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_linked_list_string_representation() {
+static void test_get_empty_linked_list_string_representation(void) {
     // when
     String string = linked_list_to_string(linked_list);
     // then
@@ -1251,7 +1251,7 @@ int main(void) {
     RUN_TEST(test_get_last_element_from_empty_linked_list_fails);
 
     RUN_TEST(test_set_element_of_linked_list);
-    RUN_TEST(test_set_element_of_linked_list_no_desctruct);
+    RUN_TEST(test_set_element_of_linked_list_no_destruct);
     RUN_TEST(test_set_element_of_linked_list_index_above_bounds_fails);
     RUN_TEST(test_set_element_of_linked_list_negative_index_fails);
 
@@ -1262,15 +1262,15 @@ int main(void) {
     RUN_TEST(test_swap_elements_of_linked_list_negative_index_b_fails);
 
     RUN_TEST(test_remove_element_by_index_from_linked_list);
-    RUN_TEST(test_remove_element_by_index_from_linked_list_no_desctruct);
+    RUN_TEST(test_remove_element_by_index_from_linked_list_no_destruct);
     RUN_TEST(test_remove_element_by_index_from_linked_list_index_above_bounds_fails);
     RUN_TEST(test_remove_element_by_index_from_linked_list_negative_index_fails);
 
     RUN_TEST(test_remove_first_element_from_linked_list);
-    RUN_TEST(test_remove_first_element_from_linked_list_no_desctruct);
+    RUN_TEST(test_remove_first_element_from_linked_list_no_destruct);
     RUN_TEST(test_remove_first_element_from_empty_linked_list_fails);
     RUN_TEST(test_remove_last_element_from_linked_list);
-    RUN_TEST(test_remove_last_element_from_linked_list_no_desctruct);
+    RUN_TEST(test_remove_last_element_from_linked_list_no_destruct);
     RUN_TEST(test_remove_last_element_from_empty_linked_list_fails);
 
     RUN_TEST(test_remove_element_from_linked_list);

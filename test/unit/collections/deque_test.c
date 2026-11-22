@@ -43,20 +43,20 @@
 
 static Deque* deque;
 
-void setUp() {
+void setUp(void) {
     deque = deque_new(DEQUE_OPTIONS(int));
     deque_change_destructor(deque, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     deque_destroy(&deque);
 }
 
-void test_create_deque() {
+static void test_create_deque(void) {
     TEST_ASSERT_NOT_NULL(deque);
 }
 
-void test_do_not_create_deque_with_invalid_options() {
+static void test_do_not_create_deque_with_invalid_options(void) {
     // when
     Deque* new_deque; Error error = attempt(new_deque = deque_new(ref(DequeOptions)));
     // then
@@ -64,7 +64,7 @@ void test_do_not_create_deque_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_deque_from_collection() {
+static void test_create_deque_from_collection(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5 );
     // when
@@ -76,7 +76,7 @@ void test_create_deque_from_collection() {
     deque_destroy(&new_deque);
 }
 
-void test_do_not_create_deque_with_invalid_options_from_collection() {
+static void test_do_not_create_deque_with_invalid_options_from_collection(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -86,7 +86,7 @@ void test_do_not_create_deque_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_destroy_deque_set_it_to_null() {
+static void test_destroy_deque_set_it_to_null(void) {
     // given
     Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // when
@@ -95,7 +95,7 @@ void test_destroy_deque_set_it_to_null() {
     TEST_ASSERT_NULL(new_deque);
 }
 
-void test_destroy_null_deque_fails() {
+static void test_destroy_null_deque_fails(void) {
     // given
     Deque* new_deque = nullptr;
     // when
@@ -104,7 +104,7 @@ void test_destroy_null_deque_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-void test_add_element_at_beginning_of_deque() {
+static void test_add_element_at_beginning_of_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -113,7 +113,7 @@ void test_add_element_at_beginning_of_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 10, 1, 2, 3, 4, 5);
 }
 
-void test_add_element_at_end_of_deque() {
+static void test_add_element_at_end_of_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -122,7 +122,7 @@ void test_add_element_at_end_of_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 1, 2, 3, 4, 5, 10);
 }
 
-void test_add_element_to_deque_exceeding_capacity_resize_it() {
+static void test_add_element_to_deque_exceeding_capacity_resize_it(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5, 6, 7, 8);
     // when
@@ -132,7 +132,7 @@ void test_add_element_to_deque_exceeding_capacity_resize_it() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 }
 
-void test_add_all_elements_from_collection_at_beginning_of_deque() {
+static void test_add_all_elements_from_collection_at_beginning_of_deque(void) {
     // given
     Deque* existing_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -146,7 +146,7 @@ void test_add_all_elements_from_collection_at_beginning_of_deque() {
     deque_destroy(&existing_deque);
 }
 
-void test_add_all_elements_from_collection_at_end_of_deque() {
+static void test_add_all_elements_from_collection_at_end_of_deque(void) {
     // given
     Deque* existing_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -160,7 +160,7 @@ void test_add_all_elements_from_collection_at_end_of_deque() {
     deque_destroy(&existing_deque);
 }
 
-void test_get_first_element_from_deque() {
+static void test_get_first_element_from_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -169,7 +169,7 @@ void test_get_first_element_from_deque() {
     TEST_ASSERT_EQUAL(1, *element);
 }
 
-void test_get_first_element_from_empty_deque_fails() {
+static void test_get_first_element_from_empty_deque_fails(void) {
     // when
     int* element; Error error = attempt(element = deque_get_first(deque));
     // then
@@ -177,7 +177,7 @@ void test_get_first_element_from_empty_deque_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_last_element_from_deque() {
+static void test_get_last_element_from_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -186,7 +186,7 @@ void test_get_last_element_from_deque() {
     TEST_ASSERT_EQUAL(5, *element);
 }
 
-void test_get_last_element_from_empty_deque_fails() {
+static void test_get_last_element_from_empty_deque_fails(void) {
     // when
     int* element; Error error = attempt(element = deque_get_last(deque));
     // then
@@ -194,7 +194,7 @@ void test_get_last_element_from_empty_deque_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_first_element_from_deque() {
+static void test_remove_first_element_from_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -203,7 +203,7 @@ void test_remove_first_element_from_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 2, 3, 4, 5);
 }
 
-void test_remove_first_element_from_deque_no_destruct() {
+static void test_remove_first_element_from_deque_no_destruct(void) {
     // given
     deque_change_destructor(deque, noop_destruct);
     // and
@@ -218,7 +218,7 @@ void test_remove_first_element_from_deque_no_destruct() {
     deque_change_destructor(deque, delete);
 }
 
-void test_remove_first_element_from_empty_deque_fails() {
+static void test_remove_first_element_from_empty_deque_fails(void) {
     // when
     int* element; Error error = attempt(element = deque_remove_first(deque));
     // then
@@ -226,7 +226,7 @@ void test_remove_first_element_from_empty_deque_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_last_element_from_deque() {
+static void test_remove_last_element_from_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -235,7 +235,7 @@ void test_remove_last_element_from_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 1, 2, 3, 4);
 }
 
-void test_remove_last_element_from_deque_no_destruct() {
+static void test_remove_last_element_from_deque_no_destruct(void) {
     // given
     deque_change_destructor(deque, noop_destruct);
     // and
@@ -250,7 +250,7 @@ void test_remove_last_element_from_deque_no_destruct() {
     deque_change_destructor(deque, delete);
 }
 
-void test_remove_last_element_from_empty_deque_fails() {
+static void test_remove_last_element_from_empty_deque_fails(void) {
     // when
     int* element; Error error = attempt(element = deque_remove_last(deque));
     // then
@@ -258,7 +258,7 @@ void test_remove_last_element_from_empty_deque_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_deque_size() {
+static void test_get_deque_size(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -267,7 +267,7 @@ void test_get_deque_size() {
     TEST_ASSERT_EQUAL(size, 5);
 }
 
-void test_get_deque_capacity() {
+static void test_get_deque_capacity(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     // when
@@ -276,14 +276,14 @@ void test_get_deque_capacity() {
     TEST_ASSERT_EQUAL(16, capacity);
 }
 
-void test_deque_is_empty() {
+static void test_deque_is_empty(void) {
     // when
     bool empty = deque_is_empty(deque);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_deque_is_not_empty() {
+static void test_deque_is_not_empty(void) {
     // given
     deque_add_last(deque, new(int, 10));
     // when
@@ -292,7 +292,7 @@ void test_deque_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_deque_iterator_forward_iteration() {
+static void test_deque_iterator_forward_iteration(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -319,7 +319,7 @@ void test_deque_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_deque_iterator_backward_iteration() {
+static void test_deque_iterator_backward_iteration(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -348,7 +348,7 @@ void test_deque_iterator_backward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_deque_iterator_detects_concurrent_modification() {
+static void test_deque_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -361,7 +361,7 @@ void test_deque_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_deque_iterator_reset() {
+static void test_deque_iterator_reset(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // and
@@ -375,7 +375,7 @@ void test_deque_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_deque_iterator_at_specified_position() {
+static void test_deque_iterator_at_specified_position(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -387,7 +387,7 @@ void test_deque_iterator_at_specified_position() {
     iterator_destroy(&iterator);
 }
 
-void test_deque_iterator_at_invalid_position_fails() {
+static void test_deque_iterator_at_invalid_position_fails(void) {
     // given
     Iterator* iterator;
     // then
@@ -398,7 +398,7 @@ void test_deque_iterator_at_invalid_position_fails() {
     TEST_ASSERT_NULL(iterator);
 }
 
-void test_deque_is_equal_to_it_self() {
+static void test_deque_is_equal_to_it_self(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -407,7 +407,7 @@ void test_deque_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_deque_is_equal_to_another_deque() {
+static void test_deque_is_equal_to_another_deque(void) {
     // given
     Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -422,7 +422,7 @@ void test_deque_is_equal_to_another_deque() {
     deque_destroy(&other_deque);
 }
 
-void test_deque_is_not_equal_to_another_deque_with_different_size() {
+static void test_deque_is_not_equal_to_another_deque_with_different_size(void) {
     // given
     Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -439,7 +439,7 @@ void test_deque_is_not_equal_to_another_deque_with_different_size() {
     deque_destroy(&other_deque);
 }
 
-void test_deque_is_not_equal_to_another_deque_with_different_elements() {
+static void test_deque_is_not_equal_to_another_deque_with_different_elements(void) {
     // given
     Deque* other_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -458,7 +458,7 @@ static void action_add_one(void* element) {
     *(int*) element += 1;
 }
 
-void test_perform_action_for_each_element_of_deque() {
+static void test_perform_action_for_each_element_of_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -467,7 +467,7 @@ void test_perform_action_for_each_element_of_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 2, 3, 4, 5, 6);
 }
 
-void test_reverse_deque() {
+static void test_reverse_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -476,7 +476,7 @@ void test_reverse_deque() {
     TEST_ASSERT_DEQUE_ELEMENTS_EQUALS(deque, int, 5, 4, 3, 2, 1);
 }
 
-void test_clear_deque() {
+static void test_clear_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3 );
     // when
@@ -487,7 +487,7 @@ void test_clear_deque() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(deque_get_last(deque)));
 }
 
-void test_deque_contains_element() {
+static void test_deque_contains_element(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -496,7 +496,7 @@ void test_deque_contains_element() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_deque_does_not_contains_element() {
+static void test_deque_does_not_contains_element(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -505,7 +505,7 @@ void test_deque_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_deque_contains_all_elements() {
+static void test_deque_contains_all_elements(void) {
     // given
     Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -520,7 +520,7 @@ void test_deque_contains_all_elements() {
     deque_destroy(&new_deque);
 }
 
-void test_empty_deque_contains_all_elements_of_empty_collection() {
+static void test_empty_deque_contains_all_elements_of_empty_collection(void) {
     // given
     Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // when
@@ -531,7 +531,7 @@ void test_empty_deque_contains_all_elements_of_empty_collection() {
     deque_destroy(&new_deque);
 }
 
-void test_deque_does_not_contains_all_elements() {
+static void test_deque_does_not_contains_all_elements(void) {
     // given
     Deque* new_deque = deque_new(DEQUE_OPTIONS(int));
     // and
@@ -546,7 +546,7 @@ void test_deque_does_not_contains_all_elements() {
     deque_destroy(&new_deque);
 }
 
-void test_clone_deque() {
+static void test_clone_deque(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -557,7 +557,7 @@ void test_clone_deque() {
     deque_destroy(&copy_deque);
 }
 
-void test_convert_deque_to_collection() {
+static void test_convert_deque_to_collection(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -575,7 +575,7 @@ void test_convert_deque_to_collection() {
     iterator_destroy(&iter_b);
 }
 
-void test_convert_deque_to_array() {
+static void test_convert_deque_to_array(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -586,7 +586,7 @@ void test_convert_deque_to_array() {
     array_destroy(&elements);
 }
 
-void test_get_deque_string_representation() {
+static void test_get_deque_string_representation(void) {
     // given
     POPULATE_DEQUE(deque, int, 1, 2, 3, 4, 5);
     // when
@@ -597,7 +597,7 @@ void test_get_deque_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_deque_string_representation() {
+static void test_get_empty_deque_string_representation(void) {
     // when
     String string = deque_to_string(deque);
     // then

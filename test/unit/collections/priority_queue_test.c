@@ -43,20 +43,20 @@
 
 static PriorityQueue* priority_queue;
 
-void setUp() {
+void setUp(void) {
     priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     priority_queue_change_destructor(priority_queue, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     priority_queue_destroy(&priority_queue);
 }
 
-void test_create_priority_queue() {
+static void test_create_priority_queue(void) {
     TEST_ASSERT_NOT_NULL(priority_queue);
 }
 
-void test_do_not_create_priority_queue_with_invalid_options() {
+static void test_do_not_create_priority_queue_with_invalid_options(void) {
     // when
     PriorityQueue* new_priority_queue; Error error = attempt(new_priority_queue = priority_queue_new(ref(PriorityQueueOptions)));
     // then
@@ -64,7 +64,7 @@ void test_do_not_create_priority_queue_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_priority_queue_from_collection() {
+static void test_create_priority_queue_from_collection(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -76,7 +76,7 @@ void test_create_priority_queue_from_collection() {
     priority_queue_destroy(&new_priority_queue);
 }
 
-void test_do_not_create_priority_queue_with_invalid_options_from_collection() {
+static void test_do_not_create_priority_queue_with_invalid_options_from_collection(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -86,7 +86,7 @@ void test_do_not_create_priority_queue_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_destroy_priority_queue_set_it_to_null() {
+static void test_destroy_priority_queue_set_it_to_null(void) {
     // given
     PriorityQueue* new_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // when
@@ -95,7 +95,7 @@ void test_destroy_priority_queue_set_it_to_null() {
     TEST_ASSERT_NULL(new_priority_queue);
 }
 
-void test_destroy_null_priority_queue_fails() {
+static void test_destroy_null_priority_queue_fails(void) {
     // given
     PriorityQueue* new_priority_queue = nullptr;
     // when
@@ -104,7 +104,7 @@ void test_destroy_null_priority_queue_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-void test_enqueue_element_to_priority_queue() {
+static void test_enqueue_element_to_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -113,7 +113,7 @@ void test_enqueue_element_to_priority_queue() {
     TEST_ASSERT_PRIORITY_QUEUE_ELEMENTS_EQUALS(priority_queue, int, 10, 5, 4, 3, 2, 1);
 }
 
-void test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it() {
+static void test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     // when
@@ -123,7 +123,7 @@ void test_enqueue_element_to_priority_queue_exceeding_capacity_resize_it() {
     TEST_ASSERT_PRIORITY_QUEUE_ELEMENTS_EQUALS(priority_queue, int, 100, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
 }
 
-void test_enqueue_all_elements_of_a_collection_in_priority_queue() {
+static void test_enqueue_all_elements_of_a_collection_in_priority_queue(void) {
     // given
     PriorityQueue* existing_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -137,7 +137,7 @@ void test_enqueue_all_elements_of_a_collection_in_priority_queue() {
     priority_queue_destroy(&existing_priority_queue);
 }
 
-void test_peek_element_from_priority_queue() {
+static void test_peek_element_from_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -146,7 +146,7 @@ void test_peek_element_from_priority_queue() {
     TEST_ASSERT_EQUAL(5, *element);
 }
 
-void test_peek_element_from_empty_priority_queue_fails() {
+static void test_peek_element_from_empty_priority_queue_fails(void) {
     // when
     int* element; Error error = attempt(element = priority_queue_peek(priority_queue));
     // then
@@ -154,7 +154,7 @@ void test_peek_element_from_empty_priority_queue_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_dequeue_element_from_priority_queue() {
+static void test_dequeue_element_from_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -163,7 +163,7 @@ void test_dequeue_element_from_priority_queue() {
     TEST_ASSERT_PRIORITY_QUEUE_ELEMENTS_EQUALS(priority_queue, int, 4, 3, 2, 1);
 }
 
-void test_dequeue_element_from_priority_queue_no_destruct() {
+static void test_dequeue_element_from_priority_queue_no_destruct(void) {
     // given
     priority_queue_change_destructor(priority_queue, noop_destruct);
     // and
@@ -178,7 +178,7 @@ void test_dequeue_element_from_priority_queue_no_destruct() {
     priority_queue_change_destructor(priority_queue, delete);
 }
 
-void test_dequeue_element_from_empty_priority_queue_fails() {
+static void test_dequeue_element_from_empty_priority_queue_fails(void) {
     // when
     int* value; Error error = attempt(value = priority_queue_dequeue(priority_queue));
     // then
@@ -186,7 +186,7 @@ void test_dequeue_element_from_empty_priority_queue_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_priority_queue_size() {
+static void test_get_priority_queue_size(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -195,21 +195,21 @@ void test_get_priority_queue_size() {
     TEST_ASSERT_EQUAL(size, 5);
 }
 
-void test_get_priority_queue_capacity() {
+static void test_get_priority_queue_capacity(void) {
     // when
     int capacity = priority_queue_capacity(priority_queue);
     // then
     TEST_ASSERT_EQUAL(10, capacity);
 }
 
-void test_priority_queue_is_empty() {
+static void test_priority_queue_is_empty(void) {
     // when
     bool empty = priority_queue_is_empty(priority_queue);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_priority_queue_is_not_empty() {
+static void test_priority_queue_is_not_empty(void) {
     // given
     priority_queue_enqueue(priority_queue, new(int, 10));
     // when
@@ -218,7 +218,7 @@ void test_priority_queue_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_priority_queue_iterator_forward_iteration() {
+static void test_priority_queue_iterator_forward_iteration(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -245,7 +245,7 @@ void test_priority_queue_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_priority_queue_iterator_detects_concurrent_modification() {
+static void test_priority_queue_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -257,7 +257,7 @@ void test_priority_queue_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_priority_queue_iterator_reset() {
+static void test_priority_queue_iterator_reset(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // and
@@ -271,7 +271,7 @@ void test_priority_queue_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_priority_queue_is_equal_to_it_self() {
+static void test_priority_queue_is_equal_to_it_self(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -280,7 +280,7 @@ void test_priority_queue_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_priority_queue_is_equal_to_another_priority_queue() {
+static void test_priority_queue_is_equal_to_another_priority_queue(void) {
     // given
     PriorityQueue* other_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -295,7 +295,7 @@ void test_priority_queue_is_equal_to_another_priority_queue() {
     priority_queue_destroy(&other_priority_queue);
 }
 
-void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_size() {
+static void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_size(void) {
     // given
     PriorityQueue* other_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -312,7 +312,7 @@ void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_s
     priority_queue_destroy(&other_priority_queue);
 }
 
-void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_elements() {
+static void test_priority_queue_is_not_equal_to_another_priority_queue_with_different_elements(void) {
     // given
     PriorityQueue* other_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -331,7 +331,7 @@ static void action_add_one(void* element) {
     *(int*) element += 1;
 }
 
-void test_perform_action_for_each_element_of_priority_queue() {
+static void test_perform_action_for_each_element_of_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -340,7 +340,7 @@ void test_perform_action_for_each_element_of_priority_queue() {
     TEST_ASSERT_PRIORITY_QUEUE_ELEMENTS_EQUALS(priority_queue, int, 6, 5, 4, 3, 2);
 }
 
-void test_clear_priority_queue() {
+static void test_clear_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3);
     // when
@@ -350,7 +350,7 @@ void test_clear_priority_queue() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, attempt(priority_queue_peek(priority_queue)));
 }
 
-void test_priority_queue_contains_element() {
+static void test_priority_queue_contains_element(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -359,7 +359,7 @@ void test_priority_queue_contains_element() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_priority_queue_does_not_contains_element() {
+static void test_priority_queue_does_not_contains_element(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -368,7 +368,7 @@ void test_priority_queue_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_priority_queue_contains_all_elements() {
+static void test_priority_queue_contains_all_elements(void) {
     // given
     PriorityQueue* new_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -383,7 +383,7 @@ void test_priority_queue_contains_all_elements() {
     priority_queue_destroy(&new_priority_queue);
 }
 
-void test_empty_priority_queue_contains_all_elements_of_empty_collection() {
+static void test_empty_priority_queue_contains_all_elements_of_empty_collection(void) {
     // given
     PriorityQueue* new_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // when
@@ -394,7 +394,7 @@ void test_empty_priority_queue_contains_all_elements_of_empty_collection() {
     priority_queue_destroy(&new_priority_queue);
 }
 
-void test_priority_queue_does_not_contains_all_elements() {
+static void test_priority_queue_does_not_contains_all_elements(void) {
     // given
     PriorityQueue* new_priority_queue = priority_queue_new(PRIORITY_QUEUE_OPTIONS(int));
     // and
@@ -409,7 +409,7 @@ void test_priority_queue_does_not_contains_all_elements() {
     priority_queue_destroy(&new_priority_queue);
 }
 
-void test_clone_priority_queue() {
+static void test_clone_priority_queue(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -420,7 +420,7 @@ void test_clone_priority_queue() {
     priority_queue_destroy(&copy_priority_queue);
 }
 
-void test_convert_priority_queue_to_collection() {
+static void test_convert_priority_queue_to_collection(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -438,7 +438,7 @@ void test_convert_priority_queue_to_collection() {
     iterator_destroy(&iter_b);
 }
 
-void test_convert_priority_queue_to_array() {
+static void test_convert_priority_queue_to_array(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -449,7 +449,7 @@ void test_convert_priority_queue_to_array() {
     array_destroy(&elements);
 }
 
-void test_get_priority_queue_string_representation() {
+static void test_get_priority_queue_string_representation(void) {
     // given
     POPULATE_PRIORITY_QUEUE(priority_queue, int, 1, 2, 3, 4, 5);
     // when
@@ -460,7 +460,7 @@ void test_get_priority_queue_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_priority_queue_string_representation() {
+static void test_get_empty_priority_queue_string_representation(void) {
     // when
     String string = priority_queue_to_string(priority_queue);
     // then

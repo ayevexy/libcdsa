@@ -20,18 +20,18 @@
 
 static ArrayList* array_list;
 
-void setUp() {
+void setUp(void) {
     array_list = array_list_new(DEFAULT_ARRAY_LIST_OPTIONS());
     array_list_change_destructor(array_list, delete);
 
     POPULATE_ARRAY_LIST(array_list, int, 1, 2, 3, 4, 5);
 }
 
-void tearDown() {
+void tearDown(void) {
     array_list_destroy(&array_list);
 }
 
-void test_iterator_advance() {
+static void test_iterator_advance(void) {
     // given
     Iterator* iterator = array_list_iterator(array_list);
     // then
@@ -42,7 +42,7 @@ void test_iterator_advance() {
     iterator_destroy(&iterator);
 }
 
-void test_iterator_retreat() {
+static void test_iterator_retreat(void) {
     // given
     Iterator* iterator = array_list_iterator(array_list);
     // and
@@ -55,7 +55,7 @@ void test_iterator_retreat() {
     iterator_destroy(&iterator);
 }
 
-void test_iterator_element() {
+static void test_iterator_element(void) {
     // given
     Iterator* iterator = array_list_iterator(array_list);
     // then
@@ -65,7 +65,7 @@ void test_iterator_element() {
     iterator_destroy(&iterator);
 }
 
-void test_iterator_element_or_default() {
+static void test_iterator_element_or_default(void) {
     // given
     Iterator* iterator = array_list_iterator(array_list);
     // then
@@ -75,7 +75,7 @@ void test_iterator_element_or_default() {
     iterator_destroy(&iterator);
 }
 
-void test_iterator_size() {
+static void test_iterator_size(void) {
     // given
     Iterator* iterator = array_list_iterator(array_list);
     // then

@@ -51,7 +51,7 @@ static void* sum(void* result, void* next) {
 static ArrayList* list;
 static ArrayList* empty_list;
 
-void setUp() {
+void setUp(void) {
     list = list_new(ARRAY_LIST_OPTIONS(int));
     list_change_destructor(list, delete);
 
@@ -60,12 +60,12 @@ void setUp() {
     POPULATE_LIST(list, int, 1, 2, 3, 4, 5);
 }
 
-void tearDown() {
+void tearDown(void) {
     list_destroy(&list);
     list_destroy(&empty_list);
 }
 
-void test_create_sequence_from_collection() {
+static void test_create_sequence_from_collection(void) {
     // given
     Collection collection = list_to_collection(list);
     // when
@@ -78,7 +78,7 @@ void test_create_sequence_from_collection() {
     array_destroy(&elements);
 }
 
-void test_create_sequence_of_given_elements() {
+static void test_create_sequence_of_given_elements(void) {
     // when
     Sequence* sequence = sequence_of(ref(int, 1), ref(int, 2), ref(int, 3), ref(int, 4), ref(int, 5));
     // and
@@ -89,19 +89,19 @@ void test_create_sequence_of_given_elements() {
     array_destroy(&elements);
 }
 
-void test_create_empty_sequence() {
+static void test_create_empty_sequence(void) {
     // when
     Sequence* sequence = sequence_empty();
     // then
     TEST_ASSERT_EQUAL(0, sequence_count(sequence));
 }
 
-void* int_generator() {
+static void* int_generator(void) {
     static int counter = 1;
     return new(int, counter++);
 }
 
-void test_generate_sequence() {
+static void test_generate_sequence(void) {
     // when
     Sequence* sequence = sequence_generate(int_generator, 5);
     // and
@@ -115,16 +115,16 @@ void test_generate_sequence() {
     array_destroy(&elements);
 }
 
-bool int_has_next(const void* number) {
+static bool int_has_next(const void* number) {
     return number && *(const int*) number <= 5;
 }
 
-void* int_next(void* number) {
+static void* int_next(void* number) {
     int value = *(int*) number;
     return value < 5 ? new(int, value + 1) : nullptr; // avoids allocating an extra element that would be rejected by the predicate
 }
 
-void test_iterate_sequence() {
+static void test_iterate_sequence(void) {
     // when
     Sequence* sequence = sequence_iterate(new(int, 1), int_has_next, int_next);
     // and
@@ -138,7 +138,7 @@ void test_iterate_sequence() {
     array_destroy(&elements);
 }
 
-void test_filter_sequence() {
+static void test_filter_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -147,7 +147,7 @@ void test_filter_sequence() {
     TEST_ASSERT_EQUAL(2, sequence_count(sequence));
 }
 
-void test_map_sequence() {
+static void test_map_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -163,7 +163,7 @@ void test_map_sequence() {
     array_destroy(&elements);
 }
 
-void test_peek_sequence() {
+static void test_peek_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -176,7 +176,7 @@ void test_peek_sequence() {
     array_destroy(&elements);
 }
 
-void test_limit_n_elements_of_sequence() {
+static void test_limit_n_elements_of_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -190,7 +190,7 @@ void test_limit_n_elements_of_sequence() {
     array_destroy(&elements);
 }
 
-void test_skip_n_elements_of_sequence() {
+static void test_skip_n_elements_of_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -204,7 +204,7 @@ void test_skip_n_elements_of_sequence() {
     array_destroy(&elements);
 }
 
-void test_take_elements_of_sequence_while_predicate_is_truth() {
+static void test_take_elements_of_sequence_while_predicate_is_truth(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -218,7 +218,7 @@ void test_take_elements_of_sequence_while_predicate_is_truth() {
     array_destroy(&elements);
 }
 
-void test_drop_elements_of_sequence_while_predicate_is_truth() {
+static void test_drop_elements_of_sequence_while_predicate_is_truth(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -232,7 +232,7 @@ void test_drop_elements_of_sequence_while_predicate_is_truth() {
     array_destroy(&elements);
 }
 
-void test_filter_distinct_elements_of_sequence() {
+static void test_filter_distinct_elements_of_sequence(void) {
     // given
     list_add_last(list, new(int, 1)); // duplicate
     list_add_last(list, new(int, 5)); // duplicate
@@ -249,7 +249,7 @@ void test_filter_distinct_elements_of_sequence() {
     array_destroy(&elements);
 }
 
-void test_sort_elements_of_sequence() {
+static void test_sort_elements_of_sequence(void) {
     // given
     list_clear(list);
     // and
@@ -271,7 +271,7 @@ static inline int int_compare_reversed_generic(const void* a, const void* b) {
     return int_compare_generic(b, a);
 }
 
-void test_chain_sequence_operations() {
+static void test_chain_sequence_operations(void) {
     // given
     list_clear(list);
     // and
@@ -297,7 +297,7 @@ void test_chain_sequence_operations() {
     array_destroy(&elements);
 }
 
-void test_apply_action_for_each_element_of_sequence() {
+static void test_apply_action_for_each_element_of_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -310,7 +310,7 @@ void test_apply_action_for_each_element_of_sequence() {
     array_destroy(&elements);
 }
 
-void test_reduce_sequence() {
+static void test_reduce_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -319,7 +319,7 @@ void test_reduce_sequence() {
     TEST_ASSERT_EQUAL(15, *result);
 }
 
-void test_find_element_in_sequence() {
+static void test_find_element_in_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -329,7 +329,7 @@ void test_find_element_in_sequence() {
     TEST_ASSERT_EQUAL(1, *(int*) result.value);
 }
 
-void test_do_not_find_element_in_empty_sequence() {
+static void test_do_not_find_element_in_empty_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(empty_list));
     // when
@@ -338,7 +338,7 @@ void test_do_not_find_element_in_empty_sequence() {
     TEST_ASSERT_FALSE(result.present);
 }
 
-void test_find_max_element_of_sequence() {
+static void test_find_max_element_of_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -348,7 +348,7 @@ void test_find_max_element_of_sequence() {
     TEST_ASSERT_EQUAL(5, *(int*) result.value);
 }
 
-void test_find_min_element_of_sequence() {
+static void test_find_min_element_of_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -358,7 +358,7 @@ void test_find_min_element_of_sequence() {
     TEST_ASSERT_EQUAL(1, *(int*) result.value);
 }
 
-void test_sequence_all_match_predicate() {
+static void test_sequence_all_match_predicate(void) {
     // given
     Sequence* sequence_a = sequence_from(list_to_collection(list));
     Sequence* sequence_b = sequence_from(list_to_collection(list));
@@ -367,7 +367,7 @@ void test_sequence_all_match_predicate() {
     TEST_ASSERT_FALSE(sequence_all_match(sequence_b, is_even));
 }
 
-void test_sequence_any_match_predicate() {
+static void test_sequence_any_match_predicate(void) {
     // given
     Sequence* sequence_a = sequence_from(list_to_collection(list));
     Sequence* sequence_b = sequence_from(list_to_collection(list));
@@ -376,7 +376,7 @@ void test_sequence_any_match_predicate() {
     TEST_ASSERT_FALSE(sequence_any_match(sequence_b, is_null));
 }
 
-void test_sequence_none_match_predicate() {
+static void test_sequence_none_match_predicate(void) {
     // given
     Sequence* sequence_a = sequence_from(list_to_collection(list));
     Sequence* sequence_b = sequence_from(list_to_collection(list));
@@ -385,7 +385,7 @@ void test_sequence_none_match_predicate() {
     TEST_ASSERT_FALSE(sequence_none_match(sequence_b, is_even));
 }
 
-void test_count_sequence() {
+static void test_count_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -394,7 +394,7 @@ void test_count_sequence() {
     TEST_ASSERT_EQUAL(list_size(list), count);
 }
 
-void test_convert_sequence_to_array() {
+static void test_convert_sequence_to_array(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when
@@ -405,7 +405,7 @@ void test_convert_sequence_to_array() {
     array_destroy(&elements);
 }
 
-void test_convert_empty_sequence_to_array() {
+static void test_convert_empty_sequence_to_array(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(empty_list));
     // when
@@ -416,7 +416,7 @@ void test_convert_empty_sequence_to_array() {
     array_destroy(&elements);
 }
 
-void test_collect_sequence() {
+static void test_collect_sequence(void) {
     // given
     Sequence* sequence = sequence_from(list_to_collection(list));
     // when

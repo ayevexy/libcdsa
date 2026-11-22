@@ -7,11 +7,11 @@
 // Custom error type
 static const Error UNKNOWN_ERROR = ERROR("UNKNOWN_ERROR", "the cause could not be determined");
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
@@ -20,7 +20,7 @@ static void exit_handler(void) {
     TEST_ABORT();
 }
 
-void test_set_error_aborts_program() {
+static void test_set_error_aborts_program(void) {
     // given
     atexit(exit_handler);
     // when
@@ -38,7 +38,7 @@ static int divide(int a, int b) {
     return a / b;
 }
 
-void test_attempt_on_fail_catch_error() {
+static void test_attempt_on_fail_catch_error(void) {
     // given
     int result; Error error = attempt(result = divide(10, 0));
     // then
@@ -47,7 +47,7 @@ void test_attempt_on_fail_catch_error() {
     TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0", error_message());
 }
 
-void test_attempt_on_success_catch_no_error() {
+static void test_attempt_on_success_catch_no_error(void) {
     // given
     int result; Error error = attempt(result = divide(10, 2));
     // then
@@ -70,7 +70,7 @@ static int arithmetic_mean(int values[], int count) {
     return result;
 }
 
-void test_nested_attempt_on_fail_catch_error() {
+static void test_nested_attempt_on_fail_catch_error(void) {
     // given
     int result; Error error = attempt(result = arithmetic_mean((int[]){1}, 0));
     // then
@@ -79,7 +79,7 @@ void test_nested_attempt_on_fail_catch_error() {
     TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Arithmetic Mean can't be calculated with zero values", error_message());
 }
 
-void test_nested_attempt_on_success_catch_no_error() {
+static void test_nested_attempt_on_success_catch_no_error(void) {
     // given
     int result; Error error = attempt(result = arithmetic_mean((int[]){5, 5}, 2));
     // then
@@ -88,21 +88,21 @@ void test_nested_attempt_on_success_catch_no_error() {
     TEST_ASSERT_EQUAL_STRING("", error_message());
 }
 
-void test_get_error_message() {
+static void test_get_error_message(void) {
     // given
     attempt(divide(10, 0));
     // then
     TEST_ASSERT_EQUAL_STRING("ARITHMETIC_ERROR: Cannot divide by zero: 10 / 0", error_message());
 }
 
-void test_get_error_description() {
+static void test_get_error_description(void) {
     // given
     attempt(divide(10, 0));
     // then
     TEST_ASSERT_EQUAL_STRING("Cannot divide by zero: 10 / 0", error_description());
 }
 
-void test_try_result() {
+static void test_try_result(void) {
     // given
     Result(int) result = try(divide(10, 0));
     // then

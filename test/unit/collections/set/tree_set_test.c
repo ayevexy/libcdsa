@@ -40,20 +40,20 @@
 
 static TreeSet* tree_set;
 
-void setUp() {
+void setUp(void) {
     tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     tree_set_change_destructor(tree_set, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     tree_set_destroy(&tree_set);
 }
 
-void test_create_tree_set() {
+static void test_create_tree_set(void) {
     TEST_ASSERT_NOT_NULL(tree_set);
 }
 
-void test_do_not_create_tree_set_with_invalid_options() {
+static void test_do_not_create_tree_set_with_invalid_options(void) {
     // when
     TreeSet* new_tree_set; Error error = attempt(new_tree_set = tree_set_new(ref(TreeSetOptions)));
     // then
@@ -61,7 +61,7 @@ void test_do_not_create_tree_set_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_tree_set_from_collection() {
+static void test_create_tree_set_from_collection(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -73,7 +73,7 @@ void test_create_tree_set_from_collection() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_do_not_create_tree_set_with_invalid_options_from_collection() {
+static void test_do_not_create_tree_set_with_invalid_options_from_collection(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -83,7 +83,7 @@ void test_do_not_create_tree_set_with_invalid_options_from_collection() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_destroy_tree_set_set_it_to_null() {
+static void test_destroy_tree_set_set_it_to_null(void) {
     // given
     TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // when
@@ -92,7 +92,7 @@ void test_destroy_tree_set_set_it_to_null() {
     TEST_ASSERT_NULL(new_tree_set);
 }
 
-void test_destroy_null_tree_set_fails() {
+static void test_destroy_null_tree_set_fails(void) {
     // given
     TreeSet* new_tree_set = nullptr;
     // when
@@ -101,7 +101,7 @@ void test_destroy_null_tree_set_fails() {
     TEST_ASSERT_EQUAL(NULL_POINTER_ERROR, error);
 }
 
-void test_add_element_to_tree_set() {
+static void test_add_element_to_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -111,7 +111,7 @@ void test_add_element_to_tree_set() {
     TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(tree_set, int, 1, 2, 3, 4, 5, 10);
 }
 
-void test_do_not_add_element_to_tree_set_if_already_present() {
+static void test_do_not_add_element_to_tree_set_if_already_present(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -121,7 +121,7 @@ void test_do_not_add_element_to_tree_set_if_already_present() {
     TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(tree_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_add_all_elements_to_tree_set() {
+static void test_add_all_elements_to_tree_set(void) {
     // given
     TreeSet* existing_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -136,7 +136,7 @@ void test_add_all_elements_to_tree_set() {
     tree_set_destroy(&existing_tree_set);
 }
 
-void test_do_not_add_all_elements_to_tree_set_if_already_present() {
+static void test_do_not_add_all_elements_to_tree_set_if_already_present(void) {
     // given
     TreeSet* existing_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -152,7 +152,7 @@ void test_do_not_add_all_elements_to_tree_set_if_already_present() {
     tree_set_destroy(&existing_tree_set);
 }
 
-void test_get_first_element_from_tree_set() {
+static void test_get_first_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -161,7 +161,7 @@ void test_get_first_element_from_tree_set() {
     TEST_ASSERT_EQUAL(1, *element);
 }
 
-void test_get_first_element_from_empty_tree_set_fails() {
+static void test_get_first_element_from_empty_tree_set_fails(void) {
     // when
     int* element; Error error = attempt(element = tree_set_get_first(tree_set));
     // then
@@ -169,7 +169,7 @@ void test_get_first_element_from_empty_tree_set_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_get_last_element_from_tree_set() {
+static void test_get_last_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -178,7 +178,7 @@ void test_get_last_element_from_tree_set() {
     TEST_ASSERT_EQUAL(5, *element);
 }
 
-void test_get_last_element_from_empty_tree_set_fails() {
+static void test_get_last_element_from_empty_tree_set_fails(void) {
     // when
     int* element; Error error = attempt(element = tree_set_get_last(tree_set));
     // then
@@ -186,7 +186,7 @@ void test_get_last_element_from_empty_tree_set_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_element_from_tree_set() {
+static void test_remove_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -197,7 +197,7 @@ void test_remove_element_from_tree_set() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, int, 3);
 }
 
-void test_do_not_remove_element_from_tree_set_if_not_present() {
+static void test_do_not_remove_element_from_tree_set_if_not_present(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -207,7 +207,7 @@ void test_do_not_remove_element_from_tree_set_if_not_present() {
     TEST_ASSERT_TREE_SET_CONTAINS_ELEMENTS(tree_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_remove_first_element_from_tree_set() {
+static void test_remove_first_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -217,7 +217,7 @@ void test_remove_first_element_from_tree_set() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, int, 1);
 }
 
-void test_remove_first_element_from_tree_set_no_destruct() {
+static void test_remove_first_element_from_tree_set_no_destruct(void) {
     // given
     tree_set_change_destructor(tree_set, noop_destruct);
     // and
@@ -233,7 +233,7 @@ void test_remove_first_element_from_tree_set_no_destruct() {
     tree_set_change_destructor(tree_set, delete);
 }
 
-void test_remove_first_element_from_empty_tree_set_fails() {
+static void test_remove_first_element_from_empty_tree_set_fails(void) {
     // when
     int* element; Error error = attempt(element = tree_set_remove_first(tree_set));
     // then
@@ -241,7 +241,7 @@ void test_remove_first_element_from_empty_tree_set_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_last_element_from_tree_set() {
+static void test_remove_last_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -251,7 +251,7 @@ void test_remove_last_element_from_tree_set() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, int, 5);
 }
 
-void test_remove_last_element_from_tree_set_no_destruct() {
+static void test_remove_last_element_from_tree_set_no_destruct(void) {
     // given
     tree_set_change_destructor(tree_set, noop_destruct);
     // and
@@ -267,7 +267,7 @@ void test_remove_last_element_from_tree_set_no_destruct() {
     tree_set_change_destructor(tree_set, delete);
 }
 
-void test_remove_last_element_from_empty_tree_set_fails() {
+static void test_remove_last_element_from_empty_tree_set_fails(void) {
     // when
     int* element; Error error = attempt(element = tree_set_remove_last(tree_set));
     // then
@@ -275,7 +275,7 @@ void test_remove_last_element_from_empty_tree_set_fails() {
     TEST_ASSERT_EQUAL(NO_SUCH_ELEMENT_ERROR, error);
 }
 
-void test_remove_all_elements_from_tree_set_matching_collection() {
+static void test_remove_all_elements_from_tree_set_matching_collection(void) {
     // given
     TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -296,7 +296,7 @@ static bool is_odd(const void* element) {
     return *(int*) element % 2 != 0;
 }
 
-void test_remove_elements_from_tree_set_matching_predicate() {
+static void test_remove_elements_from_tree_set_matching_predicate(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -307,7 +307,7 @@ void test_remove_elements_from_tree_set_matching_predicate() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, int, 1, 3, 5);
 }
 
-void test_retain_all_elements_from_collection_in_tree_set() {
+static void test_retain_all_elements_from_collection_in_tree_set(void) {
     // given
     TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -324,7 +324,7 @@ void test_retain_all_elements_from_collection_in_tree_set() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_get_tree_set_size() {
+static void test_get_tree_set_size(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -333,14 +333,14 @@ void test_get_tree_set_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
-void test_tree_set_is_empty() {
+static void test_tree_set_is_empty(void) {
     // when
     bool empty = tree_set_is_empty(tree_set);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_tree_set_is_not_empty() {
+static void test_tree_set_is_not_empty(void) {
     // given
     tree_set_add(tree_set, new(int, 10));
     // when
@@ -349,7 +349,7 @@ void test_tree_set_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_tree_set_iterator_forward_iteration() {
+static void test_tree_set_iterator_forward_iteration(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -376,7 +376,7 @@ void test_tree_set_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_backward_iteration() {
+static void test_tree_set_iterator_backward_iteration(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -404,7 +404,7 @@ void test_tree_set_iterator_backward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_detects_concurrent_modification() {
+static void test_tree_set_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -418,7 +418,7 @@ void test_tree_set_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_remove_element_after_next() {
+static void test_tree_set_iterator_remove_element_after_next(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // and
@@ -433,7 +433,7 @@ void test_tree_set_iterator_remove_element_after_next() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_remove_element_after_previous() {
+static void test_tree_set_iterator_remove_element_after_previous(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // and
@@ -448,7 +448,7 @@ void test_tree_set_iterator_remove_element_after_previous() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_remove_element_fails_if_no_next_or_previous_was_called() {
+static void test_tree_set_iterator_remove_element_fails_if_no_next_or_previous_was_called(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // and
@@ -462,7 +462,7 @@ void test_tree_set_iterator_remove_element_fails_if_no_next_or_previous_was_call
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
+static void test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // and
@@ -479,7 +479,7 @@ void test_tree_set_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_reset() {
+static void test_tree_set_iterator_reset(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // and
@@ -493,7 +493,7 @@ void test_tree_set_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_at_specified_position() {
+static void test_tree_set_iterator_at_specified_position(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -505,7 +505,7 @@ void test_tree_set_iterator_at_specified_position() {
     iterator_destroy(&iterator);
 }
 
-void test_tree_set_iterator_at_invalid_position_fails() {
+static void test_tree_set_iterator_at_invalid_position_fails(void) {
     // given
     Iterator* iterator;
     // then
@@ -516,7 +516,7 @@ void test_tree_set_iterator_at_invalid_position_fails() {
     TEST_ASSERT_NULL(iterator);
 }
 
-void test_tree_set_is_equal_to_it_self() {
+static void test_tree_set_is_equal_to_it_self(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -525,7 +525,7 @@ void test_tree_set_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_tree_set_is_equal_to_another_tree_set() {
+static void test_tree_set_is_equal_to_another_tree_set(void) {
     // given
     TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -540,7 +540,7 @@ void test_tree_set_is_equal_to_another_tree_set() {
     tree_set_destroy(&other_tree_set);
 }
 
-void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
+static void test_tree_set_is_not_equal_to_another_tree_set_with_different_size(void) {
     // given
     TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -557,7 +557,7 @@ void test_tree_set_is_not_equal_to_another_tree_set_with_different_size() {
     tree_set_destroy(&other_tree_set);
 }
 
-void test_tree_set_is_not_equal_to_another_tree_set_with_different_elements() {
+static void test_tree_set_is_not_equal_to_another_tree_set_with_different_elements(void) {
     // given
     TreeSet* other_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -578,7 +578,7 @@ static void action(void*) {
     action_count++;
 }
 
-void test_perform_action_for_each_element_of_tree_set() {
+static void test_perform_action_for_each_element_of_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -587,7 +587,7 @@ void test_perform_action_for_each_element_of_tree_set() {
     TEST_ASSERT_EQUAL(5, action_count);
 }
 
-void test_clear_tree_set() {
+static void test_clear_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -597,7 +597,7 @@ void test_clear_tree_set() {
     TEST_ASSERT_TREE_SET_DO_NOT_CONTAINS_ELEMENTS(tree_set, int, 1, 2, 3, 4, 5);
 }
 
-void test_get_higher_element_from_tree_set() {
+static void test_get_higher_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 4, 5);
     // when
@@ -608,7 +608,7 @@ void test_get_higher_element_from_tree_set() {
     TEST_ASSERT_NULL(no_successor);
 }
 
-void test_get_ceiling_element_from_tree_set() {
+static void test_get_ceiling_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 5);
     // when
@@ -621,7 +621,7 @@ void test_get_ceiling_element_from_tree_set() {
     TEST_ASSERT_NULL(no_successor);
 }
 
-void test_get_floor_element_from_tree_set() {
+static void test_get_floor_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 3, 4, 5);
     // when
@@ -634,7 +634,7 @@ void test_get_floor_element_from_tree_set() {
     TEST_ASSERT_NULL(no_predecessor);
 }
 
-void test_get_lower_element_from_tree_set() {
+static void test_get_lower_element_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 4, 5);
     // when
@@ -645,7 +645,7 @@ void test_get_lower_element_from_tree_set() {
     TEST_ASSERT_NULL(no_predecessor);
 }
 
-void test_tree_set_contains_element() {
+static void test_tree_set_contains_element(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -654,7 +654,7 @@ void test_tree_set_contains_element() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_tree_set_does_not_contains_element() {
+static void test_tree_set_does_not_contains_element(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -663,7 +663,7 @@ void test_tree_set_does_not_contains_element() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_tree_set_contains_all_elements() {
+static void test_tree_set_contains_all_elements(void) {
     // given
     TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // and
@@ -678,7 +678,7 @@ void test_tree_set_contains_all_elements() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_empty_tree_set_contains_all_elements_of_empty_collection() {
+static void test_empty_tree_set_contains_all_elements_of_empty_collection(void) {
     // given
     TreeSet* new_tree_set = tree_set_new(TREE_SET_OPTIONS(int));
     // when
@@ -689,7 +689,7 @@ void test_empty_tree_set_contains_all_elements_of_empty_collection() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_create_head_set_from_tree_set() {
+static void test_create_head_set_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -700,7 +700,7 @@ void test_create_head_set_from_tree_set() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_create_tail_set_from_tree_set() {
+static void test_create_tail_set_from_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -711,7 +711,7 @@ void test_create_tail_set_from_tree_set() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_create_sub_set_of_tree_set() {
+static void test_create_sub_set_of_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -722,7 +722,7 @@ void test_create_sub_set_of_tree_set() {
     tree_set_destroy(&new_tree_set);
 }
 
-void test_create_empty_sub_set_of_tree_set() {
+static void test_create_empty_sub_set_of_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -743,19 +743,19 @@ static void sub_set_inexistent_element_test_helper(int* start_element, int* end_
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_sub_set_inexistent_end_element_fails() {
+static void test_create_sub_set_inexistent_end_element_fails(void) {
     sub_set_inexistent_element_test_helper(ref(int, 1), ref(int, 6));
 }
 
-void test_create_sub_set_inexistent_start_element_fails() {
+static void test_create_sub_set_inexistent_start_element_fails(void) {
     sub_set_inexistent_element_test_helper(ref(int, 0), ref(int, 5));
 }
 
-void test_create_sub_set_start_element_greater_than_end_element_fails() {
+static void test_create_sub_set_start_element_greater_than_end_element_fails(void) {
     sub_set_inexistent_element_test_helper(ref(int, 5), ref(int, 3));
 }
 
-void test_clone_tree_set() {
+static void test_clone_tree_set(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -766,7 +766,7 @@ void test_clone_tree_set() {
     tree_set_destroy(&copy_tree_set);
 }
 
-void test_tree_set_to_collection() {
+static void test_tree_set_to_collection(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -782,7 +782,7 @@ void test_tree_set_to_collection() {
     iterator_destroy(&iterator);
 }
 
-void test_convert_tree_set_to_array() {
+static void test_convert_tree_set_to_array(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -793,7 +793,7 @@ void test_convert_tree_set_to_array() {
     array_destroy(&element_array);
 }
 
-void test_get_tree_set_string_representation() {
+static void test_get_tree_set_string_representation(void) {
     // given
     POPULATE_TREE_SET(tree_set, int, 1, 2, 3, 4, 5);
     // when
@@ -804,7 +804,7 @@ void test_get_tree_set_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_tree_set_string_representation() {
+static void test_get_empty_tree_set_string_representation(void) {
     // when
     String string = tree_set_to_string(tree_set);
     // then

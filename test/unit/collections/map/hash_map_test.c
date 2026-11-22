@@ -49,22 +49,22 @@ typedef struct {
 
 static HashMap* hash_map;
 
-void setUp() {
+void setUp(void) {
     hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
 
     hash_map_change_key_destructor(hash_map, delete);
     hash_map_change_value_destructor(hash_map, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     hash_map_destroy(&hash_map);
 }
 
-void test_create_hash_map() {
+static void test_create_hash_map(void) {
     TEST_ASSERT_NOT_NULL(hash_map);
 }
 
-void test_do_not_create_hash_map_with_invalid_options() {
+static void test_do_not_create_hash_map_with_invalid_options(void) {
     // when
     HashMap* new_hash_map; Error error = attempt(new_hash_map = hash_map_new(ref(HashMapOptions)));
     // then
@@ -72,7 +72,7 @@ void test_do_not_create_hash_map_with_invalid_options() {
     TEST_ASSERT_EQUAL(ILLEGAL_ARGUMENT_ERROR, error);
 }
 
-void test_create_hash_map_from_entry_collection() {
+static void test_create_hash_map_from_entry_collection(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -87,7 +87,7 @@ void test_create_hash_map_from_entry_collection() {
     hash_map_destroy(&new_hash_map);
 }
 
-void test_destroy_hash_map_set_it_to_null() {
+static void test_destroy_hash_map_set_it_to_null(void) {
     // given
     HashMap* new_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // when
@@ -96,7 +96,7 @@ void test_destroy_hash_map_set_it_to_null() {
     TEST_ASSERT_NULL(new_hash_map);
 }
 
-void test_destroy_null_hash_map_fails() {
+static void test_destroy_null_hash_map_fails(void) {
     // given
     HashMap* new_hash_map = nullptr;
     // when
@@ -118,7 +118,7 @@ static void* remapper_sum_values(void* old_value, void* new_value) {
     return old_value;
 }
 
-void test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_mapping() {
+static void test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_mapping(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -132,7 +132,7 @@ void test_compute_mapping_of_hash_map_if_remapper_return_value_is_null_remove_ma
     );
 }
 
-void test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_mapping() {
+static void test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_mapping(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -148,7 +148,7 @@ void test_compute_mapping_of_hash_map_if_remapper_return_value_is_not_null_put_m
     );
 }
 
-void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_do_nothing() {
+static void test_compute_mapping_of_hash_map_if_key_is_absent_and_remapper_return_null_do_nothing(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -166,7 +166,7 @@ static void* mapper(void*) {
     return new(int, 10);
 }
 
-void test_compute_mapping_of_hash_map_if_absent() {
+static void test_compute_mapping_of_hash_map_if_absent(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -180,7 +180,7 @@ void test_compute_mapping_of_hash_map_if_absent() {
     );
 }
 
-void test_do_not_compute_mapping_of_hash_map_if_not_absent() {
+static void test_do_not_compute_mapping_of_hash_map_if_not_absent(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -194,7 +194,7 @@ void test_do_not_compute_mapping_of_hash_map_if_not_absent() {
     );
 }
 
-void test_compute_mapping_of_hash_map_if_present() {
+static void test_compute_mapping_of_hash_map_if_present(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -208,7 +208,7 @@ void test_compute_mapping_of_hash_map_if_present() {
     );
 }
 
-void test_do_not_compute_mapping_of_hash_map_if_not_present() {
+static void test_do_not_compute_mapping_of_hash_map_if_not_present(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -222,7 +222,7 @@ void test_do_not_compute_mapping_of_hash_map_if_not_present() {
     );
 }
 
-void test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value() {
+static void test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -237,7 +237,7 @@ void test_merge_mapping_of_hash_map_if_old_value_is_null_insert_new_value() {
     );
 }
 
-void test_merge_mapping_of_hash_map_if_old_value_is_not_null_merge_with_new_value() {
+static void test_merge_mapping_of_hash_map_if_old_value_is_not_null_merge_with_new_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -251,7 +251,7 @@ void test_merge_mapping_of_hash_map_if_old_value_is_not_null_merge_with_new_valu
     );
 }
 
-void test_merge_mapping_of_hash_map_if_merged_value_is_null_remove_mapping() {
+static void test_merge_mapping_of_hash_map_if_merged_value_is_null_remove_mapping(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -265,7 +265,7 @@ void test_merge_mapping_of_hash_map_if_merged_value_is_null_remove_mapping() {
     );
 }
 
-void test_put_entry_to_hash_map() {
+static void test_put_entry_to_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -279,7 +279,7 @@ void test_put_entry_to_hash_map() {
     );
 }
 
-void test_put_entry_to_hash_map_if_key_already_exists_update_value() {
+static void test_put_entry_to_hash_map_if_key_already_exists_update_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -292,7 +292,7 @@ void test_put_entry_to_hash_map_if_key_already_exists_update_value() {
     );
 }
 
-void test_put_entry_to_hash_map_if_key_already_exists_update_value_no_destruct() {
+static void test_put_entry_to_hash_map_if_key_already_exists_update_value_no_destruct(void) {
     // given
     hash_map_change_value_destructor(hash_map, noop_destruct);
     // and
@@ -311,7 +311,7 @@ void test_put_entry_to_hash_map_if_key_already_exists_update_value_no_destruct()
     hash_map_change_value_destructor(hash_map, delete);
 }
 
-void test_put_entry_to_hash_map_if_key_is_absent() {
+static void test_put_entry_to_hash_map_if_key_is_absent(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -327,7 +327,7 @@ void test_put_entry_to_hash_map_if_key_is_absent() {
     );
 }
 
-void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
+static void test_do_not_put_entry_to_hash_map_if_key_is_not_absent(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -341,7 +341,7 @@ void test_do_not_put_entry_to_hash_map_if_key_is_not_absent() {
     );
 }
 
-void test_put_all_entries_to_hash_map() {
+static void test_put_all_entries_to_hash_map(void) {
     // given
     HashMap* new_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
@@ -358,7 +358,7 @@ void test_put_all_entries_to_hash_map() {
     hash_map_destroy(&new_hash_map);
 }
 
-void test_put_entries_to_hash_map_exceeding_threshold_resizes_it() {
+static void test_put_entries_to_hash_map_exceeding_threshold_resizes_it(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }, { 'f', 6 },
@@ -375,7 +375,7 @@ void test_put_entries_to_hash_map_exceeding_threshold_resizes_it() {
     );
 }
 
-void test_get_value_from_hash_map() {
+static void test_get_value_from_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -386,7 +386,7 @@ void test_get_value_from_hash_map() {
     TEST_ASSERT_EQUAL(1, *value);
 }
 
-void test_get_value_from_hash_map_no_mapping_fails() {
+static void test_get_value_from_hash_map_no_mapping_fails(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -397,7 +397,7 @@ void test_get_value_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_NULL(value);
 }
 
-void test_get_default_value_from_hash_map() {
+static void test_get_default_value_from_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -410,7 +410,7 @@ void test_get_default_value_from_hash_map() {
     TEST_ASSERT_EQUAL(10, *value_b);
 }
 
-void test_replace_value_from_hash_map() {
+static void test_replace_value_from_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -423,7 +423,7 @@ void test_replace_value_from_hash_map() {
     );
 }
 
-void test_replace_value_from_hash_map_no_destruct() {
+static void test_replace_value_from_hash_map_no_destruct(void) {
     // given
     hash_map_change_value_destructor(hash_map, noop_destruct);
     // and
@@ -442,7 +442,7 @@ void test_replace_value_from_hash_map_no_destruct() {
     hash_map_change_value_destructor(hash_map, delete);
 }
 
-void test_replace_value_from_hash_map_no_mapping_fails() {
+static void test_replace_value_from_hash_map_no_mapping_fails(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -456,7 +456,7 @@ void test_replace_value_from_hash_map_no_mapping_fails() {
     );
 }
 
-void test_replace_entry_from_hash_map_matching_value() {
+static void test_replace_entry_from_hash_map_matching_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -470,7 +470,7 @@ void test_replace_entry_from_hash_map_matching_value() {
     );
 }
 
-void test_replace_entry_from_hash_map_no_matching_value_fails() {
+static void test_replace_entry_from_hash_map_no_matching_value_fails(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -484,7 +484,7 @@ void test_replace_entry_from_hash_map_no_matching_value_fails() {
     );
 }
 
-void test_remove_entry_from_hash_map() {
+static void test_remove_entry_from_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -497,7 +497,7 @@ void test_remove_entry_from_hash_map() {
     );
 }
 
-void test_remove_entry_from_hash_map_no_destruct() {
+static void test_remove_entry_from_hash_map_no_destruct(void) {
     // given
     hash_map_change_value_destructor(hash_map, noop_destruct);
     // and
@@ -516,7 +516,7 @@ void test_remove_entry_from_hash_map_no_destruct() {
     hash_map_change_value_destructor(hash_map, delete);
 }
 
-void test_remove_entry_from_hash_map_no_mapping_fails() {
+static void test_remove_entry_from_hash_map_no_mapping_fails(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -527,7 +527,7 @@ void test_remove_entry_from_hash_map_no_mapping_fails() {
     TEST_ASSERT_NULL(value);
 }
 
-void test_remove_entry_from_hash_map_matching_value() {
+static void test_remove_entry_from_hash_map_matching_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -541,7 +541,7 @@ void test_remove_entry_from_hash_map_matching_value() {
     );
 }
 
-void test_remove_entry_from_hash_map_no_matching_value_fails() {
+static void test_remove_entry_from_hash_map_no_matching_value_fails(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -560,7 +560,7 @@ static void* replace_by_2_times_original(void*, void* value) {
     return value;
 }
 
-void test_replace_all_values_from_hash_map() {
+static void test_replace_all_values_from_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -573,7 +573,7 @@ void test_replace_all_values_from_hash_map() {
     );
 }
 
-void test_get_hash_map_size() {
+static void test_get_hash_map_size(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -584,14 +584,14 @@ void test_get_hash_map_size() {
     TEST_ASSERT_EQUAL(5, size);
 }
 
-void test_hash_map_is_empty() {
+static void test_hash_map_is_empty(void) {
     // when
     bool empty = hash_map_is_empty(hash_map);
     // then
     TEST_ASSERT_TRUE(empty);
 }
 
-void test_hash_map_is_not_empty() {
+static void test_hash_map_is_not_empty(void) {
     // given
     hash_map_put(hash_map, new(char, 'k'), new(int, 10));
     // when
@@ -600,7 +600,7 @@ void test_hash_map_is_not_empty() {
     TEST_ASSERT_FALSE(empty);
 }
 
-void test_hash_map_iterator_forward_iteration() {
+static void test_hash_map_iterator_forward_iteration(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -629,7 +629,7 @@ void test_hash_map_iterator_forward_iteration() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_backward_iteration_unsupported() {
+static void test_hash_map_iterator_backward_iteration_unsupported(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -643,7 +643,7 @@ void test_hash_map_iterator_backward_iteration_unsupported() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_detects_concurrent_modification() {
+static void test_hash_map_iterator_detects_concurrent_modification(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -658,7 +658,7 @@ void test_hash_map_iterator_detects_concurrent_modification() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_remove_element() {
+static void test_hash_map_iterator_remove_element(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -676,7 +676,7 @@ void test_hash_map_iterator_remove_element() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_remove_element_fails_if_no_next_was_called() {
+static void test_hash_map_iterator_remove_element_fails_if_no_next_was_called(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -694,7 +694,7 @@ void test_hash_map_iterator_remove_element_fails_if_no_next_was_called() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
+static void test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -713,7 +713,7 @@ void test_hash_map_iterator_remove_element_fails_if_called_twice_in_a_row() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_iterator_reset() {
+static void test_hash_map_iterator_reset(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -729,7 +729,7 @@ void test_hash_map_iterator_reset() {
     iterator_destroy(&iterator);
 }
 
-void test_hash_map_is_equal_to_it_self() {
+static void test_hash_map_is_equal_to_it_self(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -740,7 +740,7 @@ void test_hash_map_is_equal_to_it_self() {
     TEST_ASSERT_TRUE(equals);
 }
 
-void test_hash_map_is_equal_to_another_hash_map() {
+static void test_hash_map_is_equal_to_another_hash_map(void) {
     // given
     HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
@@ -760,7 +760,7 @@ void test_hash_map_is_equal_to_another_hash_map() {
     hash_map_destroy(&other_hash_map);
 }
 
-void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
+static void test_hash_map_is_not_equal_to_another_hash_map_with_different_size(void) {
     // given
     HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
@@ -782,7 +782,7 @@ void test_hash_map_is_not_equal_to_another_hash_map_with_different_size() {
     hash_map_destroy(&other_hash_map);
 }
 
-void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings() {
+static void test_hash_map_is_not_equal_to_another_hash_map_with_different_mappings(void) {
     // given
     HashMap* other_hash_map = hash_map_new(HASH_MAP_OPTIONS(char, int));
     // and
@@ -811,7 +811,7 @@ static void action_add_one_every_two_keys(void* key, void* value) {
     }
 }
 
-void test_perform_action_for_each_entry_of_hash_map() {
+static void test_perform_action_for_each_entry_of_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -824,7 +824,7 @@ void test_perform_action_for_each_entry_of_hash_map() {
     );
 }
 
-void test_clear_hash_map() {
+static void test_clear_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }
@@ -838,7 +838,7 @@ void test_clear_hash_map() {
     TEST_ASSERT_NULL(hash_map_get(hash_map, ref(char, 'c')));
 }
 
-void test_hash_map_contains_entry() {
+static void test_hash_map_contains_entry(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -849,7 +849,7 @@ void test_hash_map_contains_entry() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_hash_map_does_not_contains_entry() {
+static void test_hash_map_does_not_contains_entry(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -860,7 +860,7 @@ void test_hash_map_does_not_contains_entry() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_hash_map_contains_key() {
+static void test_hash_map_contains_key(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -871,7 +871,7 @@ void test_hash_map_contains_key() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_hash_map_does_not_contains_key() {
+static void test_hash_map_does_not_contains_key(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -882,7 +882,7 @@ void test_hash_map_does_not_contains_key() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_hash_map_contains_value() {
+static void test_hash_map_contains_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -893,7 +893,7 @@ void test_hash_map_contains_value() {
     TEST_ASSERT_TRUE(contains);
 }
 
-void test_hash_map_does_not_contains_value() {
+static void test_hash_map_does_not_contains_value(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -904,7 +904,7 @@ void test_hash_map_does_not_contains_value() {
     TEST_ASSERT_FALSE(contains);
 }
 
-void test_get_hash_map_entries() {
+static void test_get_hash_map_entries(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -922,7 +922,7 @@ void test_get_hash_map_entries() {
     iterator_destroy(&iterator);
 }
 
-void test_get_hash_map_keys() {
+static void test_get_hash_map_keys(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -940,7 +940,7 @@ void test_get_hash_map_keys() {
     iterator_destroy(&iterator);
 }
 
-void test_get_hash_map_values() {
+static void test_get_hash_map_values(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -958,7 +958,7 @@ void test_get_hash_map_values() {
     iterator_destroy(&iterator);
 }
 
-void test_clone_hash_map() {
+static void test_clone_hash_map(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -973,7 +973,7 @@ void test_clone_hash_map() {
     hash_map_destroy(&copy_hash_map);
 }
 
-void test_get_hash_map_string_representation() {
+static void test_get_hash_map_string_representation(void) {
     // given
     POPULATE_HASH_MAP(hash_map, CharIntEntry,
         { 'a', 1 }, { 'b', 2 }, { 'c', 3 }, { 'd', 4 }, { 'e', 5 }
@@ -986,7 +986,7 @@ void test_get_hash_map_string_representation() {
     string_destroy(&string);
 }
 
-void test_get_empty_hash_map_string_representation() {
+static void test_get_empty_hash_map_string_representation(void) {
     // when
     String string = hash_map_to_string(hash_map);
     // then

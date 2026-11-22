@@ -18,16 +18,16 @@
 
 static ArrayList* array_list;
 
-void setUp() {
+void setUp(void) {
     array_list = array_list_new(ARRAY_LIST_OPTIONS(int));
     array_list_change_destructor(array_list, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     array_list_destroy(&array_list);
 }
 
-void test_iterate_through_data_structure() {
+static void test_iterate_through_data_structure(void) {
     // given
     int* new_values[5], count = 0;
     // and
@@ -41,7 +41,7 @@ void test_iterate_through_data_structure() {
     TEST_ASSERT_EQUAL(5, count);
 }
 
-void test_iterate_through_empty_data_structure() {
+static void test_iterate_through_empty_data_structure(void) {
     // given
     int count = 0;
     // when
@@ -53,7 +53,7 @@ void test_iterate_through_empty_data_structure() {
     TEST_ASSERT_EQUAL(0, count);
 }
 
-void test_iterate_through_collection_view() {
+static void test_iterate_through_collection_view(void) {
     // given
     int* new_values[5], count = 0;
     // and

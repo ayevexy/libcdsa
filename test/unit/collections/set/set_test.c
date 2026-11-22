@@ -37,7 +37,7 @@
 static HashSet* set_a;
 static TreeSet* set_b;
 
-void setUp() {
+void setUp(void) {
     set_a = set_new(HASH_SET_OPTIONS(int));
     set_b = set_new(TREE_SET_OPTIONS(int));
 
@@ -45,12 +45,12 @@ void setUp() {
     set_change_destructor(set_b, delete);
 }
 
-void tearDown() {
+void tearDown(void) {
     set_destroy(&set_a);
     set_destroy(&set_b);
 }
 
-void test_sets_union() {
+static void test_sets_union(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 6, 7, 8, 9, 10);
@@ -63,7 +63,7 @@ void test_sets_union() {
     set_destroy(&union_set);
 }
 
-void test_sets_intersection() {
+static void test_sets_intersection(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 0, 2, 3, 4, 6);
@@ -77,7 +77,7 @@ void test_sets_intersection() {
     set_destroy(&intersection_set);
 }
 
-void test_sets_difference() {
+static void test_sets_difference(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 0, 2, 3, 4, 6);
@@ -91,7 +91,7 @@ void test_sets_difference() {
     set_destroy(&difference_set);
 }
 
-void test_sets_symmetric_difference() {
+static void test_sets_symmetric_difference(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 0, 2, 3, 4, 6);
@@ -105,7 +105,7 @@ void test_sets_symmetric_difference() {
     set_destroy(&symmetric_different_set);
 }
 
-void test_set_is_subset() {
+static void test_set_is_subset(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 2, 3, 4);
@@ -120,7 +120,7 @@ void test_set_is_subset() {
     TEST_ASSERT_FALSE(subset);
 }
 
-void test_set_is_superset() {
+static void test_set_is_superset(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 2, 3, 4);
@@ -135,7 +135,7 @@ void test_set_is_superset() {
     TEST_ASSERT_FALSE(superset);
 }
 
-void test_multiple_sets_operations() {
+static void test_multiple_sets_operations(void) {
     // given
     POPULATE_SET(set_a, int, 1, 2, 3, 4, 5);
     POPULATE_SET(set_b, int, 6, 7, 8, 9, 10);

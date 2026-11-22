@@ -4,15 +4,15 @@
 
 #include "unity.h"
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
-void test_array_new() {
+static void test_array_new(void) {
     // given
     Array(int) ints = array_new(5, int);
     // then
@@ -26,7 +26,7 @@ void test_array_new() {
     TEST_ASSERT_NULL(ints);
 }
 
-void test_array_of() {
+static void test_array_of(void) {
     // when
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // then
@@ -40,7 +40,7 @@ void test_array_of() {
     TEST_ASSERT_NULL(ints);
 }
 
-void test_fill_array() {
+static void test_fill_array(void) {
     // given
     Array(int) ints = array_new(5, int);
     // when
@@ -55,7 +55,7 @@ void test_fill_array() {
     array_destroy(&ints);
 }
 
-void test_get_array_element() {
+static void test_get_array_element(void) {
     // given
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // when
@@ -70,7 +70,7 @@ void test_get_array_element() {
     array_destroy(&ints);
 }
 
-void test_set_array_element() {
+static void test_set_array_element(void) {
     // given
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // when
@@ -90,7 +90,7 @@ void test_set_array_element() {
     array_destroy(&ints);
 }
 
-void test_get_array_length() {
+static void test_get_array_length(void) {
     // given
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // when
@@ -101,7 +101,7 @@ void test_get_array_length() {
     array_destroy(&ints);
 }
 
-void test_array_equals() {
+static void test_array_equals(void) {
     // given
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     Array(int) same_ints = array_of(int, 1, 2, 3, 4, 5);
@@ -118,7 +118,7 @@ void test_array_equals() {
     array_destroy(&diff_ints);
 }
 
-void test_copy_array() {
+static void test_copy_array(void) {
     // given
     Array(int) ints = array_of(int, 1, 2, 3, 4, 5);
     // when

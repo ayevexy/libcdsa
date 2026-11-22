@@ -7,15 +7,15 @@
 
 #include "unity.h"
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
-void test_create_new_string() {
+static void test_create_new_string(void) {
     // given
     const char* raw_string = "Hello World!";
     // when
@@ -27,7 +27,7 @@ void test_create_new_string() {
     string_destroy(&string);
 }
 
-void test_create_reference_string() {
+static void test_create_reference_string(void) {
     // given
     const char* raw_string = "Hello World!";
     // when
@@ -39,7 +39,7 @@ void test_create_reference_string() {
     string_destroy(&string);
 }
 
-void test_destroy_string() {
+static void test_destroy_string(void) {
     // given
     String string = string_new("Hello World!");
     // when
@@ -48,7 +48,7 @@ void test_destroy_string() {
     TEST_ASSERT_NULL(string);
 }
 
-void test_create_formatted_string() {
+static void test_create_formatted_string(void) {
     // given
     String format = string_ref("H%dllo W%drld!");
     // when
@@ -60,7 +60,7 @@ void test_create_formatted_string() {
     string_destroy_all(&format, &string);
 }
 
-void test_hash_string() {
+static void test_hash_string(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -71,7 +71,7 @@ void test_hash_string() {
     string_destroy(&string);
 }
 
-void test_get_char_at_index_from_string() {
+static void test_get_char_at_index_from_string(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -94,15 +94,15 @@ static void get_chat_at_index_out_of_bounds_test_helper(int index) {
     string_destroy(&string);
 }
 
-void test_get_char_from_string_index_above_bounds_fails() {
+static void test_get_char_from_string_index_above_bounds_fails(void) {
     get_chat_at_index_out_of_bounds_test_helper(235);
 }
 
-void test_get_char_from_string_negative_index_fails() {
+static void test_get_char_from_string_negative_index_fails(void) {
     get_chat_at_index_out_of_bounds_test_helper(-1);
 }
 
-void test_string_is_empty() {
+static void test_string_is_empty(void) {
     // given
     String string = string_ref("");
     // when
@@ -113,7 +113,7 @@ void test_string_is_empty() {
     string_destroy(&string);
 }
 
-void test_string_is_not_empty() {
+static void test_string_is_not_empty(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -124,7 +124,7 @@ void test_string_is_not_empty() {
     string_destroy(&string);
 }
 
-void test_string_is_blank() {
+static void test_string_is_blank(void) {
     // given
     String string = string_ref("    ");
     // when
@@ -135,7 +135,7 @@ void test_string_is_blank() {
     string_destroy(&string);
 }
 
-void test_string_is_not_blank() {
+static void test_string_is_not_blank(void) {
     // given
     String string = string_ref("    Hello World!    ");
     // when
@@ -146,7 +146,7 @@ void test_string_is_not_blank() {
     string_destroy(&string);
 }
 
-void test_compare_strings_with_same_length() {
+static void test_compare_strings_with_same_length(void) {
     // given
     String string = string_ref("aaaaa"); // 'a' is greater than 'A' in ASCII
     String other_string = string_ref("AAAAA");
@@ -162,7 +162,7 @@ void test_compare_strings_with_same_length() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_compare_strings_with_different_lengths() {
+static void test_compare_strings_with_different_lengths(void) {
     // given
     String string = string_ref("aAaAA");
     String other_string = string_ref("AaA");
@@ -176,7 +176,7 @@ void test_compare_strings_with_different_lengths() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_compare_strings_with_same_length_ignore_case() {
+static void test_compare_strings_with_same_length_ignore_case(void) {
     // given
     String string = string_ref("aAaAa"); // 'a' is greater than 'A' in ASCII
     String other_string = string_ref("AAaAA");
@@ -188,7 +188,7 @@ void test_compare_strings_with_same_length_ignore_case() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_compare_strings_with_different_lengths_ignore_case() {
+static void test_compare_strings_with_different_lengths_ignore_case(void) {
     // given
     String string = string_ref("aAaAA");
     String other_string = string_ref("AaA");
@@ -202,7 +202,7 @@ void test_compare_strings_with_different_lengths_ignore_case() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_string_equals() {
+static void test_string_equals(void) {
     // given
     String string = string_ref("Hello World!");
     String other_string = string_ref("HELLO WORLD!");
@@ -213,7 +213,7 @@ void test_string_equals() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_string_equals_ignore_case() {
+static void test_string_equals_ignore_case(void) {
     // given
     String string = string_ref("Hello World!");
     String other_string = string_ref("HELLO WORLD!");
@@ -224,7 +224,7 @@ void test_string_equals_ignore_case() {
     string_destroy_all(&string, &other_string);
 }
 
-void test_string_index_of_char() {
+static void test_string_index_of_char(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -237,7 +237,7 @@ void test_string_index_of_char() {
     string_destroy(&string);
 }
 
-void test_string_last_index_of_char() {
+static void test_string_last_index_of_char(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -250,7 +250,7 @@ void test_string_last_index_of_char() {
     string_destroy(&string);
 }
 
-void test_string_index_of_substring() {
+static void test_string_index_of_substring(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -263,7 +263,7 @@ void test_string_index_of_substring() {
     string_destroy(&string);
 }
 
-void test_string_last_index_of_substring() {
+static void test_string_last_index_of_substring(void) {
     // given
     String string = string_ref("Hello Worlld!");
     // when
@@ -276,7 +276,7 @@ void test_string_last_index_of_substring() {
     string_destroy(&string);
 }
 
-void test_string_contains_substring() {
+static void test_string_contains_substring(void) {
     // given
     String string = string_ref("Hello World!");
     // then
@@ -286,7 +286,7 @@ void test_string_contains_substring() {
     string_destroy(&string);
 }
 
-void test_string_starts_with_prefix() {
+static void test_string_starts_with_prefix(void) {
     // given
     String string = string_ref("Hello World!");
     // then
@@ -296,7 +296,7 @@ void test_string_starts_with_prefix() {
     string_destroy(&string);
 }
 
-void test_string_ends_with_prefix() {
+static void test_string_ends_with_prefix(void) {
     // given
     String string = string_ref("Hello World!");
     // then
@@ -306,7 +306,7 @@ void test_string_ends_with_prefix() {
     string_destroy(&string);
 }
 
-void test_string_trim() {
+static void test_string_trim(void) {
     // given
     String string = string_ref("  Hello World!  ");
     // when
@@ -318,7 +318,7 @@ void test_string_trim() {
     string_destroy_all(&string, &trimmed);
 }
 
-void test_string_trim_start() {
+static void test_string_trim_start(void) {
     // given
     String string = string_ref("  Hello World!  ");
     // when
@@ -330,7 +330,7 @@ void test_string_trim_start() {
     string_destroy_all(&string, &trimmed);
 }
 
-void test_string_trim_end() {
+static void test_string_trim_end(void) {
     // given
     String string = string_ref("  Hello World!  ");
     // when
@@ -342,7 +342,7 @@ void test_string_trim_end() {
     string_destroy_all(&string, &trimmed);
 }
 
-void test_string_substring() {
+static void test_string_substring(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -366,19 +366,19 @@ static void substring_index_out_of_bounds_test_helper(int start, int length) {
     string_destroy(&string);
 }
 
-void test_string_substring_length_less_than_zero_fails() {
+static void test_string_substring_length_less_than_zero_fails(void) {
     substring_index_out_of_bounds_test_helper(0, -1);
 }
 
-void test_string_substring_negative_start_index_fails() {
+static void test_string_substring_negative_start_index_fails(void) {
     substring_index_out_of_bounds_test_helper(-1, 3);
 }
 
-void test_string_substring_start_index_greater_than_length_fails() {
+static void test_string_substring_start_index_greater_than_length_fails(void) {
     substring_index_out_of_bounds_test_helper(30, 3);
 }
 
-void test_string_concat() {
+static void test_string_concat(void) {
     // given
     String hello = string_ref("Hello ");
     String world = string_ref("World!");
@@ -391,7 +391,7 @@ void test_string_concat() {
     string_destroy_all(&hello, &world, &hello_world);
 }
 
-void test_string_replace_char() {
+static void test_string_replace_char(void) {
     // given
     String hello = string_ref("Hello World!");
     // when
@@ -402,7 +402,7 @@ void test_string_replace_char() {
     string_destroy_all(&hello, &replaced);
 }
 
-void test_string_replace_substring() {
+static void test_string_replace_substring(void) {
     // given
     String hello = string_ref("Hello Worlld!");
     // when
@@ -414,7 +414,7 @@ void test_string_replace_substring() {
     string_destroy_all(&hello, &replaced);
 }
 
-void test_string_repeat() {
+static void test_string_repeat(void) {
     // given
     String hello = string_ref("Hello");
     // when
@@ -426,7 +426,7 @@ void test_string_repeat() {
     string_destroy_all(&hello, &hello_n_times);
 }
 
-void test_string_repeat_fails_if_times_is_negative() {
+static void test_string_repeat_fails_if_times_is_negative(void) {
     // given
     String hello = string_ref("Hello");
     // when
@@ -438,7 +438,7 @@ void test_string_repeat_fails_if_times_is_negative() {
     string_destroy(&hello);
 }
 
-void test_string_join() {
+static void test_string_join(void) {
     // given
     String hello = string_ref("Hello");
     String world = string_ref("World");
@@ -452,7 +452,7 @@ void test_string_join() {
     string_destroy_all(&hello, &world, &exclamation, &full_hello_world);
 }
 
-void test_string_split() {
+static void test_string_split(void) {
     // given
     String string = string_ref("Hello World !!!");
     // when
@@ -471,7 +471,7 @@ void test_string_split() {
     array_obliterate(&strings, string_destroy);
 }
 
-void test_string_split_single_word() {
+static void test_string_split_single_word(void) {
     // given
     String string = string_ref("Hello");
     // when
@@ -484,7 +484,7 @@ void test_string_split_single_word() {
     array_obliterate(&strings, string_destroy);
 }
 
-void test_string_split_empty() {
+static void test_string_split_empty(void) {
     // given
     String string = string_ref("");
     // when
@@ -496,7 +496,7 @@ void test_string_split_empty() {
     array_obliterate(&strings, string_destroy);
 }
 
-void test_string_to_uppercase() {
+static void test_string_to_uppercase(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -507,7 +507,7 @@ void test_string_to_uppercase() {
     string_destroy_all(&string, &uppercase);
 }
 
-void test_string_to_lowercase() {
+static void test_string_to_lowercase(void) {
     // given
     String string = string_ref("Hello World!");
     // when
@@ -524,7 +524,7 @@ void test_string_to_lowercase() {
     string_destroy(&string);                                    \
 } while (false)
 
-void test_string_value_of() {
+static void test_string_value_of(void) {
     ASSERT_STRING_VALUE("true", true);
     ASSERT_STRING_VALUE("\n", (char) 10);
 
@@ -545,7 +545,7 @@ void test_string_value_of() {
     ASSERT_STRING_VALUE("10.000000", (ldouble) 10);
 }
 
-void test_string_to_number() {
+static void test_string_to_number(void) {
     TEST_ASSERT_EQUAL(-10, string_to_short("-10"));
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_short("a")));
     TEST_ASSERT_EQUAL(NUMBER_FORMAT_ERROR, attempt(string_to_short("1'000'000")));
@@ -597,7 +597,7 @@ void test_string_to_number() {
 
 /* --------------------------------------------------------------------------------- */
 
-void test_create_and_destroy_string_builder() {
+static void test_create_and_destroy_string_builder(void) {
     // when
     StringBuilder *sb = string_builder_new();
     // then
@@ -609,7 +609,7 @@ void test_create_and_destroy_string_builder() {
     TEST_ASSERT_NULL(sb);
 }
 
-void test_string_builder_append() {
+static void test_string_builder_append(void) {
     // given
     StringBuilder* sb = string_builder_new();
     // when
@@ -622,7 +622,7 @@ void test_string_builder_append() {
     string_builder_destroy(&sb);
 }
 
-void test_string_builder_append_exceeding_capacity_resize_it() {
+static void test_string_builder_append_exceeding_capacity_resize_it(void) {
     // given
     StringBuilder* sb = string_builder_new();
     // when
@@ -637,7 +637,7 @@ void test_string_builder_append_exceeding_capacity_resize_it() {
     string_builder_destroy(&sb);
 }
 
-void test_string_builder_insert() {
+static void test_string_builder_insert(void) {
     // given
     StringBuilder* sb = string_builder_new();
     // and
@@ -666,15 +666,15 @@ static void insert_index_out_of_bounds_test_helper(int index) {
     string_builder_destroy(&sb);
 }
 
-void test_string_builder_insert_index_above_bounds_fails() {
+static void test_string_builder_insert_index_above_bounds_fails(void) {
     insert_index_out_of_bounds_test_helper(10);
 }
 
-void test_string_builder_insert_negative_index_fails() {
+static void test_string_builder_insert_negative_index_fails(void) {
     insert_index_out_of_bounds_test_helper(-1);
 }
 
-void test_string_builder_to_string() {
+static void test_string_builder_to_string(void) {
     // given
     StringBuilder* sb = string_builder_new();
     // and

@@ -5,15 +5,15 @@
 
 #include "unity.h"
 
-void setUp() {
+void setUp(void) {
 
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
-void test_math_add_exact() {
+static void test_math_add_exact(void) {
     // then: unsigned integers
     TEST_ASSERT_EQUAL(3000u, math_add_exact(1000u, 2000u));
     TEST_ASSERT_EQUAL(300000ul, math_add_exact(100000ul, 200000ul));
@@ -36,7 +36,7 @@ void test_math_add_exact() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_add_exact(LLONG_MIN_VALUE, -1ll)));
 }
 
-void test_math_sub_exact() {
+static void test_math_sub_exact(void) {
     // then: unsigned integers
     TEST_ASSERT_EQUAL(1000u, math_sub_exact(3000u, 2000u));
     TEST_ASSERT_EQUAL(100000ul, math_sub_exact(200000ul, 100000ul));
@@ -59,7 +59,7 @@ void test_math_sub_exact() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_sub_exact(LLONG_MIN_VALUE, 1ll)));
 }
 
-void test_math_mul_exact() {
+static void test_math_mul_exact(void) {
     // then: unsigned integers
     TEST_ASSERT_EQUAL(20000u, math_mul_exact(100u, 200u));
     TEST_ASSERT_EQUAL(200000ul, math_mul_exact(1000ul, 200ul));
@@ -82,7 +82,7 @@ void test_math_mul_exact() {
     TEST_ASSERT_EQUAL(ARITHMETIC_ERROR, attempt(math_mul_exact(LLONG_MIN_VALUE, 2ll)));
 }
 
-void test_math_div_exact() {
+static void test_math_div_exact(void) {
     // then: unsigned integers
     TEST_ASSERT_EQUAL(10u, math_div_exact(1000u, 100u));
     TEST_ASSERT_EQUAL(100ul, math_div_exact(100000ul, 1000ul));
@@ -116,7 +116,7 @@ void test_math_div_exact() {
     TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 2, math_cbrt((T) 8));           \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 5, math_hypot((T) 3, (T) 4))
 
-void test_math_functions() {
+static void test_math_functions(void) {
     // then
     TEST_MATH_FUNCTIONS(float, 1e-6f, MATH_E(float));
     TEST_MATH_FUNCTIONS(double, 1e-12, MATH_E(double));
@@ -138,14 +138,14 @@ void test_math_functions() {
     TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_acosh((T) 1));              \
     TEST_ASSERT_FLOAT_WITHIN(tolerance, (T) 0, math_atanh((T) 0))
 
-void test_math_trigonometric() {
+static void test_math_trigonometric(void) {
     // then
     TEST_TRIGONOMETRIC(float, 1e-6f, MATH_PI(float), 0.5f);
     TEST_TRIGONOMETRIC(double, 1e-12, MATH_PI(double), 0.5);
     TEST_TRIGONOMETRIC(ldouble, 1e-15L, MATH_PI(ldouble), 0.5L);
 }
 
-void test_math_to_radians() {
+static void test_math_to_radians(void) {
     // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_radians(0.0));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.7853981633974483, math_to_radians(45.0));
@@ -155,7 +155,7 @@ void test_math_to_radians() {
     TEST_ASSERT_FLOAT_WITHIN(0.000001, -1.5707963267948966, math_to_radians(-90.0));
 }
 
-void test_math_to_degrees() {
+static void test_math_to_degrees(void) {
     // then
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 0.0, math_to_degrees(0.0));
     TEST_ASSERT_FLOAT_WITHIN(0.000001, 45.0, math_to_degrees(0.7853981633974483));
@@ -165,7 +165,7 @@ void test_math_to_degrees() {
     TEST_ASSERT_FLOAT_WITHIN(0.000001, -90.0, math_to_degrees(-1.5707963267948966));
 }
 
-void test_math_mean() {
+static void test_math_mean(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(3, math_mean(((int[]) {1, 2, 3, 4, 5}), 5));
     TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean(((int[]) {1, 2, 3, 4}), 4));
@@ -181,7 +181,7 @@ void test_math_mean() {
     TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean(((double[]) {1, 2, 3, 4}), 4));
 }
 
-void test_math_mean_of() {
+static void test_math_mean_of(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(3, math_mean_of(int, 1, 2, 3, 4, 5));
     TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean_of(int, 1, 2, 3, 4));
@@ -197,7 +197,7 @@ void test_math_mean_of() {
     TEST_ASSERT_EQUAL_FLOAT(2.5, math_mean_of(double, 1, 2, 3, 4));
 }
 
-void test_math_median() {
+static void test_math_median(void) {
     // then: odd number of elements
     TEST_ASSERT_EQUAL(3.0, math_median(((double[]) {1, 2, 3, 4, 5}), 5));
     TEST_ASSERT_EQUAL(1.0, math_median(((double[]) {1}), 1));
@@ -219,7 +219,7 @@ void test_math_median() {
     TEST_ASSERT_TRUE(math_is_nan(math_median((double[]){1}, 0)));
 }
 
-void test_math_median_of() {
+static void test_math_median_of(void) {
     // then: odd number of elements
     TEST_ASSERT_EQUAL(3.0, math_median_of(int, 1, 2, 3, 4, 5));
     TEST_ASSERT_EQUAL(1.0, math_median_of(int, 1));
@@ -239,7 +239,7 @@ void test_math_median_of() {
     TEST_ASSERT_EQUAL(2.25, math_median_of(double, 1.5, 2.0, 2.5, 3.0));
 }
 
-void test_math_gcd() {
+static void test_math_gcd(void) {
     // then
     TEST_ASSERT_EQUAL(6, math_gcd(-12, -18));
     TEST_ASSERT_EQUAL(6, math_gcd(12, 18));
@@ -250,7 +250,7 @@ void test_math_gcd() {
     TEST_ASSERT_EQUAL(0, math_gcd(0, 0));
 }
 
-void test_math_lcm() {
+static void test_math_lcm(void) {
     // then
     TEST_ASSERT_EQUAL(36, math_lcm(-12, -18));
     TEST_ASSERT_EQUAL(36, math_lcm(12, 18));
@@ -260,7 +260,7 @@ void test_math_lcm() {
     TEST_ASSERT_EQUAL(0,math_lcm(0, 10));
 }
 
-void test_math_factorial() {
+static void test_math_factorial(void) {
     // then
     TEST_ASSERT_EQUAL(1, math_factorial(0));
     TEST_ASSERT_EQUAL(1, math_factorial(1));
@@ -277,7 +277,7 @@ void test_math_factorial() {
     TEST_ASSERT_EQUAL(INT_MAX_VALUE, math_factorial(1'000'000));
 }
 
-void test_math_combinations() {
+static void test_math_combinations(void) {
     // then
     TEST_ASSERT_EQUAL(1, math_combinations(5, 0));
     TEST_ASSERT_EQUAL(5, math_combinations(5, 1));
@@ -297,7 +297,7 @@ void test_math_combinations() {
     TEST_ASSERT_EQUAL(0, math_combinations(-2, -4));
 }
 
-void test_math_permutations() {
+static void test_math_permutations(void) {
     // then
     TEST_ASSERT_EQUAL(1, math_permutations(5, 0));
     TEST_ASSERT_EQUAL(5, math_permutations(5, 1));
@@ -314,7 +314,7 @@ void test_math_permutations() {
     TEST_ASSERT_EQUAL(0, math_combinations(-2, -4));
 }
 
-void test_math_is_prime() {
+static void test_math_is_prime(void) {
     // then
     TEST_ASSERT_FALSE(math_is_prime(0));
     TEST_ASSERT_FALSE(math_is_prime(1));
@@ -328,7 +328,7 @@ void test_math_is_prime() {
     TEST_ASSERT_FALSE(math_is_prime(100));
 }
 
-void test_math_is_power_of_two() {
+static void test_math_is_power_of_two(void) {
     // then
     TEST_ASSERT_TRUE(math_is_power_of_two(2));
     TEST_ASSERT_TRUE(math_is_power_of_two(8));
@@ -339,14 +339,14 @@ void test_math_is_power_of_two() {
     TEST_ASSERT_FALSE(math_is_power_of_two(237));
 }
 
-void test_math_abs() {
+static void test_math_abs(void) {
     // then
     TEST_ASSERT_EQUAL(10, math_abs(10));
     TEST_ASSERT_EQUAL(10, math_abs(-10));
     TEST_ASSERT_EQUAL(0, math_abs(0));
 }
 
-void test_math_min() {
+static void test_math_min(void) {
     // then
     TEST_ASSERT_EQUAL(10, math_min(10, 20));
     TEST_ASSERT_EQUAL(10, math_min(20, 10));
@@ -355,7 +355,7 @@ void test_math_min() {
     TEST_ASSERT_EQUAL(10, math_min(10, 10));
 }
 
-void test_math_max() {
+static void test_math_max(void) {
     // then
     TEST_ASSERT_EQUAL(20, math_max(10, 20));
     TEST_ASSERT_EQUAL(20, math_max(20, 10));
@@ -364,21 +364,21 @@ void test_math_max() {
     TEST_ASSERT_EQUAL(10, math_max(10, 10));
 }
 
-void test_math_clamp() {
+static void test_math_clamp(void) {
     // then
     TEST_ASSERT_EQUAL(0, math_clamp(-1, 0, 1));
     TEST_ASSERT_EQUAL(1, math_clamp(2, 0, 1));
     TEST_ASSERT_EQUAL(0, math_clamp(0, 0, 1));
 }
 
-void test_math_sign() {
+static void test_math_sign(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_sign(-1.0));
     TEST_ASSERT_EQUAL_FLOAT(0.0, math_sign(0.0));
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_sign(1.0));
 }
 
-void test_math_copysign() {
+static void test_math_copysign(void) {
     // then: positive and negative signs
     TEST_ASSERT_EQUAL_FLOAT(-5.0, math_copysign(5.0, -1.0));
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_copysign(-5.0, 1.0));
@@ -390,7 +390,7 @@ void test_math_copysign() {
     TEST_ASSERT_EQUAL_FLOAT(-0.0, math_copysign(0.0, -1.0));
 }
 
-void test_math_scalb() {
+static void test_math_scalb(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(-16, math_scalb(-0.5f, 5));
     TEST_ASSERT_EQUAL_FLOAT(16, math_scalb(0.5, 5));
@@ -398,7 +398,7 @@ void test_math_scalb() {
     TEST_ASSERT_EQUAL_FLOAT(32, math_scalb(1.0L, 5L));
 }
 
-void test_math_frexp() {
+static void test_math_frexp(void) {
     // when
     int exponent; float mantissa = math_frexp(10.0, &exponent);
     // then
@@ -406,26 +406,26 @@ void test_math_frexp() {
     TEST_ASSERT_EQUAL(4, exponent);
 }
 
-void test_math_ldexp() {
+static void test_math_ldexp(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(0.437500, math_ldexp(7.0, -4));
 }
 
-void test_math_next_after() {
+static void test_math_next_after(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(nextafterf(1.0f, 2.0f), math_next_after(1.0f, 2.0f));
     TEST_ASSERT_EQUAL_FLOAT(nextafter(1.0, 2.0), math_next_after(1.0, 2.0));
     TEST_ASSERT_EQUAL_FLOAT(nextafterl(1.0L, 2.0L), math_next_after(1.0L, 2.0L));
 }
 
-void test_math_next_toward() {
+static void test_math_next_toward(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(nexttowardf(1.0f, 2.0L), math_next_toward(1.0f, 2.0L));
     TEST_ASSERT_EQUAL_FLOAT(nexttoward(1.0, 2.0L), math_next_toward(1.0, 2.0L));
     TEST_ASSERT_EQUAL_FLOAT(nexttowardl(1.0L, 2.0L), math_next_toward(1.0L, 2.0L));
 }
 
-void test_math_remainder() {
+static void test_math_remainder(void) {
     // then: positive values
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_remainder(5.0, 2.0));
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_remainder(7.0, 2.0));
@@ -437,7 +437,7 @@ void test_math_remainder() {
     TEST_ASSERT_EQUAL_FLOAT(0.0, math_remainder(8.0, 2.0));
 }
 
-void test_math_mod() {
+static void test_math_mod(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(1.0, math_mod(10.0,  3.0));
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0,  3.0));
@@ -445,20 +445,20 @@ void test_math_mod() {
     TEST_ASSERT_EQUAL_FLOAT(-1.0, math_mod(-10.0, -3.0));
 }
 
-void test_math_fdim() {
+static void test_math_fdim(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(2.0f, math_fdim(5.0f, 3.0f));
     TEST_ASSERT_EQUAL_FLOAT(0.0, math_fdim(3.0, 5.0));
     TEST_ASSERT_EQUAL_FLOAT(0.0L, math_fdim(5.0L, 5.0L));
 }
 
-void test_math_fma() {
+static void test_math_fma(void) {
     // given
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_fma(2.0, 2.0, 1.0));
     TEST_ASSERT_EQUAL_FLOAT(-3.0, math_fma(2.0, -2.0, 1.0));
 }
 
-void test_math_round() {
+static void test_math_round(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(4.0, math_round(4.1));
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_round(4.5));
@@ -466,7 +466,7 @@ void test_math_round() {
     TEST_ASSERT_EQUAL_FLOAT(-4, math_round(-4.1));
 }
 
-void test_math_floor() {
+static void test_math_floor(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(4.0, math_floor(4.1));
     TEST_ASSERT_EQUAL_FLOAT(4.0, math_floor(4.5));
@@ -474,7 +474,7 @@ void test_math_floor() {
     TEST_ASSERT_EQUAL_FLOAT(-5, math_floor(-4.1));
 }
 
-void test_math_ceil() {
+static void test_math_ceil(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_ceil(4.1));
     TEST_ASSERT_EQUAL_FLOAT(5.0, math_ceil(4.5));
@@ -482,7 +482,7 @@ void test_math_ceil() {
     TEST_ASSERT_EQUAL_FLOAT(-4, math_ceil(-4.1));
 }
 
-void test_math_trunc() {
+static void test_math_trunc(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(4.000, math_trunc(4.125427));
     TEST_ASSERT_EQUAL_FLOAT(4.0000, math_trunc(4.523453));
@@ -490,7 +490,7 @@ void test_math_trunc() {
     TEST_ASSERT_EQUAL_FLOAT(-4.0000, math_trunc(-4.111239));
 }
 
-void test_math_is() {
+static void test_math_is(void) {
     // then
     TEST_ASSERT_TRUE(math_is_nan(0.0 / 0.0));
     TEST_ASSERT_TRUE(math_is_infinite(1.0 / 0.0));
@@ -499,13 +499,13 @@ void test_math_is() {
     TEST_ASSERT_TRUE(math_is_normal(1.0 / 1.0));
 }
 
-void test_math_is_close() {
+static void test_math_is_close(void) {
     // then
     TEST_ASSERT_TRUE(math_is_close(3.0010, 3.0015, 0.1));
     TEST_ASSERT_FALSE(math_is_close(3.0010, 3.0015, 0.0001));
 }
 
-void test_math_lerp() {
+static void test_math_lerp(void) {
     // then: interpolation
     TEST_ASSERT_EQUAL_FLOAT(0, math_lerp(0.0, 10.0, 0.0));
     TEST_ASSERT_EQUAL_FLOAT(5, math_lerp(0.0, 10.0, 0.5));
@@ -521,7 +521,7 @@ void test_math_lerp() {
     TEST_ASSERT_EQUAL_FLOAT(-20, math_lerp(-10.0, -20.0, 1.0));
 }
 
-void test_math_percentage() {
+static void test_math_percentage(void) {
     // then
     TEST_ASSERT_EQUAL_FLOAT(10.0, math_percentage(100.0, 10.0));
     TEST_ASSERT_EQUAL_FLOAT(2.0, math_percentage(200.0, 1.0));
@@ -538,7 +538,7 @@ void test_math_percentage() {
         TEST_ASSERT_TRUE(value < one);      \
     } while (0)
 
-void test_math_random() {
+static void test_math_random(void) {
     // given
     uint64 state = 12345;
     // then

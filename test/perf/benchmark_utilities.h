@@ -18,6 +18,7 @@
     for (; benchmark_times_column < benchmark_runs; benchmark_times_column++) {                         \
         benchmark_times_line = 0;
 
+[[maybe_unused]]
 static inline double benchmark_time(void) {
     struct timespec time;
 
@@ -30,6 +31,7 @@ static inline double benchmark_time(void) {
     return (double) time.tv_sec + (double) time.tv_nsec / 1'000'000'000.0;
 }
 
+[[maybe_unused]]
 static inline void format_number(unsigned long long value, char* buffer) {
     char digits[32];
     snprintf(digits, sizeof(digits), "%llu", value);
@@ -50,6 +52,7 @@ static inline void format_number(unsigned long long value, char* buffer) {
     }
 }
 
+[[maybe_unused]]
 static inline double benchmark_median(double* times, int count) {
     double sorted[count];
     memcpy(sorted, times, sizeof(double) * count);
@@ -103,6 +106,7 @@ static volatile size_t benchmark_sink;
 
 static volatile size_t iteration_count;
 
+[[maybe_unused]]
 static void benchmark_count(void* element) {
     (void) element;
     iteration_count++;

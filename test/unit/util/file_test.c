@@ -7,7 +7,7 @@
 
 static const char* file_name = "test_file.txt";
 
-void setUp() {
+void setUp(void) {
     file_delete_if_exists(file_name);
     file_delete_if_exists("test_dir/file_1.txt");
     file_delete_if_exists("test_dir/file_2.txt");
@@ -16,11 +16,11 @@ void setUp() {
     file_delete_if_exists("destination.txt");
 }
 
-void tearDown() {
+void tearDown(void) {
 
 }
 
-void test_file_create() {
+static void test_file_create(void) {
     // when
     file_create(file_name);
     // then
@@ -29,7 +29,7 @@ void test_file_create() {
     file_delete(file_name);
 }
 
-void test_file_create_directory() {
+static void test_file_create_directory(void) {
     // when
     file_create_directory("test_dir");
     // then
@@ -38,7 +38,7 @@ void test_file_create_directory() {
     file_delete("test_dir");
 }
 
-void test_file_list_directory() {
+static void test_file_list_directory(void) {
     // given
     file_create_directory("test_dir");
     file_create("test_dir/file_1.txt");
@@ -56,7 +56,7 @@ void test_file_list_directory() {
     file_delete("test_dir");
 }
 
-void test_file_open_temporary() {
+static void test_file_open_temporary(void) {
     // when
     File* file = file_open_temporary();
     // then
@@ -65,7 +65,7 @@ void test_file_open_temporary() {
     file_close(file);
 }
 
-void test_file_read_and_write_data() {
+static void test_file_read_and_write_data(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     uint8 input[] = { 1, 2, 3, 4, 5 };
@@ -81,7 +81,7 @@ void test_file_read_and_write_data() {
     file_delete(file_name);
 }
 
-void test_file_read_and_write_char() {
+static void test_file_read_and_write_char(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     char self = file_write_char(file, 'a');
@@ -96,7 +96,7 @@ void test_file_read_and_write_char() {
     file_delete(file_name);
 }
 
-void test_file_read_line_and_write_string() {
+static void test_file_read_line_and_write_string(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     int chars = file_write_string(file, "Hello World!\n");
@@ -116,7 +116,7 @@ void test_file_read_line_and_write_string() {
 
 #ifdef __linux__
 
-void test_file_truncate() {
+static void test_file_truncate(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
@@ -132,7 +132,7 @@ void test_file_truncate() {
 
 #endif
 
-void test_file_exists() {
+static void test_file_exists(void) {
     // given
     file_create(file_name);
     // then
@@ -142,7 +142,7 @@ void test_file_exists() {
     file_delete(file_name);
 }
 
-void test_file_size() {
+static void test_file_size(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
@@ -157,7 +157,7 @@ void test_file_size() {
 
 #ifdef __linux__
 
-void test_file_info() {
+static void test_file_info(void) {
     // given
     File* file = file_open(file_name, FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(file, "Hello World!\n");
@@ -173,7 +173,7 @@ void test_file_info() {
 
 #endif
 
-void test_file_copy() {
+static void test_file_copy(void) {
     // given
     File* source = file_open("source.txt", FILE_READ | FILE_WRITE | FILE_TRUNCATE);
     file_write_string(source, "Hello World!\n");
@@ -191,7 +191,7 @@ void test_file_copy() {
     file_delete("destination.txt");
 }
 
-void test_file_move() {
+static void test_file_move(void) {
     // given
     const char* new_file_name = "new_file.txt";
     // and
@@ -205,7 +205,7 @@ void test_file_move() {
     file_delete(new_file_name);
 }
 
-void test_file_delete() {
+static void test_file_delete(void) {
     // given
     file_create(file_name);
     // when
@@ -214,7 +214,7 @@ void test_file_delete() {
     TEST_ASSERT_FALSE(file_exists(file_name));
 }
 
-void test_file_delete_if_exists() {
+static void test_file_delete_if_exists(void) {
     // given
     file_create(file_name);
     // then

@@ -7,7 +7,7 @@
 static MemoryArena* arena;
 static MemoryPool* pool;
 
-void setUp() {
+void setUp(void) {
     arena = memory_arena_new(1024);
     TEST_ASSERT_NOT_NULL(arena);
 
@@ -15,7 +15,7 @@ void setUp() {
     TEST_ASSERT_NOT_NULL(pool);
 }
 
-void tearDown() {
+void tearDown(void) {
     memory_arena_destroy(&arena);
     TEST_ASSERT_NULL(arena);
 
@@ -23,7 +23,7 @@ void tearDown() {
     TEST_ASSERT_NULL(pool);
 }
 
-void test_memory_arena_alloc() {
+static void test_memory_arena_alloc(void) {
     // when
     void* first_block = memory_arena_alloc(arena, 256);
     void* second_block = memory_arena_alloc(arena, 256);
@@ -37,7 +37,7 @@ void test_memory_arena_alloc() {
     TEST_ASSERT_EQUAL(0, (uintptr) second_block % alignof(max_align_t));
 }
 
-void test_memory_arena_overflow() {
+static void test_memory_arena_overflow(void) {
     // when
     void* block; Error error = attempt(block = memory_arena_alloc(arena, 2048));
     // then
@@ -45,7 +45,7 @@ void test_memory_arena_overflow() {
     TEST_ASSERT_NULL(block);
 }
 
-void test_memory_arena_reset() {
+static void test_memory_arena_reset(void) {
     // given
     memory_arena_alloc(arena, 1024);
     TEST_ASSERT_EQUAL(MEMORY_ALLOCATION_ERROR, attempt(memory_arena_alloc(arena, 1)));
@@ -56,7 +56,7 @@ void test_memory_arena_reset() {
     TEST_ASSERT_NOT_NULL(block);
 }
 
-void test_memory_pool_alloc() {
+static void test_memory_pool_alloc(void) {
     // when
     void* first_block = memory_pool_alloc(pool);
     void* second_block = memory_pool_alloc(pool);
@@ -70,7 +70,7 @@ void test_memory_pool_alloc() {
     TEST_ASSERT_EQUAL(0, (uintptr) second_block % alignof(max_align_t));
 }
 
-void test_memory_pool_overflow() {
+static void test_memory_pool_overflow(void) {
     // given
     memory_pool_alloc(pool); // 32
     memory_pool_alloc(pool); // 64
@@ -83,7 +83,7 @@ void test_memory_pool_overflow() {
     TEST_ASSERT_NULL(block);
 }
 
-void test_memory_pool_dealloc() {
+static void test_memory_pool_dealloc(void) {
     // given
     void* block_1 = memory_pool_alloc(pool); // 32
     void* block_2 = memory_pool_alloc(pool); // 64
